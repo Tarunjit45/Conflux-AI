@@ -54,7 +54,7 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
                   <div className="w-full h-full border-2 border-slate-900 bg-blue-600 rounded-sm" />
                 </div>
               </div>
-              <span className="font-orbitron font-bold text-lg md:text-xl tracking-tighter text-white uppercase">CONFLUX<span className="text-blue-500">AI</span></span>
+              <span className="font-orbitron font-bold text-base md:text-xl tracking-tighter text-white uppercase">CONFLUX<span className="text-blue-500">AI</span></span>
             </div>
           )}
         </div>
@@ -86,7 +86,7 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
             className="md:hidden text-white p-2 focus:outline-none"
             aria-label="Toggle Menu"
           >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </motion.nav>
@@ -98,7 +98,7 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
             initial={{ opacity: 0, x: '100%' }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
-            className="fixed inset-0 z-[90] bg-slate-950 flex flex-col items-center justify-center space-y-8 p-6 md:hidden"
+            className="fixed inset-0 z-[90] bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center space-y-8 p-6 md:hidden"
           >
             {navItems.map((item) => (
               <button
@@ -111,7 +111,7 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
             ))}
             <button 
               onClick={(e) => scrollToSection(e, 'contact')}
-              className="mt-8 px-10 py-4 glass border border-blue-500/30 text-[12px] font-orbitron tracking-[0.15em] text-white w-full max-w-xs"
+              className="mt-8 px-10 py-4 glass border border-blue-500/30 text-[12px] font-orbitron tracking-[0.15em] text-white w-full max-w-xs uppercase"
             >
               CLIENT ACCESS
             </button>

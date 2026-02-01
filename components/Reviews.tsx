@@ -37,14 +37,14 @@ const ReviewCard: React.FC<{
     </p>
 
     <div className="flex items-center gap-4 border-t border-white/5 pt-6">
-      <div className={`w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center font-orbitron text-[10px] ${isFeatured ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)]' : 'bg-slate-800 text-slate-400'}`}>
+      <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex-shrink-0 flex items-center justify-center font-orbitron text-[9px] md:text-[10px] ${isFeatured ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)]' : 'bg-slate-800 text-slate-400'}`}>
         {name.split(' ').map(n => n[0]).join('')}
       </div>
       <div className="min-w-0">
-        <h4 className="text-white font-orbitron text-[11px] md:text-xs tracking-wider truncate">{name}</h4>
-        <p className="text-blue-400 text-[9px] font-orbitron tracking-widest uppercase truncate">{business}</p>
+        <h4 className="text-white font-orbitron text-[10px] md:text-xs tracking-wider truncate">{name}</h4>
+        <p className="text-blue-400 text-[8px] md:text-[9px] font-orbitron tracking-widest uppercase truncate">{business}</p>
         <div className="flex items-center gap-2 mt-1">
-           <span className="text-[9px] text-slate-500 uppercase tracking-widest">{location}</span>
+           <span className="text-[8px] md:text-[9px] text-slate-500 uppercase tracking-widest">{location}</span>
            <div className="w-3 h-2 bg-gradient-to-r from-orange-400 via-white to-green-600 rounded-[1px] opacity-70" />
         </div>
       </div>
@@ -90,13 +90,13 @@ const Reviews: React.FC = () => {
           className="flex items-center justify-center gap-4 mb-4"
         >
           <div className="h-[1px] w-6 md:w-8 bg-blue-500" />
-          <span className="font-orbitron text-[9px] md:text-[10px] tracking-[0.4em] text-blue-500 uppercase">Partner Testimonials</span>
+          <span className="font-orbitron text-[8px] md:text-[10px] tracking-[0.4em] text-blue-500 uppercase">Partner Testimonials</span>
           <div className="h-[1px] w-6 md:w-8 bg-blue-500" />
         </motion.div>
-        <h2 className="font-orbitron text-2xl md:text-5xl font-black text-white mb-6">
+        <h2 className="font-orbitron text-2xl md:text-5xl font-black text-white mb-4 md:mb-6">
           PROVEN <span className="text-gradient">IMPACT</span>
         </h2>
-        <p className="text-slate-500 text-xs md:text-sm max-w-xl mx-auto font-light px-4">
+        <p className="text-slate-500 text-[10px] md:text-sm max-w-xl mx-auto font-light px-4">
           Real results from Indian MSMEs and growing startups powered by Conflux Infrastructure.
         </p>
       </div>
@@ -107,17 +107,17 @@ const Reviews: React.FC = () => {
         ))}
       </div>
 
-      <div className="mt-12 md:mt-20 py-8 md:py-10 border-t border-white/5 flex flex-wrap justify-center gap-6 md:gap-24">
+      <div className="mt-12 md:mt-20 py-8 md:py-10 border-t border-white/5 flex flex-wrap justify-center gap-8 md:gap-24">
         <div className="text-center">
-            <div className="text-white font-orbitron text-lg md:text-xl font-bold mb-1">4.9/5</div>
+            <div className="text-white font-orbitron text-base md:text-xl font-bold mb-1">4.9/5</div>
             <div className="text-[7px] md:text-[8px] text-slate-500 tracking-[0.3em] uppercase">Trust Score</div>
         </div>
         <div className="text-center">
-            <div className="text-white font-orbitron text-lg md:text-xl font-bold mb-1">500+</div>
+            <div className="text-white font-orbitron text-base md:text-xl font-bold mb-1">500+</div>
             <div className="text-[7px] md:text-[8px] text-slate-500 tracking-[0.3em] uppercase">Indian Deployments</div>
         </div>
         <div className="text-center">
-            <div className="text-white font-orbitron text-lg md:text-xl font-bold mb-1">₹12Cr+</div>
+            <div className="text-white font-orbitron text-base md:text-xl font-bold mb-1">₹12Cr+</div>
             <div className="text-[7px] md:text-[8px] text-slate-500 tracking-[0.3em] uppercase">Ad Capital Managed</div>
         </div>
       </div>
