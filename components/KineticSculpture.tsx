@@ -1,13 +1,16 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 
 const KineticSculpture: React.FC = () => {
-  // Generate random floating nodes
-  const nodes = Array.from({ length: 15 });
+  const nodes = Array.from({ length: 24 });
+  const rings = [
+    { rx: 180, ry: 60, dur: 25, rev: false },
+    { rx: 120, ry: 160, dur: 35, rev: true },
+    { rx: 200, ry: 100, dur: 45, rev: false }
+  ];
 
   return (
-    <div className="relative w-full h-full max-w-[800px] max-h-[800px] opacity-40 md:opacity-60">
+    <div className="relative w-full h-full max-w-[900px] max-h-[900px]">
       <motion.svg
         viewBox="0 0 400 400"
         className="w-full h-full"
@@ -15,115 +18,92 @@ const KineticSculpture: React.FC = () => {
         animate="animate"
       >
         <defs>
-          <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+          <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.8" />
             <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
           </radialGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
 
         {/* Central Core */}
-        <motion.circle
-          cx="200"
-          cy="200"
-          r="40"
-          fill="none"
-          stroke="#3b82f6"
-          strokeWidth="0.5"
-          animate={{
-            r: [40, 50, 40],
-            strokeWidth: [0.5, 2, 0.5],
-            opacity: [0.3, 0.6, 0.3],
-          }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        />
-        
-        <motion.circle
-          cx="200"
-          cy="200"
-          r="10"
-          fill="#3b82f6"
-          className="glow-blue"
-          animate={{
-            scale: [1, 1.5, 1],
-            opacity: [0.5, 1, 0.5],
-          }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        />
+        <motion.g filter="url(#glow)">
+          <motion.circle
+            cx="200"
+            cy="200"
+            r="30"
+            fill="none"
+            stroke="#3b82f6"
+            strokeWidth="0.5"
+            animate={{
+              r: [30, 45, 30],
+              opacity: [0.2, 0.5, 0.2],
+            }}
+            transition={{ duration: 3, repeat: Infinity }}
+          />
+          <motion.circle
+            cx="200"
+            cy="200"
+            r="8"
+            fill="#3b82f6"
+            animate={{
+              scale: [1, 1.4, 1],
+              opacity: [0.6, 1, 0.6],
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </motion.g>
 
-        {/* Floating Nodes and Connecting Lines */}
+        {/* Orbital Rings */}
+        {rings.map((ring, i) => (
+          <motion.ellipse
+            key={i}
+            cx="200"
+            cy="200"
+            rx={ring.rx}
+            ry={ring.ry}
+            fill="none"
+            stroke="#334155"
+            strokeWidth="0.5"
+            strokeDasharray="4 8"
+            animate={{ rotate: ring.rev ? -360 : 360 }}
+            transition={{ duration: ring.dur, repeat: Infinity, ease: "linear" }}
+          />
+        ))}
+
+        {/* Floating Intelligent Nodes */}
         {nodes.map((_, i) => {
           const angle = (i / nodes.length) * Math.PI * 2;
-          const distance = 80 + Math.random() * 80;
-          const x = 200 + Math.cos(angle) * distance;
-          const y = 200 + Math.sin(angle) * distance;
+          const radius = 100 + (i % 3) * 40;
+          const x = 200 + Math.cos(angle) * radius;
+          const y = 200 + Math.sin(angle) * radius;
 
           return (
-            <React.Fragment key={i}>
-              {/* Lines connecting to core */}
+            <motion.g key={i}>
               <motion.line
-                x1="200"
-                y1="200"
-                x2={x}
-                y2={y}
-                stroke="#3b82f6"
-                strokeWidth="0.2"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 0.2 }}
-                transition={{ duration: 2, delay: i * 0.1 }}
+                x1="200" y1="200" x2={x} y2={y}
+                stroke="#3b82f6" strokeWidth="0.2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0, 0.15, 0] }}
+                transition={{ duration: 4, delay: i * 0.2, repeat: Infinity }}
               />
-
-              {/* Orbital Nodes */}
-              <motion.g
+              <motion.circle
+                cx={x} cy={y} r="2"
+                fill="#60a5fa"
                 animate={{
-                  x: [0, Math.random() * 20 - 10, 0],
-                  y: [0, Math.random() * 20 - 10, 0],
+                  scale: [1, 1.5, 1],
+                  opacity: [0.3, 0.8, 0.3],
                 }}
-                transition={{
-                  duration: 5 + Math.random() * 5,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                <circle
-                  cx={x}
-                  cy={y}
-                  r="4"
-                  fill="url(#nodeGlow)"
-                />
-                <circle
-                  cx={x}
-                  cy={y}
-                  r="1.5"
-                  fill="#60a5fa"
-                />
-              </motion.g>
-            </React.Fragment>
+                transition={{ duration: 3, delay: i * 0.1, repeat: Infinity }}
+              />
+            </motion.g>
           );
         })}
-
-        {/* Outer Rings */}
-        <motion.ellipse
-          cx="200"
-          cy="200"
-          rx="180"
-          ry="60"
-          fill="none"
-          stroke="#1e293b"
-          strokeWidth="0.5"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-        />
-        <motion.ellipse
-          cx="200"
-          cy="200"
-          rx="60"
-          ry="180"
-          fill="none"
-          stroke="#1e293b"
-          strokeWidth="0.5"
-          animate={{ rotate: -360 }}
-          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-        />
       </motion.svg>
     </div>
   );

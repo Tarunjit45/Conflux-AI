@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
@@ -50,8 +49,8 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 md:w-8 md:h-8 relative">
                 <div className="absolute inset-0 bg-blue-600 blur-[4px] rounded-sm opacity-50" />
-                <div className="relative w-full h-full bg-white clip-path-polygon-[50%_0%,100%_100%,0%_100%] flex items-center justify-center">
-                  <div className="w-full h-full border-2 border-slate-900 bg-blue-600 rounded-sm" />
+                <div className="relative w-full h-full bg-white flex items-center justify-center rounded-sm overflow-hidden" style={{ clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)' }}>
+                  <div className="w-full h-full bg-blue-600" />
                 </div>
               </div>
               <span className="font-orbitron font-bold text-base md:text-xl tracking-tighter text-white uppercase">CONFLUX<span className="text-blue-500">AI</span></span>
