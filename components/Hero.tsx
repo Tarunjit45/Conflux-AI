@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import KineticSculpture from './KineticSculpture';
+import KineticSculpture from './KineticSculpture.tsx';
 
 const Hero: React.FC = () => {
   const { scrollY } = useScroll();

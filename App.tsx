@@ -1,14 +1,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import InfrastructureSuite from './components/InfrastructureSuite';
-import TrustEngine from './components/TrustEngine';
-import AICore from './components/AICore';
-import Reviews from './components/Reviews';
-import ContactForm from './components/ContactForm';
-import BrandingControl from './components/BrandingControl';
+import Navbar from './components/Navbar.tsx';
+import Hero from './components/Hero.tsx';
+import InfrastructureSuite from './components/InfrastructureSuite.tsx';
+import TrustEngine from './components/TrustEngine.tsx';
+import AICore from './components/AICore.tsx';
+import Reviews from './components/Reviews.tsx';
+import ContactForm from './components/ContactForm.tsx';
+import BrandingControl from './components/BrandingControl.tsx';
 
 const App: React.FC = () => {
   const { scrollYProgress } = useScroll();
