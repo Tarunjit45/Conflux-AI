@@ -18,6 +18,13 @@
         color: #f8fafc;
         overflow-x: hidden;
         min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      #root {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
       }
       .font-orbitron {
         font-family: 'Orbitron', sans-serif;
@@ -68,8 +75,8 @@
     "react-dom": "https://esm.sh/react-dom@18.3.1",
     "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
     "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
-    "framer-motion": "https://esm.sh/framer-motion@11.11.17?deps=react@18.3.1,react-dom@18.3.1",
-    "lucide-react": "https://esm.sh/lucide-react@0.454.0?deps=react@18.3.1,react-dom@18.3.1",
+    "framer-motion": "https://esm.sh/framer-motion@11.11.17?deps=react@18.3.1",
+    "lucide-react": "https://esm.sh/lucide-react@0.454.0?deps=react@18.3.1",
     "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
     "react/": "https://esm.sh/react@^19.2.4/"
   }
@@ -79,7 +86,7 @@
   </head>
   <body>
     <div id="root"></div>
-    <!-- Entry point using type module for esm.sh/run compatibility -->
-    <script type="module" src="./index.tsx"></script>
+    <!-- Entry point using type="text/babel" for browser-side JSX transpilation -->
+    <script type="text/babel" src="./index.tsx"></script>
   </body>
 </html>
