@@ -10,5 +10,11 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/((?!.*\\.(?:tsx|ts|js|jsx|css|json|png|jpg|jpeg|svg|gif|webp|ico)$).*)",
+      "destination": "/index.html"
+    }
   ]
 }
