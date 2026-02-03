@@ -1,5 +1,16 @@
 {
   "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/(.*)\\.tsx",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     {
       "source": "/((?!.*\\.(?:tsx|ts|js|jsx|css|json|png|jpg|jpeg|svg|gif|webp|ico)$).*)",

@@ -12,9 +12,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
+      :root {
+        --bg-color: #020617;
+      }
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-color);
+      }
       body {
         font-family: 'Inter', sans-serif;
-        background-color: #020617;
         color: #f8fafc;
         overflow-x: hidden;
         min-height: 100vh;
@@ -25,6 +33,7 @@
         flex: 1;
         display: flex;
         flex-direction: column;
+        min-height: 100vh;
       }
       .font-orbitron {
         font-family: 'Orbitron', sans-serif;
@@ -60,12 +69,6 @@
         background: #1e293b;
         border-radius: 4px;
       }
-      .perspective-2000 {
-        perspective: 2000px;
-      }
-      .preserve-3d {
-        transform-style: preserve-3d;
-      }
     </style>
 
     <script type="importmap">
@@ -86,7 +89,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <!-- Entry point using type="text/babel" for browser-side JSX transpilation -->
     <script type="text/babel" src="./index.tsx"></script>
   </body>
 </html>
