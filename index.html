@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Conflux AI | Your Business, Unified by Intelligence</title>
+    <title>Conflux AI | Digital Infrastructure Agency</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -12,83 +12,85 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-      :root {
-        --bg-color: #020617;
-      }
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        background-color: var(--bg-color);
-      }
-      body {
-        font-family: 'Inter', sans-serif;
-        color: #f8fafc;
-        overflow-x: hidden;
-        min-height: 100vh;
+      :root { --bg-color: #020617; }
+      html, body { height: 100%; margin: 0; padding: 0; background-color: var(--bg-color); }
+      body { font-family: 'Inter', sans-serif; color: #f8fafc; overflow-x: hidden; }
+      #root { min-height: 100vh; display: flex; flex-direction: column; }
+      .font-orbitron { font-family: 'Orbitron', sans-serif; }
+      .glass { background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+      
+      /* Fallback UI for when React fails to mount */
+      #fallback-ui {
         display: flex;
         flex-direction: column;
-      }
-      #root {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
-      .font-orbitron {
-        font-family: 'Orbitron', sans-serif;
-      }
-      .glass {
-        background: rgba(15, 23, 42, 0.4);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-      }
-      .glow-blue {
-        box-shadow: 0 0 40px -10px rgba(59, 130, 246, 0.4);
-      }
-      .text-gradient {
-        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-      @keyframes marquee {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
-      }
-      .animate-marquee {
-        animation: marquee 40s linear infinite;
-      }
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100vw;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
         background: #020617;
+        color: white;
+        text-align: center;
+        padding: 20px;
+        transition: opacity 0.5s ease-out;
       }
-      ::-webkit-scrollbar-thumb {
-        background: #1e293b;
-        border-radius: 4px;
+      #fallback-ui.hidden { opacity: 0; pointer-events: none; }
+      
+      .loader {
+        width: 48px;
+        height: 48px;
+        border: 3px solid #3b82f6;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+        margin-bottom: 20px;
       }
+      @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 
     <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@18.3.1",
-    "react/": "https://esm.sh/react@18.3.1/",
     "react-dom": "https://esm.sh/react-dom@18.3.1",
-    "react-dom/": "https://esm.sh/react-dom@18.3.1/",
     "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
     "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
     "framer-motion": "https://esm.sh/framer-motion@11.11.17?deps=react@18.3.1",
-    "lucide-react": "https://esm.sh/lucide-react@0.454.0?deps=react@18.3.1"
+    "lucide-react": "https://esm.sh/lucide-react@0.454.0?deps=react@18.3.1",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/"
   }
 }
 </script>
     <script type="module" src="https://esm.sh/run" crossorigin></script>
+    
+    <script>
+      // Global error tracker to surface silent script failures
+      window.onerror = function(message, source, lineno, colno, error) {
+        console.error("Critical Runtime Error:", message, "at", source, lineno);
+        const errDiv = document.getElementById('error-log');
+        if (errDiv) {
+          errDiv.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${message}</div>`;
+        }
+        return false;
+      };
+    </script>
   </head>
   <body>
+    <div id="fallback-ui">
+      <div class="font-orbitron text-2xl font-bold mb-4">CONFLUX <span class="text-blue-500">AI</span></div>
+      <span class="loader"></span>
+      <div id="loading-text" class="text-slate-400 text-[10px] font-orbitron tracking-[0.3em] uppercase">Initializing Neural Core...</div>
+      <div id="error-log" class="mt-8 text-red-500 text-[10px] font-mono max-w-md text-left overflow-auto max-h-40 border-t border-white/5 pt-4"></div>
+    </div>
+
     <div id="root"></div>
+
     <script type="text/babel" src="./index.tsx"></script>
   </body>
 </html>
