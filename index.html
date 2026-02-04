@@ -70,37 +70,35 @@
     
     <script>
       window.onerror = function(message, source, lineno, colno, error) {
-        console.error("Critical Runtime Error:", message);
+        console.error("Critical Runtime Error:", message, "at", source, ":", lineno);
         const errDiv = document.getElementById('error-log');
         if (errDiv) {
-          errDiv.innerHTML += `<div style="margin-bottom: 5px;">[ERROR] ${message}</div>`;
+          errDiv.innerHTML += `<div style="margin-bottom: 5px; color: #f87171;">[System Error] ${message}</div>`;
         }
         return false;
       };
       
-      // Auto-clear loader if it hangs for more than 10 seconds (emergency bypass)
+      // Safety timeout to reveal content if React is just being slow but successful
       setTimeout(() => {
         const fallback = document.getElementById('fallback-ui');
-        if (fallback && !fallback.classList.contains('hidden')) {
-          console.warn("Conflux AI: Boot timeout. Forcing UI reveal...");
-          const log = document.getElementById('error-log');
-          if (log && log.innerHTML === "") {
-            log.innerHTML = "<div style='color: #64748b'>Warning: Connection to neural core is slow. Retrying...</div>";
-          }
+        const log = document.getElementById('error-log');
+        if (fallback && !fallback.classList.contains('hidden') && (!log || log.innerHTML === "")) {
+          console.warn("Conflux AI: Neural synchronization taking longer than expected...");
         }
-      }, 10000);
+      }, 8000);
     </script>
   </head>
   <body>
     <div id="fallback-ui">
       <div class="font-orbitron text-2xl font-bold mb-4">CONFLUX <span class="text-blue-500">AI</span></div>
       <span class="loader"></span>
-      <div id="loading-text" class="text-slate-400 text-[10px] font-orbitron tracking-[0.3em] uppercase">Synchronizing Modalities...</div>
-      <div id="error-log" class="mt-8 text-red-500 text-[10px] font-mono max-w-md text-left overflow-auto max-h-40 border-t border-white/5 pt-4"></div>
+      <div id="loading-text" class="text-slate-400 text-[10px] font-orbitron tracking-[0.3em] uppercase">Synchronizing Neural Modalities...</div>
+      <div id="error-log" class="mt-8 text-red-400 text-[10px] font-mono max-w-md text-left overflow-auto max-h-40 border-t border-white/5 pt-4"></div>
     </div>
 
     <div id="root"></div>
 
-    <script type="text/babel" src="./index.tsx"></script>
+    <!-- Ensure file path is correctly recognized by esm.sh/run -->
+    <script type="text/babel" src="index.tsx"></script>
   </body>
 </html>
