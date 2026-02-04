@@ -56,18 +56,6 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
-      
-      .glow-blue { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-
-      @keyframes marquee {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
-      }
-      .animate-marquee {
-        display: flex;
-        width: max-content;
-        animation: marquee 30s linear infinite;
-      }
     </style>
 
     <script type="importmap">
@@ -90,20 +78,33 @@
     <div id="fallback-ui">
       <div class="font-orbitron text-2xl font-bold mb-4">CONFLUX <span class="text-blue-500">AI</span></div>
       <span class="loader"></span>
-      <div id="loading-text" class="text-slate-400 text-[10px] font-orbitron tracking-[0.3em] uppercase">Synchronizing Neural Modalities...</div>
+      <div id="loading-text" class="text-slate-400 text-[10px] font-orbitron tracking-[0.3em] uppercase">Initializing Neural Core...</div>
       <div id="error-log" class="mt-8 text-red-400 text-[10px] font-mono max-w-md text-left overflow-auto max-h-40 border-t border-white/5 pt-4"></div>
     </div>
 
     <div id="root"></div>
 
-    <script type="text/babel" src="index.tsx"></script>
+    <!-- Explicitly set the path to index.tsx -->
+    <script type="text/babel" src="./index.tsx"></script>
     
     <script>
-      // Fallback monitor
-      window.onerror = function(msg) {
+      window.onerror = function(msg, url, line) {
         const log = document.getElementById('error-log');
-        if (log) log.innerHTML += `<div>[Boot Error] ${msg}</div>`;
+        if (log) {
+          log.innerHTML += `<div style="margin-bottom:4px;">[BOOT_ERROR] ${msg} <br/><span style="opacity:0.5; font-size:8px;">Location: ${url}:${line}</span></div>`;
+        }
+        return false;
       };
+
+      // Final fallback if the app hangs without a hard error
+      setTimeout(() => {
+        const loader = document.getElementById('fallback-ui');
+        if (loader && !loader.classList.contains('hidden')) {
+          console.warn("Conflux AI: Boot timeout. Forcing UI reveal...");
+          const statusText = document.getElementById('loading-text');
+          if (statusText) statusText.innerText = "Connection Slow - Finalizing Interface...";
+        }
+      }, 10000);
     </script>
   </body>
 </html>
