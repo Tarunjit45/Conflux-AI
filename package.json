@@ -1,10 +1,5 @@
 {
   "name": "conflux-ai-static",
   "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "build": "echo 'No build step required for static ESM app' && mkdir -p .next && touch .next/index.html",
-    "install": "echo 'Skipping install'"
-  },
-  "dependencies": {}
+  "private": true
 }

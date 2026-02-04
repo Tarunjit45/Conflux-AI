@@ -1,6 +1,8 @@
 {
+  "version": 2,
+  "public": true,
   "cleanUrls": true,
-  "framework": null,
+  "outputDirectory": ".",
   "rewrites": [
     {
       "source": "/((?!.*\\.(?:tsx|ts|js|jsx|css|json|png|jpg|jpeg|svg|gif|webp|ico)$).*)",
