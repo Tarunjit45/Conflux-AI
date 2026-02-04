@@ -2,50 +2,47 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 
-console.log("Conflux AI: Boot sequence initiated...");
+console.log("Conflux AI: System boot sequence initiated.");
 
-const initializeApp = () => {
-  const rootElement = document.getElementById('root');
-  const fallback = document.getElementById('fallback-ui');
-  const loadingText = document.getElementById('loading-text');
-
-  if (loadingText) loadingText.innerText = "Synchronizing Modalities...";
-
-  if (!rootElement) {
-    const errorMsg = "Critical Failure: Root element not found.";
-    console.error(errorMsg);
-    const errorLog = document.getElementById('error-log');
-    if (errorLog) errorLog.innerText = errorMsg;
+const mountApp = () => {
+  const container = document.getElementById('root');
+  const loader = document.getElementById('fallback-ui');
+  
+  if (!container) {
+    console.error("Conflux AI: Root container not found.");
     return;
   }
 
   try {
-    const root = createRoot(rootElement);
+    const root = createRoot(container);
     root.render(
       <React.StrictMode>
         <App />
       </React.StrictMode>
     );
     
-    // Smooth transition from loading to app
-    setTimeout(() => {
-      if (fallback) {
-        fallback.classList.add('hidden');
-        console.log("Conflux AI: System fully operational.");
-      }
-    }, 1000);
-    
+    // Give React a moment to complete the first paint before hiding the loader
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        if (loader) {
+          loader.style.opacity = '0';
+          setTimeout(() => {
+            loader.classList.add('hidden');
+            console.log("Conflux AI: Core operational. UI ready.");
+          }, 500);
+        }
+      }, 800);
+    });
   } catch (err) {
-    const errorMsg = "Render Pipeline Failed: " + (err as Error).message;
-    console.error(errorMsg, err);
-    const errorLog = document.getElementById('error-log');
-    if (errorLog) errorLog.innerText = errorMsg;
+    console.error("Conflux AI: Initialization failure:", err);
+    const log = document.getElementById('error-log');
+    if (log) log.innerHTML += `<div>Mount Error: ${err.message}</div>`;
   }
 };
 
-// Handle mounting regardless of script load order
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
-  initializeApp();
+// Start initialization
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', mountApp);
 } else {
-  document.addEventListener('DOMContentLoaded', initializeApp);
+  mountApp();
 }
