@@ -50,6 +50,24 @@
         margin-bottom: 20px;
       }
       @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      
+      .text-gradient {
+        background: linear-gradient(to right, #60a5fa, #3b82f6, #2563eb);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      
+      .glow-blue { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+
+      @keyframes marquee {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+      .animate-marquee {
+        display: flex;
+        width: max-content;
+        animation: marquee 30s linear infinite;
+      }
     </style>
 
     <script type="importmap">
@@ -67,26 +85,6 @@
 }
 </script>
     <script type="module" src="https://esm.sh/run" crossorigin></script>
-    
-    <script>
-      window.onerror = function(message, source, lineno, colno, error) {
-        console.error("Critical Runtime Error:", message, "at", source, ":", lineno);
-        const errDiv = document.getElementById('error-log');
-        if (errDiv) {
-          errDiv.innerHTML += `<div style="margin-bottom: 5px; color: #f87171;">[System Error] ${message}</div>`;
-        }
-        return false;
-      };
-      
-      // Safety timeout to reveal content if React is just being slow but successful
-      setTimeout(() => {
-        const fallback = document.getElementById('fallback-ui');
-        const log = document.getElementById('error-log');
-        if (fallback && !fallback.classList.contains('hidden') && (!log || log.innerHTML === "")) {
-          console.warn("Conflux AI: Neural synchronization taking longer than expected...");
-        }
-      }, 8000);
-    </script>
   </head>
   <body>
     <div id="fallback-ui">
@@ -98,7 +96,14 @@
 
     <div id="root"></div>
 
-    <!-- Ensure file path is correctly recognized by esm.sh/run -->
     <script type="text/babel" src="index.tsx"></script>
+    
+    <script>
+      // Fallback monitor
+      window.onerror = function(msg) {
+        const log = document.getElementById('error-log');
+        if (log) log.innerHTML += `<div>[Boot Error] ${msg}</div>`;
+      };
+    </script>
   </body>
 </html>
