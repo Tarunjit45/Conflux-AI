@@ -12,8 +12,8 @@ const Founders: React.FC = () => {
             specialties: ["Building AI Tools", "Business Strategy", "Expert Coding"],
             accentColor: "#0000ff",
             socials: [
-                { platform: "LinkedIn", url: "https://www.linkedin.com/in/tarunjit-biswas/" },
-                { platform: "YouTube", url: "https://www.youtube.com/@confluxai" }
+                { platform: "LinkedIn", url: "https://www.linkedin.com/in/tarunjit-biswas-a5248131b/" },
+                { platform: "YouTube", url: "https://www.youtube.com/@Confluxai-z9o" }
             ],
             delay: 0.15
         },
@@ -26,8 +26,8 @@ const Founders: React.FC = () => {
             specialties: ["Getting You More Sales", "Planning for Growth", "Marketing Expert"],
             accentColor: "#0f172a",
             socials: [
-                { platform: "LinkedIn", url: "https://www.linkedin.com/in/shouvik-majumdar/" },
-                { platform: "YouTube", url: "https://www.youtube.com/@confluxai" }
+                { platform: "LinkedIn", url: "https://www.linkedin.com/in/shoubhik-majumdar-1a77032a1/" },
+                { platform: "YouTube", url: "https://www.youtube.com/@Confluxai-z9o" }
             ],
             delay: 0.3
         }
