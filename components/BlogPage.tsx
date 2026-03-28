@@ -67,10 +67,10 @@ const BlogPage: React.FC = () => {
                             <ArrowLeft size={14} /> Back to Network
                         </Link>
                         <h1 className="font-inter text-5xl md:text-7xl font-black text-slate-900 tracking-tighter leading-[0.9]">
-                            The <span className="text-blue-600 underline decoration-blue-500/20">Daily</span> <br />Authority.
+                            The <span className="text-blue-600 underline decoration-blue-500/20">Conflux</span> <br />Blog.
                         </h1>
                         <p className="text-slate-500 font-medium text-lg mt-6">
-                            Real data, real insights, and modern AI automation strategies. Updated daily for digital dominance.
+                            Frontier AI tools, automation guides, and strategic business tips. Updated for digital dominance.
                         </p>
                     </div>
                     
@@ -145,7 +145,7 @@ const BlogPage: React.FC = () => {
                                         </button>
                                         
                                         <Link 
-                                            to={`/articles/${article.slug}`}
+                                            to={`/blog/${article.slug}`}
                                             className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:translate-x-1 transition-transform"
                                         >
                                             Deep Dive →

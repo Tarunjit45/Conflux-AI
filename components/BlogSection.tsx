@@ -49,11 +49,11 @@ const BlogSection: React.FC = () => {
                             Daily <span className="text-blue-600 text-gradient">Authority.</span>
                         </h2>
                         <p className="text-slate-500 font-medium mt-4 max-w-lg text-sm">
-                            Manual updates and strategic insights delivered daily to maintain digital dominance.
+                            Strategic insights on AI tools, automation, and business growth delivered to maintain digital dominance.
                         </p>
                     </div>
-                    <Link to="/articles" className="group flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-2xl hover:border-blue-500 transition-all shadow-sm">
-                        <span className="text-xs font-black text-slate-900 uppercase tracking-widest">Full Network Feed</span>
+                    <Link to="/blog" className="group flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-2xl hover:border-blue-500 transition-all shadow-sm">
+                        <span className="text-xs font-black text-slate-900 uppercase tracking-widest">Full Blog Feed</span>
                         <ArrowRight size={16} className="text-blue-600 group-hover:translate-x-1 transition-transform" />
                     </Link>
                 </div>
@@ -80,7 +80,7 @@ const BlogSection: React.FC = () => {
                                 {article.title}
                             </h3>
                             <Link 
-                                to={`/articles/${article.slug}`}
+                                to={`/blog/${article.slug}`}
                                 className="inline-flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-blue-600 transition-colors"
                             >
                                 Read Full Insight <ArrowRight size={14} />

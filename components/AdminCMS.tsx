@@ -92,11 +92,11 @@ const AdminCMS: React.FC = () => {
                                 onChange={(e) => setCategory(e.target.value)}
                                 className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:border-blue-500 outline-none transition-all font-medium text-slate-900 appearance-none"
                             >
-                                <option>AI Automation</option>
-                                <option>Web Development</option>
-                                <option>Digital Strategy</option>
+                                <option>AI Tools</option>
+                                <option>Automation Guides</option>
+                                <option>Business Tips</option>
                                 <option>Case Study</option>
-                                <option>SEO/GEO</option>
+                                <option>Network Update</option>
                             </select>
                         </div>
                     </div>

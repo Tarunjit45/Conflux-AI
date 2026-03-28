@@ -21,7 +21,7 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
 
   const navItems = [
     { name: 'Services', id: 'infrastructure' },
-    { name: 'Articles', path: '/articles', isLink: true },
+    { name: 'Blog', path: '/blog', isLink: true },
     { name: 'Impact', id: 'impact' },
     { name: 'AI Core', id: 'ai-core' },
     { name: 'Team', id: 'founders' },

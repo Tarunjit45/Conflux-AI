@@ -7,6 +7,7 @@ import Footer from './components/Footer.tsx';
 import LandingPage from './LandingPage.tsx';
 import BlogPage from './components/BlogPage.tsx';
 import AdminCMS from './components/AdminCMS.tsx';
+import ArticleDetail from './components/ArticleDetail.tsx';
 import BrandingControl from './components/BrandingControl.tsx';
 import Chatbot from './components/Chatbot.tsx';
 
@@ -68,7 +69,8 @@ const App: React.FC = () => {
 
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/articles" element={<BlogPage />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:slug" element={<ArticleDetail />} />
         <Route path="/admin/cms" element={<AdminCMS />} />
       </Routes>
 
