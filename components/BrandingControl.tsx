@@ -31,7 +31,7 @@ const BrandingControl: React.FC<BrandingControlProps> = ({ onUpload, onReset, cu
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 left-6 z-[60] w-12 h-12 rounded-full flex items-center justify-center shadow-2xl overflow-hidden group"
+        className="fixed bottom-4 left-4 md:bottom-6 md:left-6 z-[60] w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center shadow-2xl overflow-hidden group"
         style={{
           background: 'rgba(2,12,27,0.85)',
           backdropFilter: 'blur(10px)',

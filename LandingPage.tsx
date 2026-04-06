@@ -18,6 +18,7 @@ import BlogSection from './components/BlogSection.tsx';
 import AICore from './components/AICore.tsx';
 import Projects from './components/Projects.tsx';
 import AuthoritySignals from './components/AuthoritySignals.tsx';
+import QuickServices from './components/QuickServices.tsx';
 
 const LandingPage: React.FC = () => {
   return (
@@ -26,6 +27,9 @@ const LandingPage: React.FC = () => {
       <section id="home" className="relative" style={{ backgroundColor: '#020c1b' }}>
         <Hero />
       </section>
+
+      {/* Services At A Glance */}
+      <QuickServices />
 
       {/* LIGHT SECTION 1: Infrastructure */}
       <section id="infrastructure" className="py-24 px-4 sm:px-6 md:px-12 lg:px-24 relative" style={{ backgroundColor: '#ffffff' }}>

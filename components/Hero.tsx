@@ -125,8 +125,8 @@ const Hero: React.FC = () => {
                         className="font-inter font-black leading-tight tracking-tight mb-8"
                         style={{ fontSize: 'clamp(2rem, 4.5vw, 3.8rem)' }}
                     >
-                        <span className="text-black inline-block mb-1">WE BUILD SIMPLE AI TO</span><br />
-                        <span style={{ color: navyColor }}>GROW YOUR BUSINESS FAST</span>
+                        <span className="text-black inline-block mb-1">WE BUILD POWERFUL AI & DIGITAL SOLUTIONS TO</span><br />
+                        <span style={{ color: navyColor }}>SCALE YOUR BUSINESS FAST</span>
                     </motion.h1>
 
                     {/* Subheadline */}
@@ -137,7 +137,7 @@ const Hero: React.FC = () => {
                         className="font-inter text-base lg:text-lg font-medium max-w-xl mb-10 leading-relaxed"
                         style={{ color: '#334155' }}
                     >
-                        We help small businesses grow using smart AI and beautiful websites that are easy to use. No more complex tech—just real results for you.
+                        We empower businesses with advanced AI automation, premium web development, and high-impact digital marketing. From intelligent chatbots to professional creative suites, we deliver everything you need to dominate the digital landscape.
                     </motion.p>
 
                     <motion.div

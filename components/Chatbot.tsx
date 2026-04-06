@@ -74,7 +74,7 @@ const Chatbot: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[1000] font-inter">
+    <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[1000] font-inter">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -165,7 +165,7 @@ const Chatbot: React.FC = () => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-16 h-16 rounded-full bg-[#020c1b] border-2 border-blue-600 shadow-2xl flex items-center justify-center text-blue-600 relative group overflow-hidden"
+        className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-[#020c1b] border-2 border-blue-600 shadow-2xl flex items-center justify-center text-blue-600 relative group overflow-hidden"
         style={{ boxShadow: '0 0 30px rgba(0, 0, 255, 0.3)' }}
       >
         <div className="absolute inset-0 bg-blue-600 opacity-0 group-hover:opacity-10 transition-opacity" />

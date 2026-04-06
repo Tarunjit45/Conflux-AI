@@ -50,7 +50,7 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-4 md:px-10 h-14 md:h-[72px] transition-all duration-300"
+        className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-6 md:px-10 h-14 md:h-[72px] transition-all duration-300"
         style={{
           background: scrolled
             ? 'rgba(255, 255, 255, 0.95)'
