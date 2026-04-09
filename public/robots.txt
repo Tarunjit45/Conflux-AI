@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /admin/cms
 
 Sitemap: https://confluxai.in/sitemap.xml
