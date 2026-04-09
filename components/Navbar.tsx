@@ -20,11 +20,11 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
   }, []);
 
   const navItems = [
-    { name: 'Services', id: 'infrastructure' },
-    { name: 'Blog', path: '/blog', isLink: true },
-    { name: 'Impact', id: 'impact' },
-    { name: 'AI Core', id: 'ai-core' },
-    { name: 'Team', id: 'founders' },
+    { name: 'Solutions', path: '/solutions', isLink: true, id: 'solutions' },
+    { name: 'Creative', path: '/creative', isLink: true, id: 'creative' },
+    { name: 'Portfolio', path: '/portfolio', isLink: true, id: 'portfolio' },
+    { name: 'About', path: '/about', isLink: true, id: 'about' },
+    { name: 'Blog', path: '/blog', isLink: true, id: 'blog' },
   ];
 
   const scrollToSection = (e: React.MouseEvent, id: string) => {
@@ -169,19 +169,29 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
 
             <div className="flex flex-col items-start justify-center flex-1 px-8 gap-7">
               {navItems.map((item, i) => (
-                <motion.button
-                  key={item.id}
-                  initial={{ opacity: 0, x: 30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.06 }}
-                  onClick={(e) => scrollToSection(e, item.id)}
-                  className="text-2xl font-inter font-bold tracking-tight transition-colors bg-transparent border-none uppercase text-left"
-                  style={{ color: '#475569' }}
-                  onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color = navyColor}
-                  onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color = '#475569'}
-                >
-                  {item.name}
-                </motion.button>
+                item.isLink ? (
+                  <Link
+                    key={item.path}
+                    to={item.path || '/'}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-2xl font-inter font-bold tracking-tight transition-colors bg-transparent border-none uppercase text-left"
+                    style={{ color: pathname === item.path ? navyColor : '#475569' }}
+                  >
+                    {item.name}
+                  </Link>
+                ) : (
+                  <motion.button
+                    key={item.id}
+                    initial={{ opacity: 0, x: 30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.06 }}
+                    onClick={(e) => scrollToSection(e, item.id || '')}
+                    className="text-2xl font-inter font-bold tracking-tight transition-colors bg-transparent border-none uppercase text-left"
+                    style={{ color: '#475569' }}
+                  >
+                    {item.name}
+                  </motion.button>
+                )
               ))}
             </div>
 

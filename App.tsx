@@ -10,6 +10,14 @@ import AdminCMS from './components/AdminCMS.tsx';
 import ArticleDetail from './components/ArticleDetail.tsx';
 import BrandingControl from './components/BrandingControl.tsx';
 import Chatbot from './components/Chatbot.tsx';
+import AboutUsPage from './components/AboutUsPage.tsx';
+import SolutionsPage from './components/SolutionsPage.tsx';
+import CreativePage from './components/CreativePage.tsx';
+import ImpactPage from './components/ImpactPage.tsx';
+import PortfolioPage from './components/PortfolioPage.tsx';
+import AuthorityPage from './components/AuthorityPage.tsx';
+import FaqPage from './components/FaqPage.tsx';
+import SemanticPage from './components/SemanticPage.tsx';
 
 const ScrollToTop = () => {
   const { pathname, hash } = useLocation();
@@ -71,6 +79,14 @@ const App: React.FC = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:slug" element={<ArticleDetail />} />
+        <Route path="/about" element={<AboutUsPage />} />
+        <Route path="/solutions" element={<SolutionsPage />} />
+        <Route path="/creative" element={<CreativePage />} />
+        <Route path="/impact" element={<ImpactPage />} />
+        <Route path="/portfolio" element={<PortfolioPage />} />
+        <Route path="/authority" element={<AuthorityPage />} />
+        <Route path="/faq" element={<FaqPage />} />
+        <Route path="/semantic-map" element={<SemanticPage />} />
         <Route path="/admin/cms" element={<AdminCMS />} />
       </Routes>
 
