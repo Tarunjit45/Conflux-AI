@@ -119,6 +119,9 @@ const BlogPage: React.FC = () => {
                                         <img 
                                             src={article.image_url} 
                                             alt={article.title} 
+                                            onError={(e) => {
+                                                e.currentTarget.src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80';
+                                            }}
                                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                         />
                                     ) : (

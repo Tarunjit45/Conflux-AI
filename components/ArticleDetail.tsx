@@ -150,7 +150,14 @@ const ArticleDetail: React.FC = () => {
                         {/* Featured Image */}
                         {article.image_url && (
                             <div className="aspect-video w-full rounded-[2.5rem] overflow-hidden mb-12 border border-slate-100 shadow-2xl shadow-slate-200/50">
-                                <img src={article.image_url} alt={article.title} className="w-full h-full object-cover" />
+                                <img 
+                                    src={article.image_url} 
+                                    alt={article.title} 
+                                    onError={(e) => {
+                                        e.currentTarget.src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80';
+                                    }}
+                                    className="w-full h-full object-cover" 
+                                />
                             </div>
                         )}
 
