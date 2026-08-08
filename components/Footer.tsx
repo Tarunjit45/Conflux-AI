@@ -8,30 +8,31 @@ const Footer: React.FC<{ siteLogo: string | null }> = ({ siteLogo }) => {
 
   const footerSections = [
     {
-      title: "Solutions",
-      links: [
-        { name: "AI Infrastructure", path: "/solutions" },
-        { name: "Creative Suite", path: "/creative" },
-        { name: "AI Core Engine", path: "/solutions" },
-        { name: "Semantic Mapping", path: "/semantic-map" },
-      ]
-    },
-    {
       title: "Company",
       links: [
         { name: "About Us", path: "/about" },
-        { name: "Our Impact", path: "/impact" },
-        { name: "Case Studies", path: "/portfolio" },
-        { name: "Network Blog", path: "/blog" },
+        { name: "Careers", path: "/careers" },
+        { name: "Contact Us", path: "/contact" },
+        { name: "Our Impact", path: "/impact" }
+      ]
+    },
+    {
+      title: "Services",
+      links: [
+        { name: "AI Automation", path: "/services/ai-automation" },
+        { name: "Chatbot Development", path: "/services/chatbot-development" },
+        { name: "Website Development", path: "/services/website-development" },
+        { name: "SEO & GEO", path: "/services/seo-geo" },
+        { name: "Digital Marketing", path: "/services/digital-marketing" }
       ]
     },
     {
       title: "Resources",
       links: [
-        { name: "FAQ & Support", path: "/faq" },
-        { name: "Authority Signals", path: "/authority" },
-        { name: "Client Access", path: "/#contact" },
-        { name: "Privacy Policy", path: "#" },
+        { name: "Blog", path: "/blog" },
+        { name: "Case Studies / Work", path: "/work" },
+        { name: "FAQ", path: "/faq" },
+        { name: "Authority Signals", path: "/authority" }
       ]
     }
   ];

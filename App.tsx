@@ -20,6 +20,8 @@ import FaqPage from './components/FaqPage.tsx';
 import SemanticPage from './components/SemanticPage.tsx';
 import ServiceDetailPage from './components/ServiceDetailPage.tsx';
 import ThankYouPage from './components/ThankYouPage.tsx';
+import CareersPage from './components/CareersPage.tsx';
+import ContactPage from './components/ContactPage.tsx';
 
 const ScrollToTop = () => {
   const { pathname, hash } = useLocation();
@@ -86,6 +88,9 @@ const App: React.FC = () => {
         <Route path="/creative" element={<CreativePage />} />
         <Route path="/impact" element={<ImpactPage />} />
         <Route path="/portfolio" element={<PortfolioPage />} />
+        <Route path="/work" element={<PortfolioPage />} />
+        <Route path="/careers" element={<CareersPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/authority" element={<AuthorityPage />} />
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/semantic-map" element={<SemanticPage />} />

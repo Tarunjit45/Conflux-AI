@@ -17,11 +17,53 @@ const FaqPage: React.FC = () => {
                         <ArrowLeft size={14} /> Back to Network
                     </Link>
                     <h1 className="font-inter text-5xl md:text-7xl font-black text-slate-900 tracking-tighter leading-[0.9]">
-                        Have <span className="text-blue-600 underline decoration-blue-500/20">Questions?</span>.
+                        Have <span className="text-blue-600 underline decoration-blue-500/20">Questions?</span>
                     </h1>
                     <p className="text-slate-500 font-medium text-lg mt-6 max-w-2xl">
                         Everything you need to know about our AI automation, creative services, and how we help businesses scale with precision.
                     </p>
+
+                    {/* FAQPage JSON-LD Structured Data */}
+                    <script type="application/ld+json" dangerouslySetInnerHTML={{
+                      __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "FAQPage",
+                        "mainEntity": [
+                          {
+                            "@type": "Question",
+                            "name": "What does Conflux AI build?",
+                            "acceptedAnswer": {
+                              "@type": "Answer",
+                              "text": "Conflux AI builds autonomous AI workflows, custom chatbot agents, high-performing websites, and search engine / generative AI (GEO) optimization solutions."
+                            }
+                          },
+                          {
+                            "@type": "Question",
+                            "name": "What businesses can benefit from AI automation?",
+                            "acceptedAnswer": {
+                              "@type": "Answer",
+                              "text": "B2B companies, SaaS platforms, e-commerce stores, agency networks, and local service providers processing customer enquiries or multi-step data pipelines."
+                            }
+                          },
+                          {
+                            "@type": "Question",
+                            "name": "How does your SEO & GEO service work?",
+                            "acceptedAnswer": {
+                              "@type": "Answer",
+                              "text": "We optimize website architecture and Entity Schema graphs so your business ranks high in traditional Google Search and gets synthesized as an authoritative recommendation in Google AI Overviews, ChatGPT, and Perplexity."
+                            }
+                          },
+                          {
+                            "@type": "Question",
+                            "name": "How do we start a project with Conflux AI?",
+                            "acceptedAnswer": {
+                              "@type": "Answer",
+                              "text": "Submit an enquiry via our website contact form or WhatsApp. Our technical team evaluates your requirements and provides an architecture blueprint within 24 hours."
+                            }
+                          }
+                        ]
+                      })
+                    }} />
                 </div>
 
                 <div className="py-24" style={{ backgroundColor: '#f8fafc' }}>

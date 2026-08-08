@@ -20,11 +20,12 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
   }, []);
 
   const navItems = [
-    { name: 'Solutions', path: '/solutions', isLink: true, id: 'solutions' },
-    { name: 'Creative', path: '/creative', isLink: true, id: 'creative' },
-    { name: 'Portfolio', path: '/portfolio', isLink: true, id: 'portfolio' },
-    { name: 'About', path: '/about', isLink: true, id: 'about' },
+    { name: 'Services', path: '/solutions', isLink: true, id: 'solutions' },
+    { name: 'Work', path: '/work', isLink: true, id: 'portfolio' },
+    { name: 'Careers', path: '/careers', isLink: true, id: 'careers' },
     { name: 'Blog', path: '/blog', isLink: true, id: 'blog' },
+    { name: 'FAQ', path: '/faq', isLink: true, id: 'faq' },
+    { name: 'Contact', path: '/contact', isLink: true, id: 'contact' },
   ];
 
   const scrollToSection = (e: React.MouseEvent, id: string) => {
