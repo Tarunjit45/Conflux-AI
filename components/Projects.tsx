@@ -40,16 +40,6 @@ const projectsList = [
     tags: ["Interactive Menu", "Fluid UI", "High Performance", "Custom Styling"]
   },
   {
-    id: "alert-ahead",
-    title: "Alert Ahead",
-    category: "Enterprise Headless Commerce",
-    url: "https://alert-ahead.vercel.app/",
-    type: "image",
-    image: "/images/website-development/website-development_2.jpg",
-    summary: "High-velocity headless commerce platform built for rapid scaling and multi-inventory product management.",
-    tags: ["Headless E-Commerce", "API Driven", "Vercel Edge", "Custom UI"]
-  },
-  {
     id: "joy-consultancy",
     title: "Joy Consultancy",
     category: "Corporate & Financial Advisory",
