@@ -26,23 +26,54 @@ const ContactForm: React.FC = () => {
 
     setStatus('processing');
 
+    // Extract UTM parameters and attribution metadata
+    const urlParams = new URLSearchParams(window.location.search);
+    const leadPayload = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      company: formData.company,
+      business: formData.company,
+      goal: formData.goal,
+      service: formData.goal,
+      message: formData.message,
+      source: document.referrer || 'Direct Website',
+      landing_page: window.location.pathname,
+      utm_source: urlParams.get('utm_source') || '',
+      utm_medium: urlParams.get('utm_medium') || '',
+      utm_campaign: urlParams.get('utm_campaign') || ''
+    };
+
     try {
-      // 1. Save to Supabase
-      await supabase
-        .from('leads')
-        .insert([
-          {
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            company: formData.company,
-            goal: formData.goal,
-            message: formData.message,
-            created_at: new Date().toISOString(),
-          }
-        ]);
-    } catch (err) {
-      console.warn('Lead logging notice:', err);
+      // 1. Post to Server-Side API Endpoint (/api/contact)
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(leadPayload)
+      });
+
+      if (!res.ok) {
+        throw new Error(`API Endpoint returned status ${res.status}`);
+      }
+    } catch (apiErr) {
+      console.warn('Server-side API endpoint notice, attempting client Supabase fallback:', apiErr);
+      try {
+        await supabase
+          .from('leads')
+          .insert([
+            {
+              name: formData.name,
+              email: formData.email,
+              phone: formData.phone,
+              company: formData.company,
+              goal: formData.goal,
+              message: formData.message,
+              created_at: new Date().toISOString(),
+            }
+          ]);
+      } catch (dbErr) {
+        console.warn('Supabase fallback notice:', dbErr);
+      }
     }
 
     setStatus('success');
