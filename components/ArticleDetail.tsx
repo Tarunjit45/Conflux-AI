@@ -28,8 +28,21 @@ const ArticleDetail: React.FC = () => {
     const [article, setArticle] = useState<Article | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    const [comments, setComments] = useState<Array<{ id: string; author: string; content: string; created_at: string }>>([]);
+    const [newComment, setNewComment] = useState('');
+    const [commentAuthor, setCommentAuthor] = useState('');
+
     useEffect(() => {
-        if (slug) fetchArticle();
+        if (slug) {
+            fetchArticle();
+            try {
+                const saved = localStorage.getItem(`comments_${slug}`);
+                if (saved) setComments(JSON.parse(saved));
+                else setComments([]);
+            } catch (e) {
+                setComments([]);
+            }
+        }
     }, [slug]);
 
     const fetchArticle = async () => {
@@ -176,6 +189,109 @@ const ArticleDetail: React.FC = () => {
 
                         {/* Ad at the end */}
                         <AdPlaceholder label="Inside Article: Bottom" />
+
+                        {/* Real User Engagement: Like Reaction & Social Sharing */}
+                        <div className="flex items-center justify-between py-6 px-8 my-10 bg-slate-50 border border-slate-100 rounded-2xl">
+                            <button
+                                onClick={() => {
+                                    if (!article) return;
+                                    const likedKey = `liked_${article.slug}`;
+                                    const hasLiked = localStorage.getItem(likedKey);
+                                    const newReactions = hasLiked ? (article.reactions || 0) : (article.reactions || 0) + 1;
+                                    setArticle({ ...article, reactions: newReactions });
+                                    if (!hasLiked) {
+                                        localStorage.setItem(likedKey, 'true');
+                                        try {
+                                            supabase.from('articles').update({ reactions: newReactions }).eq('slug', article.slug);
+                                        } catch (e) {}
+                                    }
+                                }}
+                                className="flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-xl hover:border-pink-500 hover:text-pink-600 transition-all shadow-sm group"
+                            >
+                                <span className="text-pink-500 group-hover:scale-125 transition-transform">❤️</span>
+                                <span className="text-xs font-black text-slate-800 uppercase tracking-widest">
+                                    Like Article ({article.reactions || 0})
+                                </span>
+                            </button>
+
+                            <div className="flex items-center gap-2 text-slate-400 text-xs font-bold">
+                                <Share2 size={16} />
+                                <span>Share Insight</span>
+                            </div>
+                        </div>
+
+                        {/* Real User Comments Section */}
+                        <section className="my-12 p-8 md:p-10 rounded-[2.5rem] bg-white border border-slate-100 shadow-xl shadow-slate-100/50">
+                            <div className="flex items-center gap-3 mb-8">
+                                <MessageSquare size={20} className="text-blue-600" />
+                                <h3 className="font-inter text-2xl font-black text-slate-900 tracking-tight">
+                                    Discussion & Reader Comments ({comments.length})
+                                </h3>
+                            </div>
+
+                            {/* Comment Submission Form */}
+                            <form 
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    if (!newComment.trim() || !commentAuthor.trim() || !article) return;
+                                    const commentObj = {
+                                        id: Date.now().toString(),
+                                        author: commentAuthor,
+                                        content: newComment,
+                                        created_at: new Date().toISOString()
+                                    };
+                                    const updated = [commentObj, ...comments];
+                                    setComments(updated);
+                                    localStorage.setItem(`comments_${article.slug}`, JSON.stringify(updated));
+                                    setNewComment('');
+                                }}
+                                className="mb-10 space-y-4"
+                            >
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input 
+                                        type="text"
+                                        placeholder="Your Name *"
+                                        required
+                                        value={commentAuthor}
+                                        onChange={(e) => setCommentAuthor(e.target.value)}
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 outline-none text-sm font-medium transition-all"
+                                    />
+                                </div>
+                                <textarea 
+                                    placeholder="Add to the technical discussion..."
+                                    required
+                                    rows={3}
+                                    value={newComment}
+                                    onChange={(e) => setNewComment(e.target.value)}
+                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 outline-none text-sm font-medium transition-all"
+                                />
+                                <button 
+                                    type="submit"
+                                    className="px-6 py-3 bg-blue-600 text-white font-black text-xs uppercase tracking-widest rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20"
+                                >
+                                    Post Reader Comment
+                                </button>
+                            </form>
+
+                            {/* Comments List */}
+                            {comments.length === 0 ? (
+                                <p className="text-xs font-bold text-slate-400 italic">No comments yet. Be the first genuine reader to join the technical discussion!</p>
+                            ) : (
+                                <div className="space-y-6">
+                                    {comments.map((c) => (
+                                        <div key={c.id} className="p-5 rounded-2xl bg-slate-50 border border-slate-100">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-xs font-black text-slate-900">{c.author}</span>
+                                                <span className="text-[10px] font-bold text-slate-400">
+                                                    {new Date(c.created_at).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                            <p className="text-sm font-medium text-slate-600 leading-relaxed">{c.content}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </section>
 
                         {/* Funnel CTA Section */}
                         <section className="mt-16 p-8 md:p-12 rounded-[3rem] bg-gradient-to-br from-blue-600 to-indigo-900 text-white relative overflow-hidden shadow-2xl shadow-blue-500/30">
