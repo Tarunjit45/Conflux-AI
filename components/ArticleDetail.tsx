@@ -16,12 +16,7 @@ interface Article {
     created_at: string;
 }
 
-const AdPlaceholder: React.FC<{ label: string; className?: string }> = ({ label, className = "" }) => (
-    <div className={`my-8 p-4 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center min-h-[100px] md:min-h-[250px] ${className}`}>
-        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Google AdSense Placement</span>
-        <span className="text-xs font-bold text-slate-300 italic">{label}</span>
-    </div>
-);
+
 
 const ArticleDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -168,27 +163,14 @@ const ArticleDetail: React.FC = () => {
                         {/* Text-First Editorial Divider */}
                         <div className="w-full h-px bg-gradient-to-r from-blue-500/20 via-slate-200 to-transparent my-8" />
 
-                        {/* Article Body with Smart Ad Placement */}
+                        {/* Article Body */}
                         <div className="prose prose-slate prose-lg max-w-none">
                             {paragraphs.map((para, idx) => (
-                                <React.Fragment key={idx}>
-                                    <p className="text-slate-600 font-medium leading-relaxed mb-6 text-lg">
-                                        {para}
-                                    </p>
-                                    
-                                    {/* Ad After 1st Paragraph */}
-                                    {idx === 0 && <AdPlaceholder label="Inside Article: Top (After 1st Paragraph)" />}
-                                    
-                                    {/* Ad in the middle */}
-                                    {idx === middleIndex && paragraphs.length > 3 && (
-                                        <AdPlaceholder label="Inside Article: Middle" />
-                                    )}
-                                </React.Fragment>
+                                <p key={idx} className="text-slate-600 font-medium leading-relaxed mb-6 text-lg">
+                                    {para}
+                                </p>
                             ))}
                         </div>
-
-                        {/* Ad at the end */}
-                        <AdPlaceholder label="Inside Article: Bottom" />
 
                         {/* Real User Engagement: Like Reaction & Social Sharing */}
                         <div className="flex items-center justify-between py-6 px-8 my-10 bg-slate-50 border border-slate-100 rounded-2xl">
@@ -332,12 +314,9 @@ const ArticleDetail: React.FC = () => {
 
                     {/* Sidebar */}
                     <aside className="lg:col-span-4 space-y-8">
-                        {/* Desktop Sidebar Ad */}
                         <div className="sticky top-32">
-                            <AdPlaceholder label="Desktop Sidebar" className="min-h-[600px] hidden lg:flex" />
-                            
                             {/* Newsletter / CTA */}
-                            <div className="mt-8 p-8 rounded-[2rem] bg-slate-50 border border-slate-100">
+                            <div className="p-8 rounded-[2rem] bg-slate-50 border border-slate-100 shadow-sm">
                                 <h4 className="font-black text-slate-900 uppercase tracking-widest text-xs mb-4">Network Freshness</h4>
                                 <p className="text-sm text-slate-500 font-medium mb-6">
                                     Get manual updates and strategic AI insights delivered directly to your tactical layer.
