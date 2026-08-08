@@ -39,23 +39,8 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* SECTION 7: Streamlined Direct Contact & Enquiry Form */}
-      <section id="contact" className="py-20 px-4 sm:px-6 md:px-12 lg:px-24 relative bg-white">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-wider mb-3 inline-block">
-              Let's Build Together
-            </span>
-            <h2 className="text-3xl md:text-5xl font-black font-orbitron text-slate-900 tracking-tight">
-              Start Your AI Project
-            </h2>
-            <p className="text-slate-600 text-sm md:text-base mt-2 max-w-md mx-auto">
-              Send us your project details. We deliver custom architecture proposals within 24 hours.
-            </p>
-          </div>
-          <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200 shadow-xl">
-            <ContactForm />
-          </div>
-        </div>
+      <section id="contact" className="py-20 px-4 sm:px-6 md:px-12 lg:px-24 relative bg-slate-50 border-t border-slate-200">
+        <ContactForm />
       </section>
     </main>
   );

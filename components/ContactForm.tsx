@@ -1,7 +1,6 @@
-
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Mail, User, Building2, Briefcase, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
+import { Send, Mail, User, Building2, Briefcase, CheckCircle2, Loader2, AlertCircle, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
@@ -18,7 +17,6 @@ const ContactForm: React.FC = () => {
   });
   const [status, setStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [focused, setFocused] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -29,7 +27,6 @@ const ContactForm: React.FC = () => {
     setStatus('processing');
     setErrorMessage(null);
 
-    // Extract UTM parameters and attribution metadata
     const urlParams = new URLSearchParams(window.location.search);
     const leadPayload = {
       name: formData.name,
@@ -50,7 +47,6 @@ const ContactForm: React.FC = () => {
     };
 
     try {
-      // 1. Post to Server-Side API Endpoint (/api/contact)
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -91,67 +87,44 @@ const ContactForm: React.FC = () => {
         console.warn('Supabase fallback notice:', dbErr);
       }
 
-      // If both API and DB fallback fail, show error banner while preserving user form state
       setStatus('error');
       setErrorMessage('We could not transmit your project enquiry. Please try again or chat with our team directly on WhatsApp.');
     }
   };
 
-  const inputStyle = (field: string) => ({
-    width: '100%',
-    background: focused === field ? 'rgba(15,23,42,0.8)' : 'rgba(2,12,27,0.6)',
-    border: `1px solid ${focused === field ? 'rgba(0,0,255,0.5)' : 'rgba(30,41,59,0.8)'}`,
-    borderRadius: '6px',
-    padding: '14px 16px',
-    color: '#f8fafc',
-    fontSize: '16px',
-    outline: 'none',
-    transition: 'all 0.25s ease',
-    fontFamily: 'Inter, sans-serif',
-    boxShadow: focused === field ? '0 0 15px rgba(0,0,255,0.1)' : 'inset 0 1px 4px rgba(0,0,0,0.2)'
-  });
-
   const serviceOptions = [
-    { value: 'ai-automation', label: 'AI Automation & Chatbots' },
-    { value: 'web-development', label: 'Website Development' },
-    { value: 'ad-optimization', label: 'Ad Stack Optimization' },
-    { value: 'full-stack', label: 'Complete Digital Infrastructure' },
-    { value: 'it-consultancy', label: 'IT Strategy Consultancy' },
+    { value: 'ai-automation', label: 'AI Automation & Microservices' },
+    { value: 'chatbot-development', label: 'Custom AI Chatbot Development' },
+    { value: 'website-development', label: 'High-Performance Web Development' },
+    { value: 'seo-geo', label: 'SEO & Generative Engine Optimization (GEO)' },
+    { value: 'digital-marketing', label: 'Digital Marketing & B2B Acquisition' },
   ];
 
   if (status === 'success') {
     return (
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center py-20 px-8 rounded-2xl"
-          style={{
-            background: 'linear-gradient(135deg, rgba(0,0,255,0.05), rgba(2,12,27,0.8))',
-            border: '1px solid rgba(0,0,255,0.2)',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.4), inset 0 0 40px rgba(0,0,255,0.05)'
-          }}
+          className="text-center py-16 px-8 rounded-3xl bg-white border border-slate-200 shadow-xl"
         >
-          <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
-            style={{ background: 'rgba(0,0,255,0.1)', border: '1px solid rgba(0,0,255,0.4)', boxShadow: '0 0 20px rgba(0,0,255,0.3)' }}>
-            <CheckCircle2 size={40} style={{ color: '#3333ff' }} />
+          <div className="w-16 h-16 rounded-full bg-emerald-100 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 size={36} />
           </div>
-          <h3 className="font-inter text-2xl md:text-3xl font-black mb-3 text-white">Message Received!</h3>
-          <p className="text-sm md:text-base mb-2 max-w-md mx-auto leading-relaxed" style={{ color: '#94a3b8' }}>
-            Thank you, <strong className="text-white">{formData.name}</strong>. Our growth team has received your application
-            and will reach out within <strong className="text-blue-500">24 hours</strong>.
+          <h3 className="font-orbitron text-2xl md:text-3xl font-black mb-3 text-slate-900">Enquiry Transmitted!</h3>
+          <p className="text-slate-600 text-base mb-6 max-w-md mx-auto leading-relaxed">
+            Thank you, <strong className="text-slate-900">{formData.name}</strong>. Our engineering team has received your project details and will reach out within <strong className="text-blue-600">24 hours</strong>.
           </p>
-          <div className="mt-8 inline-flex items-center gap-2 px-5 py-3 rounded-lg"
-            style={{ background: 'rgba(0,0,255,0.1)', border: '1px solid rgba(0,0,255,0.3)' }}>
-            <Mail size={14} style={{ color: '#3333ff' }} />
-            <span className="font-inter text-[12px] font-bold tracking-wide text-blue-500">confluxdotai@gmail.com</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 font-bold text-xs">
+            <Mail size={14} />
+            <span>confluxdotai@gmail.com</span>
           </div>
-          <div className="mt-6">
+          <div className="mt-8">
             <button
-              onClick={() => { setStatus('idle'); setFormData({ name: '', email: '', phone: '', company: '', goal: '', message: '' }); }}
-              className="font-inter text-[11px] font-bold tracking-wide transition-colors bg-transparent border-none uppercase text-slate-400 hover:text-blue-500"
+              onClick={() => { setStatus('idle'); setFormData({ name: '', email: '', phone: '', company: '', goal: '', message: '', website_url_hp: '' }); }}
+              className="text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-blue-600 transition-colors"
             >
-              SEND ANOTHER MESSAGE
+              Send Another Enquiry
             </button>
           </div>
         </motion.div>
@@ -160,56 +133,55 @@ const ContactForm: React.FC = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="text-center mb-12 md:mb-16">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-6 relative group"
-          style={{ background: 'rgba(0,0,255,0.1)', border: '1px solid rgba(0,0,255,0.3)', boxShadow: '0 0 30px rgba(0,0,255,0.2)' }}
-        >
-          <div className="absolute inset-0 bg-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl rounded-2xl" />
-          <Mail size={28} className="text-blue-500 relative z-10" />
-        </motion.div>
-        <h2 className="font-inter text-3xl md:text-5xl font-black mb-3 uppercase tracking-tight text-white">
-          Let's <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #6666ff 0%, #0000ff 100%)' }}>Grow Together</span>
+    <div className="max-w-3xl mx-auto font-inter">
+      {/* High-Contrast Section Header */}
+      <div className="text-center mb-10">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-wider mb-3">
+          <Mail className="w-3.5 h-3.5" />
+          Direct Inquiry Channel
+        </div>
+        <h2 className="text-3xl md:text-4xl font-black font-orbitron text-slate-900 tracking-tight mb-3">
+          Start Your AI Project — <span className="text-blue-600">Let's Grow Together</span>
         </h2>
-        <p className="text-sm md:text-base max-w-md mx-auto mb-4 leading-relaxed" style={{ color: '#94a3b8' }}>
-          Tell us about your business and goals. We'll design a custom AI strategy for you.
+        <p className="text-slate-600 text-sm md:text-base max-w-lg mx-auto mb-4 leading-relaxed font-normal">
+          Tell us about your business and goals. We deliver custom architecture proposals within 24 hours.
         </p>
-        <div className="flex items-center justify-center gap-2 text-blue-500">
-          <Mail size={12} />
-          <a href="mailto:confluxdotai@gmail.com" className="font-inter text-[11px] font-bold tracking-wide transition-colors uppercase text-blue-500 hover:text-blue-400">
+
+        {/* High Contrast Official Email Badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 border border-slate-200 hover:border-blue-300 transition-colors">
+          <Mail className="w-4 h-4 text-blue-600" />
+          <a 
+            href="mailto:confluxdotai@gmail.com" 
+            className="text-xs font-bold tracking-wide text-slate-800 hover:text-blue-600 transition-colors"
+          >
             confluxdotai@gmail.com
           </a>
         </div>
       </div>
 
+      {/* High-Contrast Form Container */}
       <motion.form
         ref={formRef}
         onSubmit={handleSubmit}
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="rounded-2xl overflow-hidden relative backdrop-blur-xl"
-        style={{
-          background: 'linear-gradient(135deg, rgba(30,41,59,0.4), rgba(2,12,27,0.8))',
-          border: '1px solid rgba(0,0,255,0.2)',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,255,0.05)'
-        }}
+        className="bg-white rounded-3xl border border-slate-200 shadow-2xl shadow-slate-200/60 overflow-hidden"
       >
-        {/* Form top bar */}
-        <div className="px-8 py-4 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(30,41,59,0.8)', background: 'rgba(15,23,42,0.4)' }}>
-          <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
-          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
-          <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-          <span className="ml-4 font-inter text-[11px] font-bold tracking-wide uppercase text-slate-400">Contact Us</span>
+        {/* Top Window Bar */}
+        <div className="px-6 py-3.5 bg-slate-100 border-b border-slate-200 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-400" />
+            <div className="w-3 h-3 rounded-full bg-amber-400" />
+            <div className="w-3 h-3 rounded-full bg-emerald-400" />
+          </div>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+            Conflux AI Enquiry Portal
+          </span>
         </div>
 
-        <div className="p-5 md:p-10">
-          {/* Hidden Anti-Spam Honeypot Field */}
+        <div className="p-6 md:p-10 space-y-6">
+          {/* Anti-Spam Honeypot */}
           <input
             type="text"
             name="website_url_hp"
@@ -222,162 +194,135 @@ const ContactForm: React.FC = () => {
 
           {/* Error Banner */}
           {status === 'error' && (
-            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <AlertCircle size={18} className="text-red-400 flex-shrink-0" />
+            <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="flex items-center gap-2.5">
+                <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
                 <span>{errorMessage || 'Form transmission failed. Please try again.'}</span>
               </div>
               <a
                 href="https://wa.me/918972517557?text=Hi%20Conflux%20AI,%20I%20had%20trouble%20submitting%20a%20request%20on%20your%20website."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-500 transition-colors flex-shrink-0"
+                className="px-3.5 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 transition-colors shrink-0"
               >
                 Chat on WhatsApp
               </a>
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Full Name */}
             <div>
-              <label className="flex items-center gap-2 text-[11px] font-medium tracking-widest uppercase mb-2 text-slate-400">
-                <User size={10} className="text-blue-500" /> Full Name *
+              <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                <User className="w-3.5 h-3.5 text-blue-600" /> Full Name *
               </label>
               <input
                 type="text"
                 required
-                placeholder="Your full name"
-                style={inputStyle('name')}
+                placeholder="e.g. Rahul Sharma"
+                className="w-full px-4 py-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm font-medium focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 outline-none transition-all"
                 value={formData.name}
-                onFocus={() => setFocused('name')}
-                onBlur={() => setFocused(null)}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
 
             {/* Email */}
             <div>
-              <label className="flex items-center gap-2 text-[11px] font-medium tracking-widest uppercase mb-2 text-slate-400">
-                <Mail size={10} className="text-blue-500" /> Business Email *
+              <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                <Mail className="w-3.5 h-3.5 text-blue-600" /> Business Email *
               </label>
               <input
                 type="email"
                 required
                 placeholder="you@company.com"
-                style={inputStyle('email')}
+                className="w-full px-4 py-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm font-medium focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 outline-none transition-all"
                 value={formData.email}
-                onFocus={() => setFocused('email')}
-                onBlur={() => setFocused(null)}
                 onChange={e => setFormData({ ...formData, email: e.target.value })}
               />
             </div>
 
             {/* Company */}
             <div>
-              <label className="flex items-center gap-2 text-[11px] font-medium tracking-widest uppercase mb-2 text-slate-400">
-                <Building2 size={10} className="text-blue-500" /> Company / Business *
+              <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                <Building2 className="w-3.5 h-3.5 text-blue-600" /> Company / Business *
               </label>
               <input
                 type="text"
                 required
-                placeholder="Your company name"
-                style={inputStyle('company')}
+                placeholder="Company Name"
+                className="w-full px-4 py-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm font-medium focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 outline-none transition-all"
                 value={formData.company}
-                onFocus={() => setFocused('company')}
-                onBlur={() => setFocused(null)}
                 onChange={e => setFormData({ ...formData, company: e.target.value })}
               />
             </div>
 
             {/* Phone */}
             <div>
-              <label className="flex items-center gap-2 text-[11px] font-medium tracking-widest uppercase mb-2 text-slate-400">
-                <User size={10} className="text-blue-500" /> Phone Number
+              <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                <Phone className="w-3.5 h-3.5 text-blue-600" /> Phone / WhatsApp Number
               </label>
               <input
                 type="tel"
                 placeholder="+91 98765 43210"
-                style={inputStyle('phone')}
+                className="w-full px-4 py-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm font-medium focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 outline-none transition-all"
                 value={formData.phone}
-                onFocus={() => setFocused('phone')}
-                onBlur={() => setFocused(null)}
                 onChange={e => setFormData({ ...formData, phone: e.target.value })}
               />
             </div>
 
-            {/* Service Goal */}
+            {/* Service Requirement */}
             <div className="md:col-span-2">
-              <label className="flex items-center gap-2 text-[11px] font-medium tracking-widest uppercase mb-2 text-slate-400">
-                <Briefcase size={10} className="text-blue-500" /> What Do You Need?
+              <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                <Briefcase className="w-3.5 h-3.5 text-blue-600" /> Service Solution Required
               </label>
               <select
-                style={{ ...inputStyle('goal'), cursor: 'pointer', appearance: 'none' }}
+                className="w-full px-4 py-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 outline-none transition-all cursor-pointer"
                 value={formData.goal}
-                onFocus={() => setFocused('goal')}
-                onBlur={() => setFocused(null)}
                 onChange={e => setFormData({ ...formData, goal: e.target.value })}
               >
-                <option value="" style={{ color: '#64748b' }}>Select a service...</option>
+                <option value="">Select a service solution...</option>
                 {serviceOptions.map(opt => (
-                  <option key={opt.value} value={opt.value} style={{ color: '#f8fafc', background: '#020c1b' }}>{opt.label}</option>
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
             </div>
 
             {/* Message */}
             <div className="md:col-span-2">
-              <label className="flex items-center gap-2 text-[11px] font-medium tracking-widest uppercase mb-2 text-slate-400">
-                <Send size={10} className="text-blue-500" /> Tell Us More (Optional)
+              <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                <Send className="w-3.5 h-3.5 text-blue-600" /> Project Details & Goals
               </label>
               <textarea
                 rows={4}
-                placeholder="Briefly describe your business challenge, target market, and what success looks like for you..."
-                style={{ ...inputStyle('message'), resize: 'none' }}
+                placeholder="Tell us about your business goals, required timeline, or specific challenges..."
+                className="w-full px-4 py-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm font-medium focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 outline-none transition-all resize-none"
                 value={formData.message}
-                onFocus={() => setFocused('message')}
-                onBlur={() => setFocused(null)}
                 onChange={e => setFormData({ ...formData, message: e.target.value })}
               />
             </div>
 
-            {/* Submit */}
+            {/* Submit Button */}
             <div className="md:col-span-2 pt-2">
-              {status === 'error' && (
-                <div className="flex items-center gap-2 mb-4 p-3 rounded-lg"
-                  style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
-                  <AlertCircle size={14} className="text-red-400 flex-shrink-0" />
-                  <span className="text-red-400 text-xs">Something went wrong. Please email us directly at confluxdotai@gmail.com</span>
-                </div>
-              )}
-
               <button
                 type="submit"
                 disabled={status === 'processing'}
-                className="w-full group relative py-4 md:py-5 rounded-lg font-orbitron text-xs tracking-[0.25em] text-white flex items-center justify-center gap-3 transition-all duration-300 disabled:opacity-60 overflow-hidden"
-                style={{
-                  background: status === 'processing'
-                    ? 'rgba(0,0,255,0.5)'
-                    : 'linear-gradient(135deg, #0000ff 0%, #0000cc 100%)',
-                  boxShadow: status !== 'processing' ? '0 8px 30px rgba(0,0,255,0.4)' : 'none'
-                }}
+                className="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold font-orbitron text-xs tracking-widest uppercase flex items-center justify-center gap-3 transition-all shadow-xl shadow-blue-600/25 disabled:opacity-60"
               >
-                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
                 {status === 'processing' ? (
                   <>
-                    <Loader2 size={16} className="animate-spin" />
-                    TRANSMITTING...
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Processing Submission...</span>
                   </>
                 ) : (
                   <>
-                    SEND MESSAGE
-                    <Send size={14} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                    <span>Transmit Project Proposal Request</span>
+                    <Send className="w-4 h-4" />
                   </>
                 )}
               </button>
 
-              <p className="text-center mt-4 text-[10px]" style={{ color: '#64748b' }}>
-                🔒 Encryption active. Your protocol data is secure. We respond within 24 hours.
+              <p className="text-center mt-4 text-[11px] text-slate-500 font-medium">
+                🔒 Enterprise Data Protection. All enquiries are stored securely and answered within 24 hours.
               </p>
             </div>
           </div>
