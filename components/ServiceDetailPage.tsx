@@ -13,6 +13,7 @@ interface ServiceDetail {
   deliverables: string[];
   process: { step: string; title: string; desc: string }[];
   faqs: { q: string; a: string }[];
+  images: string[];
 }
 
 const SERVICE_DETAILS: Record<string, ServiceDetail> = {
@@ -22,6 +23,14 @@ const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     "headline": "Replace Manual Operations with High-Throughput Autonomous Workflows",
     "problem": "Manual data entry, repetitive customer follow-ups, and fragmented operational tools slow down growth and increase labor costs.",
     "solution": "Conflux AI builds custom autonomous microservices that connect your CRMs, databases, and communication tools, reducing manual operational overhead by up to 80%.",
+    "images": [
+      "/images/ai-automation/ai-automation_1.jpg",
+      "/images/ai-automation/ai-automation_2.jpg",
+      "/images/ai-automation/ai-automation_3.jpg",
+      "/images/ai-automation/ai-automation_4.jpg",
+      "/images/ai-automation/ai-automation_5.jpg",
+      "/images/ai-automation/ai-automation_6.jpg"
+    ],
     "deliverables": [
       "Custom Automated Workflow Pipelines",
       "CRM & ERP API Integrations",
@@ -46,6 +55,15 @@ const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     "headline": "Convert Site Visitors 24/7 with Intelligent Qualified Lead Chatbots",
     "problem": "Generic chatbots frustrate users with canned scripts, while human support teams miss late-night B2B leads.",
     "solution": "We build context-aware AI chatbots trained on your company knowledge base that answer complex questions, qualify leads, and book sales meetings automatically.",
+    "images": [
+      "/images/chatbot-development/chatbot-development_1.jpg",
+      "/images/chatbot-development/chatbot-development_2.jpg",
+      "/images/chatbot-development/chatbot-development_3.jpg",
+      "/images/chatbot-development/chatbot-development_4.jpg",
+      "/images/chatbot-development/chatbot-development_5.jpg",
+      "/images/chatbot-development/chatbot-development_6.jpg",
+      "/images/chatbot-development/chatbot-development_7.jpg"
+    ],
     "deliverables": [
       "Custom Knowledge Base Vector Embeddings",
       "Automated B2B Lead Qualification Logic",
@@ -68,6 +86,14 @@ const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     "headline": "Ultra-Fast, High-Converting Web Applications Built for Digital Dominance",
     "problem": "Slow, bloated, outdated websites lose visitors within 3 seconds and fail to rank on search engines.",
     "solution": "We engineer custom React + Vite + TypeScript web applications designed for sub-second load speeds, flawless mobile responsiveness, and maximum lead conversion.",
+    "images": [
+      "/images/website-development/website-development_1.jpg",
+      "/images/website-development/website-development_2.jpg",
+      "/images/website-development/website-development_3.jpg",
+      "/images/website-development/website-development_4.jpg",
+      "/images/website-development/website-development_5.jpg",
+      "/images/website-development/website-development_6.jpg"
+    ],
     "deliverables": [
       "Custom React 18 & Vite Frontend",
       "100/100 Core Web Vitals Optimization",
@@ -90,6 +116,14 @@ const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     "headline": "Rank #1 on Google & Get Cited by AI Answer Engines (Gemini, ChatGPT, Perplexity)",
     "problem": "Traditional SEO is no longer enough; search engines and AI models require structured, machine-readable entity data to cite your business.",
     "solution": "We optimize your website for both traditional search crawlers (Googlebot) and Generative Engine Optimization (GEO/AEO) using JSON-LD schemas, technical taxonomy, and high-authority documentation.",
+    "images": [
+      "/images/seo-geo/seo-geo_1.jpg",
+      "/images/seo-geo/seo-geo_2.jpg",
+      "/images/seo-geo/seo-geo_3.jpg",
+      "/images/seo-geo/seo-geo_4.jpg",
+      "/images/seo-geo/seo-geo_5.jpg",
+      "/images/seo-geo/seo-geo_6.jpg"
+    ],
     "deliverables": [
       "Schema.org JSON-LD Infrastructure (Organization, TechArticle, Service, FAQ)",
       "Robots.txt & Sitemap AI Crawl Configuration",
@@ -112,6 +146,15 @@ const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     "headline": "Scalable B2B Client Acquisition & High-Impact Content Creation",
     "problem": "Inconsistent lead generation and unoptimized marketing campaigns waste ad spend without driving real revenue.",
     "solution": "We provide end-to-end B2B client acquisition campaigns, high-converting video editing, social media management, and authentic review growth.",
+    "images": [
+      "/images/digital-marketing/digital-marketing_1.jpg",
+      "/images/digital-marketing/digital-marketing_2.jpg",
+      "/images/digital-marketing/digital-marketing_3.jpg",
+      "/images/digital-marketing/digital-marketing_4.jpg",
+      "/images/digital-marketing/digital-marketing_5.jpg",
+      "/images/digital-marketing/digital-marketing_6.jpg",
+      "/images/digital-marketing/digital-marketing_7.jpg"
+    ],
     "deliverables": [
       "B2B Targeted Client Acquisition Campaigns",
       "High-Impact Short & Long-Form Video Editing",
@@ -235,12 +278,44 @@ const ServiceDetailPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {service.deliverables.map((item, idx) => (
               <div key={idx} className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-start gap-4">
-                <CheckCircle2 className="text-blue-600 flex-shrink-0 mt-0.5" size={20} />
-                <span className="text-slate-800 font-bold text-sm leading-snug">{item}</span>
+                <CheckCircle2 className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <span className="font-bold text-slate-800 text-sm">{item}</span>
               </div>
             ))}
           </div>
         </div>
+
+        {/* Visual Project & Architecture Gallery */}
+        {service.images && service.images.length > 0 && (
+          <div className="mb-20">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-2 inline-block">Visual Evidence & Interface Assets</span>
+                <h2 className="text-3xl font-black text-slate-900 tracking-tight">
+                  Architecture & Implementation Gallery
+                </h2>
+              </div>
+              <p className="text-slate-500 text-sm max-w-md">Real screenshots, system visual mockups, and deployment previews from our work.</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {service.images.map((imgUrl, i) => (
+                <div key={i} className="group relative aspect-[16/10] rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm hover:shadow-xl transition-all">
+                  <img 
+                    src={imgUrl} 
+                    alt={`${service.name} Asset ${i + 1}`} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4">
+                    <span className="px-4 py-2 bg-white text-slate-900 font-bold text-xs rounded-xl shadow-lg">
+                      View Architecture Preview #{i + 1}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Process */}
         <div className="mb-20">

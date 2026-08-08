@@ -8,6 +8,7 @@ const Projects: React.FC = () => {
             title: "Vintage Phi",
             category: "Salon Interface",
             url: "https://vintage-phi.vercel.app/",
+            image: "/images/website-development/website-development_1.jpg",
             description: "A premium, high-conversion reservation and branding platform engineered for elite salons.",
             delay: 0.1
         },
@@ -15,6 +16,7 @@ const Projects: React.FC = () => {
             title: "Alert Ahead",
             category: "Enterprise Ecommerce",
             url: "https://alert-ahead.vercel.app/",
+            image: "/images/website-development/website-development_2.jpg",
             description: "A high-velocity headless commerce system built for rapid scaling and complex inventory matrices.",
             delay: 0.2
         },
@@ -22,6 +24,7 @@ const Projects: React.FC = () => {
             title: "Aura Fashion",
             category: "Fashion Retail",
             url: "https://aura-fasion.vercel.app/",
+            image: "/images/website-development/website-development_3.jpg",
             description: "Visually stunning storefront optimized for high-resolution product displays and fluid user checkout.",
             delay: 0.3
         },
@@ -29,6 +32,7 @@ const Projects: React.FC = () => {
             title: "Aurum Wine",
             category: "Restaurant & Hospitality",
             url: "https://aurum-wine.vercel.app/",
+            image: "/images/website-development/website-development_4.jpg",
             description: "Dynamic menu architecture and immersive brand storytelling for premium culinary experiences.",
             delay: 0.4
         }
@@ -89,15 +93,18 @@ const Projects: React.FC = () => {
                                 (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 32px rgba(15,23,42,0.04)';
                             }}
                         >
-                            <div className="flex justify-between items-start mb-6">
+                            <div className="flex justify-between items-start mb-4">
                                 <div className="text-[11px] font-inter font-bold tracking-wide uppercase py-1 px-3 rounded-full"
                                     style={{ color: '#0000ff', background: 'rgba(0,0,255,0.08)', border: '1px solid rgba(0,0,255,0.2)' }}>
                                     {project.category}
                                 </div>
                                 <ExternalLink size={18} className="transition-colors" style={{ color: '#94a3b8' }}
-                                    onMouseEnter={e => (e.currentTarget as unknown as SVGElement).style.color = '#0000ff'}
-                                    onMouseLeave={e => (e.currentTarget as unknown as SVGElement).style.color = '#94a3b8'}
                                 />
+                            </div>
+
+                            {/* Project Visual Image */}
+                            <div className="relative aspect-[16/10] rounded-lg overflow-hidden bg-slate-100 mb-4 border border-slate-200">
+                                <img src={project.image} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             </div>
 
                             <h3 className="text-xl font-inter font-black mb-3 transition-colors"
