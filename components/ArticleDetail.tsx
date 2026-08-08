@@ -175,6 +175,7 @@ const ArticleDetail: React.FC = () => {
 
     const fetchArticle = async () => {
         setIsLoading(true);
+        let loadedArticle: Article | null = null;
         try {
             const { data, error } = await supabase
                 .from('articles')
@@ -183,26 +184,34 @@ const ArticleDetail: React.FC = () => {
                 .single();
 
             if (!error && data) {
-                setArticle(data);
-                setIsLoading(false);
-                return;
+                loadedArticle = data;
             }
         } catch (err) {
             console.error('Error fetching article from Supabase:', err);
         }
 
-        try {
-            const res = await fetch('/data/articles.json');
-            if (res.ok) {
-                const localArticles: Article[] = await res.json();
-                const found = localArticles.find(a => a.slug === slug);
-                setArticle(found || null);
+        if (!loadedArticle) {
+            try {
+                const res = await fetch('/data/articles.json');
+                if (res.ok) {
+                    const localArticles: Article[] = await res.json();
+                    loadedArticle = localArticles.find(a => a.slug === slug) || null;
+                }
+            } catch (err) {
+                console.error('Error fetching fallback article:', err);
             }
-        } catch (err) {
-            console.error('Error fetching fallback article:', err);
-        } finally {
-            setIsLoading(false);
         }
+
+        if (loadedArticle) {
+            const customCount = localStorage.getItem(`count_${slug}`);
+            const baseReactions = customCount ? parseInt(customCount, 10) : (loadedArticle.reactions || 0);
+            const userLiked = localStorage.getItem(`liked_${slug}`);
+            const finalReactions = (customCount ? baseReactions : (baseReactions + (userLiked ? 1 : 0)));
+            setArticle({ ...loadedArticle, reactions: finalReactions });
+        } else {
+            setArticle(null);
+        }
+        setIsLoading(false);
     };
 
     if (isLoading) {
@@ -303,17 +312,23 @@ const ArticleDetail: React.FC = () => {
                                 onClick={() => {
                                     if (!article) return;
                                     const likedKey = `liked_${article.slug}`;
+                                    const countKey = `count_${article.slug}`;
                                     const hasLiked = localStorage.getItem(likedKey);
-                                    const newReactions = hasLiked ? (article.reactions || 0) : (article.reactions || 0) + 1;
-                                    setArticle({ ...article, reactions: newReactions });
                                     if (!hasLiked) {
+                                        const newReactions = (article.reactions || 0) + 1;
+                                        setArticle({ ...article, reactions: newReactions });
                                         localStorage.setItem(likedKey, 'true');
+                                        localStorage.setItem(countKey, newReactions.toString());
                                         try {
                                             supabase.from('articles').update({ reactions: newReactions }).eq('slug', article.slug);
                                         } catch (e) {}
                                     }
                                 }}
-                                className="flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-xl hover:border-pink-500 hover:text-pink-600 transition-all shadow-sm group"
+                                className={`flex items-center gap-3 px-6 py-3 bg-white border rounded-xl transition-all shadow-sm group ${
+                                    article && localStorage.getItem(`liked_${article.slug}`) 
+                                        ? 'border-pink-500 text-pink-600 bg-pink-50/20' 
+                                        : 'border-slate-200 hover:border-pink-500 hover:text-pink-600'
+                                }`}
                             >
                                 <span className="text-pink-500 group-hover:scale-125 transition-transform">❤️</span>
                                 <span className="text-xs font-black text-slate-800 uppercase tracking-widest">
