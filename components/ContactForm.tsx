@@ -13,9 +13,11 @@ const ContactForm: React.FC = () => {
     phone: '',
     company: '',
     goal: '',
-    message: ''
+    message: '',
+    website_url_hp: '' // Anti-spam honeypot
   });
   const [status, setStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [focused, setFocused] = useState<string | null>(null);
 
   const navigate = useNavigate();
@@ -25,6 +27,7 @@ const ContactForm: React.FC = () => {
     if (!formData.name || !formData.email || !formData.company) return;
 
     setStatus('processing');
+    setErrorMessage(null);
 
     // Extract UTM parameters and attribution metadata
     const urlParams = new URLSearchParams(window.location.search);
@@ -41,7 +44,8 @@ const ContactForm: React.FC = () => {
       landing_page: window.location.pathname,
       utm_source: urlParams.get('utm_source') || '',
       utm_medium: urlParams.get('utm_medium') || '',
-      utm_campaign: urlParams.get('utm_campaign') || ''
+      utm_campaign: urlParams.get('utm_campaign') || '',
+      website_url_hp: formData.website_url_hp
     };
 
     try {
@@ -52,13 +56,18 @@ const ContactForm: React.FC = () => {
         body: JSON.stringify(leadPayload)
       });
 
-      if (!res.ok) {
-        throw new Error(`API Endpoint returned status ${res.status}`);
+      const resData = await res.json().catch(() => ({}));
+      if (res.ok && resData.success) {
+        setStatus('success');
+        navigate('/thank-you');
+        return;
+      } else {
+        throw new Error(resData.error || 'Server error processing request');
       }
     } catch (apiErr) {
-      console.warn('Server-side API endpoint notice, attempting client Supabase fallback:', apiErr);
+      console.warn('Server API endpoint notice, trying client fallback:', apiErr);
       try {
-        await supabase
+        const { error: dbErr } = await supabase
           .from('leads')
           .insert([
             {
@@ -71,13 +80,20 @@ const ContactForm: React.FC = () => {
               created_at: new Date().toISOString(),
             }
           ]);
+
+        if (!dbErr) {
+          setStatus('success');
+          navigate('/thank-you');
+          return;
+        }
       } catch (dbErr) {
         console.warn('Supabase fallback notice:', dbErr);
       }
-    }
 
-    setStatus('success');
-    navigate('/thank-you');
+      // If both API and DB fallback fail, show error banner while preserving user form state
+      setStatus('error');
+      setErrorMessage('We could not transmit your project enquiry. Please try again or chat with our team directly on WhatsApp.');
+    }
   };
 
   const inputStyle = (field: string) => ({
@@ -192,6 +208,35 @@ const ContactForm: React.FC = () => {
         </div>
 
         <div className="p-5 md:p-10">
+          {/* Hidden Anti-Spam Honeypot Field */}
+          <input
+            type="text"
+            name="website_url_hp"
+            style={{ display: 'none' }}
+            tabIndex={-1}
+            autoComplete="off"
+            value={formData.website_url_hp}
+            onChange={(e) => setFormData({ ...formData, website_url_hp: e.target.value })}
+          />
+
+          {/* Error Banner */}
+          {status === 'error' && (
+            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <AlertCircle size={18} className="text-red-400 flex-shrink-0" />
+                <span>{errorMessage || 'Form transmission failed. Please try again.'}</span>
+              </div>
+              <a
+                href="https://wa.me/918972517557?text=Hi%20Conflux%20AI,%20I%20had%20trouble%20submitting%20a%20request%20on%20your%20website."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-500 transition-colors flex-shrink-0"
+              >
+                Chat on WhatsApp
+              </a>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
             {/* Full Name */}
             <div>

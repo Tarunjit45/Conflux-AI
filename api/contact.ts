@@ -26,32 +26,50 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       landing_page,
       utm_source,
       utm_medium,
-      utm_campaign
+      utm_campaign,
+      website_url_hp // Honeypot anti-spam field
     } = body || {};
 
-    // 1. Server-Side Validation
+    // 1. Anti-Spam Honeypot Check: If honeypot is filled, return success silently without saving
+    if (website_url_hp && website_url_hp.trim() !== '') {
+      console.warn('Spam submission intercepted via honeypot field.');
+      return res.status(200).json({ success: true, lead_id: 'SPAM-FILTERED' });
+    }
+
+    // 2. Server-Side Validation & Input Limits
     if (!name || !email || (!company && !body.business)) {
       return res.status(400).json({ error: 'Missing required fields: name, email, and company/business.' });
     }
 
-    const business = company || body.business || 'Not Specified';
-    const service = goal || body.service || 'General AI & Digital Growth';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(String(email).trim())) {
+      return res.status(400).json({ error: 'Invalid email address format.' });
+    }
+
+    // Input length caps to prevent memory or buffer abuse
+    const cleanName = String(name).trim().substring(0, 100);
+    const cleanEmail = String(email).trim().substring(0, 100);
+    const business = String(company || body.business || 'Not Specified').trim().substring(0, 150);
+    const cleanPhone = String(phone || 'Not provided').trim().substring(0, 30);
+    const service = String(goal || body.service || 'General AI & Digital Growth').trim().substring(0, 100);
+    const cleanMessage = String(message || 'No additional message').trim().substring(0, 2000);
     const submittedAt = new Date().toISOString();
 
-    // 2. SAVE FIRST: Store Lead in Supabase with notification_status = 'pending'
+    // 3. SAVE FIRST: Store Lead in Supabase with notification_status = 'pending'
     let leadRecordId = `LEAD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     try {
       const { data, error } = await supabase
         .from('leads')
         .insert([
           {
-            name,
-            email,
-            phone: phone || 'Not provided',
+            name: cleanName,
+            email: cleanEmail,
+            phone: cleanPhone,
             company: business,
             goal: service,
-            message: message || 'No additional message',
+            message: cleanMessage,
             notification_status: 'pending',
+            notification_attempts: 0,
             created_at: submittedAt
           }
         ])
@@ -66,15 +84,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.warn('Supabase Lead Save Notice:', dbErr);
     }
 
-    // 3. Formulate Email Notification Content
+    // 4. Formulate Email Notification Content
     const emailSubject = `New Conflux AI Lead — ${service} — ${business}`;
     const emailText = `NEW CONFLUX AI LEAD
-Name: ${name}
+Name: ${cleanName}
 Business: ${business}
-Email: ${email}
-Phone: ${phone || 'Not provided'}
+Email: ${cleanEmail}
+Phone: ${cleanPhone}
 Requested Service: ${service}
-Message: ${message || 'None'}
+Message: ${cleanMessage}
 Source: ${source || 'Direct Website'}
 Landing Page: ${landing_page || '/'}
 UTM Source: ${utm_source || 'None'}
@@ -84,8 +102,10 @@ Submitted At: ${submittedAt}
 Lead ID: ${leadRecordId}
 `;
 
-    // 4. EMAIL SECOND: Attempt Transactional Email Dispatch via Resend API
+    // 5. EMAIL SECOND: Attempt Transactional Email Dispatch via Resend API
     let emailSentSuccessfully = false;
+    let notificationError = '';
+    const attemptTime = new Date().toISOString();
 
     if (RESEND_API_KEY) {
       try {
@@ -98,7 +118,7 @@ Lead ID: ${leadRecordId}
           body: JSON.stringify({
             from: 'Conflux AI Growth System <onboarding@resend.dev>',
             to: [LEAD_NOTIFICATION_EMAIL],
-            reply_to: email, // Prospect's email as Reply-To
+            reply_to: cleanEmail, // Prospect's email as Reply-To
             subject: emailSubject,
             text: emailText
           })
@@ -108,35 +128,41 @@ Lead ID: ${leadRecordId}
           emailSentSuccessfully = true;
           console.log(`Successfully sent email notification for Lead ID: ${leadRecordId}`);
         } else {
-          const errText = await emailRes.text();
-          console.warn('Resend Email Notification Warning:', errText);
+          notificationError = await emailRes.text();
+          console.warn('Resend Email Notification Warning:', notificationError);
         }
-      } catch (emailErr) {
+      } catch (emailErr: any) {
+        notificationError = emailErr?.message || String(emailErr);
         console.warn('Resend Email Dispatch Warning:', emailErr);
       }
     } else {
-      console.log('RESEND_API_KEY not configured in environment variables. Lead safely saved to database.');
+      notificationError = 'RESEND_API_KEY not configured in environment variables.';
+      console.log(notificationError);
     }
 
-    // 5. Update Notification Status in Supabase (sent / failed)
+    // 6. Audit Trail Update: Update notification_status, attempts, & errors in Supabase
     try {
       await supabase
         .from('leads')
-        .update({ notification_status: emailSentSuccessfully ? 'sent' : 'failed' })
+        .update({
+          notification_status: emailSentSuccessfully ? 'sent' : 'failed',
+          notification_attempts: 1,
+          last_notification_attempt: attemptTime,
+          last_notification_error: notificationError ? notificationError.substring(0, 500) : null
+        })
         .eq('id', leadRecordId);
     } catch (statusErr) {
-      console.warn('Notice updating lead notification_status:', statusErr);
+      console.warn('Notice updating lead notification audit trail:', statusErr);
     }
 
-    // 6. Return HTTP 200 Success to Client
+    // 7. Return Clean HTTP 200 Success to Client (Zero sensitive errors exposed to visitors)
     return res.status(200).json({
       success: true,
-      lead_id: leadRecordId,
-      notification_status: emailSentSuccessfully ? 'sent' : (RESEND_API_KEY ? 'failed' : 'logged_to_db')
+      lead_id: leadRecordId
     });
 
   } catch (err: any) {
     console.error('Server-side Contact Handler Error:', err);
-    return res.status(500).json({ error: 'Internal Server Error', message: err.message });
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 }
