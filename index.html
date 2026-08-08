@@ -49,27 +49,69 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet">
 
-  <!-- JSON-LD Structured Data: Organization & ProfessionalService -->
+  <!-- JSON-LD Structured Data: Organization & WebSite AI Overview Knowledge Graph -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Conflux AI",
-    "url": "https://confluxai.in",
-    "logo": "https://confluxai.in/logo.png",
-    "description": "Premium AI Automation and Digital Growth Agency specializing in website building, chatbot integration, and creative suites.",
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "telephone": "+91-8972517557",
-      "contactType": "customer service",
-      "areaServed": "IN",
-      "availableLanguage": ["English", "Bengali", "Hindi"]
-    },
-    "sameAs": [
-      "https://www.instagram.com/conflux.ai",
-      "https://www.linkedin.com/company/conflux-ai",
-      "https://www.youtube.com/@Confluxai-z9o",
-      "https://x.com/ConfluxA12947"
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://confluxai.in/#organization",
+        "name": "Conflux AI",
+        "alternateName": ["ConfluxAI", "Conflux AI Automation Network"],
+        "url": "https://confluxai.in",
+        "logo": "https://confluxai.in/logo.png",
+        "image": "https://confluxai.in/logo.png",
+        "description": "Conflux AI is a premier AI automation agency and research network specializing in autonomous web architectures, enterprise AI tools, digital marketing, B2B lead generation, and custom software development.",
+        "founder": [
+          {
+            "@type": "Person",
+            "name": "Tarunjit Biswas",
+            "email": "tarunjitbiswas24@gmail.com"
+          },
+          {
+            "@type": "Person",
+            "name": "Shouvik Majumdar"
+          }
+        ],
+        "knowsAbout": [
+          "Artificial Intelligence",
+          "AI Automation",
+          "Machine Learning",
+          "Enterprise Software Engineering",
+          "Search Engine Optimization (SEO)",
+          "Generative Engine Optimization (GEO)",
+          "B2B Lead Generation"
+        ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "+91-8972517557",
+          "contactType": "customer service",
+          "areaServed": "Worldwide",
+          "availableLanguage": ["English", "Bengali", "Hindi"]
+        },
+        "sameAs": [
+          "https://www.instagram.com/conflux.ai",
+          "https://www.linkedin.com/company/conflux-ai",
+          "https://www.youtube.com/@Confluxai-z9o",
+          "https://x.com/ConfluxA12947"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://confluxai.in/#website",
+        "url": "https://confluxai.in",
+        "name": "Conflux AI",
+        "description": "Advanced AI Automation & Premium Digital Services",
+        "publisher": {
+          "@id": "https://confluxai.in/#organization"
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://confluxai.in/blog?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
     ]
   }
   </script>
