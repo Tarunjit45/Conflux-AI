@@ -1,9 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
-import { Calendar, User, Tag, ArrowLeft, Loader2, Share2, MessageSquare, Zap, ExternalLink } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Loader2, Share2, MessageSquare, Zap, ExternalLink } from 'lucide-react';
 
 interface Article {
     id: string;
@@ -14,9 +12,144 @@ interface Article {
     image_url: string;
     slug: string;
     created_at: string;
+    reactions?: number;
 }
 
+// Markdown Parser Helper to render clean, beautifully formatted HTML without raw symbols
+const parseMarkdownText = (text: string) => {
+    // Process inline bold and links
+    let parts: (string | JSX.Element)[] = [text];
 
+    // Bold formatting **text**
+    const formatBold = (nodes: (string | JSX.Element)[]) => {
+        let result: (string | JSX.Element)[] = [];
+        nodes.forEach((node) => {
+            if (typeof node !== 'string') {
+                result.push(node);
+                return;
+            }
+            const regex = /\*\*(.*?)\*\*/g;
+            let lastIndex = 0;
+            let match;
+            while ((match = regex.exec(node)) !== null) {
+                if (match.index > lastIndex) {
+                    result.push(node.substring(lastIndex, match.index));
+                }
+                result.push(<strong key={match.index} className="font-bold text-slate-900">{match[1]}</strong>);
+                lastIndex = regex.lastIndex;
+            }
+            if (lastIndex < node.length) {
+                result.push(node.substring(lastIndex));
+            }
+        });
+        return result;
+    };
+
+    // Link formatting [text](url)
+    const formatLinks = (nodes: (string | JSX.Element)[]) => {
+        let result: (string | JSX.Element)[] = [];
+        nodes.forEach((node) => {
+            if (typeof node !== 'string') {
+                result.push(node);
+                return;
+            }
+            const regex = /\[(.*?)\]\((.*?)\)/g;
+            let lastIndex = 0;
+            let match;
+            while ((match = regex.exec(node)) !== null) {
+                if (match.index > lastIndex) {
+                    result.push(node.substring(lastIndex, match.index));
+                }
+                result.push(
+                    <a 
+                        key={match.index} 
+                        href={match[2]} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-blue-600 font-bold underline hover:text-blue-800 transition-colors"
+                    >
+                        {match[1]}
+                    </a>
+                );
+                lastIndex = regex.lastIndex;
+            }
+            if (lastIndex < node.length) {
+                result.push(node.substring(lastIndex));
+            }
+        });
+        return result;
+    };
+
+    return formatLinks(formatBold(parts));
+};
+
+const renderFormattedBlocks = (rawContent: string, articleTitle: string) => {
+    const lines = rawContent.split('\n');
+    const elements: JSX.Element[] = [];
+
+    lines.forEach((line, index) => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+
+        // Skip H1 title if it duplicates article title
+        if (trimmed.startsWith('# ')) {
+            const h1Text = trimmed.replace(/^#\s+/, '').replace(/\*\*/g, '');
+            if (h1Text.toLowerCase() === articleTitle.toLowerCase()) return;
+            elements.push(
+                <h1 key={index} className="font-inter text-3xl md:text-4xl font-black text-slate-900 tracking-tight mt-10 mb-6">
+                    {parseMarkdownText(h1Text)}
+                </h1>
+            );
+        }
+        else if (trimmed.startsWith('## ')) {
+            const h2Text = trimmed.replace(/^##\s+/, '');
+            elements.push(
+                <h2 key={index} className="font-inter text-2xl font-black text-slate-900 tracking-tight mt-10 mb-4 pb-3 border-b border-slate-100 flex items-center gap-2">
+                    {parseMarkdownText(h2Text)}
+                </h2>
+            );
+        }
+        else if (trimmed.startsWith('### ')) {
+            const h3Text = trimmed.replace(/^###\s+/, '');
+            elements.push(
+                <h3 key={index} className="font-inter text-xl font-bold text-slate-800 tracking-tight mt-8 mb-3">
+                    {parseMarkdownText(h3Text)}
+                </h3>
+            );
+        }
+        else if (trimmed === '---' || trimmed === '***') {
+            elements.push(<hr key={index} className="my-8 border-slate-100" />);
+        }
+        else if (trimmed.startsWith('> ')) {
+            const quoteText = trimmed.replace(/^>\s+/, '');
+            elements.push(
+                <blockquote key={index} className="p-6 my-6 bg-blue-50/50 border-l-4 border-blue-600 rounded-r-2xl italic text-slate-700 font-medium text-lg shadow-sm">
+                    {parseMarkdownText(quoteText)}
+                </blockquote>
+            );
+        }
+        else if (/^(\d+\.|\-|\*)\s+/.test(trimmed)) {
+            const listText = trimmed.replace(/^(\d+\.|\-|\*)\s+/, '');
+            elements.push(
+                <div key={index} className="flex items-start gap-3 my-3 pl-4">
+                    <span className="w-2 h-2 rounded-full bg-blue-600 mt-2.5 flex-shrink-0" />
+                    <p className="text-slate-700 font-medium leading-relaxed text-lg">
+                        {parseMarkdownText(listText)}
+                    </p>
+                </div>
+            );
+        }
+        else {
+            elements.push(
+                <p key={index} className="text-slate-600 font-medium leading-relaxed mb-6 text-lg">
+                    {parseMarkdownText(trimmed)}
+                </p>
+            );
+        }
+    });
+
+    return elements;
+};
 
 const ArticleDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -83,8 +216,8 @@ const ArticleDetail: React.FC = () => {
 
     if (!article) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-white px-4 text-center">
-                <h2 className="text-3xl font-black text-slate-900 tracking-tight">Article Not Found</h2>
+            <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-white text-center px-4">
+                <h2 className="text-3xl font-black text-slate-900">Insight Not Found</h2>
                 <p className="text-slate-500 font-medium max-w-md">The insight you're looking for might have been archived or moved in the network.</p>
                 <Link to="/blog" className="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-blue-700 transition-all">
                     Return to Blog
@@ -92,10 +225,6 @@ const ArticleDetail: React.FC = () => {
             </div>
         );
     }
-
-    // Split content into paragraphs for ad placement
-    const paragraphs = article.content.split('\n\n').filter(p => p.trim() !== '');
-    const middleIndex = Math.floor(paragraphs.length / 2);
 
     return (
         <div className="min-h-screen bg-white">
@@ -163,13 +292,9 @@ const ArticleDetail: React.FC = () => {
                         {/* Text-First Editorial Divider */}
                         <div className="w-full h-px bg-gradient-to-r from-blue-500/20 via-slate-200 to-transparent my-8" />
 
-                        {/* Article Body */}
+                        {/* Article Body: Clean Formatted HTML without raw markdown symbols */}
                         <div className="prose prose-slate prose-lg max-w-none">
-                            {paragraphs.map((para, idx) => (
-                                <p key={idx} className="text-slate-600 font-medium leading-relaxed mb-6 text-lg">
-                                    {para}
-                                </p>
-                            ))}
+                            {renderFormattedBlocks(article.content, article.title)}
                         </div>
 
                         {/* Real User Engagement: Like Reaction & Social Sharing */}

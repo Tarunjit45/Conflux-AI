@@ -129,7 +129,7 @@ const BlogPage: React.FC = () => {
                                     </h2>
                                     
                                     <p className="text-sm text-slate-500 font-medium line-clamp-3 mb-8 leading-relaxed">
-                                        {article.content}
+                                        {article.content.replace(/#|\*|\[|\]|\(.*?\)|\---/g, '').replace(/\s+/g, ' ').trim()}
                                     </p>
 
                                     <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between">
