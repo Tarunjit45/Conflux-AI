@@ -48,6 +48,16 @@ const projectsList = [
     image: "/images/website-development/website-development_2.jpg",
     summary: "High-velocity headless commerce platform built for rapid scaling and multi-inventory product management.",
     tags: ["Headless E-Commerce", "API Driven", "Vercel Edge", "Custom UI"]
+  },
+  {
+    id: "joy-consultancy",
+    title: "Joy Consultancy",
+    category: "Corporate & Financial Advisory",
+    url: "https://www.joyconsultancy.co.in/",
+    type: "video",
+    video: "/works/joy-consultancy/joy_consultancy.mp4",
+    summary: "A modern, high-trust corporate consultancy platform engineered for professional financial advisory, compliance, and client intake.",
+    tags: ["Corporate Advisory", "Lead Intake", "High Performance", "Custom Branding"]
   }
 ];
 
