@@ -18,6 +18,8 @@ import PortfolioPage from './components/PortfolioPage.tsx';
 import AuthorityPage from './components/AuthorityPage.tsx';
 import FaqPage from './components/FaqPage.tsx';
 import SemanticPage from './components/SemanticPage.tsx';
+import ServiceDetailPage from './components/ServiceDetailPage.tsx';
+import ThankYouPage from './components/ThankYouPage.tsx';
 
 const ScrollToTop = () => {
   const { pathname, hash } = useLocation();
@@ -87,6 +89,8 @@ const App: React.FC = () => {
         <Route path="/authority" element={<AuthorityPage />} />
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/semantic-map" element={<SemanticPage />} />
+        <Route path="/services/:serviceId" element={<ServiceDetailPage />} />
+        <Route path="/thank-you" element={<ThankYouPage />} />
         <Route path="/admin/cms" element={<AdminCMS />} />
       </Routes>
 

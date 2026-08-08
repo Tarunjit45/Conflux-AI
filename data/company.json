@@ -1,0 +1,75 @@
+{
+  "name": "Conflux AI",
+  "legalName": "Conflux AI Digital Automation & Growth Agency",
+  "website": "https://confluxai.in",
+  "logo": "https://confluxai.in/logo.png",
+  "description": "Conflux AI is a premier AI automation agency and growth engineering network specializing in autonomous web architectures, custom AI chatbots, enterprise workflow automation, SEO/GEO optimization, and digital marketing.",
+  "founders": [
+    {
+      "name": "Tarunjit Biswas",
+      "role": "Founder & Chief Technology Officer",
+      "email": "tarunjitbiswas24@gmail.com"
+    },
+    {
+      "name": "Shouvik Majumdar",
+      "role": "Co-Founder & Creative Director"
+    }
+  ],
+  "contact": {
+    "telephone": "+91-8972517557",
+    "email": "tarunjitbiswas24@gmail.com",
+    "address": {
+      "city": "Kolkata",
+      "state": "West Bengal",
+      "country": "India",
+      "postalCode": "700001"
+    }
+  },
+  "socialProfiles": [
+    "https://www.instagram.com/conflux.ai",
+    "https://www.linkedin.com/company/conflux-ai",
+    "https://www.youtube.com/@Confluxai-z9o",
+    "https://x.com/ConfluxA12947"
+  ],
+  "services": [
+    {
+      "id": "ai-automation",
+      "name": "Enterprise AI Automation",
+      "slug": "ai-automation",
+      "summary": "Streamline complex enterprise operations and data pipelines with autonomous AI workflows."
+    },
+    {
+      "id": "chatbot-development",
+      "name": "Custom AI Chatbot Development",
+      "slug": "chatbot-development",
+      "summary": "24/7 intelligent customer engagement and automated lead qualification chatbots."
+    },
+    {
+      "id": "website-development",
+      "name": "High-Performance Web Development",
+      "slug": "website-development",
+      "summary": "Ultra-fast, high-converting web applications built with React, Vite, and Clean Architecture."
+    },
+    {
+      "id": "seo-geo-optimization",
+      "name": "SEO & GEO Engine Optimization",
+      "slug": "seo-geo",
+      "summary": "Dominate Google Search and AI answer engines (Gemini, ChatGPT, Perplexity) with structured data."
+    },
+    {
+      "id": "digital-marketing",
+      "name": "Digital Marketing & Growth Suite",
+      "slug": "digital-marketing",
+      "summary": "End-to-end B2B client acquisition, video editing, social media, and review growth."
+    }
+  ],
+  "expertise": [
+    "Artificial Intelligence",
+    "AI Automation",
+    "Machine Learning",
+    "Search Engine Optimization (SEO)",
+    "Generative Engine Optimization (GEO)",
+    "Web Engineering",
+    "B2B Lead Generation"
+  ]
+}

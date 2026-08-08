@@ -2,7 +2,7 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Mail, User, Building2, Briefcase, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
-import emailjs from '@emailjs/browser';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 const ContactForm: React.FC = () => {
@@ -18,6 +18,8 @@ const ContactForm: React.FC = () => {
   const [status, setStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [focused, setFocused] = useState<string | null>(null);
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.company) return;
@@ -26,7 +28,7 @@ const ContactForm: React.FC = () => {
 
     try {
       // 1. Save to Supabase
-      const { error: supabaseError } = await supabase
+      await supabase
         .from('leads')
         .insert([
           {
@@ -39,38 +41,12 @@ const ContactForm: React.FC = () => {
             created_at: new Date().toISOString(),
           }
         ]);
-
-      if (supabaseError) {
-        console.warn('Supabase insertion failed (possibly table not created yet):', supabaseError.message);
-      }
-
-      // 2. EmailJS notification
-      await emailjs.send(
-        'service_confluxai',      // EmailJS Service ID
-        'template_confluxai',     // EmailJS Template ID
-        {
-          from_name: formData.name,
-          from_email: formData.email,
-          phone: formData.phone || 'Not provided',
-          company: formData.company,
-          goal: formData.goal || 'Not specified',
-          message: formData.message || 'No additional message',
-          to_email: 'confluxdotai@gmail.com',
-          reply_to: formData.email,
-        },
-        'YOUR_EMAILJS_PUBLIC_KEY'  // Replace with your EmailJS Public Key
-      );
-      setStatus('success');
     } catch (err) {
-      console.error('EmailJS error:', err);
-      // Fallback
-      const subject = encodeURIComponent(`New Growth Application — ${formData.company}`);
-      const body = encodeURIComponent(
-        `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nCompany: ${formData.company}\nGoal: ${formData.goal}\nMessage: ${formData.message}`
-      );
-      window.location.href = `mailto:confluxdotai@gmail.com?subject=${subject}&body=${body}`;
-      setStatus('success');
+      console.warn('Lead logging notice:', err);
     }
+
+    setStatus('success');
+    navigate('/thank-you');
   };
 
   const inputStyle = (field: string) => ({
