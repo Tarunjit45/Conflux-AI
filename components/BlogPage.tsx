@@ -114,30 +114,14 @@ const BlogPage: React.FC = () => {
                                 transition={{ delay: index * 0.1 }}
                                 className="group flex flex-col bg-white rounded-[2rem] border border-slate-100 overflow-hidden hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500"
                             >
-                                <div className="aspect-[16/10] overflow-hidden bg-slate-100 relative">
-                                    {article.image_url ? (
-                                        <img 
-                                            src={article.image_url} 
-                                            alt={article.title} 
-                                            onError={(e) => {
-                                                e.currentTarget.src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80';
-                                            }}
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-600 opacity-20" />
-                                    )}
-                                    <div className="absolute top-6 left-6">
-                                        <span className="px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-[10px] font-black text-blue-600 uppercase tracking-widest border border-white">
+                                <div className="p-8 flex flex-col flex-1">
+                                    <div className="flex items-center justify-between gap-4 mb-6">
+                                        <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-100">
                                             {article.category}
                                         </span>
-                                    </div>
-                                </div>
-
-                                <div className="p-8 flex flex-col flex-1">
-                                    <div className="flex items-center gap-4 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">
-                                        <div className="flex items-center gap-1.5"><Calendar size={12} /> {new Date(article.created_at).toLocaleDateString()}</div>
-                                        <div className="flex items-center gap-1.5"><User size={12} /> {article.author}</div>
+                                        <div className="flex items-center gap-1.5 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                            <Calendar size={12} /> {new Date(article.created_at).toLocaleDateString()}
+                                        </div>
                                     </div>
                                     
                                     <h2 className="font-inter text-2xl font-black text-slate-900 tracking-tight leading-tight mb-4 group-hover:text-blue-600 transition-colors">

@@ -91,27 +91,32 @@ const ArticleDetail: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-white">
-            {/* SEO JSON-LD */}
+            {/* SEO & LLM GEO/AEO Schema.org JSON-LD */}
             <script type="application/ld+json">
                 {JSON.stringify({
                     "@context": "https://schema.org",
-                    "@type": "BlogPosting",
+                    "@type": "TechArticle",
                     "headline": article.title,
-                    "image": article.image_url,
+                    "inLanguage": "en-US",
+                    "mainEntityOfPage": `https://confluxai.in/blog/${article.slug}`,
+                    "articleSection": article.category,
                     "author": {
-                        "@type": "Person",
-                        "name": article.author
+                        "@type": "Organization",
+                        "name": article.author || "Conflux AI Research Network",
+                        "url": "https://confluxai.in"
                     },
                     "publisher": {
                         "@type": "Organization",
                         "name": "Conflux AI",
+                        "url": "https://confluxai.in",
                         "logo": {
                             "@type": "ImageObject",
                             "url": "https://confluxai.in/logo.png"
                         }
                     },
                     "datePublished": article.created_at,
-                    "description": article.content.substring(0, 160)
+                    "dateModified": article.created_at,
+                    "description": article.content.substring(0, 200).replace(/#|\*/g, '').trim()
                 })}
             </script>
 
@@ -147,19 +152,8 @@ const ArticleDetail: React.FC = () => {
                             </div>
                         </header>
 
-                        {/* Featured Image */}
-                        {article.image_url && (
-                            <div className="aspect-video w-full rounded-[2.5rem] overflow-hidden mb-12 border border-slate-100 shadow-2xl shadow-slate-200/50">
-                                <img 
-                                    src={article.image_url} 
-                                    alt={article.title} 
-                                    onError={(e) => {
-                                        e.currentTarget.src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80';
-                                    }}
-                                    className="w-full h-full object-cover" 
-                                />
-                            </div>
-                        )}
+                        {/* Text-First Editorial Divider */}
+                        <div className="w-full h-px bg-gradient-to-r from-blue-500/20 via-slate-200 to-transparent my-8" />
 
                         {/* Article Body with Smart Ad Placement */}
                         <div className="prose prose-slate prose-lg max-w-none">
