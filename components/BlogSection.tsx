@@ -18,14 +18,31 @@ const BlogSection: React.FC = () => {
 
     useEffect(() => {
         const fetchLatest = async () => {
-            const { data } = await supabase
-                .from('articles')
-                .select('id, title, category, slug, created_at')
-                .eq('is_published', true)
-                .order('created_at', { ascending: false })
-                .limit(3);
-            
-            setArticles(data || []);
+            try {
+                const { data, error } = await supabase
+                    .from('articles')
+                    .select('id, title, category, slug, created_at')
+                    .eq('is_published', true)
+                    .order('created_at', { ascending: false })
+                    .limit(3);
+                
+                if (!error && data && data.length > 0) {
+                    setArticles(data);
+                    return;
+                }
+            } catch (err) {
+                console.error('Error fetching latest articles from Supabase:', err);
+            }
+
+            try {
+                const res = await fetch('/data/articles.json');
+                if (res.ok) {
+                    const localData = await res.json();
+                    setArticles((localData || []).slice(0, 3));
+                }
+            } catch (err) {
+                console.error('Error fetching local articles fallback:', err);
+            }
         };
         fetchLatest();
     }, []);

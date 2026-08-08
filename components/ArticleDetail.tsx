@@ -41,10 +41,24 @@ const ArticleDetail: React.FC = () => {
                 .eq('slug', slug)
                 .single();
 
-            if (error) throw error;
-            setArticle(data);
+            if (!error && data) {
+                setArticle(data);
+                setIsLoading(false);
+                return;
+            }
         } catch (err) {
-            console.error('Error fetching article:', err);
+            console.error('Error fetching article from Supabase:', err);
+        }
+
+        try {
+            const res = await fetch('/data/articles.json');
+            if (res.ok) {
+                const localArticles: Article[] = await res.json();
+                const found = localArticles.find(a => a.slug === slug);
+                setArticle(found || null);
+            }
+        } catch (err) {
+            console.error('Error fetching fallback article:', err);
         } finally {
             setIsLoading(false);
         }

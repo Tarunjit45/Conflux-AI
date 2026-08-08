@@ -34,10 +34,24 @@ const BlogPage: React.FC = () => {
                 .eq('is_published', true)
                 .order('created_at', { ascending: false });
 
-            if (error) throw error;
-            setArticles(data || []);
+            if (!error && data && data.length > 0) {
+                setArticles(data);
+                setIsLoading(false);
+                return;
+            }
         } catch (err) {
-            console.error('Error fetching articles:', err);
+            console.error('Error fetching articles from Supabase:', err);
+        }
+
+        // Fallback to static /data/articles.json
+        try {
+            const res = await fetch('/data/articles.json');
+            if (res.ok) {
+                const localArticles = await res.json();
+                setArticles(localArticles || []);
+            }
+        } catch (localErr) {
+            console.error('Error fetching static articles:', localErr);
         } finally {
             setIsLoading(false);
         }
