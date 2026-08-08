@@ -45,6 +45,7 @@ const ContactForm: React.FC = () => {
       utm_source: urlParams.get('utm_source') || '',
       utm_medium: urlParams.get('utm_medium') || '',
       utm_campaign: urlParams.get('utm_campaign') || '',
+      utm_content: urlParams.get('utm_content') || '',
       website_url_hp: formData.website_url_hp
     };
 

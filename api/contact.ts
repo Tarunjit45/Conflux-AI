@@ -15,6 +15,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    const escapeHtml = (str: string) =>
+      str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+
     const {
       name,
       company,
@@ -27,6 +30,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       utm_source,
       utm_medium,
       utm_campaign,
+      utm_content,
       website_url_hp // Honeypot anti-spam field
     } = body || {};
 
@@ -46,13 +50,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Invalid email address format.' });
     }
 
-    // Input length caps to prevent memory or buffer abuse
-    const cleanName = String(name).trim().substring(0, 100);
+    // Input length caps & HTML sanitization to prevent XSS / header injection
+    const cleanName = escapeHtml(String(name).trim().substring(0, 100));
     const cleanEmail = String(email).trim().substring(0, 100);
-    const business = String(company || body.business || 'Not Specified').trim().substring(0, 150);
-    const cleanPhone = String(phone || 'Not provided').trim().substring(0, 30);
-    const service = String(goal || body.service || 'General AI & Digital Growth').trim().substring(0, 100);
-    const cleanMessage = String(message || 'No additional message').trim().substring(0, 2000);
+    const business = escapeHtml(String(company || body.business || 'Not Specified').trim().substring(0, 150));
+    const cleanPhone = escapeHtml(String(phone || 'Not provided').trim().substring(0, 30));
+    const service = escapeHtml(String(goal || body.service || 'General AI & Digital Growth').trim().substring(0, 100));
+    const cleanMessage = escapeHtml(String(message || 'No additional message').trim().substring(0, 2000));
+    const cleanSource = escapeHtml(String(source || 'Direct Website').trim().substring(0, 100));
+    const cleanLandingPage = escapeHtml(String(landing_page || '/').trim().substring(0, 100));
+    const cleanUtmSource = escapeHtml(String(utm_source || 'None').trim().substring(0, 100));
+    const cleanUtmMedium = escapeHtml(String(utm_medium || 'None').trim().substring(0, 100));
+    const cleanUtmCampaign = escapeHtml(String(utm_campaign || 'None').trim().substring(0, 100));
+    const cleanUtmContent = escapeHtml(String(utm_content || 'None').trim().substring(0, 100));
     const submittedAt = new Date().toISOString();
 
     // 3. SAVE FIRST: Store Lead in Supabase with notification_status = 'pending'
@@ -93,11 +103,12 @@ Email: ${cleanEmail}
 Phone: ${cleanPhone}
 Requested Service: ${service}
 Message: ${cleanMessage}
-Source: ${source || 'Direct Website'}
-Landing Page: ${landing_page || '/'}
-UTM Source: ${utm_source || 'None'}
-UTM Medium: ${utm_medium || 'None'}
-UTM Campaign: ${utm_campaign || 'None'}
+Source: ${cleanSource}
+Landing Page: ${cleanLandingPage}
+UTM Source: ${cleanUtmSource}
+UTM Medium: ${cleanUtmMedium}
+UTM Campaign: ${cleanUtmCampaign}
+UTM Content: ${cleanUtmContent}
 Submitted At: ${submittedAt}
 Lead ID: ${leadRecordId}
 `;
