@@ -108,4 +108,10 @@
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://confluxai.in/blog/ai-insight-docker-sandboxes-disposable-isolated-sandboxes-for-ai-agents-1786345313</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
