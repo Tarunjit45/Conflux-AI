@@ -3,11 +3,8 @@ User-agent: *
 Allow: /
 Disallow: /admin/cms
 
-# Explicit Allow for Google AI Overviews & LLM Search Crawlers
-User-agent: Googlebot
-Allow: /
-
-User-agent: Google-Extended
+# Explicit Allow for OpenAI SearchBot & LLM Search Crawlers
+User-agent: OAI-SearchBot
 Allow: /
 
 User-agent: GPTBot
@@ -17,6 +14,12 @@ User-agent: PerplexityBot
 Allow: /
 
 User-agent: ClaudeBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Google-Extended
 Allow: /
 
 Sitemap: https://confluxai.in/sitemap.xml

@@ -76,6 +76,46 @@ const routeMeta: Record<string, { title: string; description: string }> = {
     title: 'AI Engineering & Growth Blog | Conflux AI',
     description: 'Technical articles, AI automation tutorials, search engine optimization insights, and software guides by Conflux AI.'
   },
+  '/services/ai-automation': {
+    title: 'Enterprise AI Automation Services | Conflux AI',
+    description: 'Custom AI automation pipelines, system integrations, and process optimization by Conflux AI headquartered in Kolkata, India.'
+  },
+  '/services/ai-agents': {
+    title: 'AI Agents & Autonomous Multi-Agent Systems | Conflux AI',
+    description: 'Deploy context-aware AI agents for prospect qualification, automated research, and multi-step task execution.'
+  },
+  '/services/whatsapp-automation': {
+    title: 'WhatsApp Business Automation Systems | Conflux AI',
+    description: 'Automate WhatsApp lead generation, customer support, order tracking, and instant CRM synchronization.'
+  },
+  '/services/chatbot-development': {
+    title: 'Custom AI Chatbot Development | Conflux AI',
+    description: '24/7 intelligent conversational chatbots trained on your company knowledge base using Retrieval-Augmented Generation (RAG).'
+  },
+  '/services/workflow-automation': {
+    title: 'Business Workflow Automation Services | Conflux AI',
+    description: 'Streamline multi-department workflows with custom Make.com, Zapier, and API integrations.'
+  },
+  '/services/website-development': {
+    title: 'High-Performance Web Development | Conflux AI',
+    description: 'Sub-second React + Vite + TypeScript web applications engineered for high conversion and fast loading.'
+  },
+  '/services/seo-geo': {
+    title: 'SEO & Technical Search Engine Optimization | Conflux AI',
+    description: 'Technical SEO, Schema.org JSON-LD data structures, and crawl optimization for traditional and AI search engines.'
+  },
+  '/services/digital-marketing': {
+    title: 'Digital Marketing & Growth Services | Conflux AI',
+    description: 'Data-driven B2B client acquisition, video content editing, social media management, and reputation management.'
+  },
+  '/services/meta-ads': {
+    title: 'Meta Ads & Paid Social Acquisition | Conflux AI',
+    description: 'Targeted Facebook & Instagram ad campaigns engineered for B2B and D2C customer acquisition.'
+  },
+  '/services/google-ads': {
+    title: 'Google Ads & PPC Search Marketing | Conflux AI',
+    description: 'High-intent search campaigns, keyword targeting, and conversion-focused landing pages.'
+  },
   '/thank-you': {
     title: 'Thank You | Conflux AI',
     description: 'Thank you for reaching out to Conflux AI. Our technical team will get back to you within 24 hours.'

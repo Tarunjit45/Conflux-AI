@@ -2,103 +2,127 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://confluxai.in/</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://confluxai.in/about</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://confluxai.in/solutions</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://confluxai.in/creative</loc>
-    <lastmod>2026-04-09</lastmod>
+    <loc>https://confluxai.in/services/ai-automation</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://confluxai.in/impact</loc>
-    <lastmod>2026-04-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://confluxai.in/services/ai-agents</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/services/whatsapp-automation</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/services/chatbot-development</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/services/workflow-automation</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/services/website-development</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/services/seo-geo</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/services/digital-marketing</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/services/meta-ads</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/services/google-ads</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/work</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/portfolio</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://confluxai.in/contact</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/faq</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://confluxai.in/authority</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://confluxai.in/faq</loc>
-    <lastmod>2026-04-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/semantic-map</loc>
-    <lastmod>2026-04-09</lastmod>
+    <loc>https://confluxai.in/impact</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/ai-insight-fastmail-offers-eu-data-region-1786212167</loc>
     <lastmod>2026-08-08</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-fastmail-offers-eu-data-region-1786213058</loc>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-my-server-is-a-phone-now-1786235999</loc>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-the-original-url-for-this-prediction-will-no-longer-be-avail-1786257244</loc>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-there-are-magic-hexagons-of-every-order-1786278069</loc>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-mea-culpa-dark-hours-1786298629</loc>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-criminal-deception-in-silicon-valley-1786299603</loc>
-    <lastmod>2026-08-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
@@ -111,84 +135,6 @@
   <url>
     <loc>https://confluxai.in/blog/ai-insight-docker-sandboxes-disposable-isolated-sandboxes-for-ai-agents-1786345313</loc>
     <lastmod>2026-08-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-meta-muse-glimmer-open-weights-30b-local-coding-model-1786365460</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-muse-glimmer-30bparameter-model-optimized-for-alwayson-local-1786386662</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-muse-glimmer-30bparameter-model-optimized-for-alwayson-local-1786387118</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-the-uks-war-on-anonymity-has-come-to-america-1786408902</loc>
-    <lastmod>2026-08-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-h3metal-native-minimaxh3-inference-for-apple-silicon-1786430485</loc>
-    <lastmod>2026-08-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-france-to-ban-unsolicited-telemarketing-calls-1786451643</loc>
-    <lastmod>2026-08-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-woman-pulled-over-at-gunpoint-twice-after-flock-camera-glitc-1786473139</loc>
-    <lastmod>2026-08-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-england-set-to-be-one-of-the-first-countries-to-eliminate-he-1786473738</loc>
-    <lastmod>2026-08-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-worldclaw-agentic-3d-openworld-generation-at-scale-1786495631</loc>
-    <lastmod>2026-08-12</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-the-hardest-working-font-in-manhattan-2025-1786518114</loc>
-    <lastmod>2026-08-12</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-2026-eclipse-webcams-1786538195</loc>
-    <lastmod>2026-08-12</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-deepseek-v4-pro-0813-1786559595</loc>
-    <lastmod>2026-08-12</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-deepseek-v4-pro-0813-1786560178</loc>
-    <lastmod>2026-08-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>

@@ -1,101 +1,174 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import Founders from './Founders.tsx';
-import { ArrowLeft, Sparkles, Target, Zap, Shield } from 'lucide-react';
+import { ArrowLeft, Sparkles, Target, Zap, Shield, MapPin, Mail, Phone, ExternalLink, Linkedin, Youtube, Instagram, Twitter, Facebook } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const AboutUsPage: React.FC = () => {
+    const socialLinks = [
+        { name: "LinkedIn", icon: <Linkedin size={18} className="text-[#0077B5]" />, href: "https://www.linkedin.com/company/conflux-ai" },
+        { name: "YouTube", icon: <Youtube size={18} className="text-[#FF0000]" />, href: "https://www.youtube.com/@Confluxai-z9o" },
+        { name: "Instagram", icon: <Instagram size={18} className="text-[#E4405F]" />, href: "https://www.instagram.com/conflux.ai" },
+        { name: "Twitter / X", icon: <Twitter size={18} className="text-[#1DA1F2]" />, href: "https://x.com/ConfluxA12947" },
+        { name: "Facebook", icon: <Facebook size={18} className="text-[#1877F2]" />, href: "https://www.facebook.com/share/17dsWzvFYN/" }
+    ];
+
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white font-inter">
             <div className="pt-32 pb-20 px-4 md:px-6 max-w-7xl mx-auto">
-                {/* Header */}
+                {/* Back Link */}
+                <Link to="/" className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 uppercase tracking-widest mb-8 hover:gap-3 transition-all">
+                    <ArrowLeft size={14} /> Return to Home
+                </Link>
+
+                {/* Main Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
-                    <div className="max-w-2xl">
-                        <Link to="/" className="inline-flex items-center gap-2 text-xs font-black text-blue-600 uppercase tracking-widest mb-6 hover:gap-3 transition-all">
-                            <ArrowLeft size={14} /> Back to Network
-                        </Link>
-                        <h1 className="font-inter text-5xl md:text-7xl font-black text-slate-900 tracking-tighter leading-[0.9]">
-                            Our <span className="text-blue-600 underline decoration-blue-500/20">Mission</span> <br />& vision.
+                    <div className="max-w-3xl">
+                        <span className="px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider mb-4 inline-block">
+                            About Conflux AI
+                        </span>
+                        <h1 className="font-orbitron text-4xl sm:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
+                            Engineering Intelligent <span className="text-blue-600">Business Systems</span>.
                         </h1>
-                        <p className="text-slate-600 font-medium text-base sm:text-lg mt-6 leading-relaxed">
-                            <strong>Conflux AI Digital Automation & Growth Agency</strong> is an AI automation and digital solutions agency headquartered in Kolkata, West Bengal, India. Founded by <a href="https://www.linkedin.com/in/tarunjit-biswas-a5248131b/" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-bold hover:underline">Tarunjit Biswas</a> and <a href="https://www.linkedin.com/in/shoubhik-majumdar-1a77032a1/" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-bold hover:underline">Shouvik Majumdar</a>, Conflux AI combines AI engineering, full-stack technology, automation, business strategy, marketing, and creative direction to build digital solutions for businesses.
+                        <p className="text-slate-600 font-normal text-base sm:text-lg mt-6 leading-relaxed">
+                            Conflux AI is an AI automation and digital solutions agency headquartered in Kolkata, West Bengal, India. Founded by Tarunjit Biswas and Shouvik Majumdar, Conflux AI combines AI engineering, software development, workflow automation, and digital strategy to help businesses operate with precision and scale efficiently.
                         </p>
                     </div>
                     
-                    <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 italic text-slate-400 text-xs font-bold">
-                        <Sparkles size={16} className="text-blue-500" />
-                        "Building the Future of Work"
+                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 italic text-slate-500 text-xs font-semibold">
+                        <Sparkles size={18} className="text-blue-600" />
+                        "Practical AI Engineering for Real Business Outcomes"
                     </div>
                 </div>
 
-                {/* Core Values Section */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-                    {[
-                        { icon: <Target className="text-blue-600" />, title: "Precision", desc: "Every solution we build is mathematically optimized for maximum ROI and efficiency." },
-                        { icon: <Zap className="text-orange-500" />, title: "Speed", desc: "From concept to deployment, we prioritize rapid execution without compromising quality." },
-                        { icon: <Shield className="text-emerald-500" />, title: "Trust", desc: "Transparent systems and verified results define our approach to AI integration." }
-                    ].map((value, i) => (
-                        <motion.div 
-                            key={i}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                            className="p-8 rounded-[2rem] bg-slate-50 border border-slate-100 hover:shadow-xl hover:shadow-blue-500/5 transition-all"
-                        >
-                            <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm mb-6">
-                                {value.icon}
-                            </div>
-                            <h3 className="font-inter text-xl font-black text-slate-900 mb-3">{value.title}</h3>
-                            <p className="text-sm text-slate-500 leading-relaxed font-medium">{value.desc}</p>
-                        </motion.div>
-                    ))}
+                {/* AI-Readable Company Summary Block (Requirement 13) */}
+                <div className="mb-20 p-8 rounded-3xl bg-blue-50/60 border border-blue-100/80 shadow-sm">
+                    <div className="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-widest text-blue-700">
+                        <Shield size={16} className="text-blue-600" /> Verified Company Summary
+                    </div>
+                    <p className="text-slate-800 text-base md:text-lg font-medium leading-relaxed">
+                        "Conflux AI is an AI automation and digital solutions agency headquartered in Kolkata, West Bengal, India. We build AI-powered systems, business automation workflows, digital experiences, and growth solutions for businesses."
+                    </p>
                 </div>
 
-                {/* Founders Section (Imported Component) */}
+                {/* Detailed Overview: What We Do, Who We Serve, Where We Operate */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+                    <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200 space-y-4">
+                        <h2 className="text-xl font-bold font-orbitron text-slate-900">What We Do</h2>
+                        <p className="text-slate-600 text-sm leading-relaxed">
+                            We architect end-to-end AI automation pipelines, autonomous AI agents, 24/7 conversational chatbots, WhatsApp Business API integrations, sub-second web platforms, and structured search engine optimizations.
+                        </p>
+                    </div>
+
+                    <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200 space-y-4">
+                        <h2 className="text-xl font-bold font-orbitron text-slate-900">Who We Serve</h2>
+                        <p className="text-slate-600 text-sm leading-relaxed">
+                            We partner with growing companies, B2B agencies, e-commerce storefronts, professional consultants, local service providers, and enterprise teams seeking to reduce manual operational overhead.
+                        </p>
+                    </div>
+
+                    <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200 space-y-4">
+                        <h2 className="text-xl font-bold font-orbitron text-slate-900">Where We Operate</h2>
+                        <p className="text-slate-600 text-sm leading-relaxed">
+                            Our headquarters is located in Kolkata, West Bengal, India (Postal Code 700001). We serve business clients locally in Kolkata, regionally across India, and globally.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Core Operating Principles */}
+                <div className="mb-24">
+                    <h2 className="font-orbitron text-3xl font-bold text-slate-900 mb-8 border-l-4 border-blue-600 pl-4">
+                        Our Operational Principles
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[
+                            { icon: <Target className="text-blue-600" />, title: "Frictionless Utility", desc: "We design software around direct business goals—removing unnecessary fluff so users and internal teams accomplish tasks faster." },
+                            { icon: <Zap className="text-orange-500" />, title: "Technical Rigor", desc: "Every system is built on modern, lightweight frameworks (React, Vite, Python, Serverless Cloud) with strict error handling." },
+                            { icon: <Shield className="text-emerald-600" />, title: "Data Integrity & Security", desc: "We enforce zero-trust data protection, API encryption, and verified RAG guardrails across all customer automation pipelines." }
+                        ].map((value, i) => (
+                            <motion.div 
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.1 }}
+                                className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm"
+                            >
+                                <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center mb-6">
+                                    {value.icon}
+                                </div>
+                                <h3 className="font-orbitron text-lg font-bold text-slate-900 mb-3">{value.title}</h3>
+                                <p className="text-sm text-slate-600 leading-relaxed font-normal">{value.desc}</p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Founders Section */}
                 <div className="mb-24">
                     <Founders />
                 </div>
 
-                {/* Quick Navigation to Services & Portfolio */}
-                <div className="mb-24 p-8 md:p-10 rounded-3xl bg-slate-50 border border-slate-200">
-                    <h3 className="font-orbitron font-bold text-2xl text-slate-900 mb-4">
-                        Explore Conflux AI Capabilities & Case Studies
-                    </h3>
-                    <p className="text-slate-600 text-sm mb-6 leading-relaxed max-w-3xl">
-                        Headquartered in Kolkata, West Bengal, India, Conflux AI transforms operational workflows with enterprise AI agents, custom chatbots, high-performance web engineering, and Generative Engine Optimization (GEO).
-                    </p>
-                    <div className="flex flex-wrap gap-4">
-                        <Link 
-                            to="/solutions" 
-                            className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-blue-600/20"
-                        >
-                            Explore AI Automation Services
-                        </Link>
-                        <Link 
-                            to="/portfolio" 
-                            className="px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider transition-all"
-                        >
-                            View Selected Client Work
-                        </Link>
-                        <Link 
-                            to="/contact" 
-                            className="px-6 py-3 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs uppercase tracking-wider transition-all border border-slate-300"
-                        >
-                            Contact Engineering Team
-                        </Link>
+                {/* Contact & Verification Information */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-24">
+                    <div className="lg:col-span-6 p-8 md:p-10 rounded-3xl bg-slate-50 border border-slate-200 space-y-6">
+                        <h2 className="font-orbitron font-bold text-2xl text-slate-900">
+                            Official Contact & Location
+                        </h2>
+                        <div className="space-y-4 text-sm text-slate-600">
+                            <div className="flex items-start gap-3">
+                                <MapPin size={18} className="text-blue-600 shrink-0 mt-1" />
+                                <div>
+                                    <strong className="block text-slate-900 font-bold">Headquarters Address</strong>
+                                    <span>Kolkata, West Bengal, India — PIN 700001</span>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <Mail size={18} className="text-blue-600 shrink-0 mt-1" />
+                                <div>
+                                    <strong className="block text-slate-900 font-bold">Official Email</strong>
+                                    <a href="mailto:confluxdotai@gmail.com" className="text-blue-600 font-medium hover:underline">confluxdotai@gmail.com</a>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <Phone size={18} className="text-blue-600 shrink-0 mt-1" />
+                                <div>
+                                    <strong className="block text-slate-900 font-bold">Direct Client Line</strong>
+                                    <a href="tel:+918972517557" className="text-blue-600 font-medium hover:underline">+91-8972517557</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="lg:col-span-6 p-8 md:p-10 rounded-3xl bg-slate-50 border border-slate-200 space-y-6">
+                        <h2 className="font-orbitron font-bold text-2xl text-slate-900">
+                            Verified Official Profiles
+                        </h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {socialLinks.map((social, idx) => (
+                                <a
+                                    key={idx}
+                                    href={social.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-3.5 rounded-xl bg-white border border-slate-200 hover:border-blue-300 transition-all flex items-center justify-between group"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        {social.icon}
+                                        <span className="text-xs font-bold text-slate-800">{social.name}</span>
+                                    </div>
+                                    <ExternalLink size={14} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
+                                </a>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
                 {/* Bottom CTA */}
-                <div className="text-center py-20 px-8 rounded-[3rem] bg-[#020c1b] text-white relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none"
-                         style={{ background: 'radial-gradient(circle at 70% 30%, rgba(0,0,255,1) 0%, transparent 70%)', filter: 'blur(100px)' }} />
-                    
-                    <h2 className="font-inter text-3xl md:text-5xl font-black mb-6 tracking-tight">Ready to build something <span className="text-blue-500">Extraordinary?</span></h2>
-                    <p className="text-slate-400 max-w-xl mx-auto mb-10 text-lg">Join us in the next chapter of the AI revolution. Let's automate your growth together.</p>
-                    <Link to="/contact" className="inline-flex h-14 items-center px-10 rounded-full bg-blue-600 text-white font-black uppercase tracking-widest text-xs hover:bg-blue-700 hover:scale-105 transition-all active:scale-95">
-                        Initiate Partnership
+                <div className="text-center py-16 px-8 rounded-3xl bg-slate-950 text-white relative overflow-hidden shadow-2xl">
+                    <h2 className="font-orbitron text-3xl md:text-5xl font-bold mb-6 tracking-tight text-white">Partner with <span className="text-blue-500">Conflux AI</span></h2>
+                    <p className="text-slate-300 max-w-xl mx-auto mb-10 text-base font-light">Discuss your business automation, custom web application, or technical AI strategy with our technical team.</p>
+                    <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-600 text-white font-bold uppercase tracking-wider text-xs hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/30">
+                        <span>Initiate Project Consultation</span>
                     </Link>
                 </div>
             </div>
