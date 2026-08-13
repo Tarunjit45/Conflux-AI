@@ -5,6 +5,20 @@ import { CheckCircle, MessageSquare, ArrowRight, Sparkles } from 'lucide-react';
 const ThankYouPage: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
+    document.title = 'Thank You | Conflux AI';
+    let robotsEl = document.querySelector('meta[name="robots"]');
+    if (!robotsEl) {
+      robotsEl = document.createElement('meta');
+      robotsEl.setAttribute('name', 'robots');
+      document.head.appendChild(robotsEl);
+    }
+    robotsEl.setAttribute('content', 'noindex, follow');
+
+    return () => {
+      // Restore default robots meta when navigating away
+      const rEl = document.querySelector('meta[name="robots"]');
+      if (rEl) rEl.setAttribute('content', 'index, follow');
+    };
   }, []);
 
   return (
