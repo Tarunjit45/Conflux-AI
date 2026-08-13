@@ -56,7 +56,7 @@ const ImpactPage: React.FC = () => {
                              style={{ background: 'radial-gradient(circle at 70% 30%, #ffffff 0%, transparent 70%)', filter: 'blur(100px)' }} />
                         <h2 className="font-inter text-3xl md:text-5xl font-black mb-6 tracking-tight">Make a <span className="text-white underline decoration-white/30">Real Difference.</span></h2>
                         <p className="text-blue-100 max-w-xl mx-auto mb-10 text-lg">Partner with us to build a future where technology serves everyone, not just the few.</p>
-                        <Link to="/#contact" className="inline-flex h-14 items-center px-10 rounded-full bg-white text-blue-600 font-black uppercase tracking-widest text-xs hover:bg-slate-50 hover:scale-105 transition-all active:scale-95 shadow-xl shadow-white/10">
+                        <Link to="/contact" className="inline-flex h-14 items-center px-10 rounded-full bg-white text-blue-600 font-black uppercase tracking-widest text-xs hover:bg-slate-50 hover:scale-105 transition-all active:scale-95 shadow-xl shadow-white/10">
                             Partner for Impact
                         </Link>
                     </div>

@@ -127,9 +127,9 @@ const Footer: React.FC<{ siteLogo: string | null }> = ({ siteLogo }) => {
             © {new Date().getFullYear()} CONFLUXAI.IN. ALL RIGHTS RESERVED.
           </p>
           <div className="flex gap-8 text-slate-500 text-[10px] font-black uppercase tracking-widest">
-            <Link to="#" className="hover:text-white transition-colors">Terms</Link>
-            <Link to="#" className="hover:text-white transition-colors">Privacy</Link>
-            <Link to="#" className="hover:text-white transition-colors">Cookies</Link>
+            <Link to="/faq" className="hover:text-white transition-colors">Terms & FAQ</Link>
+            <Link to="/authority" className="hover:text-white transition-colors">Privacy & Security</Link>
+            <Link to="/contact" className="hover:text-white transition-colors">Contact Support</Link>
           </div>
         </div>
       </div>

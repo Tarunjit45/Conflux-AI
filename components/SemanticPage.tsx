@@ -77,7 +77,7 @@ const SemanticPage: React.FC = () => {
                              style={{ background: 'radial-gradient(circle at 70% 30%, rgba(0,0,255,1) 0%, transparent 70%)', filter: 'blur(100px)' }} />
                         <h2 className="font-inter text-3xl md:text-5xl font-black mb-6 tracking-tight">Connect Your <span className="text-blue-500">Ecosystem.</span></h2>
                         <p className="text-slate-400 max-w-xl mx-auto mb-10 text-lg">In the age of AI search, isolation is failure. Let's make you the center of your industry's knowledge graph.</p>
-                        <Link to="/#contact" className="inline-flex h-14 items-center px-10 rounded-full bg-blue-600 text-white font-black uppercase tracking-widest text-xs hover:bg-blue-700 hover:scale-105 transition-all active:scale-95 shadow-xl shadow-blue-500/20">
+                        <Link to="/contact" className="inline-flex h-14 items-center px-10 rounded-full bg-blue-600 text-white font-black uppercase tracking-widest text-xs hover:bg-blue-700 hover:scale-105 transition-all active:scale-95 shadow-xl shadow-blue-500/20">
                             Start Semantic Mapping
                         </Link>
                     </div>

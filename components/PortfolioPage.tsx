@@ -52,7 +52,7 @@ const PortfolioPage: React.FC = () => {
                              style={{ background: 'radial-gradient(circle at 70% 30%, rgba(0,0,255,1) 0%, transparent 70%)', filter: 'blur(100px)' }} />
                         <h2 className="font-inter text-3xl md:text-5xl font-black mb-6 tracking-tight">Your Success <span className="text-blue-500">Starts Here.</span></h2>
                         <p className="text-slate-400 max-w-xl mx-auto mb-10 text-lg">Let's build a success story together. Our portfolio is missing your brand's next achievement.</p>
-                        <Link to="/#contact" className="inline-flex h-14 items-center px-10 rounded-full bg-blue-600 text-white font-black uppercase tracking-widest text-xs hover:bg-blue-700 hover:scale-105 transition-all active:scale-95 shadow-xl shadow-blue-500/20">
+                        <Link to="/contact" className="inline-flex h-14 items-center px-10 rounded-full bg-blue-600 text-white font-black uppercase tracking-widest text-xs hover:bg-blue-700 hover:scale-105 transition-all active:scale-95 shadow-xl shadow-blue-500/20">
                             Launch Your Project
                         </Link>
                     </div>

@@ -43,7 +43,7 @@ const AuthorityPage: React.FC = () => {
                         </div>
                         <h2 className="font-inter text-3xl md:text-5xl font-black mb-6 tracking-tight text-slate-900">Establish Your <span className="text-blue-600">Digital Entity.</span></h2>
                         <p className="text-slate-500 max-w-xl mx-auto mb-10 text-lg">In the world of AI, authority is everything. Let's make sure you're the recommended choice.</p>
-                        <Link to="/#contact" className="inline-flex h-14 items-center px-10 rounded-full bg-blue-600 text-white font-black uppercase tracking-widest text-xs hover:bg-blue-700 hover:scale-105 transition-all active:scale-95 shadow-xl shadow-blue-500/20">
+                        <Link to="/contact" className="inline-flex h-14 items-center px-10 rounded-full bg-blue-600 text-white font-black uppercase tracking-widest text-xs hover:bg-blue-700 hover:scale-105 transition-all active:scale-95 shadow-xl shadow-blue-500/20">
                             Claim Your Authority
                         </Link>
                     </div>
