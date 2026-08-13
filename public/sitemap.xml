@@ -121,12 +121,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://confluxai.in/blog/ai-insight-fastmail-offers-eu-data-region-1786212167</loc>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://confluxai.in/blog/ai-insight-how-i-use-llms-to-learn-complex-topics-1786322501</loc>
     <lastmod>2026-08-10</lastmod>
     <changefreq>daily</changefreq>
@@ -135,12 +129,6 @@
   <url>
     <loc>https://confluxai.in/blog/ai-insight-docker-sandboxes-disposable-isolated-sandboxes-for-ai-agents-1786345313</loc>
     <lastmod>2026-08-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/blog/ai-insight-deepseek-v4-pro-0813-1786582161</loc>
-    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
