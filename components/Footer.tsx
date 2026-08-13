@@ -62,7 +62,7 @@ const Footer: React.FC<{ siteLogo: string | null }> = ({ siteLogo }) => {
                 </span>
               )}
               <p className="text-slate-400 text-sm leading-relaxed max-w-sm mt-6">
-                Conflux AI is an AI automation and digital solutions agency headquartered in Kolkata, West Bengal, India. We build AI-powered systems, business automation workflows, digital experiences, and growth solutions for businesses.
+                Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, India, serving clients across India and globally.
               </p>
             </div>
             

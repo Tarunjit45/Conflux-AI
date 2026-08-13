@@ -71,8 +71,8 @@ const ContactPage: React.FC = () => {
                   <MapPin className="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
-                  <div className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Headquarters</div>
-                  <div className="text-slate-900 font-bold text-sm">Kolkata, West Bengal, India</div>
+                  <div className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Base Location</div>
+                  <div className="text-slate-900 font-bold text-sm">Kolkata, West Bengal, India (Remote-First)</div>
                 </div>
               </div>
             </div>

@@ -4,7 +4,7 @@
   "alternateName": "Conflux AI",
   "website": "https://confluxai.in/",
   "logo": "https://confluxai.in/logo.png",
-  "description": "Conflux AI is an AI automation and digital solutions agency headquartered in Kolkata, India. We build AI-powered systems, business automation workflows and digital solutions.",
+  "description": "Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, India, serving clients across India and globally.",
   "founders": [
     {
       "name": "Tarunjit Biswas",
@@ -21,12 +21,8 @@
   "contact": {
     "telephone": "+91-8972517557",
     "email": "confluxdotai@gmail.com",
-    "address": {
-      "postalCode": "700001",
-      "addressLocality": "Kolkata",
-      "addressRegion": "West Bengal",
-      "addressCountry": "IN"
-    }
+    "baseLocation": "Kolkata, West Bengal, India",
+    "operatingModel": "Remote-First Agency"
   },
   "socialProfiles": [
     "https://www.linkedin.com/company/conflux-ai",

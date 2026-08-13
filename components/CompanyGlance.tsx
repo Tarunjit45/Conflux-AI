@@ -42,9 +42,9 @@ const CompanyGlance: React.FC = () => {
               <MapPin className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Headquarters</div>
+              <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Base Location</div>
               <div className="text-white font-bold text-sm mt-0.5">Kolkata, West Bengal, India</div>
-              <div className="text-xs text-slate-400 font-medium">Postal Code: 700001</div>
+              <div className="text-xs text-slate-400 font-medium">Remote-First Agency</div>
             </div>
           </div>
 

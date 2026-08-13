@@ -31,7 +31,7 @@ const AboutUsPage: React.FC = () => {
                             Engineering Intelligent <span className="text-blue-600">Business Systems</span>.
                         </h1>
                         <p className="text-slate-600 font-normal text-base sm:text-lg mt-6 leading-relaxed">
-                            Conflux AI is an AI automation and digital solutions agency headquartered in Kolkata, West Bengal, India. Founded by Tarunjit Biswas and Shouvik Majumdar, Conflux AI combines AI engineering, software development, workflow automation, and digital strategy to help businesses operate with precision and scale efficiently.
+                            Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, India. Founded by Tarunjit Biswas and Shouvik Majumdar, Conflux AI combines AI engineering, software development, workflow automation, and digital strategy to help businesses operate with precision and scale efficiently.
                         </p>
                     </div>
                     
@@ -47,7 +47,7 @@ const AboutUsPage: React.FC = () => {
                         <Shield size={16} className="text-blue-600" /> Verified Company Summary
                     </div>
                     <p className="text-slate-800 text-base md:text-lg font-medium leading-relaxed">
-                        "Conflux AI is an AI automation and digital solutions agency headquartered in Kolkata, West Bengal, India. We build AI-powered systems, business automation workflows, digital experiences, and growth solutions for businesses."
+                        "Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, India, serving clients across India and globally."
                     </p>
                 </div>
 
@@ -70,7 +70,7 @@ const AboutUsPage: React.FC = () => {
                     <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200 space-y-4">
                         <h2 className="text-xl font-bold font-orbitron text-slate-900">Where We Operate</h2>
                         <p className="text-slate-600 text-sm leading-relaxed">
-                            Our headquarters is located in Kolkata, West Bengal, India (Postal Code 700001). We serve business clients locally in Kolkata, regionally across India, and globally.
+                            Conflux AI is structured as a remote-first agency based in Kolkata, West Bengal, India. We collaborate with business clients across Kolkata, West Bengal, India, and globally through digital communication channels.
                         </p>
                     </div>
                 </div>
@@ -118,8 +118,8 @@ const AboutUsPage: React.FC = () => {
                             <div className="flex items-start gap-3">
                                 <MapPin size={18} className="text-blue-600 shrink-0 mt-1" />
                                 <div>
-                                    <strong className="block text-slate-900 font-bold">Headquarters Address</strong>
-                                    <span>Kolkata, West Bengal, India — PIN 700001</span>
+                                    <strong className="block text-slate-900 font-bold">Base Location (Remote-First)</strong>
+                                    <span>Kolkata, West Bengal, India (Serving India & Global Clients)</span>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">

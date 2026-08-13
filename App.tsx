@@ -26,11 +26,11 @@ import ContactPage from './components/ContactPage.tsx';
 const routeMeta: Record<string, { title: string; description: string }> = {
   '/': {
     title: 'Conflux AI | AI Automation & Digital Solutions Agency',
-    description: 'Conflux AI is an AI automation and digital solutions agency headquartered in Kolkata, India. We build AI-powered systems, business automation workflows and digital solutions.'
+    description: 'Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, India, serving clients across India and globally.'
   },
   '/about': {
     title: 'About Us | Conflux AI - Mission & Leadership',
-    description: 'Learn about Conflux AI, founded by Tarunjit Biswas & Shouvik Majumdar. We democratize enterprise AI automation and digital solutions from Kolkata, India.'
+    description: 'Learn about Conflux AI, founded by Tarunjit Biswas & Shouvik Majumdar. We are a remote-first AI automation and digital solutions agency based in Kolkata, India.'
   },
   '/solutions': {
     title: 'Enterprise AI Solutions & Automation Architecture | Conflux AI',
@@ -78,7 +78,7 @@ const routeMeta: Record<string, { title: string; description: string }> = {
   },
   '/services/ai-automation': {
     title: 'Enterprise AI Automation Services | Conflux AI',
-    description: 'Custom AI automation pipelines, system integrations, and process optimization by Conflux AI headquartered in Kolkata, India.'
+    description: 'Custom AI automation pipelines, system integrations, and process optimization by Conflux AI based in Kolkata, India.'
   },
   '/services/ai-agents': {
     title: 'AI Agents & Autonomous Multi-Agent Systems | Conflux AI',
@@ -142,7 +142,7 @@ const ScrollToTop = () => {
 
     const meta = routeMeta[pathname] || {
       title: 'Conflux AI | AI Automation & Digital Solutions Agency',
-      description: 'Conflux AI is an AI automation and digital solutions agency headquartered in Kolkata, India. We build AI-powered systems, business automation workflows and digital solutions.'
+      description: 'Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, India, serving clients across India and globally.'
     };
 
     // Update document title
