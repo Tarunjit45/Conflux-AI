@@ -26,8 +26,14 @@ import LocationHubPage from './components/locations/LocationHubPage';
 import DistrictDirectoryPage from './components/locations/DistrictDirectoryPage';
 import LocationDetailPage from './components/locations/LocationDetailPage';
 import IndustryLocationPage from './components/locations/IndustryLocationPage';
+import RuralDigitalSolutionsPage from './components/services/RuralDigitalSolutionsPage';
+import LocationCoverageDashboard from './components/admin/LocationCoverageDashboard';
 
 const routeMeta: Record<string, { title: string; description: string }> = {
+  '/services/digital-solutions-west-bengal': {
+    title: 'Digital Solutions for Businesses Across West Bengal | Conflux AI',
+    description: 'Conflux AI provides remote-first digital solutions, website development, WhatsApp automation, and AI chatbots for small and medium businesses across West Bengal.'
+  },
   '/locations/west-bengal': {
     title: 'Remote AI Automation Services in West Bengal | Conflux AI',
     description: 'Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, serving businesses across West Bengal, India, and globally.'
@@ -254,6 +260,7 @@ const App: React.FC = () => {
         <Route path="/authority" element={<AuthorityPage />} />
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/semantic-map" element={<SemanticPage />} />
+        <Route path="/services/digital-solutions-west-bengal" element={<RuralDigitalSolutionsPage />} />
         <Route path="/services/:serviceId" element={<ServiceDetailPage />} />
         <Route path="/locations/west-bengal" element={<LocationHubPage />} />
         <Route path="/locations/west-bengal/:districtSlug" element={<DistrictDirectoryPage />} />
@@ -261,6 +268,7 @@ const App: React.FC = () => {
         <Route path="/locations/west-bengal/:citySlug/:industrySlug" element={<IndustryLocationPage />} />
         <Route path="/thank-you" element={<ThankYouPage />} />
         <Route path="/admin/cms" element={<AdminCMS />} />
+        <Route path="/admin/location-coverage" element={<LocationCoverageDashboard />} />
       </Routes>
 
       <Footer siteLogo={siteLogo} />

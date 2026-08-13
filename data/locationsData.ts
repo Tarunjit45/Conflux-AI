@@ -648,6 +648,118 @@ export const NADIA_LOCATIONS: LocationItem[] = [
     h1Title: 'AI Automation & Digital Sales Channels for Santipur Textile Trade',
     summary: 'Empowering Santipur handloom manufacturers and wholesale saree traders with automated WhatsApp catalogs, B2B lead ingestion, and online sales platforms.'
   },
+  {
+    id: 'loc-bagula',
+    slug: 'bagula',
+    name: 'Bagula',
+    displayName: 'Bagula (Nadia)',
+    type: 'commercial_junction',
+    parentSlug: 'nadia',
+    districtSlug: 'nadia',
+    stateSlug: 'west-bengal',
+    subdivisionName: 'Ranaghat Subdivision',
+    blockName: 'Hanskhali CD Block',
+    gramPanchayatName: 'Bagula I & II Gram Panchayats',
+    status: 'PUBLISHED',
+    priority: 2,
+    tier: 3,
+    majorIndustries: ['Retail & Apparel Trade', 'Railway Junction Commerce', 'Agricultural Produce Trading', 'Private Education Tutorials'],
+    businessTypes: ['Local Garment Showrooms', 'Wholesale Distributors', 'Coaching Classes', 'Suburban Retailers'],
+    keyCommercialHubs: ['Bagula Station Road Market', 'Hanskhali Road Commercial Corridor', 'College Road Market'],
+    nearbyLocationSlugs: ['ranaghat', 'krishnanagar', 'santipur', 'chakdaha'],
+    opportunityScore: {
+      commercialActivityScore: 8,
+      businessDensityScore: 7,
+      digitalDemandScore: 8,
+      confluxFitScore: 9,
+      overallScore: 8.0,
+      isEstimated: true
+    },
+    lastResearched: '2026-08-13',
+    sourceOfData: 'Nadia District Administration & Census Records',
+    metaTitle: 'Digital Solutions & AI Automation for Businesses in Bagula | Conflux AI',
+    metaDescription: 'Conflux AI delivers remote-first digital solutions, WhatsApp saree & apparel catalogs, and web development for merchants in Bagula, Nadia.',
+    h1Title: 'Digital Solutions & Automation for Businesses in Bagula',
+    summary: 'Conflux AI brings remote digital presence, mobile-friendly websites, official WhatsApp product catalogs, and automated lead response to retail and commercial businesses in Bagula, Nadia.',
+    localBusinessContext: 'Bagula is a major commercial railway junction town in Nadia under the Hanskhali block of Ranaghat subdivision. Local clothing merchants, saree retailers, coaching centers, and agro-traders serve thousands of residents from surrounding Gram Panchayats. Moving beyond manual foot-traffic dependency allows Bagula merchants to capture customer inquiries and orders 24/7 on WhatsApp.',
+    automationOpportunities: [
+      'WhatsApp Digital Catalog & Instant Stock Inquiry Bot for Garment Merchants',
+      'Student Inquiry Capture & Batch Reminder Automation for Bagula Coaching Classes',
+      'Local Google Maps & Business Search Visibility Optimization',
+      'Automated Billing Receipts & Order Confirmation Messages'
+    ],
+    useCases: [
+      {
+        title: 'Garment & Saree Store WhatsApp Catalog',
+        description: 'Bagula apparel merchants showcase new seasonal saree designs and garment arrivals over WhatsApp with automated stock inquiries.',
+        impact: 'Expands customer reach beyond local foot traffic to surrounding villages.'
+      },
+      {
+        title: 'Coaching Institute Admission Bot',
+        description: 'Capture prospective student details from Facebook or Google and send automated course prospectuses and fee details on WhatsApp.',
+        impact: 'Increases batch enrollment while cutting administrative phone work.'
+      }
+    ],
+    faqs: [
+      {
+        question: 'Does Conflux AI have a physical office in Bagula?',
+        answer: 'No. Conflux AI is a remote-first agency based in Kolkata, West Bengal. We serve business owners in Bagula remotely through digital consultation meetings, WhatsApp support channels, and cloud-hosted software implementations.'
+      },
+      {
+        question: 'How can a small retail shop in Bagula start with digital solutions?',
+        answer: 'We begin with a simple mobile-friendly website and a WhatsApp Business product catalog bot that allows local customers to browse and inquire about items 24/7.'
+      }
+    ]
+  },
+  {
+    id: 'loc-hanskhali',
+    slug: 'hanskhali',
+    name: 'Hanskhali',
+    displayName: 'Hanskhali Block',
+    type: 'block',
+    parentSlug: 'nadia',
+    districtSlug: 'nadia',
+    stateSlug: 'west-bengal',
+    subdivisionName: 'Ranaghat Subdivision',
+    status: 'DATA_ONLY',
+    priority: 3,
+    tier: 3,
+    opportunityScore: {
+      commercialActivityScore: 6,
+      businessDensityScore: 5,
+      digitalDemandScore: 6,
+      confluxFitScore: 7,
+      overallScore: 6.0,
+      isEstimated: true
+    },
+    lastResearched: '2026-08-13',
+    sourceOfData: 'West Bengal Panchayati Raj System'
+  },
+  {
+    id: 'loc-badkulla',
+    slug: 'badkulla',
+    name: 'Badkulla',
+    displayName: 'Badkulla',
+    type: 'town',
+    parentSlug: 'nadia',
+    districtSlug: 'nadia',
+    stateSlug: 'west-bengal',
+    subdivisionName: 'Ranaghat Subdivision',
+    blockName: 'Hanskhali CD Block',
+    status: 'DATA_ONLY',
+    priority: 3,
+    tier: 3,
+    opportunityScore: {
+      commercialActivityScore: 7,
+      businessDensityScore: 6,
+      digitalDemandScore: 7,
+      confluxFitScore: 8,
+      overallScore: 7.0,
+      isEstimated: true
+    },
+    lastResearched: '2026-08-13',
+    sourceOfData: 'Census of India'
+  },
 
   // DATA_ONLY Locations in Nadia (Tier 3 - Not published as indexable pages until unique content is curated)
   {
