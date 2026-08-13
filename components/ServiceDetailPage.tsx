@@ -312,7 +312,22 @@ const ServiceDetailPage: React.FC = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [serviceId]);
+    if (service) {
+      document.title = `${service.name} | Conflux AI`;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute('content', service.headline);
+      }
+      const canonicalUrl = `https://confluxai.in/services/${service.id}`;
+      let canonicalEl = document.querySelector('link[rel="canonical"]');
+      if (!canonicalEl) {
+        canonicalEl = document.createElement('link');
+        canonicalEl.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonicalEl);
+      }
+      canonicalEl.setAttribute('href', canonicalUrl);
+    }
+  }, [serviceId, service]);
 
   if (!service) {
     return (

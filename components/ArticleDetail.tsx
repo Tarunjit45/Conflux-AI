@@ -214,6 +214,24 @@ const ArticleDetail: React.FC = () => {
         setIsLoading(false);
     };
 
+    useEffect(() => {
+        if (article) {
+            document.title = `${article.title} | Conflux AI Blog`;
+            const metaDesc = document.querySelector('meta[name="description"]');
+            if (metaDesc) {
+                metaDesc.setAttribute('content', `${article.title} - Technical insight and engineering analysis by Conflux AI.`);
+            }
+            const canonicalUrl = `https://confluxai.in/blog/${article.slug}`;
+            let canonicalEl = document.querySelector('link[rel="canonical"]');
+            if (!canonicalEl) {
+                canonicalEl = document.createElement('link');
+                canonicalEl.setAttribute('rel', 'canonical');
+                document.head.appendChild(canonicalEl);
+            }
+            canonicalEl.setAttribute('href', canonicalUrl);
+        }
+    }, [article]);
+
     if (isLoading) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-white">

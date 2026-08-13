@@ -145,11 +145,49 @@ const ScrollToTop = () => {
       description: 'Conflux AI is an AI automation and digital solutions agency headquartered in Kolkata, India. We build AI-powered systems, business automation workflows and digital solutions.'
     };
 
+    // Update document title
     document.title = meta.title;
-    const metaDescriptionEl = document.querySelector('meta[name="description"]');
-    if (metaDescriptionEl) {
-      metaDescriptionEl.setAttribute('content', meta.description);
+
+    // Update meta description
+    let metaDescriptionEl = document.querySelector('meta[name="description"]');
+    if (!metaDescriptionEl) {
+      metaDescriptionEl = document.createElement('meta');
+      metaDescriptionEl.setAttribute('name', 'description');
+      document.head.appendChild(metaDescriptionEl);
     }
+    metaDescriptionEl.setAttribute('content', meta.description);
+
+    // Dynamically manage self-referencing canonical URL based on active route
+    const canonicalOrigin = 'https://confluxai.in';
+    const cleanPath = pathname === '/' ? '/' : pathname.replace(/\/+$|(?<=^.+)\/$/g, '');
+    const canonicalUrl = `${canonicalOrigin}${cleanPath}`;
+
+    let canonicalEl = document.querySelector('link[rel="canonical"]');
+    if (!canonicalEl) {
+      canonicalEl = document.createElement('link');
+      canonicalEl.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalEl);
+    }
+    canonicalEl.setAttribute('href', canonicalUrl);
+
+    // Update Open Graph & Twitter meta tags for consistency
+    const ogUrlEl = document.querySelector('meta[property="og:url"]');
+    if (ogUrlEl) ogUrlEl.setAttribute('content', canonicalUrl);
+
+    const ogTitleEl = document.querySelector('meta[property="og:title"]');
+    if (ogTitleEl) ogTitleEl.setAttribute('content', meta.title);
+
+    const ogDescEl = document.querySelector('meta[property="og:description"]');
+    if (ogDescEl) ogDescEl.setAttribute('content', meta.description);
+
+    const twitterUrlEl = document.querySelector('meta[property="twitter:url"]');
+    if (twitterUrlEl) twitterUrlEl.setAttribute('content', canonicalUrl);
+
+    const twitterTitleEl = document.querySelector('meta[property="twitter:title"]');
+    if (twitterTitleEl) twitterTitleEl.setAttribute('content', meta.title);
+
+    const twitterDescEl = document.querySelector('meta[property="twitter:description"]');
+    if (twitterDescEl) twitterDescEl.setAttribute('content', meta.description);
   }, [pathname, hash]);
   
   return null;
