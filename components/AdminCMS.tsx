@@ -6,7 +6,7 @@ import {
   AlertCircle, Zap, Edit3, Trash2, Eye, Plus, Search, Filter, 
   Globe, Clock, User, ArrowLeft, RefreshCw, Layers, MapPin, 
   Building2, HelpCircle, Link as LinkIcon, Compass, Sparkles, 
-  TrendingUp, Calendar, BookOpen, UserCheck, ShieldAlert
+  TrendingUp, Calendar, BookOpen, UserCheck, ShieldAlert, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getAllLocations, LocationItem } from '../data/locationsData';
@@ -81,11 +81,11 @@ const AdminCMS: React.FC = () => {
     { title: 'Nadia District Official Portal', url: 'https://nadia.gov.in' }
   ]);
 
-  // Editor Sub-tabs & Helper State
+  // Mobile Assistant Panel State
+  const [showMobileAssistant, setShowMobileAssistant] = useState(false);
   const [editorMode, setEditorMode] = useState<'write' | 'preview'>('write');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error' | null; message: string }>({ type: null, message: '' });
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Editorial Planner State
   const [editorialPlans, setEditorialPlans] = useState<EditorialPlanItem[]>([]);
@@ -131,7 +131,6 @@ const AdminCMS: React.FC = () => {
     let loadedArticles: ArticleKnowledgeObject[] = [];
 
     try {
-      // 1. Fetch from Supabase if available
       const { data, error } = await supabase
         .from('articles')
         .select('*')
@@ -144,14 +143,12 @@ const AdminCMS: React.FC = () => {
       console.warn('Supabase fetch notice, loading local storage / static fallback:', err);
     }
 
-    // 2. Fetch local storage overrides
     const localData = localStorage.getItem(LOCAL_STORAGE_ARTICLES_KEY);
     let customLocal: ArticleKnowledgeObject[] = [];
     if (localData) {
       try { customLocal = JSON.parse(localData); } catch (e) {}
     }
 
-    // 3. Fallback to static articles.json
     if (loadedArticles.length === 0 && customLocal.length === 0) {
       try {
         const res = await fetch('/data/articles.json');
@@ -164,7 +161,6 @@ const AdminCMS: React.FC = () => {
       }
     }
 
-    // Combine local overrides with loaded articles
     const map = new Map<string, ArticleKnowledgeObject>();
     loadedArticles.forEach(a => map.set(a.id || a.slug, a));
     customLocal.forEach(a => map.set(a.id || a.slug, a));
@@ -187,7 +183,6 @@ const AdminCMS: React.FC = () => {
     if (raw) {
       try { setEditorialPlans(JSON.parse(raw)); return; } catch (e) {}
     }
-    // Default sample plan
     setEditorialPlans([
       {
         id: 'plan-01',
@@ -201,19 +196,6 @@ const AdminCMS: React.FC = () => {
         searchIntent: 'WhatsApp Automation',
         priority: 'HIGH',
         status: 'PLANNED'
-      },
-      {
-        id: 'plan-02',
-        title: 'How Siliguri Hotels Can Get Direct Room Bookings via WhatsApp Bot',
-        locationSlug: 'siliguri',
-        locationName: 'Siliguri (Darjeeling)',
-        businessCategoryId: 'restaurants-eateries',
-        problem: 'High OTA platform commissions',
-        targetService: 'WhatsApp Business Automation',
-        language: 'en',
-        searchIntent: 'Lead Generation',
-        priority: 'HIGH',
-        status: 'IDEA'
       }
     ]);
   };
@@ -280,6 +262,7 @@ const AdminCMS: React.FC = () => {
     setSourceList(article.sources || []);
     setStatus({ type: null, message: '' });
     setActiveTab('editor');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const resetForm = () => {
@@ -313,6 +296,7 @@ const AdminCMS: React.FC = () => {
   const handleCreateNewArticle = () => {
     resetForm();
     setActiveTab('editor');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleStartArticleFromGap = (locationSlug: string, categoryId: string) => {
@@ -330,6 +314,7 @@ const AdminCMS: React.FC = () => {
     setSlug(generateSlug(`guide-${loc?.slug || 'local'}-${cat?.id || 'business'}-growth`));
     setLanguage('bn');
     setActiveTab('editor');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const saveLocalOverride = (article: ArticleKnowledgeObject, isDelete = false) => {
@@ -399,7 +384,6 @@ const AdminCMS: React.FC = () => {
     };
 
     try {
-      // 1. Supabase Sync attempt
       if (editingId && !editingId.startsWith('art-') && !editingId.startsWith('static-')) {
         await supabase
           .from('articles')
@@ -432,7 +416,6 @@ const AdminCMS: React.FC = () => {
       console.warn('Supabase notice (saved locally):', err);
     }
 
-    // 2. Save to local storage engine
     saveLocalOverride(articlePayload);
 
     setStatus({
@@ -440,7 +423,6 @@ const AdminCMS: React.FC = () => {
       message: editingId ? `Article "${title}" updated successfully!` : `New manual article "${title}" published to network!`
     });
 
-    // Update in-memory state
     setArticles(prev => {
       const idx = prev.findIndex(a => a.id === articlePayload.id || a.slug === articlePayload.slug);
       if (idx >= 0) {
@@ -452,6 +434,7 @@ const AdminCMS: React.FC = () => {
     });
 
     setIsSubmitting(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id: string, articleSlug: string) => {
@@ -464,107 +447,114 @@ const AdminCMS: React.FC = () => {
       saveLocalOverride(target, true);
       setArticles(prev => prev.filter(a => a.id !== id && a.slug !== articleSlug));
     }
-    setDeleteConfirmId(null);
     setIsLoading(false);
   };
 
-  // Helper insertion for internal link suggestion
   const insertTextAtCursor = (textToInsert: string) => {
     setContent(prev => prev + '\n' + textToInsert);
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-inter">
-      {/* Header Bar */}
-      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link to="/" className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
-              <ArrowLeft size={18} />
-            </Link>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                <h1 className="text-xl font-black tracking-tight text-white flex items-center gap-2">
-                  CONFLUX AI <span className="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-bold border border-blue-500/30">Local Relationship & Knowledge CMS</span>
-                </h1>
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-inter pb-16">
+      {/* Sticky Mobile-Optimized Header Bar */}
+      <header className="border-b border-slate-800 bg-slate-900/90 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Link to="/" className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors shrink-0">
+                <ArrowLeft size={16} />
+              </Link>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <h1 className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-2">
+                    CONFLUX AI <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-bold border border-blue-500/30">Mobile CMS</span>
+                  </h1>
+                </div>
+                <p className="text-[11px] text-slate-400 font-medium hidden sm:block">100% Manual Editorial Publishing • Mobile Responsive Studio</p>
               </div>
-              <p className="text-xs text-slate-400 font-medium">100% Manual Editorial Publishing • Location Knowledge Graph • Zero Automated AI</p>
             </div>
+
+            <button
+              onClick={handleCreateNewArticle}
+              className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 sm:hidden shrink-0 shadow-md shadow-blue-500/20"
+            >
+              <Plus size={14} /> Write
+            </button>
           </div>
 
-          {/* Navigation Tabs */}
-          <div className="flex items-center gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800">
+          {/* Fluid Horizontal Scroll Navigation Bar for Mobile */}
+          <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-2xl border border-slate-800 overflow-x-auto no-scrollbar scrollbar-none w-full md:w-auto">
             <button
               onClick={() => setActiveTab('matrix')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'matrix' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:text-white'
+              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[40px] ${
+                activeTab === 'matrix' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Compass size={15} />
-              <span>Location Coverage Matrix</span>
+              <Compass size={14} />
+              <span>Coverage Grid</span>
             </button>
 
             <button
               onClick={() => setActiveTab('editor')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'editor' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:text-white'
+              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[40px] ${
+                activeTab === 'editor' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Edit3 size={15} />
-              <span>Manual Article Writer</span>
+              <Edit3 size={14} />
+              <span>Manual Writer</span>
             </button>
 
             <button
               onClick={() => setActiveTab('planner')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'planner' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:text-white'
+              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[40px] ${
+                activeTab === 'planner' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Calendar size={15} />
-              <span>Editorial Calendar</span>
+              <Calendar size={14} />
+              <span>Planner</span>
             </button>
 
             <button
               onClick={() => setActiveTab('crm')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'crm' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:text-white'
+              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[40px] ${
+                activeTab === 'crm' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-slate-400 hover:text-white'
               }`}
             >
-              <UserCheck size={15} />
-              <span>Internal CRM</span>
+              <UserCheck size={14} />
+              <span>CRM</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Main Workspace Body */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Main Responsive Body Container */}
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6">
         
         {/* TAB 1: LOCATION COVERAGE MATRIX */}
         {activeTab === 'matrix' && (
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* Intro Alert */}
-            <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="p-4 sm:p-6 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="space-y-1">
-                <h2 className="text-lg font-black text-white flex items-center gap-2">
-                  <MapPin className="text-blue-400" size={20} /> West Bengal Locality Knowledge Grid
+                <h2 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                  <MapPin className="text-blue-400" size={18} /> West Bengal Locality Knowledge Grid
                 </h2>
-                <p className="text-xs text-slate-400 max-w-3xl">
-                  Conflux AI is a remote-first AI automation agency based in Kolkata. We build structured local content for business hubs like Bagula, Krishnanagar, Ranaghat, Haldia, Siliguri, and beyond without fake physical office claims.
+                <p className="text-xs text-slate-400 leading-relaxed max-w-3xl">
+                  Conflux AI is a remote-first agency based in Kolkata. We build structured local content for business hubs like Bagula, Krishnanagar, Ranaghat, Haldia, Siliguri, and beyond without fake physical office claims.
                 </p>
               </div>
 
               <button
                 onClick={handleCreateNewArticle}
-                className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-blue-500/20 transition-all shrink-0"
+                className="w-full sm:w-auto px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 transition-all shrink-0 min-h-[44px]"
               >
                 <Plus size={16} /> Write New Manual Article
               </button>
             </div>
 
             {/* Location Cards & Gap Matrix */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {allLocations.filter(l => l.type === 'commercial_junction' || l.type === 'city' || l.type === 'district' || l.type === 'town').map(loc => {
                 const locArticles = articles.filter(a => 
                   a.locationIds?.includes(loc.id) || 
@@ -584,24 +574,24 @@ const AdminCMS: React.FC = () => {
                 const enCount = locArticles.filter(a => a.language === 'en').length;
 
                 return (
-                  <div key={loc.id} className="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between">
+                  <div key={loc.id} className="p-5 sm:p-6 rounded-3xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4">
                     <div>
-                      <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-start justify-between gap-2 mb-3">
                         <div>
                           <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
                             {loc.type.replace('_', ' ')} • {loc.districtSlug || 'Nadia'}
                           </span>
-                          <h3 className="text-xl font-black text-white mt-1">{loc.displayName || loc.name}</h3>
+                          <h3 className="text-lg sm:text-xl font-black text-white mt-1">{loc.displayName || loc.name}</h3>
                         </div>
-                        <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                        <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 shrink-0">
                           {locArticles.length} Articles
                         </span>
                       </div>
 
                       {/* Coverage Breakdown */}
-                      <div className="space-y-3 mb-6">
+                      <div className="space-y-3 mb-2">
                         <div className="flex items-center justify-between text-xs text-slate-400">
-                          <span>Language Distribution:</span>
+                          <span>Language:</span>
                           <span className="font-bold text-slate-200">🇧🇩 {bnCount} Bengali | 🇬🇧 {enCount} English</span>
                         </div>
 
@@ -629,7 +619,7 @@ const AdminCMS: React.FC = () => {
                     </div>
 
                     {/* Gap Detector Action */}
-                    <div className="pt-4 border-t border-slate-800">
+                    <div className="pt-3 border-t border-slate-800">
                       {missingCategories.length > 0 ? (
                         <div className="space-y-2">
                           <div className="flex items-center justify-between text-[11px]">
@@ -639,12 +629,12 @@ const AdminCMS: React.FC = () => {
                             <span className="text-slate-500">Missing Topics</span>
                           </div>
 
-                          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar scrollbar-none">
                             {missingCategories.slice(0, 2).map(cat => (
                               <button
                                 key={cat.id}
                                 onClick={() => handleStartArticleFromGap(loc.id, cat.id)}
-                                className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/30 transition-all text-left truncate"
+                                className="text-[10px] font-bold px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/30 transition-all text-left shrink-0"
                               >
                                 + Write for {cat.name.split(' ')[0]}
                               </button>
@@ -662,29 +652,66 @@ const AdminCMS: React.FC = () => {
               })}
             </div>
 
-            {/* List of All Existing Articles */}
-            <div className="p-8 rounded-3xl bg-slate-900 border border-slate-800">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            {/* Mobile Card & Responsive Table List of All Articles */}
+            <div className="p-4 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <h3 className="text-lg font-black text-white">Published Articles Knowledge Repository ({articles.length})</h3>
-                  <p className="text-xs text-slate-400">All manually created & published local articles with structured metadata tags.</p>
+                  <h3 className="text-base sm:text-lg font-black text-white">Articles Knowledge Repository ({articles.length})</h3>
+                  <p className="text-xs text-slate-400">All manually created local articles with metadata tags.</p>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-2.5 text-slate-500" size={14} />
-                    <input 
-                      type="text"
-                      placeholder="Search title or location..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9 pr-4 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 outline-none focus:border-blue-500"
-                    />
-                  </div>
+                <div className="relative w-full sm:w-64">
+                  <Search className="absolute left-3 top-2.5 text-slate-500" size={14} />
+                  <input 
+                    type="text"
+                    placeholder="Search articles..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 outline-none focus:border-blue-500"
+                  />
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
+              {/* Mobile View: Cards Layout for Small Screens */}
+              <div className="block md:hidden space-y-3 pt-2">
+                {articles
+                  .filter(a => !searchQuery || a.title.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .map(article => (
+                    <div key={article.id} className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-bold text-[10px] uppercase">
+                          {article.language === 'bn' ? '🇧🇩 Bengali' : '🇬🇧 English'}
+                        </span>
+                        <span className="text-[10px] text-slate-400">{new Date(article.publishedAt || Date.now()).toLocaleDateString()}</span>
+                      </div>
+                      <h4 className="font-bold text-white text-sm leading-snug">
+                        <Link to={`/blog/${article.slug}`} className="hover:text-blue-400 transition-colors" target="_blank">
+                          {article.title}
+                        </Link>
+                      </h4>
+                      <div className="flex items-center justify-between pt-2 border-t border-slate-900 text-xs">
+                        <span className="text-slate-400 text-[11px]">{article.category || 'Retail'}</span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleEditArticle(article)}
+                            className="px-3 py-1 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/30 text-xs font-bold"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(article.id, article.slug)}
+                            className="px-3 py-1 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/30 text-xs font-bold"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                ))}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead className="border-b border-slate-800 text-slate-400 font-bold uppercase tracking-wider text-[10px]">
                     <tr>
@@ -746,41 +773,76 @@ const AdminCMS: React.FC = () => {
 
         {/* TAB 2: MANUAL ARTICLE WRITER */}
         {activeTab === 'editor' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Form Editor Column */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
+            {/* Main Writer Form */}
             <div className="lg:col-span-8 space-y-6">
-              <div className="p-8 rounded-3xl bg-slate-900 border border-slate-800 space-y-6">
+              <div className="p-4 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 space-y-6">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                   <div>
-                    <h2 className="text-lg font-black text-white">
-                      {editingId ? 'Edit Manual Article Knowledge Object' : 'Write New Manual Article'}
+                    <h2 className="text-base sm:text-lg font-black text-white">
+                      {editingId ? 'Edit Manual Article' : 'Write New Manual Article'}
                     </h2>
-                    <p className="text-xs text-slate-400">Provide authoritative, human-written content. 100% manual authorship.</p>
+                    <p className="text-xs text-slate-400">100% human-written local business guide.</p>
                   </div>
+
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => setEditorMode('write')}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold ${
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold min-h-[36px] ${
                         editorMode === 'write' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
                       }`}
                     >
-                      Write Markdown
+                      Write
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditorMode('preview')}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold ${
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold min-h-[36px] ${
                         editorMode === 'preview' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
                       }`}
                     >
-                      Live Preview
+                      Preview
                     </button>
                   </div>
                 </div>
 
+                {/* Mobile Assistant Accordion Trigger */}
+                <div className="block lg:hidden">
+                  <button
+                    type="button"
+                    onClick={() => setShowMobileAssistant(!showMobileAssistant)}
+                    className="w-full p-3 rounded-2xl bg-blue-600/10 border border-blue-500/30 text-blue-400 font-bold text-xs flex items-center justify-between"
+                  >
+                    <span className="flex items-center gap-2">
+                      <LinkIcon size={14} /> 1-Click Internal Link Assistant & Checklist
+                    </span>
+                    {showMobileAssistant ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </button>
+
+                  {showMobileAssistant && (
+                    <div className="mt-3 p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3 text-xs">
+                      <span className="font-bold text-slate-300 block">Tap to insert link into article text:</span>
+                      <button
+                        type="button"
+                        onClick={() => insertTextAtCursor(`\nLearn more about our [WhatsApp Business Automation Services](https://confluxai.in/services/whatsapp-automation).`)}
+                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-left text-xs font-bold text-blue-400 hover:bg-slate-800"
+                      >
+                        + Insert WhatsApp Service Link
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => insertTextAtCursor(`\nCheck out our [High-Performance Website Development](https://confluxai.in/services/website-development).`)}
+                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-left text-xs font-bold text-blue-400 hover:bg-slate-800"
+                      >
+                        + Insert Web Dev Service Link
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 {status.message && (
-                  <div className={`p-4 rounded-xl border text-xs font-bold flex items-center gap-2 ${
+                  <div className={`p-3.5 rounded-xl border text-xs font-bold flex items-center gap-2 ${
                     status.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
                   }`}>
                     {status.type === 'success' ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
@@ -788,10 +850,10 @@ const AdminCMS: React.FC = () => {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-5">
                   {/* Article Title & Language */}
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="md:col-span-3 space-y-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                    <div className="sm:col-span-3 space-y-1">
                       <label className="text-xs font-bold text-slate-300">Article Title *</label>
                       <input 
                         type="text"
@@ -799,7 +861,7 @@ const AdminCMS: React.FC = () => {
                         value={title}
                         onChange={handleTitleChange}
                         placeholder="e.g. বাগুলার ছোট ব্যবসার জন্য অনলাইনে Customer পাওয়ার ৭টি বাস্তব উপায়"
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm font-bold text-white focus:border-blue-500 outline-none"
+                        className="w-full px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-800 text-base sm:text-sm font-bold text-white focus:border-blue-500 outline-none min-h-[44px]"
                       />
                     </div>
                     <div className="space-y-1">
@@ -807,7 +869,7 @@ const AdminCMS: React.FC = () => {
                       <select
                         value={language}
                         onChange={(e) => setLanguage(e.target.value as ContentLanguage)}
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-bold text-white focus:border-blue-500 outline-none"
+                        className="w-full px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-800 text-base sm:text-xs font-bold text-white focus:border-blue-500 outline-none min-h-[44px]"
                       >
                         <option value="bn">🇧🇩 Bengali (বাংলা)</option>
                         <option value="en">🇬🇧 English</option>
@@ -817,7 +879,7 @@ const AdminCMS: React.FC = () => {
                   </div>
 
                   {/* Slug & Excerpt */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-slate-300">URL Slug *</label>
                       <input 
@@ -825,7 +887,7 @@ const AdminCMS: React.FC = () => {
                         required
                         value={slug}
                         onChange={(e) => setSlug(e.target.value)}
-                        className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 focus:border-blue-500 outline-none"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-base sm:text-xs text-slate-300 focus:border-blue-500 outline-none min-h-[44px]"
                       />
                     </div>
                     <div className="space-y-1">
@@ -834,26 +896,26 @@ const AdminCMS: React.FC = () => {
                         type="text"
                         value={excerpt}
                         onChange={(e) => setExcerpt(e.target.value)}
-                        placeholder="Brief 1-2 sentence summary for search meta description..."
-                        className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 focus:border-blue-500 outline-none"
+                        placeholder="Summary for search description..."
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-base sm:text-xs text-slate-300 focus:border-blue-500 outline-none min-h-[44px]"
                       />
                     </div>
                   </div>
 
                   {/* Knowledge Graph Tagging Grid */}
-                  <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
+                  <div className="p-4 sm:p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
                     <h3 className="text-xs font-black text-blue-400 uppercase tracking-widest flex items-center gap-1.5">
-                      <Layers size={14} /> Knowledge Graph Relationships & Metadata Tagging
+                      <Layers size={14} /> Locality & Industry Tagging
                     </h3>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Location Selector */}
                       <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-300">Target Locality / Region *</label>
+                        <label className="text-xs font-bold text-slate-300">Target Locality *</label>
                         <select
                           value={selectedLocationIds[0] || 'loc-bagula'}
                           onChange={(e) => setSelectedLocationIds([e.target.value])}
-                          className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-medium text-slate-200 outline-none focus:border-blue-500"
+                          className="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-base sm:text-xs font-medium text-slate-200 outline-none focus:border-blue-500 min-h-[44px]"
                         >
                           {allLocations.map(l => (
                             <option key={l.id} value={l.id}>{l.displayName || l.name} ({l.type})</option>
@@ -863,7 +925,7 @@ const AdminCMS: React.FC = () => {
 
                       {/* Business Category Selector */}
                       <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-300">Target Business Category *</label>
+                        <label className="text-xs font-bold text-slate-300">Business Category *</label>
                         <select
                           value={selectedBusinessCategoryIds[0] || 'retail-clothing'}
                           onChange={(e) => {
@@ -871,7 +933,7 @@ const AdminCMS: React.FC = () => {
                             const cat = BUSINESS_CATEGORY_TAXONOMY.find(c => c.id === e.target.value);
                             if (cat) setCategory(cat.name);
                           }}
-                          className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-medium text-slate-200 outline-none focus:border-blue-500"
+                          className="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-base sm:text-xs font-medium text-slate-200 outline-none focus:border-blue-500 min-h-[44px]"
                         >
                           {BUSINESS_CATEGORY_TAXONOMY.map(cat => (
                             <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -881,11 +943,11 @@ const AdminCMS: React.FC = () => {
 
                       {/* Search Intent */}
                       <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-300">User Search Intent</label>
+                        <label className="text-xs font-bold text-slate-300">Search Intent</label>
                         <select
                           value={searchIntent}
                           onChange={(e) => setSearchIntent(e.target.value as SearchIntent)}
-                          className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-medium text-slate-200 outline-none focus:border-blue-500"
+                          className="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-base sm:text-xs font-medium text-slate-200 outline-none focus:border-blue-500 min-h-[44px]"
                         >
                           {SEARCH_INTENTS.map(si => (
                             <option key={si} value={si}>{si}</option>
@@ -900,49 +962,46 @@ const AdminCMS: React.FC = () => {
                           type="text"
                           value={targetAudience}
                           onChange={(e) => setTargetAudience(e.target.value)}
-                          placeholder="e.g. Local shop owners in Bagula & Nadia"
-                          className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 outline-none focus:border-blue-500"
+                          placeholder="e.g. Local shop owners in Bagula"
+                          className="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-base sm:text-xs text-slate-200 outline-none focus:border-blue-500 min-h-[44px]"
                         />
                       </div>
                     </div>
                   </div>
 
-                  {/* Content Area */}
+                  {/* Content Textarea */}
                   {editorMode === 'write' ? (
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-slate-300 flex items-center justify-between">
-                        <span>Manually Written Markdown Article Content *</span>
-                        <span className="text-[10px] text-slate-500">Supports # H1, ## H2, **bold**, [link](url)</span>
+                        <span>Markdown Content *</span>
+                        <span className="text-[10px] text-slate-500 font-normal">Supports # H1, ## H2, **bold**</span>
                       </label>
                       <textarea
                         required
-                        rows={16}
+                        rows={14}
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
-                        placeholder="Write your article manually here in Bengali or English..."
-                        className="w-full p-4 rounded-xl bg-slate-950 border border-slate-800 text-sm font-mono text-slate-200 outline-none focus:border-blue-500 leading-relaxed"
+                        placeholder="Write your article content here..."
+                        className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-base sm:text-sm font-mono text-slate-200 outline-none focus:border-blue-500 leading-relaxed min-h-[250px] sm:min-h-[350px]"
                       />
                     </div>
                   ) : (
-                    <div className="p-6 rounded-2xl bg-white text-slate-900 prose max-w-none max-h-[500px] overflow-y-auto">
-                      <h1 className="text-3xl font-black">{title}</h1>
-                      <div className="text-xs text-slate-500 font-bold mb-4">
-                        Language: {language === 'bn' ? 'Bengali' : 'English'} • Author: {authorName}
-                      </div>
-                      <div className="whitespace-pre-wrap">{content}</div>
+                    <div className="p-4 sm:p-6 rounded-2xl bg-white text-slate-900 prose max-w-none max-h-[400px] overflow-y-auto">
+                      <h1 className="text-2xl font-black">{title}</h1>
+                      <div className="whitespace-pre-wrap text-sm">{content}</div>
                     </div>
                   )}
 
                   {/* FAQs Section */}
-                  <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
+                  <div className="p-4 sm:p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
                     <div className="flex items-center justify-between">
                       <h4 className="text-xs font-black text-blue-400 uppercase tracking-widest flex items-center gap-1.5">
-                        <HelpCircle size={14} /> Manually Defined FAQs for Schema.org
+                        <HelpCircle size={14} /> FAQs (Schema.org)
                       </h4>
                       <button
                         type="button"
                         onClick={() => setFaqList(prev => [...prev, { question: '', answer: '' }])}
-                        className="text-[10px] font-bold text-blue-400 hover:underline"
+                        className="text-[11px] font-bold text-blue-400 hover:underline min-h-[36px] px-2 flex items-center"
                       >
                         + Add FAQ
                       </button>
@@ -959,7 +1018,7 @@ const AdminCMS: React.FC = () => {
                             copy[idx].question = e.target.value;
                             setFaqList(copy);
                           }}
-                          className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white outline-none"
+                          className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-base sm:text-xs text-white outline-none"
                         />
                         <textarea
                           placeholder="FAQ Answer..."
@@ -970,18 +1029,18 @@ const AdminCMS: React.FC = () => {
                             copy[idx].answer = e.target.value;
                             setFaqList(copy);
                           }}
-                          className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 outline-none"
+                          className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-base sm:text-xs text-slate-300 outline-none"
                         />
                       </div>
                     ))}
                   </div>
 
-                  {/* Submit Bar */}
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-800">
+                  {/* Mobile-Friendly Submit Bar */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-800">
                     <button
                       type="button"
                       onClick={resetForm}
-                      className="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white"
+                      className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white border border-slate-800 sm:border-0 min-h-[44px]"
                     >
                       Clear Form
                     </button>
@@ -989,23 +1048,22 @@ const AdminCMS: React.FC = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50"
+                      className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50 min-h-[44px]"
                     >
-                      <Send size={15} /> {editingId ? 'Update Article' : 'Publish Manual Article'}
+                      <Send size={15} /> {editingId ? 'Update Article' : 'Publish Article'}
                     </button>
                   </div>
                 </form>
               </div>
             </div>
 
-            {/* Side-Panel Assistant & Context Helpers */}
-            <div className="lg:col-span-4 space-y-6">
-              {/* Internal Link Suggestions */}
+            {/* Desktop Side Assistant Column */}
+            <div className="hidden lg:block lg:col-span-4 space-y-6">
               <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
                 <h3 className="text-xs font-black text-white uppercase tracking-widest flex items-center gap-1.5">
                   <LinkIcon className="text-blue-400" size={14} /> Contextual Internal Link Suggestions
                 </h3>
-                <p className="text-[11px] text-slate-400">Click to automatically append relevant internal links to your content:</p>
+                <p className="text-[11px] text-slate-400">Click to append internal links to content:</p>
 
                 <div className="space-y-2">
                   <button
@@ -1014,7 +1072,6 @@ const AdminCMS: React.FC = () => {
                     className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-blue-500 text-left text-xs transition-colors group"
                   >
                     <span className="font-bold text-slate-200 group-hover:text-blue-400 block">🔗 AI Automation Service</span>
-                    <span className="text-[10px] text-slate-500 font-mono">https://confluxai.in/services/ai-automation</span>
                   </button>
 
                   <button
@@ -1023,7 +1080,6 @@ const AdminCMS: React.FC = () => {
                     className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-blue-500 text-left text-xs transition-colors group"
                   >
                     <span className="font-bold text-slate-200 group-hover:text-blue-400 block">🔗 WhatsApp Automation Service</span>
-                    <span className="text-[10px] text-slate-500 font-mono">https://confluxai.in/services/whatsapp-automation</span>
                   </button>
 
                   <button
@@ -1032,43 +1088,8 @@ const AdminCMS: React.FC = () => {
                     className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-blue-500 text-left text-xs transition-colors group"
                   >
                     <span className="font-bold text-slate-200 group-hover:text-blue-400 block">🔗 Web Development Service</span>
-                    <span className="text-[10px] text-slate-500 font-mono">https://confluxai.in/services/website-development</span>
                   </button>
-
-                  {selectedLocationIds[0] && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const loc = allLocations.find(l => l.id === selectedLocationIds[0]);
-                        if (loc) {
-                          insertTextAtCursor(`\nView detailed digital opportunities for [${loc.name} Businesses](https://confluxai.in/locations/${loc.slug}).`);
-                        }
-                      }}
-                      className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-blue-500 text-left text-xs transition-colors group"
-                    >
-                      <span className="font-bold text-slate-200 group-hover:text-blue-400 block">🔗 Selected Locality Hub Link</span>
-                      <span className="text-[10px] text-slate-500 font-mono">https://confluxai.in/locations/{selectedLocationIds[0]}</span>
-                    </button>
-                  )}
                 </div>
-              </div>
-
-              {/* Real Entity & Remote Service Statement Notice */}
-              <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-3">
-                <h3 className="text-xs font-black text-white uppercase tracking-widest flex items-center gap-1.5">
-                  <ShieldAlert className="text-emerald-400" size={14} /> Entity & Ethics Checklist
-                </h3>
-                <ul className="text-[11px] text-slate-300 space-y-2">
-                  <li className="flex items-start gap-1.5">
-                    <span className="text-emerald-400 font-bold">✓</span> Conflux AI is represented accurately as a remote-first agency based in Kolkata, West Bengal.
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <span className="text-emerald-400 font-bold">✓</span> No fake physical office addresses created in Bagula/Krishnanagar.
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <span className="text-emerald-400 font-bold">✓</span> Real author profiles preserved without synthetic identities.
-                  </li>
-                </ul>
               </div>
             </div>
           </div>
@@ -1076,26 +1097,26 @@ const AdminCMS: React.FC = () => {
 
         {/* TAB 3: EDITORIAL PLANNER */}
         {activeTab === 'planner' && (
-          <div className="space-y-8">
-            <div className="p-8 rounded-3xl bg-slate-900 border border-slate-800 space-y-6">
+          <div className="space-y-6">
+            <div className="p-4 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 space-y-6">
               <div>
-                <h2 className="text-lg font-black text-white">Manual Editorial Calendar & Topic Planner</h2>
-                <p className="text-xs text-slate-400">Plan high-value, location-specific topics before writing manually.</p>
+                <h2 className="text-base sm:text-lg font-black text-white">Editorial Calendar & Planner</h2>
+                <p className="text-xs text-slate-400">Plan topics before writing on desktop or mobile.</p>
               </div>
 
               {/* Add New Plan Form */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 rounded-2xl bg-slate-950 border border-slate-800">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 p-3.5 sm:p-4 rounded-2xl bg-slate-950 border border-slate-800">
                 <input 
                   type="text"
                   placeholder="Planned Article Title..."
                   value={newPlanTitle}
                   onChange={(e) => setNewPlanTitle(e.target.value)}
-                  className="md:col-span-2 px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white outline-none"
+                  className="sm:col-span-2 px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-base sm:text-xs text-white outline-none min-h-[44px]"
                 />
                 <select
                   value={newPlanLocSlug}
                   onChange={(e) => setNewPlanLocSlug(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white outline-none"
+                  className="px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-base sm:text-xs text-white outline-none min-h-[44px]"
                 >
                   {allLocations.map(l => (
                     <option key={l.id} value={l.id}>{l.name}</option>
@@ -1120,26 +1141,23 @@ const AdminCMS: React.FC = () => {
                     saveEditorialPlans([item, ...editorialPlans]);
                     setNewPlanTitle('');
                   }}
-                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs"
+                  className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs min-h-[44px] flex items-center justify-center"
                 >
-                  + Add Planned Topic
+                  + Add Topic
                 </button>
               </div>
 
               {/* Planner List */}
               <div className="space-y-3">
                 {editorialPlans.map(plan => (
-                  <div key={plan.id} className="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                  <div key={plan.id} className="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
                           {plan.locationName}
                         </span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                          {plan.priority} PRIORITY
-                        </span>
                       </div>
-                      <h4 className="text-sm font-bold text-white">{plan.title}</h4>
+                      <h4 className="text-xs sm:text-sm font-bold text-white">{plan.title}</h4>
                     </div>
 
                     <button
@@ -1149,10 +1167,11 @@ const AdminCMS: React.FC = () => {
                         setSelectedLocationIds([plan.locationSlug]);
                         setLanguage(plan.language);
                         setActiveTab('editor');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
-                      className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white border border-slate-700"
+                      className="w-full sm:w-auto px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white border border-slate-700 min-h-[40px] flex items-center justify-center"
                     >
-                      Write This Article Now →
+                      Write Now →
                     </button>
                   </div>
                 ))}
@@ -1163,39 +1182,37 @@ const AdminCMS: React.FC = () => {
 
         {/* TAB 4: INTERNAL LOCAL CRM */}
         {activeTab === 'crm' && (
-          <div className="space-y-8">
-            <div className="p-8 rounded-3xl bg-slate-900 border border-slate-800 space-y-6">
+          <div className="space-y-6">
+            <div className="p-4 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 space-y-6">
               <div>
-                <h2 className="text-lg font-black text-white flex items-center gap-2">
-                  <UserCheck className="text-emerald-400" size={20} /> Internal Local Business Relationship Database (CRM)
+                <h2 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                  <UserCheck className="text-emerald-400" size={18} /> Local Business Relationship CRM
                 </h2>
-                <p className="text-xs text-slate-400">
-                  Track local business leads per locality and link manually written educational articles to prospect inquiries. Internal use only.
-                </p>
+                <p className="text-xs text-slate-400">Track local business leads per locality. Internal use only.</p>
               </div>
 
               {/* Add Lead Form */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 rounded-2xl bg-slate-950 border border-slate-800">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 p-3.5 sm:p-4 rounded-2xl bg-slate-950 border border-slate-800">
                 <input 
                   type="text"
-                  placeholder="Business Name (e.g. Bagula Saree Store)"
+                  placeholder="Business Name..."
                   value={newLeadName}
                   onChange={(e) => setNewLeadName(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white outline-none"
+                  className="px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-base sm:text-xs text-white outline-none min-h-[44px]"
                 />
                 <input 
                   type="text"
-                  placeholder="Location (e.g. Bagula, Nadia)"
+                  placeholder="Location (e.g. Bagula)..."
                   value={newLeadLocation}
                   onChange={(e) => setNewLeadLocation(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white outline-none"
+                  className="px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-base sm:text-xs text-white outline-none min-h-[44px]"
                 />
                 <input 
                   type="text"
-                  placeholder="Internal Notes / Needs..."
+                  placeholder="Internal Notes..."
                   value={newLeadNotes}
                   onChange={(e) => setNewLeadNotes(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white outline-none"
+                  className="px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-base sm:text-xs text-white outline-none min-h-[44px]"
                 />
                 <button
                   onClick={() => {
@@ -1218,16 +1235,16 @@ const AdminCMS: React.FC = () => {
                     setNewLeadName('');
                     setNewLeadNotes('');
                   }}
-                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs"
+                  className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs min-h-[44px] flex items-center justify-center"
                 >
-                  + Add Local Prospect
+                  + Add Prospect
                 </button>
               </div>
 
               {/* Lead Cards List */}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {crmLeads.map(lead => (
-                  <div key={lead.id} className="p-5 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                  <div key={lead.id} className="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-[10px] font-black px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -1235,16 +1252,13 @@ const AdminCMS: React.FC = () => {
                         </span>
                         <span className="text-[10px] font-bold text-slate-400">{lead.locationName}</span>
                       </div>
-                      <h4 className="text-base font-bold text-white">{lead.businessName}</h4>
+                      <h4 className="text-sm font-bold text-white">{lead.businessName}</h4>
                       <p className="text-xs text-slate-400 mt-1">{lead.internalNotes}</p>
                     </div>
 
-                    <div className="text-right">
-                      <span className="text-[10px] font-bold text-slate-500 block">Linked Educational Article:</span>
-                      <Link to={`/blog/${lead.linkedArticleSlugs[0]}`} className="text-xs text-blue-400 hover:underline font-bold" target="_blank">
-                        View Bagula Article →
-                      </Link>
-                    </div>
+                    <Link to={`/blog/${lead.linkedArticleSlugs[0]}`} className="text-xs text-blue-400 hover:underline font-bold shrink-0" target="_blank">
+                      Linked Article →
+                    </Link>
                   </div>
                 ))}
               </div>
