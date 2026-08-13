@@ -23,6 +23,69 @@ import ThankYouPage from './components/ThankYouPage.tsx';
 import CareersPage from './components/CareersPage.tsx';
 import ContactPage from './components/ContactPage.tsx';
 
+const routeMeta: Record<string, { title: string; description: string }> = {
+  '/': {
+    title: 'Conflux AI | AI Automation & Digital Solutions Agency',
+    description: 'Conflux AI is an AI automation and digital solutions agency headquartered in Kolkata, India. We build AI-powered systems, business automation workflows and digital solutions.'
+  },
+  '/about': {
+    title: 'About Us | Conflux AI - Mission & Leadership',
+    description: 'Learn about Conflux AI, founded by Tarunjit Biswas & Shouvik Majumdar. We democratize enterprise AI automation and digital solutions from Kolkata, India.'
+  },
+  '/solutions': {
+    title: 'Enterprise AI Solutions & Automation Architecture | Conflux AI',
+    description: 'Explore Conflux AI enterprise automation workflows, custom chatbot integrations, web architecture, and digital transformation solutions.'
+  },
+  '/creative': {
+    title: 'Creative Suite & Video Editing Services | Conflux AI',
+    description: 'High-impact video editing, social media management, graphic design, and retention-focused creative direction by Conflux AI.'
+  },
+  '/impact': {
+    title: 'Client Impact & Growth Metrics | Conflux AI',
+    description: 'See how Conflux AI delivers measurable ROI, autonomous workflows, and accelerated growth for modern enterprises.'
+  },
+  '/portfolio': {
+    title: 'Selected Client Work & Case Studies | Conflux AI',
+    description: 'View live client projects, screen video demos, and visual web applications built by Conflux AI across e-commerce, hospitality, and consultancy.'
+  },
+  '/work': {
+    title: 'Selected Client Work & Case Studies | Conflux AI',
+    description: 'View live client projects, screen video demos, and visual web applications built by Conflux AI across e-commerce, hospitality, and consultancy.'
+  },
+  '/careers': {
+    title: 'Careers & Engineering Opportunities | Join Conflux AI',
+    description: 'Join Conflux AI in building next-generation AI automation, web infrastructure, and generative engine optimization tools.'
+  },
+  '/contact': {
+    title: 'Contact Us | Conflux AI Kolkata',
+    description: 'Connect with Conflux AI engineering leadership in Kolkata, India. Request custom proposals, AI blueprints, and project consultations.'
+  },
+  '/authority': {
+    title: 'Technical Authority & Security Standards | Conflux AI',
+    description: 'Review Conflux AI verification signals, security benchmarks, clean web architecture, and data protection standards.'
+  },
+  '/faq': {
+    title: 'Frequently Asked Questions | Conflux AI',
+    description: 'Answers to common questions regarding AI automation, chatbot integrations, pricing, web development timelines, and services.'
+  },
+  '/semantic-map': {
+    title: 'Generative Engine Optimization (GEO) & Semantic Map | Conflux AI',
+    description: 'Learn how Conflux AI optimizes entity graphs and knowledge bases for AI search engines like Gemini, ChatGPT, and Perplexity.'
+  },
+  '/blog': {
+    title: 'AI Engineering & Growth Blog | Conflux AI',
+    description: 'Technical articles, AI automation tutorials, search engine optimization insights, and software guides by Conflux AI.'
+  },
+  '/thank-you': {
+    title: 'Thank You | Conflux AI',
+    description: 'Thank you for reaching out to Conflux AI. Our technical team will get back to you within 24 hours.'
+  },
+  '/admin/cms': {
+    title: 'Admin CMS | Conflux AI',
+    description: 'Internal content management system for Conflux AI.'
+  }
+};
+
 const ScrollToTop = () => {
   const { pathname, hash } = useLocation();
   
@@ -30,11 +93,22 @@ const ScrollToTop = () => {
     if (!hash) {
       window.scrollTo(0, 0);
     } else {
-        const id = hash.replace('#', '');
-        const element = document.getElementById(id);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-        }
+      const id = hash.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    const meta = routeMeta[pathname] || {
+      title: 'Conflux AI | AI Automation & Digital Solutions Agency',
+      description: 'Conflux AI is an AI automation and digital solutions agency headquartered in Kolkata, India. We build AI-powered systems, business automation workflows and digital solutions.'
+    };
+
+    document.title = meta.title;
+    const metaDescriptionEl = document.querySelector('meta[name="description"]');
+    if (metaDescriptionEl) {
+      metaDescriptionEl.setAttribute('content', meta.description);
     }
   }, [pathname, hash]);
   

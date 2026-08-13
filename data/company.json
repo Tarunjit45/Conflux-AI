@@ -1,35 +1,39 @@
 {
   "name": "Conflux AI",
   "legalName": "Conflux AI Digital Automation & Growth Agency",
-  "website": "https://confluxai.in",
+  "alternateName": "Conflux AI",
+  "website": "https://confluxai.in/",
   "logo": "https://confluxai.in/logo.png",
-  "description": "Conflux AI is a premier AI automation agency and growth engineering network specializing in autonomous web architectures, custom AI chatbots, enterprise workflow automation, SEO/GEO optimization, and digital marketing.",
+  "description": "Conflux AI is an AI automation and digital solutions agency headquartered in Kolkata, India. We build AI-powered systems, business automation workflows and digital solutions.",
   "founders": [
     {
       "name": "Tarunjit Biswas",
-      "role": "Founder & Chief Technology Officer",
-      "email": "tarunjitbiswas24@gmail.com"
+      "role": "Founder, CEO & CTO",
+      "email": "tarunjitbiswas24@gmail.com",
+      "sameAs": "https://www.linkedin.com/in/tarunjit-biswas-a5248131b/"
     },
     {
       "name": "Shouvik Majumdar",
-      "role": "Co-Founder & Creative Director"
+      "role": "Co-Founder, CFO & CMO",
+      "sameAs": "https://www.linkedin.com/in/shoubhik-majumdar-1a77032a1/"
     }
   ],
   "contact": {
     "telephone": "+91-8972517557",
     "email": "confluxdotai@gmail.com",
     "address": {
-      "city": "Kolkata",
-      "state": "West Bengal",
-      "country": "India",
-      "postalCode": "700001"
+      "postalCode": "700001",
+      "addressLocality": "Kolkata",
+      "addressRegion": "West Bengal",
+      "addressCountry": "IN"
     }
   },
   "socialProfiles": [
-    "https://www.instagram.com/conflux.ai",
     "https://www.linkedin.com/company/conflux-ai",
     "https://www.youtube.com/@Confluxai-z9o",
-    "https://x.com/ConfluxA12947"
+    "https://www.instagram.com/conflux.ai",
+    "https://x.com/ConfluxA12947",
+    "https://www.facebook.com/share/17dsWzvFYN/"
   ],
   "services": [
     {

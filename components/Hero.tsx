@@ -60,11 +60,11 @@ const Hero: React.FC = () => {
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-orbitron text-slate-900 tracking-tight leading-[1.1]">
-            We Build Intelligent <span className="text-blue-600">AI Systems</span> & Growth Platforms.
+            AI Automation & <span className="text-blue-600">Digital Solutions</span> Agency
           </h1>
 
           <p className="text-slate-600 text-base sm:text-lg max-w-xl font-normal leading-relaxed">
-            Conflux AI helps forward-thinking businesses automate workflows, deploy smart chatbots, build high-converting websites, and dominate search rankings.
+            Conflux AI builds AI-powered systems, business automation workflows, digital experiences, and growth solutions that help businesses operate and scale smarter.
           </p>
 
           {/* Quick Key Benefits */}

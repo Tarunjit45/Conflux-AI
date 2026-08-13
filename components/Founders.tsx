@@ -8,26 +8,25 @@ const Founders: React.FC = () => {
             role: "Founder, CEO & CTO",
             image: "/founder_tarunjit.jpg",
             initials: "TB",
-            quote: "I love building tools that actually help people. Our goal is to give every small business in India the power of simple, smart AI.",
-            specialties: ["Building AI Tools", "Business Strategy", "Expert Coding"],
+            quote: "I love building tools that actually help people. Our goal is to give every business the power of simple, smart AI.",
+            specialties: ["AI Engineering", "Full-Stack Architecture", "Business Strategy"],
             accentColor: "#0000ff",
             socials: [
                 { platform: "LinkedIn", url: "https://www.linkedin.com/in/tarunjit-biswas-a5248131b/" },
-                { platform: "YouTube", url: "https://www.youtube.com/@Confluxai-z9o" }
+                { platform: "GitHub", url: "https://github.com/Tarunjit45" }
             ],
             delay: 0.15
         },
         {
             name: "Shouvik Majumdar",
-            role: "Co-Founder, CFO & CMO",
+            role: "Co-Founder, CFO & CMO / Creative Director",
             image: "/founder_shouvik.jpg",
             initials: "SM",
             quote: "We believe great tech should be easy for everyone to use. We build systems that help you grow and make your work easier every day.",
-            specialties: ["Getting You More Sales", "Planning for Growth", "Marketing Expert"],
+            specialties: ["Growth Strategy", "B2B Acquisition", "Marketing & Creative Direction"],
             accentColor: "#0f172a",
             socials: [
-                { platform: "LinkedIn", url: "https://www.linkedin.com/in/shoubhik-majumdar-1a77032a1/" },
-                { platform: "YouTube", url: "https://www.youtube.com/@Confluxai-z9o" }
+                { platform: "LinkedIn", url: "https://www.linkedin.com/in/shoubhik-majumdar-1a77032a1/" }
             ],
             delay: 0.3
         }

@@ -6,6 +6,7 @@ import VideoTrust from './components/VideoTrust.tsx';
 import QuickServices from './components/QuickServices.tsx';
 import Projects from './components/Projects.tsx';
 import TrustEngine from './components/TrustEngine.tsx';
+import CompanyGlance from './components/CompanyGlance.tsx';
 
 const LandingPage: React.FC = () => {
   return (
@@ -38,7 +39,12 @@ const LandingPage: React.FC = () => {
         <Reviews />
       </section>
 
-      {/* SECTION 7: Streamlined Direct Contact & Enquiry Form */}
+      {/* SECTION 7: Conflux AI at a Glance */}
+      <section className="bg-slate-950 py-6 border-b border-slate-900">
+        <CompanyGlance />
+      </section>
+
+      {/* SECTION 8: Streamlined Direct Contact & Enquiry Form */}
       <section id="contact" className="py-20 px-4 sm:px-6 md:px-12 lg:px-24 relative bg-slate-50 border-t border-slate-200">
         <ContactForm />
       </section>

@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, Layers, Play, CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const projectsList = [
   {
     id: "aura-fashion",
     title: "Aura Fashion",
-    category: "Fashion & E-Commerce",
+    category: "Luxury E-Commerce",
     url: "https://aura-fasion.vercel.app/",
+    serviceLink: "/services/website-development",
     type: "video",
     video: "/works/aura/aura.mp4",
     summary: "Visually stunning luxury storefront engineered for high-resolution product showcases, fluid animations, and sub-second checkout.",
@@ -16,8 +18,9 @@ const projectsList = [
   {
     id: "vintage-phi",
     title: "Vintage Phi",
-    category: "Salon & Reservation Platform",
+    category: "Salon Reservation System",
     url: "https://vintage-phi.vercel.app/",
+    serviceLink: "/services/website-development",
     type: "gallery",
     images: [
       "/works/vintage-phi/vintage_phi_1.png",
@@ -32,8 +35,9 @@ const projectsList = [
   {
     id: "aurum-wine",
     title: "Aurum Wine",
-    category: "Hospitality & Dining Architecture",
+    category: "Hospitality & Dining Digital Experience",
     url: "https://aurum-wine.vercel.app/",
+    serviceLink: "/services/website-development",
     type: "video",
     video: "/works/aurum/aurum.mp4",
     summary: "Dynamic menu architecture and immersive brand storytelling platform for high-end culinary & wine hospitality venues.",
@@ -42,8 +46,9 @@ const projectsList = [
   {
     id: "joy-consultancy",
     title: "Joy Consultancy",
-    category: "Corporate & Financial Advisory",
+    category: "Financial Advisory & Compliance",
     url: "https://www.joyconsultancy.co.in/",
+    serviceLink: "/services/ai-automation",
     type: "video",
     video: "/works/joy-consultancy/joy_consultancy.mp4",
     summary: "A modern, high-trust corporate consultancy platform engineered for professional financial advisory, compliance, and client intake.",
@@ -172,17 +177,31 @@ const Projects: React.FC = () => {
                   ))}
                 </div>
 
-                {/* Live Link Button */}
-                <div className="pt-2">
+                {/* Live Link & Internal Service Buttons */}
+                <div className="pt-2 flex flex-wrap gap-3">
                   <a
                     href={project.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-blue-600/20"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-blue-600/20"
                   >
                     <span>Visit Live Website</span>
-                    <ExternalLink className="w-4 h-4" />
+                    <ExternalLink className="w-3.5 h-3.5" />
                   </a>
+                  {project.serviceLink && (
+                    <Link
+                      to={project.serviceLink}
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs uppercase tracking-wider transition-all border border-slate-200"
+                    >
+                      <span>Explore Relevant Service</span>
+                    </Link>
+                  )}
+                  <Link
+                    to="/contact"
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider transition-all"
+                  >
+                    <span>Request Similar Project</span>
+                  </Link>
                 </div>
               </div>
             </motion.div>

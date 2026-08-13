@@ -18,8 +18,8 @@ const AboutUsPage: React.FC = () => {
                         <h1 className="font-inter text-5xl md:text-7xl font-black text-slate-900 tracking-tighter leading-[0.9]">
                             Our <span className="text-blue-600 underline decoration-blue-500/20">Mission</span> <br />& vision.
                         </h1>
-                        <p className="text-slate-500 font-medium text-lg mt-6">
-                            We are on a mission to democratize AI automation, making enterprise-grade intelligence accessible to every business, regardless of size or location.
+                        <p className="text-slate-600 font-medium text-base sm:text-lg mt-6 leading-relaxed">
+                            <strong>Conflux AI Digital Automation & Growth Agency</strong> is an AI automation and digital solutions agency headquartered in Kolkata, West Bengal, India. Founded by <a href="https://www.linkedin.com/in/tarunjit-biswas-a5248131b/" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-bold hover:underline">Tarunjit Biswas</a> and <a href="https://www.linkedin.com/in/shoubhik-majumdar-1a77032a1/" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-bold hover:underline">Shouvik Majumdar</a>, Conflux AI combines AI engineering, full-stack technology, automation, business strategy, marketing, and creative direction to build digital solutions for businesses.
                         </p>
                     </div>
                     
@@ -57,6 +57,36 @@ const AboutUsPage: React.FC = () => {
                     <Founders />
                 </div>
 
+                {/* Quick Navigation to Services & Portfolio */}
+                <div className="mb-24 p-8 md:p-10 rounded-3xl bg-slate-50 border border-slate-200">
+                    <h3 className="font-orbitron font-bold text-2xl text-slate-900 mb-4">
+                        Explore Conflux AI Capabilities & Case Studies
+                    </h3>
+                    <p className="text-slate-600 text-sm mb-6 leading-relaxed max-w-3xl">
+                        Headquartered in Kolkata, West Bengal, India, Conflux AI transforms operational workflows with enterprise AI agents, custom chatbots, high-performance web engineering, and Generative Engine Optimization (GEO).
+                    </p>
+                    <div className="flex flex-wrap gap-4">
+                        <Link 
+                            to="/solutions" 
+                            className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-blue-600/20"
+                        >
+                            Explore AI Automation Services
+                        </Link>
+                        <Link 
+                            to="/portfolio" 
+                            className="px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider transition-all"
+                        >
+                            View Selected Client Work
+                        </Link>
+                        <Link 
+                            to="/contact" 
+                            className="px-6 py-3 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs uppercase tracking-wider transition-all border border-slate-300"
+                        >
+                            Contact Engineering Team
+                        </Link>
+                    </div>
+                </div>
+
                 {/* Bottom CTA */}
                 <div className="text-center py-20 px-8 rounded-[3rem] bg-[#020c1b] text-white relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none"
@@ -64,7 +94,7 @@ const AboutUsPage: React.FC = () => {
                     
                     <h2 className="font-inter text-3xl md:text-5xl font-black mb-6 tracking-tight">Ready to build something <span className="text-blue-500">Extraordinary?</span></h2>
                     <p className="text-slate-400 max-w-xl mx-auto mb-10 text-lg">Join us in the next chapter of the AI revolution. Let's automate your growth together.</p>
-                    <Link to="/#contact" className="inline-flex h-14 items-center px-10 rounded-full bg-blue-600 text-white font-black uppercase tracking-widest text-xs hover:bg-blue-700 hover:scale-105 transition-all active:scale-95">
+                    <Link to="/contact" className="inline-flex h-14 items-center px-10 rounded-full bg-blue-600 text-white font-black uppercase tracking-widest text-xs hover:bg-blue-700 hover:scale-105 transition-all active:scale-95">
                         Initiate Partnership
                     </Link>
                 </div>

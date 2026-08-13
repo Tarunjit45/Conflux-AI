@@ -1,6 +1,6 @@
 # 🚀 Tarunjit Biswas (@Tarunjit45) — Complete GitHub Project Directory
 
-**Total Repositories Managed:** 103  
+**Total Repositories Managed:** 104  
 **Owner:** [Tarunjit Biswas](https://github.com/Tarunjit45)  
 **Generated Date:** August 9, 2026  
 
@@ -10,7 +10,7 @@
 
 | Category | Count | Description |
 | :--- | :---: | :--- |
-| **🤖 AI Agents & Autonomous Systems** | **12** | Structured Projects |
+| **🤖 AI Agents & Autonomous Systems** | **13** | Structured Projects |
 | **🔍 RAG & Semantic Search Systems** | **3** | Structured Projects |
 | **🧠 AI Tools & LLM Applications** | **31** | Structured Projects |
 | **🌐 Websites & Web Applications** | **8** | Structured Projects |
@@ -20,7 +20,7 @@
 
 ---
 
-## 🤖 AI Agents & Autonomous Systems (12)
+## 🤖 AI Agents & Autonomous Systems (13)
 
 | Repository Name | Language | Access | Description |
 | :--- | :---: | :---: | :--- |
@@ -30,6 +30,7 @@
 | [cartpole-dqn-pytorch](https://github.com/Tarunjit45/cartpole-dqn-pytorch) | `Jupyter Notebook` | 🌐 Public | This repository contains an implementation of a Deep Q-Network (DQN) for the CartPole environment using PyTorch and Gymnasium. The agent learns to balance a pole on a moving cart through trial and error, receiving rewards for keeping the pole upright. |
 | [ChainWatch](https://github.com/Tarunjit45/ChainWatch) | `Python` | 🌐 Public | ChainWatch is a flight data recorder for multi-step AI systems. It's a CLI-based tool that records every step in an AI decision chain, links them together in order, prevents tampering, and allows you to verify the chain's integrity and replay the full decision flow. |
 | [conflux-bot](https://github.com/Tarunjit45/conflux-bot) | `Python` | 🔒 Private | No description provided. |
+| [ContextOS](https://github.com/Tarunjit45/ContextOS) | `N/A` | 🌐 Public | ContextOS — Stress-test the memory and operational context of long-running AI agents |
 | [deepagents](https://github.com/Tarunjit45/deepagents) | `Python` | 🌐 Public | The batteries-included agent harness. |
 | [internetdb](https://github.com/Tarunjit45/internetdb) | `TypeScript` | 🔒 Private | InternetDB is a highly polished, fully responsive full-stack platform designed to help users discover, compare, and match with the ultimate AI tools for their workflows. |
 | [local-ai-safety-auditor](https://github.com/Tarunjit45/local-ai-safety-auditor) | `Python` | 🌐 Public | An implementation of Asynchronous AI Oversight using local Small Language Models (SLMs). This project demonstrates how to build a self-correcting agentic loop that prioritizes AI Safety and Privacy by running entirely on local hardware. |
@@ -121,7 +122,7 @@
 | [dataforge-enterprise-gcp-platform](https://github.com/Tarunjit45/dataforge-enterprise-gcp-platform) | `Python` | 🌐 Public | No description provided. |
 | [indian-knowledge-engine](https://github.com/Tarunjit45/indian-knowledge-engine) | `Python` | 🌐 Public | No description provided. |
 | [medi101](https://github.com/biswajit-sarkar-007/medi101) | `TypeScript` | 🌐 Public | No description provided. |
-| [medi101](https://github.com/Tarunjit45/medi101) | `N/A` | 🔒 Private | No description provided. |
+| [medi101](https://github.com/Tarunjit45/medi101) | `TypeScript` | 🔒 Private | No description provided. |
 | [Portfolio](https://github.com/Tarunjit45/Portfolio) | `HTML` | 🌐 Public | No description provided. |
 | [Pujo-Media](https://github.com/Tarunjit45/Pujo-Media) | `N/A` | 🔒 Private | No description provided. |
 | [Pujo_media](https://github.com/Tarunjit45/Pujo_media) | `JavaScript` | 🌐 Public | No description provided. |
@@ -152,7 +153,7 @@
 | [STARTUP](https://github.com/Tarunjit45/STARTUP) | `N/A` | 🌐 Public | Welcome Developers ... !!!!!!!!!!!!!! |
 | [Study-Buddy](https://github.com/Tarunjit45/Study-Buddy) | `TypeScript` | 🔒 Private | lets study toughter  |
 | [TechDay-Welcome-card-generator-](https://github.com/Tarunjit45/TechDay-Welcome-card-generator-) | `TypeScript` | 🌐 Public | students can generate the tech day welcome card  |
-| [tensorflow](https://github.com/Tarunjit45/tensorflow) | `N/A` | 🌐 Public | An Open Source Machine Learning Framework for Everyone |
+| [tensorflow](https://github.com/Tarunjit45/tensorflow) | `C++` | 🌐 Public | An Open Source Machine Learning Framework for Everyone |
 | [Vintage-](https://github.com/Tarunjit45/Vintage-) | `TypeScript` | 🌐 Public | The Salon  |
 | [VoidChat](https://github.com/Tarunjit45/VoidChat) | `Python` | 🔒 Private | A modern, serverless, end-to-end encrypted peer-to-peer messenger. Works directly on local networks with zero reliance on central servers. Built with strong cryptography, custom protocol, and local database. |
 | [VoidChat](https://github.com/XE0N-Eg0/VoidChat) | `Python` | 🌐 Public | A modern, serverless, end-to-end encrypted peer-to-peer messenger. Works directly on local networks with zero reliance on central servers. Built with strong cryptography, custom protocol, and local database. |
