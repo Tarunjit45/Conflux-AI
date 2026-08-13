@@ -27,6 +27,8 @@ const BlogPage: React.FC = () => {
 
     const fetchArticles = async () => {
         setIsLoading(true);
+        let fetchedList: any[] = [];
+
         try {
             const { data, error } = await supabase
                 .from('articles')
@@ -35,26 +37,47 @@ const BlogPage: React.FC = () => {
                 .order('created_at', { ascending: false });
 
             if (!error && data && data.length > 0) {
-                setArticles(data);
-                setIsLoading(false);
-                return;
+                fetchedList = data;
             }
         } catch (err) {
             console.error('Error fetching articles from Supabase:', err);
         }
 
-        // Fallback to static /data/articles.json
-        try {
-            const res = await fetch('/data/articles.json');
-            if (res.ok) {
-                const localArticles = await res.json();
-                setArticles(localArticles || []);
+        // Fallback to static /data/articles.json if database returns empty
+        if (fetchedList.length === 0) {
+            try {
+                const res = await fetch('/data/articles.json');
+                if (res.ok) {
+                    fetchedList = await res.json();
+                }
+            } catch (localErr) {
+                console.error('Error fetching static articles:', localErr);
             }
-        } catch (localErr) {
-            console.error('Error fetching static articles:', localErr);
-        } finally {
-            setIsLoading(false);
         }
+
+        // Merge custom admin overrides from localStorage
+        const customLocalData = localStorage.getItem('conflux_custom_articles');
+        if (customLocalData) {
+            try {
+                const customList: any[] = JSON.parse(customLocalData);
+                const dbSlugs = new Set(fetchedList.map(a => a.slug));
+                const newCustom = customList.filter(c => !dbSlugs.has(c.slug) && c.is_published !== false);
+
+                fetchedList = fetchedList
+                    .map(dbItem => {
+                        const matchingCustom = customList.find(c => c.slug === dbItem.slug || c.id === dbItem.id);
+                        return matchingCustom ? matchingCustom : dbItem;
+                    })
+                    .filter(item => item.is_published !== false);
+
+                fetchedList = [...newCustom, ...fetchedList];
+            } catch (e) {
+                console.warn('Local articles parse error:', e);
+            }
+        }
+
+        setArticles(fetchedList);
+        setIsLoading(false);
     };
 
     const handleReaction = async (id: string, currentReactions: number) => {

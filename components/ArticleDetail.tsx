@@ -190,6 +190,18 @@ const ArticleDetail: React.FC = () => {
             console.error('Error fetching article from Supabase:', err);
         }
 
+        // Check custom local overrides first
+        const customLocalData = localStorage.getItem('conflux_custom_articles');
+        if (customLocalData) {
+            try {
+                const customList: Article[] = JSON.parse(customLocalData);
+                const matching = customList.find(a => a.slug === slug || a.id === slug);
+                if (matching) {
+                    loadedArticle = matching;
+                }
+            } catch (e) {}
+        }
+
         if (!loadedArticle) {
             try {
                 const res = await fetch('/data/articles.json');
