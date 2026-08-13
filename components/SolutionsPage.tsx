@@ -17,8 +17,8 @@ const servicesList = [
   {
     id: "ai-automation",
     name: "AI Automation",
-    tagline: "Autonomous Microservices & Workflow Automation",
-    description: "Conflux AI builds custom autonomous microservices that connect your CRMs, databases, and communication tools, reducing manual operational overhead by up to 80%.",
+    tagline: "Autonomous Microservices & Process Pipelines",
+    description: "Conflux AI builds custom autonomous microservices and intelligent AI pipelines that connect your CRMs, databases, and communication channels, streamlining manual operations.",
     image: "/images/ai-automation/ai-automation_1.jpg",
     icon: Zap,
     points: [
@@ -27,13 +27,13 @@ const servicesList = [
       "Real-Time Data Parsing & Ingestion",
       "Automated Security & Error Alerts"
     ],
-    diagram: "CRM → AI Agent → WhatsApp → Email → Database"
+    diagram: "CRM → AI Pipeline → Automated Action → Database"
   },
   {
     id: "chatbot-development",
-    name: "Chatbot Development",
+    name: "AI Agents & Chatbots",
     tagline: "24/7 Intelligent Conversational Agents",
-    description: "We build context-aware AI chatbots trained on your company knowledge base that answer complex questions, qualify leads, and book sales meetings automatically.",
+    description: "We build context-aware AI chatbots trained on your company knowledge base that answer complex questions, qualify leads, and schedule sales meetings automatically.",
     image: "/images/chatbot-development/chatbot-development_1.jpg",
     icon: MessageSquare,
     points: [
@@ -45,10 +45,25 @@ const servicesList = [
     diagram: "Customer → AI Chatbot → Qualification → Live Agent"
   },
   {
+    id: "workflow-automation",
+    name: "Business Workflow Automation",
+    tagline: "Enterprise Trigger & System Integration",
+    description: "Connect multi-platform operations using custom Make.com and Zapier webhooks, automated database triggers, and synchronized internal tools.",
+    image: "/images/ai-automation/ai-automation_1.jpg",
+    icon: Zap,
+    points: [
+      "Webhook & API Trigger Automation",
+      "Multi-App Data Synchronization",
+      "Operational Error Handling",
+      "Automated Report Generation"
+    ],
+    diagram: "Webhook Trigger → Process Logic → Multi-Channel Action"
+  },
+  {
     id: "website-development",
-    name: "Website Development",
-    tagline: "High-Speed React & Serverless Web Applications",
-    description: "We engineer custom React + Vite + TypeScript web applications designed for sub-second load speeds, flawless mobile responsiveness, and maximum lead conversion.",
+    name: "Web Development (Growth & Creative)",
+    tagline: "High-Speed React & Serverless Web Platforms",
+    description: "We engineer custom React + Vite + TypeScript web applications designed for sub-second load speeds, flawless mobile responsiveness, and high conversion.",
     image: "/images/website-development/website-development_1.jpg",
     icon: Globe,
     points: [
@@ -57,35 +72,35 @@ const servicesList = [
       "Responsive Mobile & Desktop UX",
       "Vercel Edge Cloud Deployment"
     ],
-    diagram: "Design System → React → Serverless API → 100% Uptime"
+    diagram: "Design System → React → Serverless API → High Uptime"
   },
   {
     id: "seo-geo",
-    name: "SEO & GEO",
-    tagline: "Google Search & AI Answer Engine Optimization",
-    description: "We optimize your website for both traditional search crawlers (Googlebot) and Generative Engine Optimization (GEO/AEO) using JSON-LD schemas, technical taxonomy, and high-authority documentation.",
+    name: "SEO & Search Optimization (Growth & Creative)",
+    tagline: "Google Search & Schema Technical Optimization",
+    description: "We optimize your digital presence for search engines using Schema.org JSON-LD structured data, technical taxonomy, and high-authority documentation.",
     image: "/images/seo-geo/seo-geo_1.jpg",
     icon: TrendingUp,
     points: [
       "Schema.org JSON-LD Infrastructure",
-      "Robots.txt & Sitemap AI Crawl Setup",
+      "Robots.txt & Sitemap Optimization",
       "Core Web Vitals Technical Optimization",
-      "Generative Knowledge Graph Formatting"
+      "Entity & Knowledge Graph Setup"
     ],
-    diagram: "Search Query → AI Overview → Website → Lead"
+    diagram: "Search Query → Structured Data → Website → Lead"
   },
   {
     id: "digital-marketing",
-    name: "Digital Marketing",
-    tagline: "Data-Driven B2B Acquisition & Video Editing",
-    description: "We provide end-to-end B2B client acquisition campaigns, high-converting video editing, social media management, and authentic review growth.",
+    name: "Digital Marketing & Creative Services",
+    tagline: "Data-Driven B2B Acquisition & Video Production",
+    description: "We provide end-to-end B2B client acquisition campaigns, high-converting video editing, social media management, and reputation management.",
     image: "/images/digital-marketing/digital-marketing_1.jpg",
     icon: Megaphone,
     points: [
       "B2B Targeted Client Acquisition",
-      "High-Impact Short & Long Video Editing",
-      "Social Media Growth Strategy",
-      "Monthly Growth Analytics & Attribution"
+      "Short & Long-Form Video Editing",
+      "Social Media Management & Strategy",
+      "Reputation & Feedback Management"
     ],
     diagram: "Campaign → Targeted Audience → Conversion → Analytics"
   }

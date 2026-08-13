@@ -28,22 +28,7 @@ const PortfolioPage: React.FC = () => {
                     <Projects />
                 </div>
 
-                {/* Growth Stats Section */}
-                <div className="max-w-7xl mx-auto px-4 md:px-6 py-24 border-t border-slate-100">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-                        {[
-                            { value: "450+", label: "Successful Deployments" },
-                            { value: "10k+", label: "Automation Workflows Active" },
-                            { value: "98%", label: "Client Retainment Rate" },
-                            { value: "3.5x", label: "Average ROI Increase" }
-                        ].map((stat, i) => (
-                            <div key={i} className="p-8 rounded-3xl bg-slate-50 border border-slate-100">
-                                <div className="text-4xl font-black text-blue-600 mb-2">{stat.value}</div>
-                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{stat.label}</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+
 
                 {/* Bottom CTA */}
                 <div className="max-w-7xl mx-auto px-4 md:px-6 mt-12">

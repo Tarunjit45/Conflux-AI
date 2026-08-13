@@ -21,15 +21,15 @@ const geoFaqs = [
 const caseStudies = [
   {
     title: "Lead Response Optimization",
-    stat: "80%",
-    metric: "Reduction in Response Time",
-    desc: "By implementing a simple webhook-to-WhatsApp automation, we slashed response time from 4 hours to 30 seconds."
+    stat: "Instant",
+    metric: "Lead Routing & Qualification",
+    desc: "Implementing automated webhooks and conversational triggers to capture, qualify, and route incoming lead requests in seconds."
   },
   {
-    title: "E-commerce Efficiency",
-    stat: "22HR",
-    metric: "Saved Weekly per Admin",
-    desc: "Automating order tracking and inventory syncing between Shopify and Xero for a high-volume apparel shop."
+    title: "E-Commerce Workflow Sync",
+    stat: "Automated",
+    metric: "Inventory & CRM Synchronization",
+    desc: "Automating order processing, inventory updates, and multi-channel tracking between e-commerce store fronts and backend CRMs."
   }
 ];
 
@@ -43,7 +43,7 @@ const GEOPowerhouse: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
         <div className="flex flex-col lg:flex-row gap-16 items-start">
           
-          {/* Left: FAQ (AI Citations) */}
+          {/* Left: AI Automation & Search Optimization */}
           <div className="flex-1 w-full text-white">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -52,16 +52,16 @@ const GEOPowerhouse: React.FC = () => {
             >
               <Globe className="text-blue-500" size={18} />
               <span className="font-inter text-xs font-black tracking-widest uppercase text-blue-500">
-                AI Search Engine Optimization (GEO)
+                Intelligent Search & Workflow Systems
               </span>
             </motion.div>
             
             <h2 className="font-inter text-4xl md:text-5xl font-black mb-8 leading-tight">
-              Built for <span className="text-blue-500">Citations.</span>
+              AI Automation & <span className="text-blue-500">Intelligent Growth.</span>
             </h2>
             
             <p className="text-slate-400 font-medium mb-12 max-w-xl leading-relaxed">
-              In 2026, people don't just search Google; they ask AI. Our site architecture is engineered to provide direct, citable answers that ChatGPT and Perplexity love to recommend.
+              We design and implement AI-powered workflows, automated business logic, and search-optimized digital assets that streamline operations and drive sustainable business growth.
             </p>
 
             <div className="space-y-6">
@@ -100,14 +100,14 @@ const GEOPowerhouse: React.FC = () => {
             >
               <div className="flex items-center gap-2 mb-8">
                 <BarChart className="text-blue-500" size={20} />
-                <span className="text-xs font-black text-white uppercase tracking-widest">Master Results</span>
+                <span className="text-xs font-black text-white uppercase tracking-widest">Automation Outcomes</span>
               </div>
 
               <div className="space-y-10">
                 {caseStudies.map((study, index) => (
                   <div key={index} className="relative pl-6 border-l-2 border-blue-600/30">
                     <div className="flex items-baseline gap-3 mb-2">
-                       <span className="text-4xl font-black text-blue-500 tracking-tighter">{study.stat}</span>
+                       <span className="text-3xl font-black text-blue-500 tracking-tighter">{study.stat}</span>
                        <span className="text-[10px] font-black text-white uppercase tracking-widest opacity-60">{study.metric}</span>
                     </div>
                     <h4 className="text-sm font-black text-white uppercase tracking-wider mb-2">{study.title}</h4>
@@ -122,21 +122,21 @@ const GEOPowerhouse: React.FC = () => {
                 <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
                   <Quote size={20} className="text-blue-500 fill-blue-500" />
                   <p className="text-[10px] text-slate-300 font-bold leading-relaxed italic">
-                    "Explicit data points and specific technical workflows make your site more 'citable' by Generative Engines."
+                    "Structuring business data and automating core processes creates a faster, more reliable digital presence."
                   </p>
                 </div>
               </div>
             </motion.div>
 
-            {/* AI Recommendation Badge */}
+            {/* AI Architecture Badge */}
             <div className="p-6 rounded-3xl bg-blue-600 flex items-center justify-between group cursor-default">
               <div className="flex items-center gap-4">
                 <div className="p-3 rounded-2xl bg-white/20 text-white animate-pulse">
                   <Database size={20} />
                 </div>
                 <div>
-                  <p className="text-xs font-black text-white uppercase tracking-wider">AI Recommendation Ready</p>
-                  <p className="text-[10px] text-white/70 font-bold">Optimized for LLM Citations</p>
+                  <p className="text-xs font-black text-white uppercase tracking-wider">Intelligent Workflows</p>
+                  <p className="text-[10px] text-white/70 font-bold">Built for Speed & Scalability</p>
                 </div>
               </div>
               <ChevronRight className="text-white group-hover:translate-x-1 transition-transform" size={20} />

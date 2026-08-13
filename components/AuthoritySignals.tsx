@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Linkedin, Youtube, ExternalLink, ShieldCheck, Star } from 'lucide-react';
+import { Linkedin, Youtube, ExternalLink, ShieldCheck } from 'lucide-react';
 
 const socialSignals = [
   {
@@ -17,19 +16,6 @@ const socialSignals = [
     description: "Educational content on scaling businesses with smart AI workflows.",
     icon: <Youtube size={20} className="text-[#FF0000]" />,
     action: "Watch Tutorials"
-  }
-];
-
-const recommendations = [
-  {
-    author: "Marketing Director",
-    company: "TechScale Global",
-    text: "Conflux AI didn't just build a site; they built a growth engine. Their understanding of AI agents is ahead of the curve.",
-  },
-  {
-    author: "Founder",
-    company: "UrbanEats",
-    text: "The lead generation automation they implemented saved us 20+ hours a week. Truly a game-changer.",
   }
 ];
 
@@ -83,28 +69,29 @@ const AuthoritySignals: React.FC = () => {
             </div>
           </div>
 
-          {/* Right: Recommendations (Micro-Bento) */}
+          {/* Right: Technical Capabilities (Micro-Bento) */}
           <div className="w-full lg:w-[450px] space-y-4">
             <div className="p-1 rounded-3xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-white/5">
               <div className="bg-[#020c1b]/60 backdrop-blur-3xl rounded-[1.4rem] p-6">
-                <div className="flex items-center gap-1 mb-6">
-                  {[1, 2, 3, 4, 5].map(i => <Star key={i} size={14} className="fill-blue-500 text-blue-500" />)}
-                  <span className="ml-2 text-xs font-black text-white uppercase tracking-widest">Client Vouchers</span>
+                <div className="flex items-center gap-2 mb-6">
+                  <ShieldCheck size={18} className="text-blue-500" />
+                  <span className="text-xs font-black text-white uppercase tracking-widest">Engineering Standards</span>
                 </div>
 
-                <div className="space-y-8">
-                  {recommendations.map((rec, index) => (
-                    <div key={index} className="relative pl-6 border-l-2 border-blue-600/30">
-                      <p className="text-slate-300 italic text-sm leading-relaxed mb-4">"{rec.text}"</p>
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-slate-800" />
-                        <div>
-                          <p className="text-xs font-black text-white uppercase tracking-wider">{rec.author}</p>
-                          <p className="text-[10px] text-blue-500/70 font-bold">{rec.company}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                <div className="space-y-6">
+                  <div className="relative pl-6 border-l-2 border-blue-600/30">
+                    <h4 className="text-sm font-black text-white uppercase tracking-wider mb-1">Production Lead Security</h4>
+                    <p className="text-xs text-slate-400 font-medium leading-relaxed">
+                      End-to-end encryption for incoming client leads, API Webhooks, and CRM data sync.
+                    </p>
+                  </div>
+
+                  <div className="relative pl-6 border-l-2 border-blue-600/30">
+                    <h4 className="text-sm font-black text-white uppercase tracking-wider mb-1">Sub-Second Web Architecture</h4>
+                    <p className="text-xs text-slate-400 font-medium leading-relaxed">
+                      Vite + Serverless cloud edge infrastructure ensuring 100/100 Core Web Vitals.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

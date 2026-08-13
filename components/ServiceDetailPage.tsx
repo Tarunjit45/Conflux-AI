@@ -159,7 +159,7 @@ const SERVICE_DETAILS: Record<string, ServiceDetail> = {
       "B2B Targeted Client Acquisition Campaigns",
       "High-Impact Short & Long-Form Video Editing",
       "Social Media Growth Strategy & Content",
-      "Organic Customer Review Growth Systems",
+      "Reputation Management (Feedback collection & response management)",
       "Monthly Growth Analytics & Conversion Attribution"
     ],
     "process": [

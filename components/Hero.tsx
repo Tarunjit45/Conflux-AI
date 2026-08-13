@@ -26,7 +26,7 @@ const heroShowcaseImages = [
     title: "Generative Engine Optimization",
     category: "SEO & GEO",
     src: "/images/seo-geo/seo-geo_1.jpg",
-    desc: "Optimized for Google SGE, ChatGPT & Perplexity citations"
+    desc: "Modern Search Engine & AI Search Visibility"
   },
   {
     title: "Data-Driven Acquisition",
@@ -73,7 +73,7 @@ const Hero: React.FC = () => {
               "Autonomous AI Workflows",
               "24/7 Prospect Qualification",
               "Sub-Second Fast Websites",
-              "Google SGE & GEO Optimized"
+              "Search & Digital Optimization"
             ].map((benefit, i) => (
               <div key={i} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
                 <CheckCircle className="w-4 h-4 text-blue-600 shrink-0" />

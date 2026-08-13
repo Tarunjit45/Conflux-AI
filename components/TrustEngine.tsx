@@ -75,7 +75,7 @@ const TrustEngine: React.FC = () => {
         </div>
       </div>
 
-      {/* Stats Section */}
+      {/* Features Section */}
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -83,9 +83,9 @@ const TrustEngine: React.FC = () => {
           viewport={{ once: true }}
           className="mb-10 text-center"
         >
-          <div className="section-tag justify-center mb-3">What We've Done</div>
+          <div className="section-tag justify-center mb-3">Core Pillars</div>
           <h2 className="font-inter text-2xl md:text-4xl font-black" style={{ color: '#0f172a' }}>
-            RESULTS THAT <span className="text-gradient">ACTUALLY MATTER</span>
+            ENGINEERED FOR <span className="text-gradient">OPERATIONAL EXCELLENCE</span>
           </h2>
         </motion.div>
 
@@ -94,19 +94,40 @@ const TrustEngine: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.15 }}
-          className="rounded-2xl py-12 md:py-16 px-6"
+          className="rounded-2xl py-10 px-6"
           style={{
             background: 'linear-gradient(135deg, rgba(0,0,255,0.06) 0%, rgba(255,255,255,0.95) 50%, rgba(15,23,42,0.04) 100%)',
             border: '1px solid rgba(0,0,255,0.15)',
             boxShadow: '0 4px 32px rgba(0,0,255,0.06)'
           }}
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6">
-            <RollingCounter value={60} suffix="+" label="Happy Businesses" color="#0000ff" />
-            <div className="hidden md:block w-px self-stretch" style={{ background: 'rgba(0,0,255,0.15)' }} />
-            <RollingCounter value={98} suffix="%" label="Positive Feedback" color="#0f172a" />
-            <div className="hidden md:block w-px self-stretch" style={{ background: 'rgba(22,163,74,0.15)' }} />
-            <RollingCounter value={100} prefix="₹" suffix="K+" label="New Sales Created" color="#0000cc" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div className="px-4">
+              <div className="font-inter text-xl md:text-2xl font-black mb-2 text-blue-600">
+                Autonomous AI Systems
+              </div>
+              <div className="font-inter text-[11px] md:text-[12px] font-bold tracking-wide uppercase text-slate-500">
+                End-to-End Process Automation
+              </div>
+            </div>
+            <div className="hidden md:block w-px self-stretch bg-blue-100" />
+            <div className="px-4">
+              <div className="font-inter text-xl md:text-2xl font-black mb-2 text-slate-900">
+                Sub-Second Speed
+              </div>
+              <div className="font-inter text-[11px] md:text-[12px] font-bold tracking-wide uppercase text-slate-500">
+                High-Performance Web Infrastructure
+              </div>
+            </div>
+            <div className="hidden md:block w-px self-stretch bg-blue-100" />
+            <div className="px-4">
+              <div className="font-inter text-xl md:text-2xl font-black mb-2 text-blue-700">
+                Data Security
+              </div>
+              <div className="font-inter text-[11px] md:text-[12px] font-bold tracking-wide uppercase text-slate-500">
+                Production Lead Protection
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -124,7 +145,7 @@ const TrustEngine: React.FC = () => {
           <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600" />
         </span>
         <span className="font-inter text-[11px] font-bold tracking-wide uppercase" style={{ color: '#475569' }}>
-          Always Working — Real-time Updates
+          Always Working — Real-time Operations
         </span>
       </motion.div>
     </div>
