@@ -22,8 +22,16 @@ import ServiceDetailPage from './components/ServiceDetailPage.tsx';
 import ThankYouPage from './components/ThankYouPage.tsx';
 import CareersPage from './components/CareersPage.tsx';
 import ContactPage from './components/ContactPage.tsx';
+import LocationHubPage from './components/locations/LocationHubPage';
+import DistrictDirectoryPage from './components/locations/DistrictDirectoryPage';
+import LocationDetailPage from './components/locations/LocationDetailPage';
+import IndustryLocationPage from './components/locations/IndustryLocationPage';
 
 const routeMeta: Record<string, { title: string; description: string }> = {
+  '/locations/west-bengal': {
+    title: 'Remote AI Automation Services in West Bengal | Conflux AI',
+    description: 'Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, serving businesses across West Bengal, India, and globally.'
+  },
   '/': {
     title: 'Conflux AI | AI Automation & Digital Solutions Agency',
     description: 'Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, India, serving clients across India and globally.'
@@ -247,6 +255,10 @@ const App: React.FC = () => {
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/semantic-map" element={<SemanticPage />} />
         <Route path="/services/:serviceId" element={<ServiceDetailPage />} />
+        <Route path="/locations/west-bengal" element={<LocationHubPage />} />
+        <Route path="/locations/west-bengal/:districtSlug" element={<DistrictDirectoryPage />} />
+        <Route path="/locations/west-bengal/:districtSlug/:citySlug" element={<LocationDetailPage />} />
+        <Route path="/locations/west-bengal/:citySlug/:industrySlug" element={<IndustryLocationPage />} />
         <Route path="/thank-you" element={<ThankYouPage />} />
         <Route path="/admin/cms" element={<AdminCMS />} />
       </Routes>
