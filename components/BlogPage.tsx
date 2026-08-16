@@ -5,10 +5,11 @@ import { Calendar, User, Tag, Heart, ArrowLeft, Loader2, Sparkles, MapPin, Globe
 import { Link } from 'react-router-dom';
 import { getAllLocations, LocationItem } from '../data/locationsData';
 import { ArticleKnowledgeObject, ContentLanguage } from '../types/article';
+import { STATIC_ARTICLES } from '../data/articlesData';
 
 const BlogPage: React.FC = () => {
-    const [articles, setArticles] = useState<ArticleKnowledgeObject[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [articles, setArticles] = useState<ArticleKnowledgeObject[]>(STATIC_ARTICLES);
+    const [isLoading, setIsLoading] = useState(false);
     
     // Filter State
     const [selectedLanguage, setSelectedLanguage] = useState<ContentLanguage | 'ALL'>('ALL');
@@ -39,16 +40,9 @@ const BlogPage: React.FC = () => {
             console.error('Error fetching articles from Supabase:', err);
         }
 
-        // Fallback to static /data/articles.json
+        // Fallback to static articles
         if (fetchedList.length === 0) {
-            try {
-                const res = await fetch('/data/articles.json');
-                if (res.ok) {
-                    fetchedList = await res.json();
-                }
-            } catch (localErr) {
-                console.error('Error fetching static articles:', localErr);
-            }
+            fetchedList = STATIC_ARTICLES;
         }
 
         // Merge custom admin overrides from localStorage

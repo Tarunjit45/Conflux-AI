@@ -5,16 +5,27 @@ import { supabase } from '../lib/supabase';
 import { Calendar, ArrowRight, Sparkles, Layout } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+import { STATIC_ARTICLES } from '../data/articlesData';
+
 interface Article {
     id: string;
     title: string;
-    category: string;
+    category?: string;
     slug: string;
-    created_at: string;
+    created_at?: string;
+    publishedAt?: string;
 }
 
 const BlogSection: React.FC = () => {
-    const [articles, setArticles] = useState<Article[]>([]);
+    const [articles, setArticles] = useState<Article[]>(
+        STATIC_ARTICLES.slice(0, 3).map(a => ({
+            id: a.id,
+            title: a.title,
+            category: a.category || 'AI Automation',
+            slug: a.slug,
+            created_at: a.publishedAt || a.updatedAt
+        }))
+    );
 
     useEffect(() => {
         const fetchLatest = async () => {
@@ -32,16 +43,6 @@ const BlogSection: React.FC = () => {
                 }
             } catch (err) {
                 console.error('Error fetching latest articles from Supabase:', err);
-            }
-
-            try {
-                const res = await fetch('/data/articles.json');
-                if (res.ok) {
-                    const localData = await res.json();
-                    setArticles((localData || []).slice(0, 3));
-                }
-            } catch (err) {
-                console.error('Error fetching local articles fallback:', err);
             }
         };
         fetchLatest();

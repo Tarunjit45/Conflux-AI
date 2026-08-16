@@ -6,6 +6,7 @@ import { getAllLocations, LocationItem } from '../data/locationsData';
 import { BUSINESS_CATEGORY_TAXONOMY } from '../data/taxonomiesData';
 import { ArticleKnowledgeObject } from '../types/article';
 import { trackLocationEvent } from '../lib/locationAnalytics';
+import { getArticleBySlug, STATIC_ARTICLES } from '../data/articlesData';
 
 // Markdown Parser Helper to render clean, beautifully formatted HTML without raw symbols
 const parseMarkdownText = (text: string) => {
@@ -171,6 +172,7 @@ const ArticleDetail: React.FC = () => {
 
     const fetchArticle = async () => {
         setIsLoading(true);
+        const cleanSlug = decodeURIComponent(slug || '').trim().replace(/\s+/g, '-').replace(/\/+$/, '');
         let foundArticle: ArticleKnowledgeObject | null = null;
 
         // 1. Check local storage custom articles first
@@ -178,18 +180,29 @@ const ArticleDetail: React.FC = () => {
             const localData = localStorage.getItem('conflux_custom_articles');
             if (localData) {
                 const list: ArticleKnowledgeObject[] = JSON.parse(localData);
-                const localMatch = list.find(a => a.slug === slug || a.id === slug);
+                const localMatch = list.find(a => 
+                    a.slug.toLowerCase().trim() === cleanSlug.toLowerCase() || 
+                    a.id.toLowerCase().trim() === cleanSlug.toLowerCase()
+                );
                 if (localMatch) foundArticle = localMatch;
             }
         } catch (e) {}
 
-        // 2. Query Supabase
+        // 2. Check bundled static articles in-memory (0ms latency fallback)
+        if (!foundArticle) {
+            const staticMatch = getArticleBySlug(cleanSlug);
+            if (staticMatch) {
+                foundArticle = staticMatch;
+            }
+        }
+
+        // 3. Query Supabase
         if (!foundArticle) {
             try {
                 const { data, error } = await supabase
                     .from('articles')
                     .select('*')
-                    .eq('slug', slug)
+                    .eq('slug', cleanSlug)
                     .single();
 
                 if (!error && data) {
@@ -198,13 +211,16 @@ const ArticleDetail: React.FC = () => {
             } catch (err) {}
         }
 
-        // 3. Fallback to public/data/articles.json
+        // 4. Fallback to public/data/articles.json network fetch
         if (!foundArticle) {
             try {
                 const res = await fetch('/data/articles.json');
                 if (res.ok) {
                     const articlesList: ArticleKnowledgeObject[] = await res.json();
-                    const jsonMatch = articlesList.find(a => a.slug === slug || a.id === slug);
+                    const jsonMatch = articlesList.find(a => 
+                        a.slug.toLowerCase().trim() === cleanSlug.toLowerCase() || 
+                        a.id.toLowerCase().trim() === cleanSlug.toLowerCase()
+                    );
                     if (jsonMatch) foundArticle = jsonMatch;
                 }
             } catch (err) {}
