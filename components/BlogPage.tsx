@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
-import { Calendar, User, Tag, Heart, ArrowLeft, Loader2, Sparkles, MapPin, Globe, Filter } from 'lucide-react';
+import { Calendar, User, Tag, Heart, ArrowLeft, Loader2, Sparkles, MapPin, Globe, Filter, Share2, Check, Copy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getAllLocations, LocationItem } from '../data/locationsData';
 import { ArticleKnowledgeObject, ContentLanguage } from '../types/article';
@@ -10,6 +10,7 @@ import { STATIC_ARTICLES } from '../data/articlesData';
 const BlogPage: React.FC = () => {
     const [articles, setArticles] = useState<ArticleKnowledgeObject[]>(STATIC_ARTICLES);
     const [isLoading, setIsLoading] = useState(false);
+    const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
     
     // Filter State
     const [selectedLanguage, setSelectedLanguage] = useState<ContentLanguage | 'ALL'>('ALL');
@@ -223,15 +224,45 @@ const BlogPage: React.FC = () => {
                                         </p>
 
                                         <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between text-xs">
-                                            <div className="text-[10px] font-bold text-slate-400">
-                                                By {authorName}
+                                            <div className="flex items-center gap-3">
+                                                <div className="text-[10px] font-bold text-slate-400">
+                                                    By {authorName}
+                                                </div>
+
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        const url = `https://confluxai.in/blog/${article.slug}`;
+                                                        if (typeof navigator !== 'undefined' && 'share' in navigator) {
+                                                            navigator.share({
+                                                                title: article.title,
+                                                                text: article.excerpt || article.title,
+                                                                url: url
+                                                            }).catch(() => {});
+                                                        } else {
+                                                            navigator.clipboard.writeText(url);
+                                                            setCopiedSlug(article.slug);
+                                                            setTimeout(() => setCopiedSlug(null), 2000);
+                                                        }
+                                                    }}
+                                                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-bold border transition-colors ${
+                                                        copiedSlug === article.slug 
+                                                            ? 'bg-emerald-50 text-emerald-600 border-emerald-200' 
+                                                            : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-blue-50 hover:text-blue-600'
+                                                    }`}
+                                                    title="Share Article"
+                                                >
+                                                    {copiedSlug === article.slug ? <Check size={10} /> : <Share2 size={10} />}
+                                                    <span>{copiedSlug === article.slug ? 'Copied' : 'Share'}</span>
+                                                </button>
                                             </div>
                                             
                                             <Link 
                                                 to={`/blog/${article.slug}`}
                                                 className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:translate-x-1 transition-transform"
                                             >
-                                                Read Article →
+                                                Read →
                                             </Link>
                                         </div>
                                     </div>
