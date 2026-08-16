@@ -218,6 +218,24 @@ const ArticleDetail: React.FC = () => {
             }
             setArticle(foundArticle);
 
+            // Dynamic SEO Metadata updates
+            document.title = foundArticle.seoTitle || `${foundArticle.title} | Conflux AI`;
+            let metaDesc = document.querySelector('meta[name="description"]');
+            if (!metaDesc) {
+                metaDesc = document.createElement('meta');
+                metaDesc.setAttribute('name', 'description');
+                document.head.appendChild(metaDesc);
+            }
+            metaDesc.setAttribute('content', foundArticle.seoDescription || foundArticle.excerpt || foundArticle.title);
+
+            let canonicalEl = document.querySelector('link[rel="canonical"]');
+            if (!canonicalEl) {
+                canonicalEl = document.createElement('link');
+                canonicalEl.setAttribute('rel', 'canonical');
+                document.head.appendChild(canonicalEl);
+            }
+            canonicalEl.setAttribute('href', foundArticle.canonicalUrl || `https://confluxai.in/blog/${foundArticle.slug}`);
+
             // Track page view event in location analytics
             trackLocationEvent(
                 'page_view', 
