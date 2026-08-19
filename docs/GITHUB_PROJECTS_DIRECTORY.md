@@ -1,6 +1,6 @@
 # 🚀 Tarunjit Biswas (@Tarunjit45) — Complete GitHub Project Directory
 
-**Total Repositories Managed:** 104  
+**Total Repositories Managed:** 107  
 **Owner:** [Tarunjit Biswas](https://github.com/Tarunjit45)  
 **Generated Date:** August 9, 2026  
 
@@ -10,9 +10,9 @@
 
 | Category | Count | Description |
 | :--- | :---: | :--- |
-| **🤖 AI Agents & Autonomous Systems** | **13** | Structured Projects |
+| **🤖 AI Agents & Autonomous Systems** | **15** | Structured Projects |
 | **🔍 RAG & Semantic Search Systems** | **3** | Structured Projects |
-| **🧠 AI Tools & LLM Applications** | **31** | Structured Projects |
+| **🧠 AI Tools & LLM Applications** | **32** | Structured Projects |
 | **🌐 Websites & Web Applications** | **8** | Structured Projects |
 | **📱 Mobile & Cross-Platform Applications** | **9** | Structured Projects |
 | **⚡ Automation Scripts & Scrapers** | **25** | Structured Projects |
@@ -20,7 +20,7 @@
 
 ---
 
-## 🤖 AI Agents & Autonomous Systems (13)
+## 🤖 AI Agents & Autonomous Systems (15)
 
 | Repository Name | Language | Access | Description |
 | :--- | :---: | :---: | :--- |
@@ -29,10 +29,12 @@
 | [AI-Youtube-Content-Factory](https://github.com/Tarunjit45/AI-Youtube-Content-Factory) | `TypeScript` | 🌐 Public | Welcome to AI YouTube Content Factory, a production-grade, full-stack application designed to automate the research, scriptwriting, voiceover generation, and rendering of high-engagement video packages (YouTube videos, Shorts, thumbnails, and social media promos). |
 | [cartpole-dqn-pytorch](https://github.com/Tarunjit45/cartpole-dqn-pytorch) | `Jupyter Notebook` | 🌐 Public | This repository contains an implementation of a Deep Q-Network (DQN) for the CartPole environment using PyTorch and Gymnasium. The agent learns to balance a pole on a moving cart through trial and error, receiving rewards for keeping the pole upright. |
 | [ChainWatch](https://github.com/Tarunjit45/ChainWatch) | `Python` | 🌐 Public | ChainWatch is a flight data recorder for multi-step AI systems. It's a CLI-based tool that records every step in an AI decision chain, links them together in order, prevents tampering, and allows you to verify the chain's integrity and replay the full decision flow. |
+| [Cold-Email-Outreah-bot](https://github.com/Tarunjit45/Cold-Email-Outreah-bot) | `Python` | 🌐 Public | No description provided. |
 | [conflux-bot](https://github.com/Tarunjit45/conflux-bot) | `Python` | 🔒 Private | No description provided. |
-| [ContextOS](https://github.com/Tarunjit45/ContextOS) | `N/A` | 🌐 Public | ContextOS — Stress-test the memory and operational context of long-running AI agents |
+| [ContextOS](https://github.com/Tarunjit45/ContextOS) | `Python` | 🌐 Public | ContextOS — Stress-test the memory and operational context of long-running AI agents |
 | [deepagents](https://github.com/Tarunjit45/deepagents) | `Python` | 🌐 Public | The batteries-included agent harness. |
 | [internetdb](https://github.com/Tarunjit45/internetdb) | `TypeScript` | 🔒 Private | InternetDB is a highly polished, fully responsive full-stack platform designed to help users discover, compare, and match with the ultimate AI tools for their workflows. |
+| [job-outreach-bot](https://github.com/Tarunjit45/job-outreach-bot) | `Python` | 🌐 Public | No description provided. |
 | [local-ai-safety-auditor](https://github.com/Tarunjit45/local-ai-safety-auditor) | `Python` | 🌐 Public | An implementation of Asynchronous AI Oversight using local Small Language Models (SLMs). This project demonstrates how to build a self-correcting agentic loop that prioritizes AI Safety and Privacy by running entirely on local hardware. |
 | [local-researcher](https://github.com/Tarunjit45/local-researcher) | `Python` | 🌐 Public | A lightweight, terminal-based AI research tool built for low-end systems. It uses local SLMs (Small Language Models) to provide simple, structured explanations with voice output. |
 | [mountaincar_dqn](https://github.com/Tarunjit45/mountaincar_dqn) | `Jupyter Notebook` | 🌐 Public | Training the Deep Q-Network agent on MountainCar-v0 was more challenging due to sparse rewards. |
@@ -46,7 +48,7 @@
 | [pdf-knowledge--base-rag](https://github.com/Tarunjit45/pdf-knowledge--base-rag) | `TypeScript` | 🌐 Public | No description provided. |
 | [PromptGuard](https://github.com/Tarunjit45/PromptGuard) | `Python` | 🌐 Public | PromptGuard is a pragmatic, opinionated framework for establishing continuous integration for LLM behavior. It operates on a simple, verifiable principle: run the same prompts across multiple model configurations, compare outputs against defined expectations, and flag semantic regressions.   |
 
-## 🧠 AI Tools & LLM Applications (31)
+## 🧠 AI Tools & LLM Applications (32)
 
 | Repository Name | Language | Access | Description |
 | :--- | :---: | :---: | :--- |
@@ -66,6 +68,7 @@
 | [HandWave-Volume-Controller](https://github.com/Tarunjit45/HandWave-Volume-Controller) | `Python` | 🌐 Public | HandWave is a A real-time AI gesture controller that lets you move the cursor, click, and adjust volume using only your hand |
 | [HireMate](https://github.com/Tarunjit45/HireMate) | `TypeScript` | 🌐 Public | HireMate: AI Job Application Assistant |
 | [Human-AI-Collaboration-Thesis](https://github.com/Tarunjit45/Human-AI-Collaboration-Thesis) | `N/A` | 🌐 Public | No description provided. |
+| [leadflow-ai](https://github.com/Tarunjit45/leadflow-ai) | `Python` | 🌐 Public | LeadFlow AI - 24/7 Autonomous AI Employee for Customer Conversations, Lead Qualification & Appointment Scheduling |
 | [Mahadev-AI](https://github.com/Tarunjit45/Mahadev-AI) | `TypeScript` | 🔒 Private | HAR HAR MAHADEV |
 | [MoodLink](https://github.com/Tarunjit45/MoodLink) | `TypeScript` | 🌐 Public | MoodLink is a premium, glassmorphic web application that utilizes the Google Gemini API to analyze Spotify and YouTube playlists and generate a multi-sensory "Vibe Profile." It decodes the energy of your curated sounds into poetic descriptions, visual palettes, and intensity scores. |
 | [NEXT](https://github.com/Tarunjit45/NEXT) | `TypeScript` | 🔒 Private | NEXT is a minimalist behavioral reset tool designed to solve decision fatigue. It provides a single, randomized action to help users regain momentum whenever they feel stuck, overwhelmed, or unproductive, ensuring no task repeats until the entire library is exhausted. |
