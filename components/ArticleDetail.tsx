@@ -221,84 +221,160 @@ const parseMarkdownText = (text: string) => {
 const renderFormattedBlocks = (rawContent: string, articleTitle: string) => {
     const lines = rawContent.split('\n');
     const elements: JSX.Element[] = [];
+    let i = 0;
 
-    lines.forEach((line, index) => {
+    while (i < lines.length) {
+        const line = lines[i];
         const trimmed = line.trim();
-        if (!trimmed) return;
+
+        if (!trimmed) {
+            i++;
+            continue;
+        }
+
+        // Markdown Table Parser
+        if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+            const tableLines: string[] = [];
+            while (i < lines.length && lines[i].trim().startsWith('|') && lines[i].trim().endsWith('|')) {
+                tableLines.push(lines[i].trim());
+                i++;
+            }
+
+            if (tableLines.length >= 2) {
+                const headerLine = tableLines[0];
+                const headers = headerLine.split('|').map(s => s.trim()).filter((s, idx, arr) => idx > 0 && idx < arr.length - 1);
+                
+                const rows = tableLines.slice(1).filter(l => {
+                    const clean = l.replace(/[\s|:-]/g, '');
+                    return clean.length > 0;
+                }).map(rowLine => {
+                    return rowLine.split('|').map(s => s.trim()).filter((s, idx, arr) => idx > 0 && idx < arr.length - 1);
+                });
+
+                elements.push(
+                    <div key={`table-${i}`} className="overflow-x-auto my-8 rounded-2xl border border-slate-200 shadow-sm">
+                        <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
+                            <thead className="bg-slate-50 text-slate-900 font-bold uppercase tracking-wider text-[11px]">
+                                <tr>
+                                    {headers.map((h, hIdx) => (
+                                        <th key={hIdx} className="px-4 py-3.5 border-r border-slate-200 last:border-r-0">
+                                            {parseMarkdownText(h)}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 bg-white">
+                                {rows.map((row, rIdx) => (
+                                    <tr key={rIdx} className={rIdx % 2 === 0 ? "bg-white hover:bg-slate-50/80" : "bg-slate-50/40 hover:bg-slate-50/80"}>
+                                        {row.map((cell, cIdx) => (
+                                            <td key={cIdx} className="px-4 py-3 text-slate-700 font-medium border-r border-slate-100 last:border-r-0">
+                                                {parseMarkdownText(cell)}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                );
+                continue;
+            }
+        }
 
         // Skip H1 title if it duplicates article title
         if (trimmed.startsWith('# ')) {
             const h1Text = trimmed.replace(/^#\s+/, '').replace(/\*\*/g, '');
-            if (h1Text.toLowerCase() === articleTitle.toLowerCase()) return;
-            elements.push(
-                <h1 key={index} className="font-inter text-3xl md:text-4xl font-black text-slate-900 tracking-tight mt-10 mb-6">
-                    {parseMarkdownText(h1Text)}
-                </h1>
-            );
-            return;
+            if (h1Text.toLowerCase() !== articleTitle.toLowerCase()) {
+                elements.push(
+                    <h1 key={i} className="font-inter text-3xl md:text-4xl font-black text-slate-900 tracking-tight mt-10 mb-6">
+                        {parseMarkdownText(h1Text)}
+                    </h1>
+                );
+            }
+            i++;
+            continue;
         }
 
         // Headers
         if (trimmed.startsWith('## ')) {
             const h2Text = trimmed.replace(/^##\s+/, '').replace(/\*\*/g, '');
             elements.push(
-                <h2 key={index} className="font-inter text-2xl md:text-3xl font-black text-slate-900 tracking-tight mt-10 mb-4 pb-2 border-b border-slate-100">
+                <h2 key={i} className="font-inter text-2xl md:text-3xl font-black text-slate-900 tracking-tight mt-10 mb-4 pb-2 border-b border-slate-100">
                     {parseMarkdownText(h2Text)}
                 </h2>
             );
-            return;
+            i++;
+            continue;
         }
 
         if (trimmed.startsWith('### ')) {
             const h3Text = trimmed.replace(/^###\s+/, '').replace(/\*\*/g, '');
             elements.push(
-                <h3 key={index} className="font-inter text-xl font-bold text-slate-900 tracking-tight mt-8 mb-3">
+                <h3 key={i} className="font-inter text-xl font-bold text-slate-900 tracking-tight mt-8 mb-3">
                     {parseMarkdownText(h3Text)}
                 </h3>
             );
-            return;
+            i++;
+            continue;
+        }
+
+        // Blockquote
+        if (trimmed.startsWith('> ')) {
+            const quoteText = trimmed.replace(/^>\s+/, '');
+            elements.push(
+                <blockquote key={i} className="my-6 pl-4 border-l-4 border-blue-500 bg-blue-50/50 p-4 rounded-r-2xl text-slate-700 italic font-medium">
+                    {parseMarkdownText(quoteText)}
+                </blockquote>
+            );
+            i++;
+            continue;
         }
 
         // Code block indicator
         if (trimmed.startsWith('```')) {
-            return;
+            i++;
+            continue;
         }
 
         // Horizontal Rule
         if (trimmed === '---' || trimmed === '***') {
-            elements.push(<hr key={index} className="my-8 border-slate-100" />);
-            return;
+            elements.push(<hr key={i} className="my-8 border-slate-100" />);
+            i++;
+            continue;
         }
 
         // Bullet list item
         if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
             const bulletText = trimmed.replace(/^[-*]\s+/, '');
             elements.push(
-                <li key={index} className="ml-6 list-disc text-slate-700 font-medium leading-relaxed mb-2">
+                <li key={i} className="ml-6 list-disc text-slate-700 font-medium leading-relaxed mb-2">
                     {parseMarkdownText(bulletText)}
                 </li>
             );
-            return;
+            i++;
+            continue;
         }
 
         // Numbered list item
         const numMatch = trimmed.match(/^(\d+)\.\s+(.*)/);
         if (numMatch) {
             elements.push(
-                <li key={index} className="ml-6 list-decimal text-slate-700 font-medium leading-relaxed mb-2">
+                <li key={i} className="ml-6 list-decimal text-slate-700 font-medium leading-relaxed mb-2">
                     {parseMarkdownText(numMatch[2])}
                 </li>
             );
-            return;
+            i++;
+            continue;
         }
 
         // Standard Paragraph
         elements.push(
-            <p key={index} className="text-slate-700 font-medium leading-relaxed mb-6 text-base md:text-lg">
+            <p key={i} className="text-slate-700 font-medium leading-relaxed mb-6 text-base md:text-lg">
                 {parseMarkdownText(trimmed)}
             </p>
         );
-    });
+        i++;
+    }
 
     return elements;
 };
