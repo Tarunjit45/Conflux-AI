@@ -11,6 +11,10 @@ import { BUSINESS_CATEGORY_TAXONOMY } from '../data/taxonomiesData';
 import { ArticleKnowledgeObject } from '../types/article';
 import { trackLocationEvent } from '../lib/locationAnalytics';
 import { getArticleBySlug, STATIC_ARTICLES } from '../data/articlesData';
+import Breadcrumbs from './Breadcrumbs';
+import { applySeoMetadata } from '../lib/seoMetadata';
+import { getArticleCanonicalUrl } from '../lib/canonicalUrl';
+import { generateArticleSchema, generateBreadcrumbSchema, generateFAQSchema } from '../lib/structuredData';
 
 // Dynamic OpenGraph and Meta Tag Setter
 const setOrCreateMeta = (attr: 'name' | 'property', key: string, content: string) => {
@@ -69,6 +73,7 @@ const SocialShareBar: React.FC<{ title: string; slug: string; excerpt: string; c
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition-all shadow-sm shadow-emerald-500/20 hover:scale-105"
                 title="Share on WhatsApp"
+                aria-label="Share this insight on WhatsApp"
             >
                 <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
                 WhatsApp
@@ -81,6 +86,7 @@ const SocialShareBar: React.FC<{ title: string; slug: string; excerpt: string; c
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] text-white text-xs font-bold transition-all shadow-sm shadow-blue-500/20 hover:scale-105"
                 title="Share on LinkedIn"
+                aria-label="Share this insight on LinkedIn"
             >
                 <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
                 LinkedIn
@@ -93,6 +99,7 @@ const SocialShareBar: React.FC<{ title: string; slug: string; excerpt: string; c
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all shadow-sm hover:scale-105"
                 title="Post on X (Twitter)"
+                aria-label="Post this insight on X"
             >
                 <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                 Post on X
@@ -105,6 +112,7 @@ const SocialShareBar: React.FC<{ title: string; slug: string; excerpt: string; c
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1877F2] hover:bg-[#125ec4] text-white text-xs font-bold transition-all shadow-sm shadow-blue-500/20 hover:scale-105"
                 title="Share on Facebook"
+                aria-label="Share this insight on Facebook"
             >
                 <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.374 14.5 5 15.5 5H18V0h-3.808C10.597 0 9 1.582 9 4.615V8z"/></svg>
                 Facebook
@@ -117,6 +125,7 @@ const SocialShareBar: React.FC<{ title: string; slug: string; excerpt: string; c
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#229ED9] hover:bg-[#1c85b8] text-white text-xs font-bold transition-all shadow-sm hover:scale-105"
                 title="Share on Telegram"
+                aria-label="Share this insight on Telegram"
             >
                 <Send size={12} />
                 Telegram
@@ -128,6 +137,7 @@ const SocialShareBar: React.FC<{ title: string; slug: string; excerpt: string; c
                     onClick={handleNativeShare}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all shadow-sm hover:scale-105"
                     title="Device Share"
+                    aria-label="Open device sharing menu"
                 >
                     <Share2 size={12} />
                     Share
@@ -143,6 +153,7 @@ const SocialShareBar: React.FC<{ title: string; slug: string; excerpt: string; c
                         : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                 }`}
                 title="Copy Article Link"
+                aria-label="Copy insight link to clipboard"
             >
                 {copied ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
                 {copied ? 'Copied!' : 'Copy Link'}
@@ -457,46 +468,20 @@ const ArticleDetail: React.FC = () => {
             setArticle(foundArticle);
 
             // Dynamic OpenGraph and SEO Metadata updates for Social Scrapers
-            const fullUrl = foundArticle.canonicalUrl || `https://confluxai.in/blog/${foundArticle.slug}`;
+            const fullUrl = foundArticle.canonicalUrl || getArticleCanonicalUrl(foundArticle.slug);
             const shareImage = foundArticle.featuredImage || 'https://confluxai.in/logo.png';
             const desc = foundArticle.seoDescription || foundArticle.excerpt || foundArticle.title;
             const authorStr = typeof foundArticle.author === 'object' ? foundArticle.author.name : (foundArticle.author || 'Tarunjit Biswas');
 
-            document.title = foundArticle.seoTitle || `${foundArticle.title} | Conflux AI`;
-
-            // Standard Meta
-            setOrCreateMeta('name', 'description', desc);
-            setOrCreateMeta('name', 'author', authorStr);
-
-            // Open Graph (WhatsApp, LinkedIn, Facebook, Telegram, iMessage)
-            setOrCreateMeta('property', 'og:type', 'article');
-            setOrCreateMeta('property', 'og:site_name', 'Conflux AI');
-            setOrCreateMeta('property', 'og:url', fullUrl);
-            setOrCreateMeta('property', 'og:title', foundArticle.title);
-            setOrCreateMeta('property', 'og:description', desc);
-            setOrCreateMeta('property', 'og:image', shareImage);
-            setOrCreateMeta('property', 'og:image:width', '1200');
-            setOrCreateMeta('property', 'og:image:height', '630');
-            setOrCreateMeta('property', 'og:image:alt', foundArticle.title);
-            setOrCreateMeta('property', 'article:published_time', foundArticle.publishedAt || foundArticle.updatedAt);
-            setOrCreateMeta('property', 'article:author', authorStr);
-
-            // Twitter / X Cards
-            setOrCreateMeta('name', 'twitter:card', 'summary_large_image');
-            setOrCreateMeta('name', 'twitter:site', '@ConfluxA12947');
-            setOrCreateMeta('name', 'twitter:creator', '@ConfluxA12947');
-            setOrCreateMeta('name', 'twitter:title', foundArticle.title);
-            setOrCreateMeta('name', 'twitter:description', desc);
-            setOrCreateMeta('name', 'twitter:image', shareImage);
-
-            // Canonical Link
-            let canonicalEl = document.querySelector('link[rel="canonical"]');
-            if (!canonicalEl) {
-                canonicalEl = document.createElement('link');
-                canonicalEl.setAttribute('rel', 'canonical');
-                document.head.appendChild(canonicalEl);
-            }
-            canonicalEl.setAttribute('href', fullUrl);
+            applySeoMetadata({
+                title: foundArticle.seoTitle || `${foundArticle.title} | Conflux AI`,
+                description: desc,
+                canonicalUrl: fullUrl,
+                imageUrl: shareImage,
+                author: authorStr,
+                publishedTime: foundArticle.publishedAt || foundArticle.updatedAt,
+                type: 'article'
+            });
 
             // Track page view event in location analytics
             trackLocationEvent(
@@ -563,54 +548,27 @@ const ArticleDetail: React.FC = () => {
           ].slice(0, 3);
 
     // Schema.org Structured Data
-    const articleSchema = {
-        "@context": "https://schema.org",
-        "@type": "TechArticle",
-        "headline": article.title,
-        "inLanguage": article.language === 'bn' ? 'bn-IN' : 'en-US',
-        "mainEntityOfPage": `https://confluxai.in/blog/${article.slug}`,
-        "articleSection": article.category || "AI Automation",
-        "author": {
-            "@type": "Person",
-            "name": authorName,
-            "jobTitle": authorRole
-        },
-        "publisher": {
-            "@type": "Organization",
-            "name": "Conflux AI",
-            "url": "https://confluxai.in",
-            "logo": {
-                "@type": "ImageObject",
-                "url": "https://confluxai.in/logo.png"
-            }
-        },
-        "datePublished": article.publishedAt || article.updatedAt || new Date().toISOString(),
-        "dateModified": article.updatedAt || article.publishedAt || new Date().toISOString(),
-        "description": article.excerpt || article.seoDescription || article.title
-    };
+    const articleSchema = generateArticleSchema({
+        title: article.title,
+        slug: article.slug,
+        description: article.excerpt || article.seoDescription || article.title,
+        authorName,
+        authorRole,
+        publishedAt: article.publishedAt || article.updatedAt || new Date().toISOString(),
+        updatedAt: article.updatedAt || article.publishedAt || new Date().toISOString(),
+        imageUrl: article.featuredImage || 'https://confluxai.in/logo.png',
+        category: article.category || "AI Automation",
+        language: article.language
+    });
 
-    const breadcrumbSchema = {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://confluxai.in" },
-            { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://confluxai.in/blog" },
-            { "@type": "ListItem", "position": 3, "name": article.title, "item": `https://confluxai.in/blog/${article.slug}` }
-        ]
-    };
+    const breadcrumbsItems = [
+        { name: "Knowledge Base", url: "/blog" },
+        ...(locationItems.length > 0 ? [{ name: locationItems[0].displayName || locationItems[0].name, url: `/locations/${locationItems[0].slug}` }] : []),
+        { name: article.title, url: `/blog/${article.slug}` }
+    ];
 
-    const faqSchema = article.faq && article.faq.length > 0 ? {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": article.faq.map(f => ({
-            "@type": "Question",
-            "name": f.question,
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": f.answer
-            }
-        }))
-    } : null;
+    const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbsItems);
+    const faqSchema = generateFAQSchema(article.faq || []);
 
     const handleContactClick = () => {
         if (article) {
@@ -632,6 +590,9 @@ const ArticleDetail: React.FC = () => {
             {faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}
 
             <div className="pt-32 pb-20 px-4 md:px-6 max-w-7xl mx-auto">
+                {/* Breadcrumbs Navigation */}
+                <Breadcrumbs items={breadcrumbsItems} className="mb-6" />
+
                 {/* Back Button */}
                 <Link to="/blog" className="inline-flex items-center gap-2 text-xs font-black text-blue-600 uppercase tracking-widest mb-10 hover:gap-3 transition-all">
                     <ArrowLeft size={14} /> Back to Knowledge Base

@@ -28,6 +28,7 @@ import LocationDetailPage from './components/locations/LocationDetailPage';
 import IndustryLocationPage from './components/locations/IndustryLocationPage';
 import RuralDigitalSolutionsPage from './components/services/RuralDigitalSolutionsPage';
 import LocationCoverageDashboard from './components/admin/LocationCoverageDashboard';
+import NotFoundPage from './components/NotFoundPage';
 
 const routeMeta: Record<string, { title: string; description: string }> = {
   '/services/digital-solutions-west-bengal': {
@@ -269,6 +270,7 @@ const App: React.FC = () => {
         <Route path="/thank-you" element={<ThankYouPage />} />
         <Route path="/admin/cms" element={<AdminCMS />} />
         <Route path="/admin/location-coverage" element={<LocationCoverageDashboard />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
 
       <Footer siteLogo={siteLogo} />

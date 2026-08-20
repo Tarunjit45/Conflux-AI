@@ -2,686 +2,632 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://confluxai.in/</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://confluxai.in/about</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://confluxai.in/solutions</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://confluxai.in/services/ai-automation</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/services/ai-agents</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/services/whatsapp-automation</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/services/chatbot-development</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/services/workflow-automation</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/services/website-development</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/services/seo-geo</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/services/digital-marketing</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/services/meta-ads</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/services/google-ads</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/services/digital-solutions-west-bengal</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://confluxai.in/blog</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/careers</loc>
-    <lastmod>2026-08-16</lastmod>
+    <loc>https://confluxai.in/creative</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://confluxai.in/impact</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/portfolio</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/work</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/careers</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://confluxai.in/contact</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/authority</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/faq</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://confluxai.in/social-impact</loc>
-    <lastmod>2026-08-16</lastmod>
+    <loc>https://confluxai.in/semantic-map</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://confluxai.in/locations/west-bengal</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/blog</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://confluxai.in/locations/west-bengal/nadia</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/kolkata</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/locations/west-bengal/north-24-parganas</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/locations/west-bengal/south-24-parganas</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/locations/west-bengal/howrah</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/locations/west-bengal/hooghly</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://confluxai.in/locations/west-bengal/paschim-bardhaman</loc>
-    <lastmod>2026-08-16</lastmod>
+    <loc>https://confluxai.in/locations/west-bengal/kolkata</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/locations/west-bengal/purba-bardhaman</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://confluxai.in/locations/west-bengal/darjeeling</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/jalpaiguri</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/murshidabad</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/malda</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/paschim-medinipur</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/purba-medinipur</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/bankura</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/purulia</loc>
-    <lastmod>2026-08-16</lastmod>
+    <loc>https://confluxai.in/locations/west-bengal/paschim-bardhaman</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/locations/west-bengal/birbhum</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://confluxai.in/locations/west-bengal/cooch-behar</loc>
-    <lastmod>2026-08-16</lastmod>
+    <loc>https://confluxai.in/locations/west-bengal/bankura</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://confluxai.in/locations/west-bengal/alipurduar</loc>
-    <lastmod>2026-08-16</lastmod>
+    <loc>https://confluxai.in/locations/west-bengal/purulia</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://confluxai.in/locations/west-bengal/uttar-dinajpur</loc>
-    <lastmod>2026-08-16</lastmod>
+    <loc>https://confluxai.in/locations/west-bengal/purba-medinipur</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://confluxai.in/locations/west-bengal/dakshin-dinajpur</loc>
-    <lastmod>2026-08-16</lastmod>
+    <loc>https://confluxai.in/locations/west-bengal/paschim-medinipur</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/locations/west-bengal/jhargram</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/locations/west-bengal/malda</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/locations/west-bengal/uttar-dinajpur</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/locations/west-bengal/dakshin-dinajpur</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/locations/west-bengal/murshidabad</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/locations/west-bengal/darjeeling</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/locations/west-bengal/kalimpong</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://confluxai.in/locations/west-bengal/nadia/bagula</loc>
-    <lastmod>2026-08-16</lastmod>
+    <loc>https://confluxai.in/locations/west-bengal/jalpaiguri</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://confluxai.in/locations/west-bengal/nadia/krishnanagar</loc>
-    <lastmod>2026-08-16</lastmod>
+    <loc>https://confluxai.in/locations/west-bengal/alipurduar</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://confluxai.in/locations/west-bengal/nadia/ranaghat</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/nadia/kalyani</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/nadia/santipur</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/nadia/nabadwip</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/nadia/chakdaha</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/nadia/tehatta</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/siliguri</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/durgapur</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/asansol</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/haldia</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/kolkata/real-estate</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/haldia/manufacturing</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/siliguri/hospitality</loc>
-    <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://confluxai.in/locations/west-bengal/durgapur/manufacturing</loc>
-    <lastmod>2026-08-16</lastmod>
+    <loc>https://confluxai.in/locations/west-bengal/cooch-behar</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/best-restaurants-in-raiganj-food-price-location-guide</loc>
     <lastmod>2026-08-20</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/bolpur-santiniketan-resorts-homestays-batik-artisans-direct-booking-whatsapp</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/bishnupur-baluchari-saree-terracotta-craft-digital-showroom-pan-india</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/digha-mandarmani-hotels-resorts-direct-whatsapp-booking-seafood-logistics</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/purulia-ayodhya-hills-eco-resorts-mineral-logistics-whatsapp-automation</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/jhargram-forest-homestays-agro-forestry-honey-direct-buyer-catalog</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/jaigaon-bhutan-border-trade-alipurduar-jaldapara-resort-whatsapp-booking</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/kalimpong-floriculture-orchid-export-ginger-homestay-whatsapp-catalog</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/cooch-behar-heritage-tourism-tobacco-jute-wholesale-inquiry-automation</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/jalpaiguri-tea-machinery-timber-logistics-dooars-transit-automation</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/raiganj-tulaipanji-rice-jute-wholesale-buyer-whatsapp-catalog</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/balurghat-rice-oil-mills-rural-retail-wholesale-inquiry-automation</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/south-24-parganas-diamond-harbour-aquaculture-surgical-tools-automation</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/kalna-katwa-tant-saree-rice-husk-cold-storage-automation</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/murshidabad-silk-saree-brass-ware-heritage-digital-showroom</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/chapra-karimpur-banana-mandi-fertilizer-wholesale-rate-automation</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/birnagar-taherpur-bakery-agro-retail-wholesale-order-system</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/hanskhali-mayurhat-poultry-hatchery-dairy-feed-whatsapp-supply-chain</loc>
     <lastmod>2026-08-19</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/haringhata-dairy-poultry-farms-direct-wholesale-whatsapp-supply-chain</loc>
     <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/chakdaha-building-materials-hardware-cement-whatsapp-quotation-automation</loc>
     <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/howrah-foundry-cnc-machining-metal-fabrication-b2b-lead-quotation-engine</loc>
     <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/nabadwip-mayapur-hotels-guest-houses-direct-whatsapp-booking-zero-commission</loc>
     <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/barasat-barrackpore-coaching-institutes-student-admission-whatsapp-automation</loc>
     <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/bagula-badkulla-agricultural-machinery-fertilizer-dealers-digital-catalog</loc>
     <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/howrah-hooghly-cold-storage-potato-wholesale-rate-space-booking-automation</loc>
     <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/siliguri-travel-agencies-sikkim-darjeeling-car-rental-whatsapp-itinerary-booking</loc>
     <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/generative-engine-optimization-geo-ranking-guide-2026-google-ai-gemini</loc>
     <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/speed-to-lead-whatsapp-business-api-sales-automation-lead-qualification-2026</loc>
     <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/enterprise-ai-agents-secure-rag-workflows-operational-automation-2026</loc>
     <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/durga-puja-2026-west-bengal-retail-wholesale-business-ai-whatsapp-growth-guide</loc>
     <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/west-bengal-polyclinic-diagnostic-centre-opd-booking-whatsapp-reports-local-seo</loc>
     <lastmod>2026-08-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/santipur-phulia-saree-durga-puja-whatsapp-bulk-booking</loc>
     <lastmod>2026-08-14</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/krishnanagar-clay-dolls-handicrafts-global-buyer-digital-showroom</loc>
     <lastmod>2026-08-14</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/ranaghat-fmcg-wholesale-grocery-order-intake-automation</loc>
     <lastmod>2026-08-14</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/bethuadahari-furniture-timber-whatsapp-catalog-inquiry-guide</loc>
     <lastmod>2026-08-14</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/siliguri-tea-merchants-north-bengal-resort-whatsapp-booking</loc>
     <lastmod>2026-08-14</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/haldia-port-heavy-transport-truck-booking-whatsapp-bot</loc>
     <lastmod>2026-08-14</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/durgapur-industrial-safety-equipment-b2b-quotation-catalog</loc>
     <lastmod>2026-08-14</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/kalyani-diagnostic-lab-report-home-sample-whatsapp-automation</loc>
     <lastmod>2026-08-14</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/kolkata-remote-first-ai-agency-digitize-west-bengal-businesses</loc>
     <lastmod>2026-08-14</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/7-real-ways-for-bagula-small-businesses-to-get-online-customers</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/krishnanagar-coaching-institutes-whatsapp-admission-automation</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/ranaghat-wholesale-distributors-whatsapp-order-automation</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/santipur-handloom-saree-manufacturers-digital-catalog</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/nabadwip-hotel-guest-house-direct-booking-system</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/kalyani-healthcare-clinics-opd-appointment-automation</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/haldia-industrial-manufacturing-vendor-quotation-automation</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/siliguri-travel-operators-whatsapp-tour-itinerary-automation</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/chakdaha-electronics-hardware-local-search-whatsapp-guide</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/tehatta-karimpur-cold-storage-agro-wholesale-rate-system</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/bardhaman-rice-mill-agro-machinery-b2b-inquiry-automation</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/baharampur-murshidabad-silk-saree-digital-showroom-whatsapp</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/durgapur-engineering-steel-fabricators-b2b-quotation-automation</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/asansol-mining-equipment-logistics-inquiry-automation</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/kharagpur-skill-academies-student-admission-whatsapp-bot</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/malda-mango-food-processing-wholesale-buyer-catalog</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://confluxai.in/blog/kolkata-real-estate-speed-to-lead-whatsapp-floorplan-bots</loc>
     <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 </urlset>
