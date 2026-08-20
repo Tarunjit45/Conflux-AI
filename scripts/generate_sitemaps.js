@@ -31,7 +31,6 @@ const staticRoutes = [
   { url: 'https://confluxai.in/creative', changefreq: 'monthly', priority: '0.7' },
   { url: 'https://confluxai.in/impact', changefreq: 'monthly', priority: '0.7' },
   { url: 'https://confluxai.in/portfolio', changefreq: 'monthly', priority: '0.7' },
-  { url: 'https://confluxai.in/work', changefreq: 'monthly', priority: '0.7' },
   { url: 'https://confluxai.in/careers', changefreq: 'monthly', priority: '0.6' },
   { url: 'https://confluxai.in/contact', changefreq: 'monthly', priority: '0.8' },
   { url: 'https://confluxai.in/authority', changefreq: 'monthly', priority: '0.8' },
