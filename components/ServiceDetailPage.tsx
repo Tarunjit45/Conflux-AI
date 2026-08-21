@@ -303,6 +303,35 @@ const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     "faqs": [
       { "q": "Why is negative keyword management critical for Google Ads?", "a": "Negative keywords block irrelevant search queries, preventing wasted ad spend on job seekers, free searches, or unrelated topics." }
     ]
+  },
+  "ecommerce-development": {
+    "id": "ecommerce-development",
+    "name": "E-Commerce Development & Catalogs",
+    "headline": "High-Converting Online Stores, WhatsApp Product Catalogs & Instant UPI Checkout",
+    "problem": "Generic slow storefronts, high commission fees from third-party marketplace platforms, and clunky mobile checkouts hurt conversion and profit margins.",
+    "solution": "Conflux AI develops high-performance custom e-commerce platforms and automated WhatsApp digital product catalogs integrated with instant UPI payment gateways and real-time inventory synchronization.",
+    "whoIsItFor": "D2C brands, retailers, agro-producers, handicraft artisans, and wholesale merchants looking for direct customer sales without marketplace commissions.",
+    "integrations": ["Shopify", "WooCommerce", "Razorpay", "PhonePe", "Cashfree", "WhatsApp Business API", "Stripe", "Supabase"],
+    "images": [
+      "/images/website-development/website-development_1.jpg",
+      "/images/website-development/website-development_2.jpg"
+    ],
+    "deliverables": [
+      "Sub-Second Mobile Storefront with Instant Search",
+      "Interactive WhatsApp Product Catalog & Checkout Bot",
+      "RBI-Compliant UPI & Card Payment Gateway Integration",
+      "Automated Order Ingestion & WhatsApp Dispatch Receipts",
+      "Custom Inventory & Pricing Management Dashboard"
+    ],
+    "process": [
+      { "step": "01", "title": "Catalog & Architecture", "desc": "We organize your product inventory, SKU variants, pricing tiers, and mobile checkout flow." },
+      { "step": "02", "title": "Payment & Webhook Setup", "desc": "We integrate secure UPI QR payment links and automated order receipt webhooks." },
+      { "step": "03", "title": "Speed Optimization & Launch", "desc": "We test mobile load times across 4G networks, configure global CDN caching, and deploy live." }
+    ],
+    "faqs": [
+      { "q": "Can customers purchase directly through WhatsApp without installing an app?", "a": "Yes. Conflux AI builds interactive WhatsApp catalogs with button-based selection and automated UPI payment links that allow buyers to complete purchases in under 30 seconds." },
+      { "q": "Which Indian payment gateways are supported?", "a": "We integrate all leading Indian payment gateways including Razorpay, PhonePe PG, Cashfree, and Paytm for instant UPI, Debit/Credit card, and Net Banking payments." }
+    ]
   }
 };
 

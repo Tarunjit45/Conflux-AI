@@ -123,6 +123,10 @@ const routeMeta: Record<string, { title: string; description: string }> = {
     title: 'Digital Marketing & Growth Services | Conflux AI',
     description: 'Data-driven B2B client acquisition, video content editing, social media management, and reputation management.'
   },
+  '/services/ecommerce-development': {
+    title: 'E-Commerce Development & WhatsApp Catalogs | Conflux AI',
+    description: 'Custom e-commerce platforms, automated WhatsApp product catalogs, and zero-friction UPI checkout systems by Conflux AI.'
+  },
   '/services/meta-ads': {
     title: 'Meta Ads & Paid Social Acquisition | Conflux AI',
     description: 'Targeted Facebook & Instagram ad campaigns engineered for B2B and D2C customer acquisition.'

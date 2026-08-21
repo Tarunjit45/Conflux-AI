@@ -1,9 +1,20 @@
-# Robots.txt for Conflux AI (confluxai.in)
+# Robots.txt for Conflux AI (https://confluxai.in)
 User-agent: *
 Allow: /
+Disallow: /admin/
 Disallow: /admin/cms
+Disallow: /admin/location-coverage
 
-# Explicit Allow for OpenAI SearchBot & LLM Search Crawlers
+# Explicit Allow for Search & AI Crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
 User-agent: OAI-SearchBot
 Allow: /
 
@@ -16,10 +27,13 @@ Allow: /
 User-agent: ClaudeBot
 Allow: /
 
-User-agent: Googlebot
+User-agent: Claude-Web
 Allow: /
 
-User-agent: Google-Extended
+User-agent: Applebot
+Allow: /
+
+User-agent: Meta-ExternalAgent
 Allow: /
 
 Sitemap: https://confluxai.in/sitemap.xml
