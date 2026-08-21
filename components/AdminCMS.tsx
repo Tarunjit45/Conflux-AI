@@ -11,12 +11,136 @@ import {
 import { Link } from 'react-router-dom';
 import { getAllLocations, LocationItem } from '../data/locationsData';
 import { BUSINESS_CATEGORY_TAXONOMY, DIGITAL_NEED_TAXONOMY } from '../data/taxonomiesData';
-import { ArticleKnowledgeObject, ContentLanguage, SearchIntent, ArticleStatus, LocalBusinessLead, EditorialPlanItem } from '../types/article';
+import { ArticleKnowledgeObject, ContentLanguage, SearchIntent, ArticleStatus, LocalBusinessLead, EditorialPlanItem, GSCOpportunityItem } from '../types/article';
 import { auditInternalLinks } from '../lib/internalLinkAudit';
 
 const LOCAL_STORAGE_ARTICLES_KEY = 'conflux_custom_articles';
 const LOCAL_STORAGE_EDITORIAL_PLAN_KEY = 'conflux_editorial_plan';
 const LOCAL_STORAGE_CRM_KEY = 'conflux_local_crm_leads';
+const LOCAL_STORAGE_GSC_KEY = 'conflux_gsc_opportunities';
+
+const INITIAL_GSC_OPPORTUNITIES: GSCOpportunityItem[] = [
+  {
+    id: 'gsc-1',
+    query: 'Mukutmanipur ecotourism homestay booking WhatsApp',
+    pageSlug: 'mukutmanipur-jhilimili-ecotourism-homestays-boat-safari-sabai-crafts-whatsapp-booking',
+    district: 'bankura',
+    topic: 'Ecotourism & Homestays',
+    impressions: 1420,
+    clicks: 38,
+    ctr: 2.68,
+    position: 6.4,
+    classification: 'OPPORTUNITY_A',
+    status: 'IN_PROGRESS',
+    lastUpdated: '2026-08-21',
+    nextAction: 'Enhance direct room availability table and quick takeaway answer'
+  },
+  {
+    id: 'gsc-2',
+    query: 'Jhargram wild honey and forest homestay direct booking',
+    pageSlug: 'jhargram-forest-homestays-agro-forestry-honey-direct-buyer-catalog',
+    district: 'jhargram',
+    topic: 'Jangalmahal Tourism & Agro-Forestry',
+    impressions: 980,
+    clicks: 19,
+    ctr: 1.94,
+    position: 8.2,
+    classification: 'OPPORTUNITY_A',
+    status: 'IN_PROGRESS',
+    lastUpdated: '2026-08-21',
+    nextAction: 'Add verified travel route & distance matrix from Kolkata/Kharagpur'
+  },
+  {
+    id: 'gsc-3',
+    query: 'Bishnupur Baluchari saree digital showroom online wholesale',
+    pageSlug: 'bishnupur-baluchari-saree-terracotta-craft-digital-showroom-pan-india',
+    district: 'bankura',
+    topic: 'Handloom & Silk Crafts',
+    impressions: 2150,
+    clicks: 24,
+    ctr: 1.12,
+    position: 14.1,
+    classification: 'OPPORTUNITY_B',
+    status: 'PENDING',
+    lastUpdated: '2026-08-21',
+    nextAction: 'Expand silk authenticity identification guide & GI tag details'
+  },
+  {
+    id: 'gsc-4',
+    query: 'Kurseong Mirik boutique tea retreat homestays',
+    pageSlug: 'kurseong-mirik-lepchajagat-tea-retreats-homestays-first-flush-whatsapp-booking',
+    district: 'darjeeling',
+    topic: 'Tea Tourism & Offbeat Homestays',
+    impressions: 3400,
+    clicks: 41,
+    ctr: 1.21,
+    position: 12.8,
+    classification: 'OPPORTUNITY_B',
+    status: 'IN_PROGRESS',
+    lastUpdated: '2026-08-21',
+    nextAction: 'Add detailed weather by month & tea plucking calendar (Mar-Nov)'
+  },
+  {
+    id: 'gsc-5',
+    query: 'Dooars offbeat homestays Samsing Suntalekhola Rocky Island',
+    pageSlug: 'chalsa-samsing-suntalekhola-rocky-island-homestays-safari-tea-direct-booking',
+    district: 'jalpaiguri',
+    topic: 'Dooars Ecotourism',
+    impressions: 4800,
+    clicks: 56,
+    ctr: 1.16,
+    position: 5.7,
+    classification: 'OPPORTUNITY_C',
+    status: 'IN_PROGRESS',
+    lastUpdated: '2026-08-21',
+    nextAction: 'Improve title & meta description to highlight zero-commission booking'
+  },
+  {
+    id: 'gsc-6',
+    query: 'Purulia Ayodhya Pahar camping and tent booking prices',
+    pageSlug: 'purulia-ayodhya-hills-eco-resorts-mineral-logistics-whatsapp-automation',
+    district: 'purulia',
+    topic: 'Hill Camping & Eco Resorts',
+    impressions: 2900,
+    clicks: 32,
+    ctr: 1.10,
+    position: 16.5,
+    classification: 'OPPORTUNITY_B',
+    status: 'PENDING',
+    lastUpdated: '2026-08-21',
+    nextAction: 'Restructure article to include seasonal camping checklist & water body guide'
+  },
+  {
+    id: 'gsc-7',
+    query: 'Malda Fazli Himsagar mango bulk wholesale mandi rate',
+    pageSlug: 'malda-mango-food-processing-wholesale-buyer-catalog',
+    district: 'malda',
+    topic: 'Mango Processing & Agro Logistics',
+    impressions: 1750,
+    clicks: 18,
+    ctr: 1.03,
+    position: 18.2,
+    classification: 'OPPORTUNITY_B',
+    status: 'PENDING',
+    lastUpdated: '2026-08-21',
+    nextAction: 'Add export grade quality parameters and cold chain storage contacts'
+  },
+  {
+    id: 'gsc-8',
+    query: 'Santipur tant saree wholesale price list 2026',
+    pageSlug: 'santipur-handloom-saree-manufacturers-digital-catalog',
+    district: 'nadia',
+    topic: 'Handloom Sarees & Wholesale',
+    impressions: 5100,
+    clicks: 112,
+    ctr: 2.19,
+    position: 4.8,
+    classification: 'OPPORTUNITY_A',
+    status: 'COMPLETED',
+    lastUpdated: '2026-08-21',
+    nextAction: 'Maintain position 1-3 with updated festive Durga Puja catalog link'
+  }
+];
 
 const CONFLUX_SERVICES = [
   { id: 'whatsapp-automation', name: 'WhatsApp Business Automation', url: 'https://confluxai.in/services/whatsapp-automation' },
@@ -38,7 +162,7 @@ const SEARCH_INTENTS: SearchIntent[] = [
 
 const AdminCMS: React.FC = () => {
   // Navigation State
-  const [activeTab, setActiveTab] = useState<'editor' | 'matrix' | 'planner' | 'crm' | 'health'>('matrix');
+  const [activeTab, setActiveTab] = useState<'editor' | 'matrix' | 'planner' | 'crm' | 'health' | 'gsc'>('matrix');
   
   // Articles Data State
   const [articles, setArticles] = useState<ArticleKnowledgeObject[]>([]);
@@ -103,12 +227,84 @@ const AdminCMS: React.FC = () => {
   const [newLeadStatus, setNewLeadStatus] = useState<'PROSPECT' | 'CONTACTED' | 'CONSULTATION' | 'CLIENT'>('PROSPECT');
   const [newLeadNotes, setNewLeadNotes] = useState('');
 
+  // Search Console (GSC) Content Opportunities State
+  const [gscOpportunities, setGscOpportunities] = useState<GSCOpportunityItem[]>(INITIAL_GSC_OPPORTUNITIES);
+  const [gscClassificationFilter, setGscClassificationFilter] = useState<string>('ALL');
+  const [gscDistrictFilter, setGscDistrictFilter] = useState<string>('ALL');
+  const [newGscQuery, setNewGscQuery] = useState('');
+  const [newGscPageSlug, setNewGscPageSlug] = useState('');
+  const [newGscDistrict, setNewGscDistrict] = useState('bankura');
+  const [newGscTopic, setNewGscTopic] = useState('');
+  const [newGscImpressions, setNewGscImpressions] = useState(1000);
+  const [newGscClicks, setNewGscClicks] = useState(25);
+  const [newGscPosition, setNewGscPosition] = useState(7.5);
+  const [newGscClassification, setNewGscClassification] = useState<'OPPORTUNITY_A' | 'OPPORTUNITY_B' | 'OPPORTUNITY_C' | 'OPPORTUNITY_D'>('OPPORTUNITY_A');
+  const [newGscNextAction, setNewGscNextAction] = useState('');
+
   // Fetch articles and initial data on mount
   useEffect(() => {
     fetchArticles();
     loadEditorialPlans();
     loadCrmLeads();
+    loadGscOpportunities();
   }, []);
+
+  const loadGscOpportunities = () => {
+    const local = localStorage.getItem(LOCAL_STORAGE_GSC_KEY);
+    if (local) {
+      try {
+        setGscOpportunities(JSON.parse(local));
+      } catch (e) {
+        setGscOpportunities(INITIAL_GSC_OPPORTUNITIES);
+      }
+    } else {
+      setGscOpportunities(INITIAL_GSC_OPPORTUNITIES);
+    }
+  };
+
+  const handleAddGscOpportunity = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newGscQuery.trim()) return;
+
+    const ctr = newGscImpressions > 0 ? Number(((newGscClicks / newGscImpressions) * 100).toFixed(2)) : 0;
+    const item: GSCOpportunityItem = {
+      id: `gsc-${Date.now()}`,
+      query: newGscQuery.trim(),
+      pageSlug: newGscPageSlug.trim(),
+      district: newGscDistrict,
+      topic: newGscTopic.trim() || 'General Business Growth',
+      impressions: Number(newGscImpressions),
+      clicks: Number(newGscClicks),
+      ctr,
+      position: Number(newGscPosition),
+      classification: newGscClassification,
+      status: 'PENDING',
+      lastUpdated: new Date().toISOString().split('T')[0],
+      nextAction: newGscNextAction.trim() || 'Analyze query intent and update content headings'
+    };
+
+    const updated = [item, ...gscOpportunities];
+    setGscOpportunities(updated);
+    localStorage.setItem(LOCAL_STORAGE_GSC_KEY, JSON.stringify(updated));
+
+    // Reset inputs
+    setNewGscQuery('');
+    setNewGscPageSlug('');
+    setNewGscTopic('');
+    setNewGscNextAction('');
+  };
+
+  const handleUpdateGscStatus = (id: string, newStatus: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'MONITORING') => {
+    const updated = gscOpportunities.map(g => g.id === id ? { ...g, status: newStatus, lastUpdated: new Date().toISOString().split('T')[0] } : g);
+    setGscOpportunities(updated);
+    localStorage.setItem(LOCAL_STORAGE_GSC_KEY, JSON.stringify(updated));
+  };
+
+  const handleDeleteGscOpportunity = (id: string) => {
+    const updated = gscOpportunities.filter(g => g.id !== id);
+    setGscOpportunities(updated);
+    localStorage.setItem(LOCAL_STORAGE_GSC_KEY, JSON.stringify(updated));
+  };
 
   const generateSlug = (text: string) => {
     return text
@@ -527,13 +723,23 @@ const AdminCMS: React.FC = () => {
             </button>
 
             <button
+              onClick={() => setActiveTab('gsc')}
+              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[40px] ${
+                activeTab === 'gsc' ? 'bg-amber-600 text-white shadow-md shadow-amber-500/20' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <TrendingUp size={14} />
+              <span>GSC &amp; Opportunities</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('health')}
               className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[40px] ${
                 activeTab === 'health' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20' : 'text-slate-400 hover:text-white'
               }`}
             >
               <ShieldCheck size={14} />
-              <span>SEO & Evidence Health</span>
+              <span>SEO &amp; Evidence Health</span>
             </button>
           </div>
         </div>
@@ -1402,9 +1608,318 @@ const AdminCMS: React.FC = () => {
           );
         })()}
 
+        {/* TAB 6: GSC & CONTENT OPPORTUNITIES DASHBOARD */}
+        {activeTab === 'gsc' && (() => {
+          const totalQueries = gscOpportunities.length;
+          const oppA = gscOpportunities.filter(g => g.classification === 'OPPORTUNITY_A').length;
+          const oppB = gscOpportunities.filter(g => g.classification === 'OPPORTUNITY_B').length;
+          const oppC = gscOpportunities.filter(g => g.classification === 'OPPORTUNITY_C').length;
+          const oppD = gscOpportunities.filter(g => g.classification === 'OPPORTUNITY_D').length;
+
+          const filteredList = gscOpportunities.filter(item => {
+            if (gscClassificationFilter !== 'ALL' && item.classification !== gscClassificationFilter) return false;
+            if (gscDistrictFilter !== 'ALL' && item.district !== gscDistrictFilter) return false;
+            return true;
+          });
+
+          return (
+            <div className="space-y-8">
+              {/* Header & Overview */}
+              <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">Search Console Intelligence</span>
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2 mt-1">
+                      <TrendingUp size={20} className="text-amber-400" /> Organic Search &amp; Content Authority Engine
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-1 max-w-2xl">
+                      Feed Google Search Console metrics into our editorial workflow to upgrade existing high-potential articles and eliminate random publishing.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="px-3.5 py-1.5 rounded-full bg-slate-950 border border-slate-800 text-xs font-bold text-slate-300">
+                      {totalQueries} Monitored Queries
+                    </span>
+                  </div>
+                </div>
+
+                {/* Classification Summary Cards */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                  <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800/80">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 block mb-1">Opportunity A (Pos 4-10)</span>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-black text-white">{oppA}</span>
+                      <span className="text-[10px] text-slate-400">Improve existing</span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800/80">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 block mb-1">Opportunity B (Pos 11-20)</span>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-black text-white">{oppB}</span>
+                      <span className="text-[10px] text-slate-400">Expand &amp; depth</span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800/80">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 block mb-1">Opportunity C (Low CTR)</span>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-black text-white">{oppC}</span>
+                      <span className="text-[10px] text-slate-400">Title &amp; meta boost</span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800/80">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-purple-400 block mb-1">Opportunity D (Gap)</span>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-black text-white">{oppD}</span>
+                      <span className="text-[10px] text-slate-400">New article needed</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Add New Opportunity Form */}
+              <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800">
+                <h3 className="text-sm font-black uppercase tracking-widest text-white mb-4 flex items-center gap-2">
+                  <Plus size={16} className="text-amber-400" /> Record New Search Console Query Opportunity
+                </h3>
+                <form onSubmit={handleAddGscOpportunity} className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                  <div className="md:col-span-2">
+                    <label className="block text-slate-400 font-bold mb-1">Search Query (GSC):</label>
+                    <input 
+                      type="text" 
+                      required
+                      placeholder="e.g. Mukutmanipur boat safari booking WhatsApp" 
+                      value={newGscQuery}
+                      onChange={(e) => setNewGscQuery(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-medium focus:border-amber-500 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-400 font-bold mb-1">Associated Landing Page / Slug:</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. mukutmanipur-jhilimili-ecotourism-..." 
+                      value={newGscPageSlug}
+                      onChange={(e) => setNewGscPageSlug(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-medium focus:border-amber-500 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-400 font-bold mb-1">District:</label>
+                    <select 
+                      value={newGscDistrict}
+                      onChange={(e) => setNewGscDistrict(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-medium focus:border-amber-500 outline-none"
+                    >
+                      {['bankura', 'jhargram', 'purulia', 'nadia', 'darjeeling', 'jalpaiguri', 'kalimpong', 'malda', 'murshidabad', 'purba-bardhaman', 'paschim-bardhaman', 'kolkata', 'howrah', 'hooghly', 'north-24-parganas', 'south-24-parganas', 'purba-medinipur', 'paschim-medinipur', 'birbhum', 'cooch-behar', 'alipurduar', 'uttar-dinajpur', 'dakshin-dinajpur'].map(d => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-400 font-bold mb-1">Topic Cluster:</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Ecotourism & Homestays" 
+                      value={newGscTopic}
+                      onChange={(e) => setNewGscTopic(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-medium focus:border-amber-500 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-400 font-bold mb-1">Classification Tier:</label>
+                    <select 
+                      value={newGscClassification}
+                      onChange={(e) => setNewGscClassification(e.target.value as any)}
+                      className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-medium focus:border-amber-500 outline-none"
+                    >
+                      <option value="OPPORTUNITY_A">Opportunity A (Pos 4-10) — Improve</option>
+                      <option value="OPPORTUNITY_B">Opportunity B (Pos 11-20) — Expand</option>
+                      <option value="OPPORTUNITY_C">Opportunity C (Low CTR) — Title/Meta</option>
+                      <option value="OPPORTUNITY_D">Opportunity D (Gap) — Create New</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-400 font-bold mb-1">Impressions:</label>
+                    <input 
+                      type="number" 
+                      value={newGscImpressions}
+                      onChange={(e) => setNewGscImpressions(Number(e.target.value))}
+                      className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-medium focus:border-amber-500 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-400 font-bold mb-1">Clicks:</label>
+                    <input 
+                      type="number" 
+                      value={newGscClicks}
+                      onChange={(e) => setNewGscClicks(Number(e.target.value))}
+                      className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-medium focus:border-amber-500 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-400 font-bold mb-1">Avg Position:</label>
+                    <input 
+                      type="number" 
+                      step="0.1"
+                      value={newGscPosition}
+                      onChange={(e) => setNewGscPosition(Number(e.target.value))}
+                      className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-medium focus:border-amber-500 outline-none"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-slate-400 font-bold mb-1">Next Editorial Action:</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Add direct pricing comparison table and FAQ for booking steps" 
+                      value={newGscNextAction}
+                      onChange={(e) => setNewGscNextAction(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-medium focus:border-amber-500 outline-none"
+                    />
+                  </div>
+
+                  <div className="flex items-end">
+                    <button 
+                      type="submit"
+                      className="w-full py-2.5 px-4 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl transition-all shadow-md shadow-amber-600/20"
+                    >
+                      Save GSC Opportunity
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {/* Opportunities Filter and Table */}
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900 border border-slate-800 text-xs">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="text-slate-400 font-bold">Filter By:</span>
+                    <select
+                      value={gscClassificationFilter}
+                      onChange={(e) => setGscClassificationFilter(e.target.value)}
+                      className="px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-white outline-none"
+                    >
+                      <option value="ALL">All Opportunity Types</option>
+                      <option value="OPPORTUNITY_A">Opportunity A (Pos 4-10)</option>
+                      <option value="OPPORTUNITY_B">Opportunity B (Pos 11-20)</option>
+                      <option value="OPPORTUNITY_C">Opportunity C (Low CTR)</option>
+                      <option value="OPPORTUNITY_D">Opportunity D (Gap)</option>
+                    </select>
+
+                    <select
+                      value={gscDistrictFilter}
+                      onChange={(e) => setGscDistrictFilter(e.target.value)}
+                      className="px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-white outline-none"
+                    >
+                      <option value="ALL">All Districts</option>
+                      {['bankura', 'jhargram', 'purulia', 'nadia', 'darjeeling', 'jalpaiguri', 'kalimpong', 'malda', 'murshidabad'].map(d => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <span className="text-slate-400 font-bold">
+                    Showing <strong className="text-white">{filteredList.length}</strong> Opportunities
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                  {filteredList.map((opp) => {
+                    const classConfig = {
+                      OPPORTUNITY_A: { label: 'Opportunity A', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+                      OPPORTUNITY_B: { label: 'Opportunity B', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+                      OPPORTUNITY_C: { label: 'Opportunity C', color: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+                      OPPORTUNITY_D: { label: 'Opportunity D', color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' }
+                    }[opp.classification];
+
+                    return (
+                      <div 
+                        key={opp.id} 
+                        className="p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                      >
+                        <div className="space-y-2 flex-1">
+                          <div className="flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-wider">
+                            <span className={`px-2.5 py-0.5 rounded-full border ${classConfig.color}`}>
+                              {classConfig.label}
+                            </span>
+                            <span className="px-2.5 py-0.5 rounded-full bg-slate-950 text-slate-300 border border-slate-800">
+                              📍 {opp.district}
+                            </span>
+                            <span className="px-2.5 py-0.5 rounded-full bg-slate-950 text-slate-400 border border-slate-800">
+                              #{opp.topic}
+                            </span>
+                            <span className="text-slate-500 ml-auto font-medium">
+                              Updated: {opp.lastUpdated}
+                            </span>
+                          </div>
+
+                          <h4 className="text-base font-bold text-white leading-snug">
+                            {opp.query}
+                          </h4>
+
+                          {opp.pageSlug && (
+                            <p className="text-xs text-blue-400 font-mono">
+                              /blog/{opp.pageSlug}
+                            </p>
+                          )}
+
+                          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300">
+                            <strong className="text-amber-400 font-bold">Action Plan: </strong>
+                            {opp.nextAction}
+                          </div>
+                        </div>
+
+                        <div className="flex md:flex-col items-end justify-between md:justify-center gap-3 shrink-0 border-t md:border-t-0 md:border-l border-slate-800 pt-3 md:pt-0 md:pl-6">
+                          <div className="text-right">
+                            <div className="text-xs text-slate-400">Position <strong className="text-white">{opp.position}</strong></div>
+                            <div className="text-xs text-slate-400">{opp.impressions} imp &bull; {opp.clicks} clicks ({opp.ctr}%)</div>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <select
+                              value={opp.status}
+                              onChange={(e) => handleUpdateGscStatus(opp.id, e.target.value as any)}
+                              className="px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-bold text-slate-300 outline-none"
+                            >
+                              <option value="PENDING">PENDING</option>
+                              <option value="IN_PROGRESS">IN PROGRESS</option>
+                              <option value="COMPLETED">COMPLETED</option>
+                              <option value="MONITORING">MONITORING</option>
+                            </select>
+
+                            <button
+                              onClick={() => handleDeleteGscOpportunity(opp.id)}
+                              className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-500 hover:text-red-400 transition-colors"
+                              title="Delete Opportunity"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
       </main>
     </div>
   );
 };
 
 export default AdminCMS;
+

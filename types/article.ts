@@ -34,6 +34,38 @@ export interface ArticleFAQ {
   answer: string;
 }
 
+export type PrimarySearchIntent = 'informational' | 'commercial' | 'transactional' | 'local';
+
+export interface ArticleSEOData {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  districts?: string[];
+  localities?: string[];
+  topics?: string[];
+  primaryIntent?: PrimarySearchIntent;
+  primaryKeyword?: string;
+  secondaryKeywords?: string[];
+  relatedServices?: string[];
+}
+
+export interface GSCOpportunityItem {
+  id: string;
+  query: string;
+  pageSlug: string;
+  district?: string;
+  topic?: string;
+  impressions: number;
+  clicks: number;
+  ctr: number;
+  position: number;
+  classification: 'OPPORTUNITY_A' | 'OPPORTUNITY_B' | 'OPPORTUNITY_C' | 'OPPORTUNITY_D';
+  status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'MONITORING';
+  lastUpdated: string;
+  nextAction: string;
+}
+
 export interface ArticleKnowledgeObject {
   id: string;
   title: string;
@@ -52,16 +84,22 @@ export interface ArticleKnowledgeObject {
   locationIds: string[];         // e.g. ['loc-bagula', 'dist-nadia']
   districtIds: string[];         // e.g. ['dist-nadia']
   districts?: string[];          // e.g. ['bankura', 'nadia', 'statewide']
+  localities?: string[];         // e.g. ['Mukutmanipur', 'Jhilimili']
   localityIds: string[];         // e.g. ['loc-bagula']
   businessCategoryIds: string[]; // e.g. ['retail-clothing']
   category?: string;             // e.g. 'Tourism', 'Agro-Business', 'AI Automation'
+  topics?: string[];             // e.g. ['Homestays', 'Boating', 'Handicrafts', 'WhatsApp Booking']
   tags?: string[];               // e.g. ['Mukutmanipur', 'Jhilimili']
   industryIds: string[];         // e.g. ['Retail', 'Textile']
   problemIds: string[];          // e.g. ['low-visibility']
   digitalNeedIds: string[];      // e.g. ['whatsapp-catalog', 'google-visibility']
   serviceIds: string[];          // e.g. ['whatsapp-automation', 'website-development']
+  relatedServices?: string[];    // e.g. ['whatsapp-automation', 'website-development', 'seo-geo']
   
   // Search & Editorial Metadata
+  primaryIntent?: PrimarySearchIntent;
+  primaryKeyword?: string;
+  secondaryKeywords?: string[];
   searchIntent?: SearchIntent;
   targetAudience?: string;
   relatedArticleIds?: string[];

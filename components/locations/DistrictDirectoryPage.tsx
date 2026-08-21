@@ -1,17 +1,19 @@
 import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { WEST_BENGAL_DISTRICTS, NADIA_LOCATIONS, OTHER_MAJOR_WB_LOCATIONS } from '../../data/locationsData';
-import { getArticlesByDistrict } from '../../data/articlesData';
-import { MapPin, ArrowLeft, ArrowRight, ShieldCheck, Zap, MessageSquare, ExternalLink, Building2, HelpCircle, Calendar, BookOpen, ChevronRight, Sparkles } from 'lucide-react';
+import { getArticlesByDistrict, getDistrictTopicClusters, getPopularDistrictArticles } from '../../data/articlesData';
+import { MapPin, ArrowLeft, ArrowRight, ShieldCheck, Zap, MessageSquare, ExternalLink, Building2, HelpCircle, Calendar, BookOpen, ChevronRight, Sparkles, Tag, TrendingUp } from 'lucide-react';
 import { trackLocationEvent } from '../../lib/locationAnalytics';
 
 const DistrictDirectoryPage: React.FC = () => {
   const { districtSlug } = useParams<{ districtSlug: string }>();
   const district = WEST_BENGAL_DISTRICTS.find(d => d.slug === districtSlug);
 
-  // Retrieve genuinely relevant articles for this district
+  // Retrieve genuinely relevant articles and topic clusters for this district
   const districtArticles = district ? getArticlesByDistrict(district.slug) : [];
   const visibleArticles = districtArticles.slice(0, 6);
+  const topicClusters = district ? getDistrictTopicClusters(district.slug) : [];
+  const popularArticles = district ? getPopularDistrictArticles(district.slug, 3) : [];
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -175,7 +177,7 @@ const DistrictDirectoryPage: React.FC = () => {
 
         {/* DISTRICT-BASED ARTICLE DISCOVERY LAYER */}
         <section className="mb-20">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
             <div>
               <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100 text-[10px] font-black tracking-widest uppercase mb-3 inline-flex items-center gap-1.5">
                 <BookOpen size={12} className="text-blue-600" /> Regional Knowledge Network
@@ -202,6 +204,27 @@ const DistrictDirectoryPage: React.FC = () => {
               )}
             </div>
           </div>
+
+          {/* District Topic Clusters */}
+          {topicClusters.length > 0 && (
+            <div className="mb-8 flex flex-wrap items-center gap-2">
+              <span className="text-xs font-black text-slate-400 uppercase tracking-wider flex items-center gap-1 mr-2">
+                <Tag size={13} className="text-blue-600" /> Local Topics:
+              </span>
+              {topicClusters.map((cluster, idx) => (
+                <Link
+                  key={idx}
+                  to={`/blog?district=${district.slug}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 text-xs font-bold text-slate-700 hover:text-blue-700 transition-colors"
+                >
+                  <span>#{cluster.name}</span>
+                  <span className="text-[10px] px-1.5 py-0.2 bg-white rounded-full text-slate-500 font-black border border-slate-200/80">
+                    {cluster.count}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
 
           {districtArticles.length > 0 ? (
             <div>

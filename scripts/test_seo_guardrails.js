@@ -189,6 +189,65 @@ assertTest(
   Object.values(districtArticlesMap).flat().every(a => articleSlugs.has(a.slug))
 );
 
+// 9. SEO Content Intelligence Layer Tests
+const validIntents = ['informational', 'commercial', 'transactional', 'local'];
+
+assertTest(
+  '100% of articles have valid primaryIntent (informational, commercial, transactional, local)',
+  articles.every(a => validIntents.includes(a.primaryIntent))
+);
+
+assertTest(
+  '100% of articles have verified primaryKeyword and secondaryKeywords',
+  articles.every(a => typeof a.primaryKeyword === 'string' && a.primaryKeyword.length > 5 && Array.isArray(a.secondaryKeywords) && a.secondaryKeywords.length > 0)
+);
+
+assertTest(
+  '100% of articles contain structured topics taxonomy',
+  articles.every(a => Array.isArray(a.topics) && a.topics.length > 0)
+);
+
+// 10. Intelligent Related Articles Engine Integrity
+let relatedArticleFails = 0;
+articles.forEach(article => {
+  const currentDistricts = (article.districts || article.districtIds || []).map(d => String(d).toLowerCase().replace(/^dist-/, '').trim());
+  const currentLocalities = (article.localities || []).map(l => String(l).toLowerCase());
+  const currentTopics = (article.topics || []).map(t => String(t).toLowerCase());
+  const currentCategory = (article.category || '').toLowerCase();
+  const currentIntent = article.primaryIntent || '';
+
+  const candidates = articles.filter(a => a.slug !== article.slug);
+  const scored = candidates.map(candidate => {
+    let score = 0;
+    const candDistricts = (candidate.districts || candidate.districtIds || []).map(d => String(d).toLowerCase().replace(/^dist-/, '').trim());
+    const candLocalities = (candidate.localities || []).map(l => String(l).toLowerCase());
+    const candTopics = (candidate.topics || []).map(t => String(t).toLowerCase());
+    const candCategory = (candidate.category || '').toLowerCase();
+    const candIntent = candidate.primaryIntent || '';
+
+    candDistricts.forEach(d => { if (currentDistricts.includes(d)) score += 6; });
+    candLocalities.forEach(l => { if (currentLocalities.includes(l)) score += 5; });
+    candTopics.forEach(t => { if (currentTopics.includes(t)) score += 4; });
+    if (candCategory && currentCategory && candCategory === currentCategory) score += 3;
+    if (candIntent && currentIntent && candIntent === currentIntent) score += 2;
+    if (candidate.language === article.language) score += 1;
+
+    return { candidate, score };
+  });
+
+  scored.sort((a, b) => b.score - a.score);
+  const topRelated = scored.slice(0, 3).map(s => s.candidate);
+  if (topRelated.length < 3 || topRelated.some(r => r.slug === article.slug)) {
+    relatedArticleFails++;
+  }
+});
+
+assertTest(
+  'Related articles scoring engine resolves 3 unique relevant posts per article with zero self-references',
+  relatedArticleFails === 0,
+  `Failed on ${relatedArticleFails} articles`
+);
+
 console.log('\n======================================================');
 console.log(`TEST SUMMARY: ${passedTests} / ${totalTests} TESTS PASSED`);
 console.log('======================================================\n');
@@ -198,4 +257,5 @@ if (passedTests === totalTests) {
 } else {
   process.exit(1);
 }
+
 

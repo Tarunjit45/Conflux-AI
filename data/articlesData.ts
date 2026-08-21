@@ -85,3 +85,127 @@ export function getDistrictArticleCount(districtSlug: string): number {
   return getArticlesByDistrict(districtSlug).length;
 }
 
+/**
+ * Intelligent Related Articles Engine:
+ * Ranks candidates by topical overlap, shared district, locality, category, and search intent.
+ */
+export function getRelatedArticles(
+  currentArticle: ArticleKnowledgeObject,
+  limit = 4
+): ArticleKnowledgeObject[] {
+  if (!currentArticle) return [];
+
+  const currentDistricts = getNormalizedDistricts(currentArticle);
+  const currentLocalities = (currentArticle.localities || []).map(l => l.toLowerCase());
+  const currentTopics = (currentArticle.topics || []).map(t => t.toLowerCase());
+  const currentCategory = (currentArticle.category || '').toLowerCase();
+  const currentIntent = currentArticle.primaryIntent || '';
+
+  const candidates = STATIC_ARTICLES.filter(
+    a => a.slug !== currentArticle.slug && a.id !== currentArticle.id && a.status !== 'ARCHIVED'
+  );
+
+  const scored = candidates.map(candidate => {
+    let score = 0;
+    const candDistricts = getNormalizedDistricts(candidate);
+    const candLocalities = (candidate.localities || []).map(l => l.toLowerCase());
+    const candTopics = (candidate.topics || []).map(t => t.toLowerCase());
+    const candCategory = (candidate.category || '').toLowerCase();
+    const candIntent = candidate.primaryIntent || '';
+
+    // District match: +6 points per match
+    candDistricts.forEach(d => {
+      if (currentDistricts.includes(d)) score += 6;
+    });
+
+    // Locality match: +5 points per match
+    candLocalities.forEach(l => {
+      if (currentLocalities.includes(l)) score += 5;
+    });
+
+    // Topic overlap: +4 points per match
+    candTopics.forEach(t => {
+      if (currentTopics.includes(t)) score += 4;
+    });
+
+    // Same category: +3 points
+    if (candCategory && currentCategory && candCategory === currentCategory) {
+      score += 3;
+    }
+
+    // Same primary search intent: +2 points
+    if (candIntent && currentIntent && candIntent === currentIntent) {
+      score += 2;
+    }
+
+    // Same language: +1 point
+    if (candidate.language === currentArticle.language) {
+      score += 1;
+    }
+
+    return { candidate, score };
+  });
+
+  // Sort by highest score, then by most recent date
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    const dateA = new Date(a.candidate.publishedAt || a.candidate.updatedAt || 0).getTime();
+    const dateB = new Date(b.candidate.publishedAt || b.candidate.updatedAt || 0).getTime();
+    return dateB - dateA;
+  });
+
+  return scored.slice(0, limit).map(s => s.candidate);
+}
+
+export interface TopicClusterItem {
+  name: string;
+  count: number;
+  sampleArticleSlug: string;
+}
+
+/**
+ * Extracts verified topic clusters for a district based on published articles
+ */
+export function getDistrictTopicClusters(districtSlug: string): TopicClusterItem[] {
+  if (!districtSlug) return [];
+  const districtArticles = getArticlesByDistrict(districtSlug);
+  const topicCountMap = new Map<string, { count: number; sampleSlug: string }>();
+
+  districtArticles.forEach(art => {
+    const combinedTopics = [
+      ...(art.topics || []),
+      ...(art.category ? [art.category] : [])
+    ];
+
+    combinedTopics.forEach(t => {
+      const clean = t.trim();
+      if (!clean) return;
+      const existing = topicCountMap.get(clean);
+      if (existing) {
+        existing.count++;
+      } else {
+        topicCountMap.set(clean, { count: 1, sampleSlug: art.slug });
+      }
+    });
+  });
+
+  return Array.from(topicCountMap.entries())
+    .map(([name, val]) => ({ name, count: val.count, sampleArticleSlug: val.sampleSlug }))
+    .sort((a, b) => b.count - a.count);
+}
+
+/**
+ * Returns popular / cornerstone articles for a district
+ */
+export function getPopularDistrictArticles(districtSlug: string, limit = 3): ArticleKnowledgeObject[] {
+  const allDistrictArticles = getArticlesByDistrict(districtSlug);
+  // Sort by reactions or content length / depth
+  const sorted = [...allDistrictArticles].sort((a, b) => {
+    const scoreA = (a.reactions || 0) + (a.faq?.length || 0) * 2 + (a.sources?.length || 0);
+    const scoreB = (b.reactions || 0) + (b.faq?.length || 0) * 2 + (b.sources?.length || 0);
+    return scoreB - scoreA;
+  });
+  return sorted.slice(0, limit);
+}
+
+

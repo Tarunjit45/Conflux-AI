@@ -10,7 +10,7 @@ import { getAllLocations, LocationItem } from '../data/locationsData';
 import { BUSINESS_CATEGORY_TAXONOMY } from '../data/taxonomiesData';
 import { ArticleKnowledgeObject } from '../types/article';
 import { trackLocationEvent } from '../lib/locationAnalytics';
-import { getArticleBySlug, STATIC_ARTICLES } from '../data/articlesData';
+import { getArticleBySlug, STATIC_ARTICLES, getRelatedArticles, getNormalizedDistricts } from '../data/articlesData';
 import Breadcrumbs from './Breadcrumbs';
 import { applySeoMetadata } from '../lib/seoMetadata';
 import { getArticleCanonicalUrl } from '../lib/canonicalUrl';
@@ -526,26 +526,15 @@ const ArticleDetail: React.FC = () => {
     const authorName = typeof article.author === 'object' ? article.author.name : (article.author || 'Conflux AI Editorial Network');
     const authorRole = typeof article.author === 'object' ? article.author.role : 'Authority Partner';
 
-    // Resolve Location Items
+    // Resolve Location Items & Districts
     const locationItems: LocationItem[] = (article.locationIds || []).map(id => 
         allLocations.find(l => l.id === id || l.slug === id)
     ).filter(Boolean) as LocationItem[];
 
-    // Calculate Related Articles for the Post Section
-    const relatedArticles = STATIC_ARTICLES.filter(a => {
-        if (a.slug === article.slug || a.id === article.id) return false;
-        const sameLoc = a.locationIds?.some(id => article.locationIds?.includes(id));
-        const sameCat = a.businessCategoryIds?.some(id => article.businessCategoryIds?.includes(id));
-        const sameService = a.serviceIds?.some(id => article.serviceIds?.includes(id));
-        return sameLoc || sameCat || sameService;
-    }).slice(0, 3);
+    const normalizedDistricts = getNormalizedDistricts(article);
 
-    const finalRelated = relatedArticles.length >= 3 
-        ? relatedArticles 
-        : [
-            ...relatedArticles, 
-            ...STATIC_ARTICLES.filter(a => a.slug !== article.slug && !relatedArticles.some(r => r.slug === a.slug))
-          ].slice(0, 3);
+    // Calculate Intelligent Related Articles (topical overlap, district, search intent)
+    const finalRelated = getRelatedArticles(article, 3);
 
     // Schema.org Structured Data
     const articleSchema = generateArticleSchema({
@@ -806,6 +795,32 @@ const ArticleDetail: React.FC = () => {
                     {/* Sidebar Knowledge Graph Relationships */}
                     <aside className="lg:col-span-4 space-y-6">
                         <div className="sticky top-32 space-y-6">
+                            {/* Connected District Hubs */}
+                            {normalizedDistricts.length > 0 && normalizedDistricts[0] !== 'statewide' && (
+                                <div className="p-6 rounded-3xl bg-blue-50/50 border border-blue-100">
+                                    <h4 className="font-black text-slate-900 uppercase tracking-widest text-xs mb-3 flex items-center gap-1.5">
+                                        <MapPin size={14} className="text-blue-600" /> Regional District Hub
+                                    </h4>
+                                    <div className="space-y-2">
+                                        {normalizedDistricts.map(d => (
+                                            <Link 
+                                                key={d} 
+                                                to={`/locations/west-bengal/${d}`}
+                                                className="p-3 rounded-xl bg-white border border-blue-200/80 flex items-center justify-between text-xs hover:border-blue-500 hover:shadow-md transition-all group"
+                                            >
+                                                <div>
+                                                    <span className="font-bold text-slate-900 group-hover:text-blue-600 block capitalize">
+                                                        {d.replace(/-/g, ' ')} District Directory
+                                                    </span>
+                                                    <span className="text-[10px] text-slate-500 font-medium">Explore All Local Articles &amp; Services</span>
+                                                </div>
+                                                <ChevronRight size={15} className="text-blue-600 group-hover:translate-x-1 transition-transform" />
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Connected Locations Box */}
                             {locationItems.length > 0 && (
                                 <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200">
@@ -830,6 +845,52 @@ const ArticleDetail: React.FC = () => {
                                 </div>
                             )}
 
+                            {/* Topical Clusters */}
+                            {((article.topics && article.topics.length > 0) || (article.tags && article.tags.length > 0)) && (
+                                <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200">
+                                    <h4 className="font-black text-slate-900 uppercase tracking-widest text-xs mb-3 flex items-center gap-1.5">
+                                        <BookOpen size={14} className="text-blue-600" /> Topical Knowledge Clusters
+                                    </h4>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {[...(article.topics || []), ...(article.tags || [])].slice(0, 8).map((t, idx) => (
+                                            <span 
+                                                key={idx}
+                                                className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-bold text-slate-700 shadow-2xs"
+                                            >
+                                                #{t}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Verified Data Sources */}
+                            {article.sources && article.sources.length > 0 && (
+                                <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200">
+                                    <h4 className="font-black text-slate-900 uppercase tracking-widest text-xs mb-3 flex items-center gap-1.5">
+                                        <ShieldCheck size={14} className="text-emerald-600" /> Verified Sources &amp; Citations
+                                    </h4>
+                                    <ul className="space-y-2 text-xs">
+                                        {article.sources.map((s, idx) => (
+                                            <li key={idx} className="p-2.5 rounded-xl bg-white border border-slate-200/80">
+                                                <a 
+                                                    href={s.url} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="font-bold text-blue-600 hover:underline flex items-start gap-1.5"
+                                                >
+                                                    <ExternalLink size={12} className="shrink-0 mt-0.5" />
+                                                    <span>{s.title}</span>
+                                                </a>
+                                                {s.publisher && (
+                                                    <span className="text-[10px] text-slate-400 font-medium block mt-0.5">Publisher: {s.publisher}</span>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
                             {/* Connected Conflux Services */}
                             <div className="p-6 rounded-3xl bg-slate-900 text-white space-y-4">
                                 <h4 className="font-black uppercase tracking-widest text-xs text-blue-400 flex items-center gap-1.5">
@@ -846,7 +907,7 @@ const ArticleDetail: React.FC = () => {
                                         • High-Performance Web Platforms →
                                     </Link>
                                     <Link to="/services/seo-geo" className="block p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition-colors">
-                                        • SEO & GEO Search Optimization →
+                                        • SEO &amp; GEO Search Optimization →
                                     </Link>
                                     <Link to="/services/ai-automation" className="block p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition-colors">
                                         • Enterprise AI Automation →

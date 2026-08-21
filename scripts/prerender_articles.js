@@ -232,23 +232,63 @@ articles.forEach(article => {
     });
   }
 
+  // Intelligent Related Articles Scorer for SSG
+  const currentDistricts = (article.districts || article.districtIds || []).map(d => String(d).toLowerCase().replace(/^dist-/, '').trim());
+  const currentLocalities = (article.localities || []).map(l => String(l).toLowerCase());
+  const currentTopics = (article.topics || []).map(t => String(t).toLowerCase());
+  const currentCategory = (article.category || '').toLowerCase();
+  const currentIntent = article.primaryIntent || '';
+
+  const candidates = articles.filter(a => a.slug !== article.slug);
+  const scored = candidates.map(candidate => {
+    let score = 0;
+    const candDistricts = (candidate.districts || candidate.districtIds || []).map(d => String(d).toLowerCase().replace(/^dist-/, '').trim());
+    const candLocalities = (candidate.localities || []).map(l => String(l).toLowerCase());
+    const candTopics = (candidate.topics || []).map(t => String(t).toLowerCase());
+    const candCategory = (candidate.category || '').toLowerCase();
+    const candIntent = candidate.primaryIntent || '';
+
+    candDistricts.forEach(d => { if (currentDistricts.includes(d)) score += 6; });
+    candLocalities.forEach(l => { if (currentLocalities.includes(l)) score += 5; });
+    candTopics.forEach(t => { if (currentTopics.includes(t)) score += 4; });
+    if (candCategory && currentCategory && candCategory === currentCategory) score += 3;
+    if (candIntent && currentIntent && candIntent === currentIntent) score += 2;
+    if (candidate.language === article.language) score += 1;
+
+    return { candidate, score };
+  });
+
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    const dateA = new Date(a.candidate.publishedAt || a.candidate.updatedAt || 0).getTime();
+    const dateB = new Date(b.candidate.publishedAt || b.candidate.updatedAt || 0).getTime();
+    return dateB - dateA;
+  });
+
+  const relatedArticles = scored.slice(0, 3).map(s => s.candidate);
+
+  const primaryDistrict = currentDistricts.find(d => d !== 'statewide');
+
   const serverRenderedBody = `
   <div id="root">
     <header style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
-      <div style="max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+      <div style="max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
         <a href="/" style="font-size: 18px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
         <nav style="font-size: 13px; font-weight: 700;">
-          <a href="/blog" style="color: #2563eb; text-decoration: none;">&larr; Back to Knowledge Base</a>
+          <a href="/blog" style="color: #2563eb; text-decoration: none; margin-right: 16px;">&larr; Back to Knowledge Base</a>
+          ${primaryDistrict ? `<a href="/locations/west-bengal/${primaryDistrict}" style="color: #475569; text-decoration: none;">${escapeHtml(primaryDistrict)} District Hub</a>` : ''}
         </nav>
       </div>
     </header>
     <article class="conflux-prerendered-content" style="max-width: 900px; margin: 0 auto; padding: 40px 20px; font-family: 'Inter', sans-serif;">
       <nav aria-label="Breadcrumbs" style="font-size: 12px; margin-bottom: 20px; color: #64748b;">
-        <a href="/" style="color: #2563eb; text-decoration: none;">Home</a> &gt; <a href="/blog" style="color: #2563eb; text-decoration: none;">Knowledge Base</a> &gt; <span style="color: #0f172a;">${escapeHtml(article.title)}</span>
+        <a href="/" style="color: #2563eb; text-decoration: none;">Home</a> &gt; <a href="/blog" style="color: #2563eb; text-decoration: none;">Knowledge Base</a> ${primaryDistrict ? `&gt; <a href="/locations/west-bengal/${primaryDistrict}" style="color: #2563eb; text-decoration: none;">${escapeHtml(primaryDistrict)}</a>` : ''} &gt; <span style="color: #0f172a;">${escapeHtml(article.title)}</span>
       </nav>
       <header style="margin-bottom: 30px;">
-        <div style="font-size: 11px; text-transform: uppercase; color: #2563eb; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 10px;">
-          ${escapeHtml(article.category || 'Local Strategy')} &bull; ${escapeHtml(article.language === 'bn' ? 'বাংলা (Bengali)' : 'English')}
+        <div style="font-size: 11px; text-transform: uppercase; color: #2563eb; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span style="background: #eff6ff; padding: 2px 8px; border-radius: 9999px; border: 1px solid #dbeafe;">${escapeHtml(article.category || 'Local Strategy')}</span>
+          <span style="background: #f1f5f9; padding: 2px 8px; border-radius: 9999px; color: #475569;">${escapeHtml(article.language === 'bn' ? 'বাংলা (Bengali)' : 'English')}</span>
+          ${primaryDistrict ? `<a href="/locations/west-bengal/${primaryDistrict}" style="background: #ecfdf5; color: #047857; padding: 2px 8px; border-radius: 9999px; text-decoration: none;">📍 ${escapeHtml(primaryDistrict)} District</a>` : ''}
         </div>
         <h1 style="font-size: 34px; font-weight: 900; color: #0f172a; line-height: 1.2; margin-bottom: 16px;">
           ${escapeHtml(article.title)}
@@ -261,6 +301,7 @@ articles.forEach(article => {
       <div class="article-body" style="color: #334155; line-height: 1.8; font-size: 16px; white-space: pre-wrap; font-family: 'Inter', sans-serif;">
 ${escapeHtml(article.content || '')}
       </div>
+
       ${article.faq && article.faq.length > 0 ? `
       <section style="margin-top: 40px; padding: 24px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px;">
         <h3 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 16px;">Frequently Asked Questions</h3>
@@ -272,6 +313,61 @@ ${escapeHtml(article.content || '')}
         `).join('')}
       </section>
       ` : ''}
+
+      ${article.sources && article.sources.length > 0 ? `
+      <section style="margin-top: 30px; padding: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px;">
+        <h4 style="font-size: 14px; font-weight: 800; text-transform: uppercase; color: #047857; margin-bottom: 12px;">Verified Sources &amp; Citations</h4>
+        <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #475569;">
+          ${article.sources.map(s => `
+            <li style="margin-bottom: 6px;">
+              <a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" style="color: #2563eb; font-weight: 700; text-decoration: underline;">${escapeHtml(s.title)}</a>
+              ${s.publisher ? `<span style="color: #94a3b8; font-size: 11px;"> (${escapeHtml(s.publisher)})</span>` : ''}
+            </li>
+          `).join('')}
+        </ul>
+      </section>
+      ` : ''}
+
+      <!-- DYNAMIC RELATED ARTICLES SECTION -->
+      ${relatedArticles.length > 0 ? `
+      <section style="margin-top: 48px; padding-top: 32px; border-top: 2px solid #e2e8f0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <div>
+            <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #2563eb; letter-spacing: 0.08em; display: block; margin-bottom: 4px;">Topical Intelligence</span>
+            <h3 style="font-size: 22px; font-weight: 900; color: #0f172a; margin: 0;">Recommended Insights &amp; Related Posts</h3>
+          </div>
+          <a href="/blog" style="font-size: 12px; font-weight: 800; color: #2563eb; text-decoration: none;">View All &rarr;</a>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+          ${relatedArticles.map(rel => `
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #2563eb; background: #eff6ff; padding: 2px 6px; border-radius: 6px; display: inline-block; margin-bottom: 8px;">
+                  ${escapeHtml(rel.category || 'Strategy')}
+                </span>
+                <h4 style="font-size: 15px; font-weight: 800; color: #0f172a; line-height: 1.35; margin-bottom: 8px;">
+                  <a href="/blog/${escapeHtml(rel.slug)}" style="color: #0f172a; text-decoration: none;">${escapeHtml(rel.title)}</a>
+                </h4>
+                <p style="font-size: 12px; color: #64748b; line-height: 1.5; margin-bottom: 12px;">
+                  ${escapeHtml(rel.excerpt || rel.title)}
+                </p>
+              </div>
+              <a href="/blog/${escapeHtml(rel.slug)}" style="font-size: 11px; font-weight: 800; color: #2563eb; text-decoration: none;">Read Insight &rarr;</a>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+      ` : ''}
+
+      <div style="margin-top: 48px; padding: 32px; background: #0f172a; border-radius: 20px; color: white; text-align: center;">
+        <h3 style="font-size: 22px; font-weight: 900; margin-bottom: 8px;">Automate Your Local Business Workflows</h3>
+        <p style="color: #94a3b8; font-size: 14px; max-width: 600px; margin: 0 auto 20px auto;">
+          Conflux AI partners with enterprises across West Bengal via remote collaboration to implement AI automations, official WhatsApp API bots, and sub-second web platforms.
+        </p>
+        <a href="https://wa.me/918972517557?text=Hello%20Conflux%20AI,%20I%20read%20your%20article%20on%20${encodeURIComponent(article.title)}%20and%20want%20to%20consult." target="_blank" rel="noopener noreferrer" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 13px;">
+          WhatsApp Direct Consultation &rarr;
+        </a>
+      </div>
     </article>
   </div>
 `;
@@ -660,6 +756,20 @@ districts.forEach(d => {
 
   const visibleArticles = districtArticles.slice(0, 6);
 
+  // Extract Topic Clusters for District
+  const topicCountMap = new Map();
+  districtArticles.forEach(art => {
+    const combinedTopics = [...(art.topics || []), ...(art.category ? [art.category] : [])];
+    combinedTopics.forEach(t => {
+      const clean = String(t).trim();
+      if (!clean) return;
+      topicCountMap.set(clean, (topicCountMap.get(clean) || 0) + 1);
+    });
+  });
+  const topicClusters = Array.from(topicCountMap.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+
   const getDistrictHtml = (currentUrl) => `
   <div id="root">
     <header style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
@@ -696,7 +806,7 @@ districts.forEach(d => {
 
       <!-- DISTRICT-BASED ARTICLE DISCOVERY LAYER -->
       <section style="margin-top: 40px; margin-bottom: 40px;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;">
           <div>
             <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #2563eb; letter-spacing: 0.08em; display: block; margin-bottom: 6px;">
               Regional Knowledge Network
@@ -712,6 +822,17 @@ districts.forEach(d => {
             ${districtArticles.length} Local ${districtArticles.length === 1 ? 'Article' : 'Articles'}
           </div>
         </div>
+
+        ${topicClusters.length > 0 ? `
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; align-items: center;">
+          <span style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-right: 4px;">Local Topics:</span>
+          ${topicClusters.map(t => `
+            <a href="/blog?district=${escapeHtml(d.slug)}" style="font-size: 11px; font-weight: 700; background: #f8fafc; border: 1px solid #e2e8f0; padding: 4px 10px; border-radius: 8px; color: #334155; text-decoration: none;">
+              #${escapeHtml(t.name)} (${t.count})
+            </a>
+          `).join('')}
+        </div>
+        ` : ''}
 
         ${districtArticles.length > 0 ? `
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">

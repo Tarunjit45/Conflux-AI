@@ -81,7 +81,32 @@
     "districts": [
       "bankura"
     ],
-    "category": "Ecotourism & Hospitality"
+    "category": "Ecotourism & Hospitality",
+    "primaryIntent": "local",
+    "primaryKeyword": "Mukutmanipur Jhilimili ecotourism homestay booking",
+    "secondaryKeywords": [
+      "Mukutmanipur boat safari WhatsApp",
+      "Jhilimili sabai grass handicrafts",
+      "Bankura tourist homestays"
+    ],
+    "localities": [
+      "Mukutmanipur",
+      "Jhilimili",
+      "Khatra",
+      "Bankura Town"
+    ],
+    "topics": [
+      "Ecotourism",
+      "Homestays",
+      "Boating Safaris",
+      "Handicrafts",
+      "WhatsApp Direct Booking"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-garhbeta-gongoni-canyon-bn-59",
@@ -165,7 +190,31 @@
     "districts": [
       "paschim-medinipur"
     ],
-    "category": "Agro-Business & Tourism"
+    "category": "Agro-Business & Tourism",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Gongoni Grand Canyon resort booking and cashew wholesale",
+    "secondaryKeywords": [
+      "Garhbeta potato cold storage B2B",
+      "Gongoni canyon ecotourism resort",
+      "Paschim Medinipur cashew trade"
+    ],
+    "localities": [
+      "Garhbeta",
+      "Gongoni",
+      "Medinipur"
+    ],
+    "topics": [
+      "Canyon Ecotourism",
+      "Resort Booking",
+      "Potato Cold Storage",
+      "Cashew Wholesale",
+      "WhatsApp Catalogs"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "ecommerce-development"
+    ]
   },
   {
     "id": "art-chalsa-samsing-suntalekhola-en-60",
@@ -250,7 +299,33 @@
       "jalpaiguri",
       "kalimpong"
     ],
-    "category": "Dooars Ecotourism"
+    "category": "Dooars Ecotourism",
+    "primaryIntent": "local",
+    "primaryKeyword": "Offbeat Dooars homestay booking Samsing Suntalekhola Rocky Island",
+    "secondaryKeywords": [
+      "Chalsa jungle safari booking WhatsApp",
+      "Dooars offbeat tea retreat",
+      "Rocky Island Murti river homestay"
+    ],
+    "localities": [
+      "Chalsa",
+      "Samsing",
+      "Suntalekhola",
+      "Rocky Island",
+      "Malbazar"
+    ],
+    "topics": [
+      "Dooars Ecotourism",
+      "River Retreats",
+      "Jungle Safaris",
+      "Tea Tourism",
+      "Direct Booking"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-taki-hasnabad-ichamati-bn-61",
@@ -334,7 +409,31 @@
     "districts": [
       "north-24-parganas"
     ],
-    "category": "Heritage Tourism & Honey"
+    "category": "Heritage Tourism & Honey",
+    "primaryIntent": "local",
+    "primaryKeyword": "Taki Ichamati river cruise and rajbari homestay booking",
+    "secondaryKeywords": [
+      "Hasnabad boat ride WhatsApp",
+      "Sundarban pure honey direct supplier",
+      "Taki heritage zamindar bari stay"
+    ],
+    "localities": [
+      "Taki",
+      "Hasnabad",
+      "Basirhat"
+    ],
+    "topics": [
+      "Heritage Tourism",
+      "River Cruises",
+      "Rajbari Homestays",
+      "Sundarban Honey",
+      "WhatsApp Booking"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ecommerce-development",
+      "website-development"
+    ]
   },
   {
     "id": "art-kurseong-mirik-lepchajagat-en-62",
@@ -418,7 +517,32 @@
     "districts": [
       "darjeeling"
     ],
-    "category": "Tea Tourism & Homestays"
+    "category": "Tea Tourism & Homestays",
+    "primaryIntent": "local",
+    "primaryKeyword": "Kurseong Mirik Lepchajagat boutique tea retreat homestays",
+    "secondaryKeywords": [
+      "Darjeeling first flush tea direct dispatch",
+      "Lepchajagat Kanchenjunga view homestay",
+      "Mirik lake boutique resorts"
+    ],
+    "localities": [
+      "Kurseong",
+      "Mirik",
+      "Lepchajagat",
+      "Darjeeling"
+    ],
+    "topics": [
+      "Tea Retreats",
+      "Boutique Homestays",
+      "First Flush Darjeeling Tea",
+      "Direct Dispatch",
+      "WhatsApp Automation"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "ecommerce-development"
+    ]
   },
   {
     "id": "art-raiganj-restaurants-guide-2026-01",
@@ -505,7 +629,31 @@
     "districts": [
       "uttar-dinajpur"
     ],
-    "category": "Local Food & Hospitality"
+    "category": "Local Food & Hospitality",
+    "primaryIntent": "informational",
+    "primaryKeyword": "Best restaurants in Raiganj food price location guide",
+    "secondaryKeywords": [
+      "Raiganj top cafes and dining",
+      "Raiganj bird sanctuary restaurants",
+      "Uttar Dinajpur local cuisine"
+    ],
+    "localities": [
+      "Raiganj",
+      "Karnajora",
+      "Kaliaganj"
+    ],
+    "topics": [
+      "Restaurant Guide",
+      "Local Food",
+      "Pricing & Locations",
+      "Hospitality",
+      "Local SEO"
+    ],
+    "relatedServices": [
+      "digital-marketing",
+      "website-development",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-bolpur-santiniketan-tourism-bn-40",
@@ -580,7 +728,32 @@
     "districts": [
       "birbhum"
     ],
-    "category": "Heritage Tourism & Crafts"
+    "category": "Heritage Tourism & Crafts",
+    "primaryIntent": "local",
+    "primaryKeyword": "Bolpur Santiniketan resort homestay booking and batik crafts",
+    "secondaryKeywords": [
+      "Santiniketan Poush Mela homestay WhatsApp",
+      "Bolpur batik artisan digital showroom",
+      "Birbhum heritage stay"
+    ],
+    "localities": [
+      "Bolpur",
+      "Santiniketan",
+      "Prantik",
+      "Suri"
+    ],
+    "topics": [
+      "Heritage Tourism",
+      "Boutique Homestays",
+      "Batik Craft",
+      "Handicrafts Showroom",
+      "WhatsApp Booking"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ecommerce-development",
+      "website-development"
+    ]
   },
   {
     "id": "art-bishnupur-baluchari-bn-41",
@@ -655,7 +828,31 @@
     "districts": [
       "bankura"
     ],
-    "category": "Handloom & Handicrafts"
+    "category": "Handloom & Handicrafts",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Bishnupur Baluchari saree and terracotta craft digital showroom",
+    "secondaryKeywords": [
+      "Bishnupur silk saree pan India delivery",
+      "Bankura terracotta horse online catalog",
+      "Bishnupur artisan WhatsApp booking"
+    ],
+    "localities": [
+      "Bishnupur",
+      "Bankura Town",
+      "Sonamukhi"
+    ],
+    "topics": [
+      "Baluchari Silk",
+      "Terracotta Crafts",
+      "Digital Showrooms",
+      "Pan-India Delivery",
+      "WhatsApp Catalogs"
+    ],
+    "relatedServices": [
+      "ecommerce-development",
+      "whatsapp-automation",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-digha-mandarmani-hospitality-en-42",
@@ -730,7 +927,33 @@
     "districts": [
       "purba-medinipur"
     ],
-    "category": "Coastal Tourism & Seafood"
+    "category": "Coastal Tourism & Seafood",
+    "primaryIntent": "local",
+    "primaryKeyword": "Digha Mandarmani hotel resort direct WhatsApp booking",
+    "secondaryKeywords": [
+      "Tajpur sea facing resort direct booking",
+      "Digha fresh seafood wholesale supplier",
+      "Purba Medinipur coastal tourism"
+    ],
+    "localities": [
+      "Digha",
+      "Mandarmani",
+      "Tajpur",
+      "Shankarpur",
+      "Contai"
+    ],
+    "topics": [
+      "Coastal Tourism",
+      "Hotel Direct Booking",
+      "Zero-Commission Booking",
+      "Seafood Supply Chain",
+      "WhatsApp Bots"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-purulia-ayodhya-resorts-bn-43",
@@ -805,7 +1028,32 @@
     "districts": [
       "purulia"
     ],
-    "category": "Eco-Resorts & Mining"
+    "category": "Eco-Resorts & Mining",
+    "primaryIntent": "local",
+    "primaryKeyword": "Purulia Ayodhya Hills eco resorts and mineral logistics WhatsApp",
+    "secondaryKeywords": [
+      "Ayodhya Pahar camping and tent booking",
+      "Purulia stone quarry transport logistics",
+      "Chhau mask artisans direct catalog"
+    ],
+    "localities": [
+      "Ayodhya Hills",
+      "Purulia Town",
+      "Baghmundi",
+      "Raghunathpur"
+    ],
+    "topics": [
+      "Eco-Tourism",
+      "Hill Camping",
+      "Mineral Logistics",
+      "Chhau Handicrafts",
+      "WhatsApp Automation"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "ai-automation"
+    ]
   },
   {
     "id": "art-jhargram-forest-homestays-bn-44",
@@ -879,7 +1127,32 @@
     "districts": [
       "jhargram"
     ],
-    "category": "Forest Tourism & Agro-Forestry"
+    "category": "Forest Tourism & Agro-Forestry",
+    "primaryIntent": "local",
+    "primaryKeyword": "Jhargram forest homestays and wild honey direct buyer catalog",
+    "secondaryKeywords": [
+      "Belpahari jungle homestay WhatsApp",
+      "Jhargram sal leaf craft supplier",
+      "Jangalmahal agro-forestry direct sales"
+    ],
+    "localities": [
+      "Jhargram Town",
+      "Belpahari",
+      "Kankrajhor",
+      "Lodhasuli"
+    ],
+    "topics": [
+      "Jangalmahal Tourism",
+      "Forest Homestays",
+      "Wild Honey",
+      "Sal Leaf Products",
+      "Direct Buyer Catalogs"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ecommerce-development",
+      "website-development"
+    ]
   },
   {
     "id": "art-jaigaon-alipurduar-trade-en-45",
@@ -954,7 +1227,33 @@
     "districts": [
       "alipurduar"
     ],
-    "category": "Border Trade & Safari Tourism"
+    "category": "Border Trade & Safari Tourism",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Jaigaon Bhutan border trade and Jaldapara safari resort booking",
+    "secondaryKeywords": [
+      "Alipurduar Dooars resort booking WhatsApp",
+      "Jaigaon export import clearance inquiry",
+      "Jaldapara elephant safari stay"
+    ],
+    "localities": [
+      "Jaigaon",
+      "Alipurduar Town",
+      "Madarihat",
+      "Jaldapara",
+      "Phuentsholing"
+    ],
+    "topics": [
+      "Border Trade Logistics",
+      "Safari Resorts",
+      "Jaldapara Ecotourism",
+      "Cross-Border Commerce",
+      "WhatsApp Booking"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "ai-automation"
+    ]
   },
   {
     "id": "art-kalimpong-floriculture-en-46",
@@ -1029,7 +1328,33 @@
     "districts": [
       "kalimpong"
     ],
-    "category": "Floriculture & Homestays"
+    "category": "Floriculture & Homestays",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Kalimpong orchid floriculture export and homestay booking",
+    "secondaryKeywords": [
+      "Kalimpong live plants nursery WhatsApp",
+      "Kalimpong organic ginger cardamom supply",
+      "Lava Rishop offbeat homestay"
+    ],
+    "localities": [
+      "Kalimpong Town",
+      "Pedong",
+      "Lava",
+      "Rishop",
+      "Algarah"
+    ],
+    "topics": [
+      "Floriculture & Orchids",
+      "Plant Nursery Export",
+      "Spices Wholesale",
+      "Offbeat Homestays",
+      "WhatsApp Catalogs"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ecommerce-development",
+      "website-development"
+    ]
   },
   {
     "id": "art-coochbehar-heritage-trade-bn-47",
@@ -1104,7 +1429,32 @@
     "districts": [
       "cooch-behar"
     ],
-    "category": "Heritage Tourism & Agro-Trade"
+    "category": "Heritage Tourism & Agro-Trade",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Cooch Behar heritage tourism and tobacco jute wholesale inquiry",
+    "secondaryKeywords": [
+      "Cooch Behar Rajbari hotel booking WhatsApp",
+      "Dinhata tobacco mandi wholesale prices",
+      "North Bengal jute trade automation"
+    ],
+    "localities": [
+      "Cooch Behar Town",
+      "Dinhata",
+      "Mathabhanga",
+      "Tufanganj"
+    ],
+    "topics": [
+      "Heritage Tourism",
+      "Rajbari Tours",
+      "Tobacco Mandi",
+      "Jute Wholesale",
+      "Lead Quotation Bots"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "ai-automation"
+    ]
   },
   {
     "id": "art-jalpaiguri-tea-timber-en-48",
@@ -1178,7 +1528,32 @@
     "districts": [
       "jalpaiguri"
     ],
-    "category": "Tea Machinery & Logistics"
+    "category": "Tea Machinery & Logistics",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Jalpaiguri tea processing machinery and timber logistics automation",
+    "secondaryKeywords": [
+      "Dooars tea garden machinery spare parts",
+      "Jalpaiguri timber sawmill truck transport",
+      "North Bengal industrial logistics"
+    ],
+    "localities": [
+      "Jalpaiguri Town",
+      "Malbazar",
+      "Mainaguri",
+      "Dhupguri"
+    ],
+    "topics": [
+      "Tea Machinery",
+      "Timber Sawmills",
+      "Truck Transport Logistics",
+      "Dooars Industrial Trade",
+      "WhatsApp RFQ Bots"
+    ],
+    "relatedServices": [
+      "ai-automation",
+      "whatsapp-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-raiganj-tulaipanji-rice-bn-49",
@@ -1252,7 +1627,32 @@
     "districts": [
       "uttar-dinajpur"
     ],
-    "category": "Agro-Commodities & Rice Mills"
+    "category": "Agro-Commodities & Rice Mills",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Raiganj Tulaipanji aromatic rice wholesale supplier and jute catalog",
+    "secondaryKeywords": [
+      "Tulaipanji rice mill direct buyer rate",
+      "Raiganj jute mandi WhatsApp inquiry",
+      "Uttar Dinajpur agro processing"
+    ],
+    "localities": [
+      "Raiganj",
+      "Islampur",
+      "Kaliaganj",
+      "Dalkhola"
+    ],
+    "topics": [
+      "Tulaipanji Rice",
+      "Rice Mills",
+      "Jute Wholesale",
+      "Agro-Commodities",
+      "WhatsApp Catalogs"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ecommerce-development",
+      "website-development"
+    ]
   },
   {
     "id": "art-balurghat-rice-mills-bn-50",
@@ -1326,7 +1726,31 @@
     "districts": [
       "dakshin-dinajpur"
     ],
-    "category": "Agro-Processing & Retail"
+    "category": "Agro-Processing & Retail",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Balurghat rice and mustard oil mills wholesale inquiry automation",
+    "secondaryKeywords": [
+      "Dakshin Dinajpur mustard oil mill B2B",
+      "Balurghat agro retail wholesale rates",
+      "Gangarampur rice mill distributor bot"
+    ],
+    "localities": [
+      "Balurghat",
+      "Gangarampur",
+      "Buniadpur"
+    ],
+    "topics": [
+      "Rice & Oil Mills",
+      "Mustard Oil Processing",
+      "Agro-Retail",
+      "Wholesale Quotations",
+      "WhatsApp Automation"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "ai-automation"
+    ]
   },
   {
     "id": "art-south24parganas-aquaculture-en-51",
@@ -1400,7 +1824,32 @@
     "districts": [
       "south-24-parganas"
     ],
-    "category": "Aquaculture & Manufacturing"
+    "category": "Aquaculture & Manufacturing",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Diamond Harbour aquaculture shrimp hatchery and surgical tool manufacturing",
+    "secondaryKeywords": [
+      "South 24 Parganas fish feed wholesale WhatsApp",
+      "Baruipur surgical instrument export inquiry",
+      "Kakdwip marine fish supply chain"
+    ],
+    "localities": [
+      "Diamond Harbour",
+      "Baruipur",
+      "Canning",
+      "Kakdwip"
+    ],
+    "topics": [
+      "Aquaculture & Hatcheries",
+      "Shrimp Farming",
+      "Surgical Instruments",
+      "Marine Supply Chain",
+      "WhatsApp Automation"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ai-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-kalna-katwa-tant-bn-52",
@@ -1475,7 +1924,32 @@
     "districts": [
       "purba-bardhaman"
     ],
-    "category": "Handloom Saree & Cold Storage"
+    "category": "Handloom Saree & Cold Storage",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Kalna Katwa handloom tant saree wholesale and rice husk biomass",
+    "secondaryKeywords": [
+      "Purba Bardhaman cold storage space booking",
+      "Kalna saree manufacturer WhatsApp catalog",
+      "Katwa agro biomass supplier"
+    ],
+    "localities": [
+      "Kalna",
+      "Katwa",
+      "Dhatrigram",
+      "Samudragarh"
+    ],
+    "topics": [
+      "Tant Sarees",
+      "Handloom Weaving",
+      "Rice Husk Biomass",
+      "Cold Storage Booking",
+      "WhatsApp Catalogs"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ecommerce-development",
+      "website-development"
+    ]
   },
   {
     "id": "art-murshidabad-silk-brass-bn-53",
@@ -1550,7 +2024,32 @@
     "districts": [
       "murshidabad"
     ],
-    "category": "Silk Sarees & Heritage Crafts"
+    "category": "Silk Sarees & Heritage Crafts",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Murshidabad silk saree and brass ware heritage digital showroom",
+    "secondaryKeywords": [
+      "Baharampur Murshidabad silk wholesale",
+      "Jangipur brass utensil artisan catalog",
+      "Hazarduari tourist direct booking"
+    ],
+    "localities": [
+      "Baharampur",
+      "Jangipur",
+      "Lalbagh",
+      "Jiaganj"
+    ],
+    "topics": [
+      "Murshidabad Silk",
+      "Brass & Bell Metal",
+      "Heritage Showroom",
+      "Handicraft Export",
+      "WhatsApp Booking"
+    ],
+    "relatedServices": [
+      "ecommerce-development",
+      "whatsapp-automation",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-chapra-karimpur-agro-bn-54",
@@ -1631,7 +2130,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Agro-Mandi & Fertilizer"
+    "category": "Agro-Mandi & Fertilizer",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Chapra Karimpur banana mandi and fertilizer wholesale daily rate system",
+    "secondaryKeywords": [
+      "Nadia banana wholesale market WhatsApp",
+      "Karimpur fertilizer dealer quotation bot",
+      "Tehatta cold storage banana ripening"
+    ],
+    "localities": [
+      "Chapra",
+      "Karimpur",
+      "Tehatta"
+    ],
+    "topics": [
+      "Banana Mandi",
+      "Daily Market Rates",
+      "Fertilizer Distribution",
+      "Agro-Logistics",
+      "WhatsApp Automation"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ai-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-birnagar-taherpur-bakery-bn-55",
@@ -1711,7 +2234,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Bakery & Agro-Retail"
+    "category": "Bakery & Agro-Retail",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Birnagar Taherpur bakery and agro retail wholesale order automation",
+    "secondaryKeywords": [
+      "Taherpur biscuit and toast bakery supplier",
+      "Birnagar agro grocery wholesale WhatsApp",
+      "Nadia FMCG retail ordering bot"
+    ],
+    "localities": [
+      "Birnagar",
+      "Taherpur",
+      "Ranaghat"
+    ],
+    "topics": [
+      "Bakery Manufacturing",
+      "FMCG Distribution",
+      "Agro-Retail",
+      "Order Automation",
+      "WhatsApp Commerce"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "ecommerce-development"
+    ]
   },
   {
     "id": "art-hanskhali-mayurhat-poultry-bn-56",
@@ -1790,7 +2337,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Poultry & Hatchery Supply"
+    "category": "Poultry & Hatchery Supply",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Hanskhali Mayurhat poultry hatchery and dairy feed supply chain automation",
+    "secondaryKeywords": [
+      "Nadia day old chicks hatchery rate WhatsApp",
+      "Mayurhat cattle and fish feed supplier bot",
+      "Hanskhali poultry farm dispatch"
+    ],
+    "localities": [
+      "Hanskhali",
+      "Mayurhat",
+      "Bagula"
+    ],
+    "topics": [
+      "Poultry Hatcheries",
+      "Dairy & Cattle Feed",
+      "Supply Chain Management",
+      "Wholesale Invoicing",
+      "WhatsApp Bots"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ai-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-haringhata-dairy-poultry-bn-32",
@@ -1890,7 +2461,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Dairy & Poultry Supply"
+    "category": "Dairy & Poultry Supply",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Haringhata dairy and poultry farm direct wholesale supply chain",
+    "secondaryKeywords": [
+      "Haringhata meat and egg wholesale price",
+      "Kalyani Haringhata dairy farm direct B2B",
+      "Automated milk supply dispatch WhatsApp"
+    ],
+    "localities": [
+      "Haringhata",
+      "Kalyani",
+      "Barasat"
+    ],
+    "topics": [
+      "Dairy Processing",
+      "Poultry Supply Chain",
+      "Direct B2B Supply",
+      "Order Management",
+      "WhatsApp Automation"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ai-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-chakdaha-hardware-building-bn-33",
@@ -1990,7 +2585,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Building Materials & Hardware"
+    "category": "Building Materials & Hardware",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Chakdaha building materials cement rod hardware quotation automation",
+    "secondaryKeywords": [
+      "Nadia TMT bar cement wholesale dealer",
+      "Chakdaha sanitaryware hardware WhatsApp quotation",
+      "Building contractor material order bot"
+    ],
+    "localities": [
+      "Chakdaha",
+      "Ranaghat",
+      "Kalyani"
+    ],
+    "topics": [
+      "Building Materials",
+      "Cement & TMT Steel",
+      "Hardware Stores",
+      "Automated Quotations",
+      "WhatsApp Lead CRM"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-howrah-foundry-engineering-en-34",
@@ -2089,7 +2708,32 @@
       "howrah",
       "kolkata"
     ],
-    "category": "Foundry & CNC Machining"
+    "category": "Foundry & CNC Machining",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Howrah foundry CNC machining metal fabrication B2B quotation engine",
+    "secondaryKeywords": [
+      "Howrah industrial casting workshop RFQ bot",
+      "Metal engineering drawing quotation automated",
+      "Kolkata Howrah engineering workshop B2B"
+    ],
+    "localities": [
+      "Howrah City",
+      "Shibpur",
+      "Dasnagar",
+      "Uluberia"
+    ],
+    "topics": [
+      "Foundry & Castings",
+      "CNC Machining",
+      "Metal Fabrication",
+      "Engineering RFQ",
+      "B2B Lead Engines"
+    ],
+    "relatedServices": [
+      "ai-automation",
+      "whatsapp-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-nabadwip-mayapur-hotels-bn-35",
@@ -2189,7 +2833,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Pilgrim Hospitality & Hotels"
+    "category": "Pilgrim Hospitality & Hotels",
+    "primaryIntent": "local",
+    "primaryKeyword": "Nabadwip Mayapur hotel guest house direct WhatsApp booking zero commission",
+    "secondaryKeywords": [
+      "Mayapur ISKCON dharamsala direct booking",
+      "Nabadwip pilgrim guest house room availability",
+      "Nadia religious tourism booking bot"
+    ],
+    "localities": [
+      "Nabadwip",
+      "Mayapur",
+      "Krishnanagar"
+    ],
+    "topics": [
+      "Pilgrim Tourism",
+      "Hotel Direct Booking",
+      "Zero Commission",
+      "Room Availability Bots",
+      "WhatsApp Booking"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-barasat-barrackpore-coaching-en-36",
@@ -2288,7 +2956,32 @@
       "north-24-parganas",
       "kolkata"
     ],
-    "category": "Education & Coaching"
+    "category": "Education & Coaching",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Barasat Barrackpore coaching institute student admission WhatsApp automation",
+    "secondaryKeywords": [
+      "North 24 Parganas NEET JEE coaching admission bot",
+      "Automated fee reminder coaching institute",
+      "Student test series delivery WhatsApp"
+    ],
+    "localities": [
+      "Barasat",
+      "Barrackpore",
+      "Madhyamgram",
+      "Sodepur"
+    ],
+    "topics": [
+      "Education & Coaching",
+      "Student Admissions",
+      "Lead Intake Bots",
+      "Fee Reminders",
+      "WhatsApp Automation"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ai-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-bagula-badkulla-machinery-bn-37",
@@ -2392,7 +3085,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Agro-Machinery & Hardware"
+    "category": "Agro-Machinery & Hardware",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Bagula Badkulla agricultural machinery fertilizer dealer digital showroom",
+    "secondaryKeywords": [
+      "Nadia pump set power tiller dealer WhatsApp",
+      "Badkulla pesticide fertilizer wholesale rate",
+      "Bagula kisan agro machinery catalog"
+    ],
+    "localities": [
+      "Bagula",
+      "Badkulla",
+      "Hanskhali"
+    ],
+    "topics": [
+      "Agro-Machinery",
+      "Power Tillers & Pumps",
+      "Fertilizer Distribution",
+      "Farmer Catalogs",
+      "WhatsApp Commerce"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ecommerce-development",
+      "website-development"
+    ]
   },
   {
     "id": "art-howrah-hooghly-cold-storage-bn-38",
@@ -2489,7 +3206,32 @@
       "howrah",
       "hooghly"
     ],
-    "category": "Cold Storage & Agro-Logistics"
+    "category": "Cold Storage & Agro-Logistics",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Howrah Hooghly cold storage potato wholesale space booking automation",
+    "secondaryKeywords": [
+      "Hooghly Jyoti potato cold storage gate pass",
+      "Howrah potato mandi wholesale price notification",
+      "Automated cold storage receipt system"
+    ],
+    "localities": [
+      "Singur",
+      "Tarakeswar",
+      "Arambagh",
+      "Domjur"
+    ],
+    "topics": [
+      "Cold Storage Logistics",
+      "Potato Mandi",
+      "Space Booking Automation",
+      "Gate Pass Verification",
+      "WhatsApp Notifications"
+    ],
+    "relatedServices": [
+      "ai-automation",
+      "whatsapp-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-siliguri-travel-car-rental-en-39",
@@ -2594,7 +3336,32 @@
       "kalimpong",
       "jalpaiguri"
     ],
-    "category": "Travel Logistics & Car Rentals"
+    "category": "Travel Logistics & Car Rentals",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Siliguri travel agency Darjeeling Sikkim tour car rental WhatsApp automation",
+    "secondaryKeywords": [
+      "NJP Bagdogra taxi car rental booking bot",
+      "Sikkim permit travel itinerary automated PDF",
+      "Siliguri North Bengal tour package WhatsApp"
+    ],
+    "localities": [
+      "Siliguri",
+      "Darjeeling",
+      "Gangtok",
+      "Kalimpong"
+    ],
+    "topics": [
+      "Travel Logistics",
+      "Car Rental Booking",
+      "Tour Itineraries",
+      "Permit Assistance",
+      "WhatsApp Automation"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-geo-ai-overviews-2026-en-27",
@@ -2690,7 +3457,30 @@
       "kolkata",
       "statewide"
     ],
-    "category": "GEO & Technical SEO"
+    "category": "GEO & Technical SEO",
+    "primaryIntent": "informational",
+    "primaryKeyword": "Generative Engine Optimization GEO ranking guide 2026",
+    "secondaryKeywords": [
+      "How to rank on Google AI Overviews",
+      "Perplexity Claude citation optimization",
+      "Schema JSON-LD for AI search engines"
+    ],
+    "localities": [
+      "Kolkata",
+      "Statewide"
+    ],
+    "topics": [
+      "GEO Strategy",
+      "Google AI Overviews",
+      "Perplexity Citations",
+      "Entity Graphs",
+      "Technical SEO"
+    ],
+    "relatedServices": [
+      "seo-geo",
+      "website-development",
+      "ai-automation"
+    ]
   },
   {
     "id": "art-whatsapp-speed-to-lead-funnel-2026-en-28",
@@ -2803,7 +3593,32 @@
       "howrah",
       "paschim-bardhaman"
     ],
-    "category": "WhatsApp Sales Automation"
+    "category": "WhatsApp Sales Automation",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Speed to lead WhatsApp Business API sales automation engine",
+    "secondaryKeywords": [
+      "Instant lead response bot for businesses",
+      "WhatsApp CRM lead qualification pipeline",
+      "Automated sales lead conversion Indian SMEs"
+    ],
+    "localities": [
+      "Kolkata",
+      "Nadia",
+      "Howrah",
+      "Paschim Bardhaman"
+    ],
+    "topics": [
+      "Speed to Lead",
+      "WhatsApp Sales Engines",
+      "CRM Lead Sync",
+      "Lead Qualification",
+      "Conversion Optimization"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ai-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-enterprise-rag-ai-agents-ops-2026-en-29",
@@ -2910,7 +3725,31 @@
       "paschim-bardhaman",
       "purba-medinipur"
     ],
-    "category": "Enterprise AI Agents"
+    "category": "Enterprise AI Agents",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Enterprise AI agents secure RAG workflows operational automation 2026",
+    "secondaryKeywords": [
+      "Custom autonomous AI agents Indian companies",
+      "Internal company knowledge RAG assistant",
+      "Automate operational bottlenecks with AI"
+    ],
+    "localities": [
+      "Kolkata",
+      "Durgapur",
+      "Haldia"
+    ],
+    "topics": [
+      "Enterprise AI Agents",
+      "Secure RAG Systems",
+      "Workflow Automation",
+      "Vector Databases",
+      "Operational Efficiency"
+    ],
+    "relatedServices": [
+      "ai-automation",
+      "chatbot-development",
+      "website-development"
+    ]
   },
   {
     "id": "art-durga-puja-2026-retail-wholesale-automation-bn-30",
@@ -3024,7 +3863,33 @@
       "howrah",
       "paschim-bardhaman"
     ],
-    "category": "Festive Retail Growth"
+    "category": "Festive Retail Growth",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Durga Puja retail wholesale business AI WhatsApp sales growth guide",
+    "secondaryKeywords": [
+      "Festive saree shopping WhatsApp catalog West Bengal",
+      "Retail store customer retention Puja marketing",
+      "Automated festive orders and billing bot"
+    ],
+    "localities": [
+      "Kolkata",
+      "Santipur",
+      "Ranaghat",
+      "Howrah",
+      "Durgapur"
+    ],
+    "topics": [
+      "Festive Retail Strategy",
+      "WhatsApp Catalog Sales",
+      "Customer Retention",
+      "Wholesale Pre-Booking",
+      "Digital Marketing"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "digital-marketing",
+      "ecommerce-development"
+    ]
   },
   {
     "id": "art-wb-healthcare-diagnostic-opd-whatsapp-bn-31",
@@ -3132,7 +3997,32 @@
       "kolkata",
       "paschim-bardhaman"
     ],
-    "category": "Healthcare & Diagnostics"
+    "category": "Healthcare & Diagnostics",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "West Bengal polyclinic diagnostic centre OPD booking and WhatsApp lab reports",
+    "secondaryKeywords": [
+      "Clinic appointment booking bot West Bengal",
+      "Automated diagnostic report dispatch WhatsApp",
+      "Doctor chamber local SEO ranking"
+    ],
+    "localities": [
+      "Kalyani",
+      "Krishnanagar",
+      "Kolkata",
+      "Durgapur"
+    ],
+    "topics": [
+      "Healthcare Automation",
+      "OPD Appointments",
+      "Lab Report Dispatch",
+      "Local Medical SEO",
+      "Patient Retention"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "seo-geo",
+      "website-development"
+    ]
   },
   {
     "id": "art-santipur-phulia-puja-bn-18",
@@ -3208,7 +4098,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Handloom Saree & Wholesale"
+    "category": "Handloom Saree & Wholesale",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Santipur Phulia handloom saree Durga Puja WhatsApp bulk booking",
+    "secondaryKeywords": [
+      "Santipur tant saree wholesale rate WhatsApp",
+      "Phulia jacquard silk saree catalog",
+      "Weaver direct bulk order system"
+    ],
+    "localities": [
+      "Santipur",
+      "Phulia",
+      "Ranaghat"
+    ],
+    "topics": [
+      "Handloom Sarees",
+      "Wholesale Pre-Booking",
+      "Weaver Direct Catalogs",
+      "Festive Orders",
+      "WhatsApp Commerce"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ecommerce-development",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-krishnanagar-clay-bn-19",
@@ -3280,7 +4194,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Handicrafts & Clay Models"
+    "category": "Handicrafts & Clay Models",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Krishnanagar clay dolls handicrafts global buyer digital showroom",
+    "secondaryKeywords": [
+      "Ghurni clay model artist export online",
+      "Krishnanagar terracotta handicraft catalog",
+      "International courier booking craft artisans"
+    ],
+    "localities": [
+      "Krishnanagar",
+      "Ghurni",
+      "Nadia"
+    ],
+    "topics": [
+      "Clay Models & Dolls",
+      "Ghurni Handicrafts",
+      "Global Export Showroom",
+      "Artisan Catalogs",
+      "WhatsApp Booking"
+    ],
+    "relatedServices": [
+      "ecommerce-development",
+      "website-development",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-ranaghat-fmcg-en-20",
@@ -3351,7 +4289,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "FMCG & Grocery Wholesale"
+    "category": "FMCG & Grocery Wholesale",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Ranaghat FMCG and wholesale grocery order intake automation",
+    "secondaryKeywords": [
+      "Ranaghat grocery distributor B2B ordering bot",
+      "Kirana store daily restocking WhatsApp",
+      "Automated FMCG invoice and payment receipt"
+    ],
+    "localities": [
+      "Ranaghat",
+      "Chakdaha",
+      "Taherpur"
+    ],
+    "topics": [
+      "FMCG Wholesale",
+      "Grocery Distribution",
+      "Kirana Restocking",
+      "Order Intake Bots",
+      "Invoice Automation"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ai-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-bethuadahari-furniture-bn-21",
@@ -3421,7 +4383,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Timber & Furniture"
+    "category": "Timber & Furniture",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Bethuadahari timber and furniture WhatsApp catalog customer inquiry",
+    "secondaryKeywords": [
+      "Bethuadahari teak wood furniture design catalog",
+      "Nadia sawmill timber rate WhatsApp bot",
+      "Custom sofa dining table order automation"
+    ],
+    "localities": [
+      "Bethuadahari",
+      "Debagram",
+      "Nakashipara"
+    ],
+    "topics": [
+      "Timber Sawmills",
+      "Custom Furniture",
+      "Digital Woodwork Catalog",
+      "Customer Inquiries",
+      "WhatsApp Lead CRM"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-siliguri-tea-bn-22",
@@ -3491,7 +4477,32 @@
       "darjeeling",
       "jalpaiguri"
     ],
-    "category": "Tea Trade & Resorts"
+    "category": "Tea Trade & Resorts",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Siliguri tea merchant wholesale catalog and North Bengal resort booking",
+    "secondaryKeywords": [
+      "Siliguri CTC tea auction sample order WhatsApp",
+      "Dooars tea estate boutique resort stay",
+      "North Bengal bulk tea buyer connection"
+    ],
+    "localities": [
+      "Siliguri",
+      "Sevoke",
+      "Matigara",
+      "Chalsa"
+    ],
+    "topics": [
+      "Tea Trade",
+      "Wholesale Tea Samples",
+      "Boutique Resorts",
+      "Dooars Tourism",
+      "WhatsApp Catalogs"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ecommerce-development",
+      "website-development"
+    ]
   },
   {
     "id": "art-haldia-transport-bn-23",
@@ -3560,7 +4571,32 @@
     "districts": [
       "purba-medinipur"
     ],
-    "category": "Heavy Transport & Logistics"
+    "category": "Heavy Transport & Logistics",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Haldia Port heavy transport truck booking and freight quotation bot",
+    "secondaryKeywords": [
+      "Haldia industrial trailer rental WhatsApp",
+      "Port cargo freight transporter rate calculation",
+      "Automated trip sheet and driver alert bot"
+    ],
+    "localities": [
+      "Haldia Port",
+      "Sutahata",
+      "Tamluk",
+      "Durgachak"
+    ],
+    "topics": [
+      "Port Logistics",
+      "Heavy Transport",
+      "Truck Rental Bots",
+      "Freight Quotations",
+      "Automated Dispatches"
+    ],
+    "relatedServices": [
+      "ai-automation",
+      "whatsapp-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-durgapur-safety-en-24",
@@ -3629,7 +4665,32 @@
     "districts": [
       "paschim-bardhaman"
     ],
-    "category": "Industrial Safety & Equipment"
+    "category": "Industrial Safety & Equipment",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Durgapur industrial safety equipment B2B quotation catalog",
+    "secondaryKeywords": [
+      "Durgapur steel plant PPE safety vendor bot",
+      "Industrial helmet boots safety harness wholesale",
+      "Automated GST invoice quotation WhatsApp"
+    ],
+    "localities": [
+      "Durgapur",
+      "City Centre",
+      "Benachity",
+      "Asansol"
+    ],
+    "topics": [
+      "Industrial Safety PPE",
+      "Steel Plant Suppliers",
+      "B2B Quotations",
+      "Inventory Catalogs",
+      "WhatsApp Commerce"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "ai-automation"
+    ]
   },
   {
     "id": "art-kalyani-lab-en-25",
@@ -3698,7 +4759,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Healthcare & Diagnostics"
+    "category": "Healthcare & Diagnostics",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Kalyani diagnostic lab home blood sample collection and WhatsApp report",
+    "secondaryKeywords": [
+      "Kalyani pathology lab report auto dispatch",
+      "Doctor chamber blood test booking bot",
+      "Nadia healthcare clinic local ranking"
+    ],
+    "localities": [
+      "Kalyani",
+      "Kanchrapara",
+      "Gayeshpur"
+    ],
+    "topics": [
+      "Diagnostic Labs",
+      "Home Sample Collection",
+      "Automated PDF Reports",
+      "Clinic Appointments",
+      "Local SEO"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "seo-geo",
+      "website-development"
+    ]
   },
   {
     "id": "art-kolkata-agency-bn-26",
@@ -3771,7 +4856,31 @@
       "kolkata",
       "statewide"
     ],
-    "category": "Remote AI Agency & Strategy"
+    "category": "Remote AI Agency & Strategy",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Kolkata remote-first AI agency digitize West Bengal businesses",
+    "secondaryKeywords": [
+      "How to digitize rural and suburban business West Bengal",
+      "Remote AI automation consultant Kolkata",
+      "Custom WhatsApp bot web development Bengal"
+    ],
+    "localities": [
+      "Kolkata",
+      "Statewide"
+    ],
+    "topics": [
+      "Remote-First Agency",
+      "Business Digitization",
+      "Workflow Automation",
+      "Regional Transformation",
+      "AI Strategy"
+    ],
+    "relatedServices": [
+      "ai-automation",
+      "website-development",
+      "whatsapp-automation",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-bagula-clothing-bn-01",
@@ -3856,7 +4965,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Small Business Growth"
+    "category": "Small Business Growth",
+    "primaryIntent": "informational",
+    "primaryKeyword": "7 real ways for Bagula small businesses to get online customers",
+    "secondaryKeywords": [
+      "Bagula shop Google Maps local SEO",
+      "Bagula retail store WhatsApp business catalog",
+      "Nadia rural small business digital marketing"
+    ],
+    "localities": [
+      "Bagula",
+      "Hanskhali",
+      "Duttapulia"
+    ],
+    "topics": [
+      "Small Business Marketing",
+      "Google Maps Local SEO",
+      "WhatsApp Product Lists",
+      "Customer Acquisition",
+      "Rural Commerce"
+    ],
+    "relatedServices": [
+      "seo-geo",
+      "whatsapp-automation",
+      "digital-marketing"
+    ]
   },
   {
     "id": "art-krishnanagar-coaching-en-02",
@@ -3929,7 +5062,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Education & Admissions"
+    "category": "Education & Admissions",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Krishnanagar coaching institute student admission automation WhatsApp",
+    "secondaryKeywords": [
+      "Krishnanagar tutorial admission inquiry bot",
+      "Nadia competitive exam coaching student intake",
+      "Automated course timetable fee alerts"
+    ],
+    "localities": [
+      "Krishnanagar",
+      "Debnath Institute Area",
+      "Nadia"
+    ],
+    "topics": [
+      "Education Coaching",
+      "Student Lead Capture",
+      "Admission Workflows",
+      "Fee Reminders",
+      "WhatsApp Bots"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ai-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-ranaghat-wholesale-bn-03",
@@ -4001,7 +5158,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Wholesale & Distribution"
+    "category": "Wholesale & Distribution",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Ranaghat wholesale distributor WhatsApp bulk order automation",
+    "secondaryKeywords": [
+      "Ranaghat mandi wholesale distributor price list",
+      "Automated retailer order intake WhatsApp",
+      "Nadia distributor inventory management bot"
+    ],
+    "localities": [
+      "Ranaghat",
+      "Ranaghat Mandi",
+      "Aistala"
+    ],
+    "topics": [
+      "Wholesale Distribution",
+      "Bulk Ordering",
+      "Retailer Self-Service",
+      "Daily Stock Lists",
+      "WhatsApp Automation"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ai-automation",
+      "ecommerce-development"
+    ]
   },
   {
     "id": "art-santipur-saree-bn-04",
@@ -4073,7 +5254,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Handloom Saree Manufacturers"
+    "category": "Handloom Saree Manufacturers",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Santipur handloom saree manufacturer digital catalog online selling",
+    "secondaryKeywords": [
+      "Santipur cotton handloom saree direct export",
+      "Weaver WhatsApp digital product showroom",
+      "Bulk saree buyer connect Pan India"
+    ],
+    "localities": [
+      "Santipur",
+      "Phulia",
+      "Sutragarh"
+    ],
+    "topics": [
+      "Handloom Sarees",
+      "Weaver Showrooms",
+      "Digital Catalogs",
+      "Pan-India Wholesale",
+      "WhatsApp Stores"
+    ],
+    "relatedServices": [
+      "ecommerce-development",
+      "whatsapp-automation",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-nabadwip-hotel-bn-05",
@@ -4144,7 +5349,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Hospitality & Hotels"
+    "category": "Hospitality & Hotels",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Nabadwip hotel and guest house direct room booking system",
+    "secondaryKeywords": [
+      "Nabadwip pilgrim lodge online booking",
+      "Zero commission hotel reservation bot Nabadwip",
+      "Customer review reputation management Nabadwip"
+    ],
+    "localities": [
+      "Nabadwip",
+      "Mayapur",
+      "Gouranga Temple Area"
+    ],
+    "topics": [
+      "Hospitality & Lodges",
+      "Direct Room Reservation",
+      "Zero OTA Commission",
+      "Review Management",
+      "WhatsApp Bots"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-kalyani-health-en-06",
@@ -4215,7 +5444,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Healthcare & OPD Appointments"
+    "category": "Healthcare & OPD Appointments",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Kalyani healthcare clinic OPD appointment and patient inquiry bot",
+    "secondaryKeywords": [
+      "Kalyani polyclinic specialist doctor schedule",
+      "Automated patient token booking WhatsApp",
+      "AIIMS Kalyani area clinic local search"
+    ],
+    "localities": [
+      "Kalyani",
+      "AIIMS Area",
+      "Kalyani Expressway"
+    ],
+    "topics": [
+      "Healthcare OPD",
+      "Doctor Appointment Scheduling",
+      "Token Automation",
+      "Patient Inquiries",
+      "Local SEO"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ai-automation",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-haldia-industrial-en-07",
@@ -4285,7 +5538,31 @@
     "districts": [
       "purba-medinipur"
     ],
-    "category": "Industrial Plants & Manufacturing"
+    "category": "Industrial Plants & Manufacturing",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Haldia industrial manufacturing supplier quotation and vendor onboarding",
+    "secondaryKeywords": [
+      "Haldia petrochemical plant vendor RFQ bot",
+      "Supplier drawing submittal and tracking automation",
+      "Industrial purchase order approval system"
+    ],
+    "localities": [
+      "Haldia Industrial Belt",
+      "Bhatterchak",
+      "Chiranjibpur"
+    ],
+    "topics": [
+      "Industrial Manufacturing",
+      "Supplier Onboarding",
+      "RFQ Quotations",
+      "Purchase Approvals",
+      "Workflow Automation"
+    ],
+    "relatedServices": [
+      "ai-automation",
+      "whatsapp-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-siliguri-travel-en-08",
@@ -4356,7 +5633,31 @@
       "darjeeling",
       "jalpaiguri"
     ],
-    "category": "Tour Operators & Itineraries"
+    "category": "Tour Operators & Itineraries",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Siliguri travel operator WhatsApp tour itinerary and hotel booking",
+    "secondaryKeywords": [
+      "Siliguri customized Darjeeling tour quotation",
+      "North Bengal vehicle package automated PDF",
+      "Travel agent CRM WhatsApp automation"
+    ],
+    "localities": [
+      "Siliguri",
+      "Pradhan Nagar",
+      "Sevoke Road"
+    ],
+    "topics": [
+      "Tour Operators",
+      "Dynamic Itineraries",
+      "Vehicle Package Quotes",
+      "WhatsApp CRM",
+      "Travel Automation"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "website-development",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-chakdaha-retail-bn-09",
@@ -4429,7 +5730,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Electronics & Hardware Retail"
+    "category": "Electronics & Hardware Retail",
+    "primaryIntent": "local",
+    "primaryKeyword": "Chakdaha electronics and hardware store local search WhatsApp guide",
+    "secondaryKeywords": [
+      "Chakdaha home appliances Google Maps ranking",
+      "Electronics warranty and service inquiry bot",
+      "Local hardware retailer online promotion"
+    ],
+    "localities": [
+      "Chakdaha",
+      "Chakdaha Station Road",
+      "Lalpur"
+    ],
+    "topics": [
+      "Electronics Retail",
+      "Hardware Stores",
+      "Google Maps Ranking",
+      "Customer Support Bots",
+      "Local Marketing"
+    ],
+    "relatedServices": [
+      "seo-geo",
+      "whatsapp-automation",
+      "digital-marketing"
+    ]
   },
   {
     "id": "art-tehatta-agro-bn-10",
@@ -4500,7 +5825,31 @@
     "districts": [
       "nadia"
     ],
-    "category": "Cold Storage & Agro-Trade"
+    "category": "Cold Storage & Agro-Trade",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Tehatta Karimpur cold storage and agricultural wholesale rate notification",
+    "secondaryKeywords": [
+      "Tehatta jute and vegetable cold storage space",
+      "Karimpur mandi daily wholesale rate broadcast",
+      "Agro producer buyer match notification bot"
+    ],
+    "localities": [
+      "Tehatta",
+      "Karimpur",
+      "Betai"
+    ],
+    "topics": [
+      "Cold Storage",
+      "Mandi Rate Broadcasts",
+      "Agro-Commodities",
+      "Buyer Matching",
+      "WhatsApp Automation"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ai-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-bardhaman-agro-bn-11",
@@ -4569,7 +5918,32 @@
     "districts": [
       "purba-bardhaman"
     ],
-    "category": "Rice Mills & Agro-Machinery"
+    "category": "Rice Mills & Agro-Machinery",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Bardhaman rice mill and agricultural machinery B2B inquiry automation",
+    "secondaryKeywords": [
+      "Purba Bardhaman Minikit Govindabhog rice wholesale",
+      "Harvester tractor spare parts quotation bot",
+      "Bardhaman rice mill exporter buyer connect"
+    ],
+    "localities": [
+      "Bardhaman City",
+      "Uchalan",
+      "Memari",
+      "Shaktigarh"
+    ],
+    "topics": [
+      "Rice Mills & Exports",
+      "Agro-Machinery & Spares",
+      "B2B Buyer Connections",
+      "Quotation Bots",
+      "WhatsApp Commerce"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ai-automation",
+      "ecommerce-development"
+    ]
   },
   {
     "id": "art-baharampur-silk-bn-12",
@@ -4639,7 +6013,31 @@
     "districts": [
       "murshidabad"
     ],
-    "category": "Silk Saree & Wholesale"
+    "category": "Silk Saree & Wholesale",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Baharampur Murshidabad silk saree digital showroom and WhatsApp booking",
+    "secondaryKeywords": [
+      "Baharampur pure Murshidabad silk manufacturer",
+      "Garad Baluchari saree online wholesale inquiry",
+      "Heritage textile digital catalog Murshidabad"
+    ],
+    "localities": [
+      "Baharampur",
+      "Khagra",
+      "Saidabad"
+    ],
+    "topics": [
+      "Murshidabad Silk",
+      "Heritage Textiles",
+      "Digital Showrooms",
+      "Wholesale Inquiries",
+      "WhatsApp Stores"
+    ],
+    "relatedServices": [
+      "ecommerce-development",
+      "whatsapp-automation",
+      "seo-geo"
+    ]
   },
   {
     "id": "art-durgapur-engineering-en-13",
@@ -4708,7 +6106,31 @@
     "districts": [
       "paschim-bardhaman"
     ],
-    "category": "Steel & Engineering"
+    "category": "Steel & Engineering",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Durgapur engineering and steel fabricators B2B vendor quotation automation",
+    "secondaryKeywords": [
+      "Durgapur structural steel fabrication drawing RFQ",
+      "Industrial machine parts job work quotation",
+      "Steel plant vendor automated submittal"
+    ],
+    "localities": [
+      "Durgapur",
+      "Muchipara",
+      "Gopalpur Industrial Area"
+    ],
+    "topics": [
+      "Steel Fabrication",
+      "Machining Job Work",
+      "Vendor RFQ Workflows",
+      "Engineering Quotations",
+      "Workflow Automation"
+    ],
+    "relatedServices": [
+      "ai-automation",
+      "whatsapp-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-asansol-mining-en-14",
@@ -4776,7 +6198,32 @@
     "districts": [
       "paschim-bardhaman"
     ],
-    "category": "Mining Equipment & Logistics"
+    "category": "Mining Equipment & Logistics",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Asansol heavy mining equipment and transport logistics inquiry automation",
+    "secondaryKeywords": [
+      "Asansol Raniganj coal mining earthmover rental",
+      "Heavy dump truck trailer hiring WhatsApp",
+      "Industrial machinery spare parts quotation bot"
+    ],
+    "localities": [
+      "Asansol",
+      "Raniganj",
+      "Neamatpur",
+      "Barakar"
+    ],
+    "topics": [
+      "Mining Equipment",
+      "Earthmovers & Heavy Machinery",
+      "Truck Logistics",
+      "Spare Parts Quotations",
+      "WhatsApp Bots"
+    ],
+    "relatedServices": [
+      "ai-automation",
+      "whatsapp-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-kharagpur-education-en-15",
@@ -4843,7 +6290,32 @@
     "districts": [
       "paschim-medinipur"
     ],
-    "category": "Skill Academies & Education"
+    "category": "Skill Academies & Education",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Kharagpur skill academy student admission and course inquiry bot",
+    "secondaryKeywords": [
+      "Kharagpur technical training institute admission bot",
+      "Student counseling callback scheduling WhatsApp",
+      "Vocational academy digital presence West Bengal"
+    ],
+    "localities": [
+      "Kharagpur",
+      "IIT Bypass Area",
+      "Golebazar",
+      "Nimpura"
+    ],
+    "topics": [
+      "Skill Academies",
+      "Technical Education",
+      "Admission Intake Bots",
+      "Student Counseling",
+      "WhatsApp Automation"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "ai-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-malda-agro-bn-16",
@@ -4911,7 +6383,32 @@
     "districts": [
       "malda"
     ],
-    "category": "Mango & Food Processing"
+    "category": "Mango & Food Processing",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Malda Fazli Himsagar mango food processing wholesale buyer catalog",
+    "secondaryKeywords": [
+      "Malda mango pulp juice concentrate supplier",
+      "Himsagar mango export wholesale order WhatsApp",
+      "Malda agro processing cold chain logistics"
+    ],
+    "localities": [
+      "English Bazar",
+      "Old Malda",
+      "Chanchal",
+      "Kaliachak"
+    ],
+    "topics": [
+      "Mango Processing",
+      "Pulp & Concentrate Exports",
+      "Wholesale Pre-Booking",
+      "Cold Chain Logistics",
+      "WhatsApp Catalogs"
+    ],
+    "relatedServices": [
+      "ecommerce-development",
+      "whatsapp-automation",
+      "website-development"
+    ]
   },
   {
     "id": "art-kolkata-realestate-en-17",
@@ -4981,6 +6478,32 @@
     "districts": [
       "kolkata"
     ],
-    "category": "Real Estate & Lead Automation"
+    "category": "Real Estate & Lead Automation",
+    "primaryIntent": "commercial",
+    "primaryKeyword": "Kolkata real estate speed to lead WhatsApp automation and digital floorplans",
+    "secondaryKeywords": [
+      "Kolkata luxury apartment brochure WhatsApp delivery",
+      "Property site visit scheduling automated bot",
+      "Real estate CRM lead qualification Kolkata"
+    ],
+    "localities": [
+      "New Town",
+      "Rajarhat",
+      "EM Bypass",
+      "Ballygunge",
+      "Salt Lake"
+    ],
+    "topics": [
+      "Real Estate Marketing",
+      "Speed to Lead",
+      "Digital Floorplan Delivery",
+      "Site Visit Scheduling",
+      "WhatsApp Automation"
+    ],
+    "relatedServices": [
+      "whatsapp-automation",
+      "digital-marketing",
+      "website-development"
+    ]
   }
 ]
