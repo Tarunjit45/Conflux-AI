@@ -231,39 +231,34 @@
 </head>
 
 <body>
-  <div id="fallback-ui">
-    <div class="font-orbitron text-2xl font-bold mb-4">CONFLUX <span class="text-blue-500">AI</span></div>
-    <span class="loader"></span>
-    <div id="loading-text" class="text-slate-400 text-[10px] font-orbitron tracking-[0.3em] uppercase">Initializing
-      Neural Core...</div>
-    <div id="error-log"
-      class="mt-8 text-red-400 text-[10px] font-mono max-w-md text-left overflow-auto max-h-40 border-t border-white/5 pt-4">
-    </div>
+  <div id="root">
+    <header style="padding: 20px; text-align: center; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+      <div style="font-size: 24px; font-weight: 900; color: #0f172a;">CONFLUX <span style="color: #2563eb;">AI</span></div>
+      <p style="color: #64748b; font-size: 14px; margin-top: 4px;">AI Automation & Digital Solutions Agency | Kolkata, West Bengal</p>
+      <nav style="margin-top: 12px; font-size: 13px; font-weight: 700;">
+        <a href="/" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Home</a>
+        <a href="/blog" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Knowledge Base / Blog</a>
+        <a href="/solutions" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Solutions</a>
+        <a href="/locations/west-bengal" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Locations</a>
+        <a href="/contact" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Contact</a>
+      </nav>
+    </header>
+    <main style="max-width: 1200px; margin: 0 auto; padding: 40px 20px; font-family: 'Inter', sans-serif;">
+      <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; line-height: 1.15; margin-bottom: 16px;">
+        AI Automation & Digital Growth for Modern Enterprises
+      </h1>
+      <p style="font-size: 16px; color: #475569; max-width: 800px; line-height: 1.6; margin-bottom: 24px;">
+        Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, India. We engineer custom AI agents, automated WhatsApp Business pipelines, sub-second web platforms, and Generative Engine Optimization (GEO) knowledge graphs for businesses across India and globally.
+      </p>
+      <div style="margin-top: 24px;">
+        <a href="/blog" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 14px;">
+          Browse 60+ West Bengal Business & Tourism Guides &rarr;
+        </a>
+      </div>
+    </main>
   </div>
 
-  <div id="root"></div>
-
   <script type="module" src="/index.tsx"></script>
-
-  <script>
-    window.onerror = function (msg, url, line) {
-      const log = document.getElementById('error-log');
-      if (log) {
-        log.innerHTML += `<div style="margin-bottom:4px;">[BOOT_ERROR] ${msg} <br/><span style="opacity:0.5; font-size:8px;">Location: ${url}:${line}</span></div>`;
-      }
-      return false;
-    };
-
-    // Final fallback if the app hangs without a hard error
-    setTimeout(() => {
-      const loader = document.getElementById('fallback-ui');
-      if (loader && !loader.classList.contains('hidden')) {
-        console.warn("Conflux AI: Boot timeout. Forcing UI reveal...");
-        const statusText = document.getElementById('loading-text');
-        if (statusText) statusText.innerText = "Connection Slow - Finalizing Interface...";
-      }
-    }, 10000);
-  </script>
 </body>
 
 </html>

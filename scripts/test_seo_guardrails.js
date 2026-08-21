@@ -33,10 +33,10 @@ const assertTest = (testName, condition, details = '') => {
 
 // 1. Article URL & Metadata Integrity
 assertTest(
-  'All 57 articles have unique valid slugs and titles',
-  articles.length === 57 &&
-  new Set(articles.map(a => a.slug)).size === 57 &&
-  new Set(articles.map(a => a.title)).size === 57
+  `All ${articles.length} articles have unique valid slugs and titles`,
+  articles.length >= 57 &&
+  new Set(articles.map(a => a.slug)).size === articles.length &&
+  new Set(articles.map(a => a.title)).size === articles.length
 );
 
 assertTest(
@@ -73,7 +73,7 @@ assertTest(
 );
 
 assertTest(
-  'All 57 published articles are present in sitemap.xml',
+  `All ${articles.length} published articles are present in sitemap.xml`,
   articles.every(a => sitemapUrls.includes(`https://confluxai.in/blog/${a.slug}`))
 );
 
