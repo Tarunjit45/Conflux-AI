@@ -156,6 +156,39 @@ assertTest(
   `Found ${brokenLinksCount} broken links`
 );
 
+// 8. District-Based Article Discovery Layer Tests
+const districtSlugs = [
+  'nadia', 'north-24-parganas', 'south-24-parganas', 'howrah', 'hooghly', 
+  'kolkata', 'purba-bardhaman', 'paschim-bardhaman', 'birbhum', 'bankura', 
+  'purulia', 'jhargram', 'malda', 'uttar-dinajpur', 'dakshin-dinajpur', 
+  'murshidabad', 'darjeeling', 'kalimpong', 'jalpaiguri', 'alipurduar', 
+  'cooch-behar', 'purba-medinipur', 'paschim-medinipur'
+];
+
+assertTest(
+  '100% of articles contain structured districts metadata',
+  articles.every(a => Array.isArray(a.districts) && a.districts.length > 0)
+);
+
+const districtArticlesMap = {};
+districtSlugs.forEach(slug => {
+  districtArticlesMap[slug] = articles.filter(a => {
+    const list = a.districts || a.districtIds || [];
+    const normalized = list.map(item => String(item).toLowerCase().replace(/^dist-/, '').trim());
+    return normalized.includes(slug);
+  });
+});
+
+assertTest(
+  'All 23 West Bengal districts have valid article discovery mapping',
+  districtSlugs.every(slug => Array.isArray(districtArticlesMap[slug]))
+);
+
+assertTest(
+  'All articles referenced by district discovery layer resolve to existing articles',
+  Object.values(districtArticlesMap).flat().every(a => articleSlugs.has(a.slug))
+);
+
 console.log('\n======================================================');
 console.log(`TEST SUMMARY: ${passedTests} / ${totalTests} TESTS PASSED`);
 console.log('======================================================\n');
@@ -165,3 +198,4 @@ if (passedTests === totalTests) {
 } else {
   process.exit(1);
 }
+

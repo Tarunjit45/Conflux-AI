@@ -51,8 +51,11 @@ export interface ArticleKnowledgeObject {
   // Knowledge Graph Relationships
   locationIds: string[];         // e.g. ['loc-bagula', 'dist-nadia']
   districtIds: string[];         // e.g. ['dist-nadia']
+  districts?: string[];          // e.g. ['bankura', 'nadia', 'statewide']
   localityIds: string[];         // e.g. ['loc-bagula']
   businessCategoryIds: string[]; // e.g. ['retail-clothing']
+  category?: string;             // e.g. 'Tourism', 'Agro-Business', 'AI Automation'
+  tags?: string[];               // e.g. ['Mukutmanipur', 'Jhilimili']
   industryIds: string[];         // e.g. ['Retail', 'Textile']
   problemIds: string[];          // e.g. ['low-visibility']
   digitalNeedIds: string[];      // e.g. ['whatsapp-catalog', 'google-visibility']

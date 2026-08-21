@@ -77,7 +77,11 @@
     "seoDescription": "Discover the best offbeat homestays in Mukutmanipur and Jhilimili. Direct zero-commission WhatsApp room booking, boat safaris, and Sabai grass craft catalogs.",
     "canonicalUrl": "https://confluxai.in/blog/mukutmanipur-jhilimili-ecotourism-homestays-boat-safari-sabai-crafts-whatsapp-booking",
     "status": "PUBLISHED",
-    "reactions": 88
+    "reactions": 88,
+    "districts": [
+      "bankura"
+    ],
+    "category": "Ecotourism & Hospitality"
   },
   {
     "id": "art-garhbeta-gongoni-canyon-bn-59",
@@ -157,7 +161,11 @@
     "seoDescription": "গড়বেতা ও গনগনি ক্যানিয়ন হোমস্টে, আলু কোল্ড স্টোরেজ রেট ও কাজু বাদাম প্রসেসিং ইউনিটের সরাসরি হোয়াটসঅ্যাপ অটোমেশন গাইড।",
     "canonicalUrl": "https://confluxai.in/blog/garhbeta-gongoni-canyon-resorts-potato-cold-storage-cashew-wholesale-whatsapp",
     "status": "PUBLISHED",
-    "reactions": 84
+    "reactions": 84,
+    "districts": [
+      "paschim-medinipur"
+    ],
+    "category": "Agro-Business & Tourism"
   },
   {
     "id": "art-chalsa-samsing-suntalekhola-en-60",
@@ -237,7 +245,12 @@
     "seoDescription": "Discover the best homestays in Samsing, Suntalekhola & Rocky Island. Zero-commission WhatsApp room booking, Gorumara safari permits, and organic tea dispatch.",
     "canonicalUrl": "https://confluxai.in/blog/chalsa-samsing-suntalekhola-rocky-island-homestays-safari-tea-direct-booking",
     "status": "PUBLISHED",
-    "reactions": 92
+    "reactions": 92,
+    "districts": [
+      "jalpaiguri",
+      "kalimpong"
+    ],
+    "category": "Dooars Ecotourism"
   },
   {
     "id": "art-taki-hasnabad-ichamati-bn-61",
@@ -317,7 +330,11 @@
     "seoDescription": "টাকির ইছামতী রিভারভিউ রিসোর্ট, জমিদার বাড়ি হোমস্টে ও সুন্দরবনের খাঁটি মধুর সরাসরি হোয়াটসঅ্যাপ বুকিং ও ডিজিটাল সমাধান।",
     "canonicalUrl": "https://confluxai.in/blog/taki-hasnabad-ichamati-river-cruise-rajbari-homestay-sundarban-honey-whatsapp",
     "status": "PUBLISHED",
-    "reactions": 86
+    "reactions": 86,
+    "districts": [
+      "north-24-parganas"
+    ],
+    "category": "Heritage Tourism & Honey"
   },
   {
     "id": "art-kurseong-mirik-lepchajagat-en-62",
@@ -397,7 +414,11 @@
     "seoDescription": "Discover boutique tea retreats in Kurseong, Mirik, and Lepchajagat. Direct zero-commission WhatsApp room bookings and authentic single-estate first flush tea dispatch.",
     "canonicalUrl": "https://confluxai.in/blog/kurseong-mirik-lepchajagat-tea-retreats-homestays-first-flush-whatsapp-booking",
     "status": "PUBLISHED",
-    "reactions": 95
+    "reactions": 95,
+    "districts": [
+      "darjeeling"
+    ],
+    "category": "Tea Tourism & Homestays"
   },
   {
     "id": "art-raiganj-restaurants-guide-2026-01",
@@ -480,7 +501,11 @@
     "seoDescription": "Discover the 10 best restaurants in Raiganj, Uttar Dinajpur. Detailed comparison of food, locations (Mohanbati, Siliguri More, Station Rd), prices, and thalis.",
     "canonicalUrl": "https://confluxai.in/blog/best-restaurants-in-raiganj-food-price-location-guide",
     "status": "PUBLISHED",
-    "reactions": 94
+    "reactions": 94,
+    "districts": [
+      "uttar-dinajpur"
+    ],
+    "category": "Local Food & Hospitality"
   },
   {
     "id": "art-bolpur-santiniketan-tourism-bn-40",
@@ -551,7 +576,11 @@
     "seoDescription": "বোলপুর ও শান্তিনিকেতনের হোমস্টে ও বাটিক শিল্পীদের জন্য জিরো-কমিশন হোয়াটসঅ্যাপ রুম বুকিং ও ডিজিটাল ক্যাটালগ।",
     "canonicalUrl": "https://confluxai.in/blog/bolpur-santiniketan-resorts-homestays-batik-artisans-direct-booking-whatsapp",
     "status": "PUBLISHED",
-    "reactions": 82
+    "reactions": 82,
+    "districts": [
+      "birbhum"
+    ],
+    "category": "Heritage Tourism & Crafts"
   },
   {
     "id": "art-bishnupur-baluchari-bn-41",
@@ -622,7 +651,11 @@
     "seoDescription": "বিষ্ণুপুরের বালুচরী শাড়ি ও টেরাকোটা হস্তশিল্পীদের জন্য সরাসরি অনলাইন বিক্রয় ও হোয়াটসঅ্যাপ ক্যাটালগ রূপরেখা।",
     "canonicalUrl": "https://confluxai.in/blog/bishnupur-baluchari-saree-terracotta-craft-digital-showroom-pan-india",
     "status": "PUBLISHED",
-    "reactions": 76
+    "reactions": 76,
+    "districts": [
+      "bankura"
+    ],
+    "category": "Handloom & Handicrafts"
   },
   {
     "id": "art-digha-mandarmani-hospitality-en-42",
@@ -693,7 +726,11 @@
     "seoDescription": "Automate room bookings without OTA commissions and streamline seafood supply chain orders for Digha & Mandarmani businesses.",
     "canonicalUrl": "https://confluxai.in/blog/digha-mandarmani-hotels-resorts-direct-whatsapp-booking-seafood-logistics",
     "status": "PUBLISHED",
-    "reactions": 89
+    "reactions": 89,
+    "districts": [
+      "purba-medinipur"
+    ],
+    "category": "Coastal Tourism & Seafood"
   },
   {
     "id": "art-purulia-ayodhya-resorts-bn-43",
@@ -764,7 +801,11 @@
     "seoDescription": "অযোধ্যা পাহাড়ের ইকো-রিসোর্ট ও পুরুলিয়ার পরিবহন ব্যবসার জন্য হোয়াটসঅ্যাপ সরাসরি বুকিং ও লোকাল এসইও সমাধান।",
     "canonicalUrl": "https://confluxai.in/blog/purulia-ayodhya-hills-eco-resorts-mineral-logistics-whatsapp-automation",
     "status": "PUBLISHED",
-    "reactions": 71
+    "reactions": 71,
+    "districts": [
+      "purulia"
+    ],
+    "category": "Eco-Resorts & Mining"
   },
   {
     "id": "art-jhargram-forest-homestays-bn-44",
@@ -834,7 +875,11 @@
     "seoDescription": "ঝাড়গ্রামের জঙ্গলমহল হোমস্টে ও খাঁটি বনজ মধুর জন্য হোয়াটসঅ্যাপ সরাসরি বুকিং ও ডিজিটাল শোকেস গাইড।",
     "canonicalUrl": "https://confluxai.in/blog/jhargram-forest-homestays-agro-forestry-honey-direct-buyer-catalog",
     "status": "PUBLISHED",
-    "reactions": 68
+    "reactions": 68,
+    "districts": [
+      "jhargram"
+    ],
+    "category": "Forest Tourism & Agro-Forestry"
   },
   {
     "id": "art-jaigaon-alipurduar-trade-en-45",
@@ -905,7 +950,11 @@
     "seoDescription": "Automate cross-border export catalogs in Jaigaon and safari resort bookings in Jaldapara via WhatsApp.",
     "canonicalUrl": "https://confluxai.in/blog/jaigaon-bhutan-border-trade-alipurduar-jaldapara-resort-whatsapp-booking",
     "status": "PUBLISHED",
-    "reactions": 84
+    "reactions": 84,
+    "districts": [
+      "alipurduar"
+    ],
+    "category": "Border Trade & Safari Tourism"
   },
   {
     "id": "art-kalimpong-floriculture-en-46",
@@ -976,7 +1025,11 @@
     "seoDescription": "Automate orchid nursery sales, organic ginger exports, and Lava-Rishop homestay bookings via WhatsApp for Kalimpong businesses.",
     "canonicalUrl": "https://confluxai.in/blog/kalimpong-floriculture-orchid-export-ginger-homestay-whatsapp-catalog",
     "status": "PUBLISHED",
-    "reactions": 79
+    "reactions": 79,
+    "districts": [
+      "kalimpong"
+    ],
+    "category": "Floriculture & Homestays"
   },
   {
     "id": "art-coochbehar-heritage-trade-bn-47",
@@ -1047,7 +1100,11 @@
     "seoDescription": "কোচবিহারের তামাক-পাট পাইকারি দর ব্রডকাস্ট ও রাজবাড়ি পর্যটকদের সরাসরি হোটেল বুকিং সমাধান।",
     "canonicalUrl": "https://confluxai.in/blog/cooch-behar-heritage-tourism-tobacco-jute-wholesale-inquiry-automation",
     "status": "PUBLISHED",
-    "reactions": 73
+    "reactions": 73,
+    "districts": [
+      "cooch-behar"
+    ],
+    "category": "Heritage Tourism & Agro-Trade"
   },
   {
     "id": "art-jalpaiguri-tea-timber-en-48",
@@ -1117,7 +1174,11 @@
     "seoDescription": "Automate tea processing spare parts catalogs, timber gate passes, and transport fleet logistics in Jalpaiguri.",
     "canonicalUrl": "https://confluxai.in/blog/jalpaiguri-tea-machinery-timber-logistics-dooars-transit-automation",
     "status": "PUBLISHED",
-    "reactions": 77
+    "reactions": 77,
+    "districts": [
+      "jalpaiguri"
+    ],
+    "category": "Tea Machinery & Logistics"
   },
   {
     "id": "art-raiganj-tulaipanji-rice-bn-49",
@@ -1187,7 +1248,11 @@
     "seoDescription": "রায়গঞ্জের তুলাইপাঞ্জি চাল ও ইসলামপুরের পাট ব্যবসায়ীদের জন্য হোয়াটসঅ্যাপ ডিজিটাল ক্যাটালগ ও প্যান-ইন্ডিয়া বায়ার কানেক্ট।",
     "canonicalUrl": "https://confluxai.in/blog/raiganj-tulaipanji-rice-jute-wholesale-buyer-whatsapp-catalog",
     "status": "PUBLISHED",
-    "reactions": 75
+    "reactions": 75,
+    "districts": [
+      "uttar-dinajpur"
+    ],
+    "category": "Agro-Commodities & Rice Mills"
   },
   {
     "id": "art-balurghat-rice-mills-bn-50",
@@ -1257,7 +1322,11 @@
     "seoDescription": "বালুরঘাট ও গঙ্গারামপুরের রাইস মিল ও তেলের কলের জন্য দৈনিক দর ব্রডকাস্ট ও ডিজিটাল চালান অটোমেশন।",
     "canonicalUrl": "https://confluxai.in/blog/balurghat-rice-oil-mills-rural-retail-wholesale-inquiry-automation",
     "status": "PUBLISHED",
-    "reactions": 70
+    "reactions": 70,
+    "districts": [
+      "dakshin-dinajpur"
+    ],
+    "category": "Agro-Processing & Retail"
   },
   {
     "id": "art-south24parganas-aquaculture-en-51",
@@ -1327,7 +1396,11 @@
     "seoDescription": "Automate B2B quotations and supply chain tracking for Diamond Harbour prawn exporters and Baruipur surgical manufacturers.",
     "canonicalUrl": "https://confluxai.in/blog/south-24-parganas-diamond-harbour-aquaculture-surgical-tools-automation",
     "status": "PUBLISHED",
-    "reactions": 85
+    "reactions": 85,
+    "districts": [
+      "south-24-parganas"
+    ],
+    "category": "Aquaculture & Manufacturing"
   },
   {
     "id": "art-kalna-katwa-tant-bn-52",
@@ -1398,7 +1471,11 @@
     "seoDescription": "কালনার টাঙ্গাইল তাঁত শাড়ি ও কাটোয়ার হিমঘরের জন্য হোয়াটসঅ্যাপ ডিজিটাল ক্যাটালগ ও গেট পাস অটোমেশন।",
     "canonicalUrl": "https://confluxai.in/blog/kalna-katwa-tant-saree-rice-husk-cold-storage-automation",
     "status": "PUBLISHED",
-    "reactions": 74
+    "reactions": 74,
+    "districts": [
+      "purba-bardhaman"
+    ],
+    "category": "Handloom Saree & Cold Storage"
   },
   {
     "id": "art-murshidabad-silk-brass-bn-53",
@@ -1469,7 +1546,11 @@
     "seoDescription": "বহরমপুরের মুর্শিদাবাদ সিল্ক শাড়ি ও হাজারদুয়ারি পর্যটকদের সরাসরি হোটেল বুকিংয়ের জন্য হোয়াটসঅ্যাপ অটোমেশন।",
     "canonicalUrl": "https://confluxai.in/blog/murshidabad-silk-saree-brass-ware-heritage-digital-showroom",
     "status": "PUBLISHED",
-    "reactions": 81
+    "reactions": 81,
+    "districts": [
+      "murshidabad"
+    ],
+    "category": "Silk Sarees & Heritage Crafts"
   },
   {
     "id": "art-chapra-karimpur-agro-bn-54",
@@ -1546,7 +1627,11 @@
     "seoDescription": "চাপড়া ও করিমপুরের কলার আড়ত এবং সার-কীটনাশক বিক্রেতাদের জন্য হোয়াটসঅ্যাপ দৈনিক রেট ব্রডকাস্ট ও চালান অটোমেশন।",
     "canonicalUrl": "https://confluxai.in/blog/chapra-karimpur-banana-mandi-fertilizer-wholesale-rate-automation",
     "status": "PUBLISHED",
-    "reactions": 72
+    "reactions": 72,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Agro-Mandi & Fertilizer"
   },
   {
     "id": "art-birnagar-taherpur-bakery-bn-55",
@@ -1622,7 +1707,11 @@
     "seoDescription": "বীরনগর ও তাহেরপুরের বেকারি এবং পাইকারি খাদ্য প্রস্তুতকারকদের জন্য হোয়াটসঅ্যাপ অর্ডার ম্যানেজমেন্ট ও চালান অটোমেশন।",
     "canonicalUrl": "https://confluxai.in/blog/birnagar-taherpur-bakery-agro-retail-wholesale-order-system",
     "status": "PUBLISHED",
-    "reactions": 69
+    "reactions": 69,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Bakery & Agro-Retail"
   },
   {
     "id": "art-hanskhali-mayurhat-poultry-bn-56",
@@ -1697,7 +1786,11 @@
     "seoDescription": "হাঁসখালি ও ময়ূরহাটের পোল্ট্রি হ্যাচারি এবং মাছ ও পোল্ট্রি খাদ্য বিক্রেতাদের জন্য হোয়াটসঅ্যাপ অর্ডার ম্যানেজমেন্ট ও চালান অটোমেশন।",
     "canonicalUrl": "https://confluxai.in/blog/hanskhali-mayurhat-poultry-hatchery-dairy-feed-whatsapp-supply-chain",
     "status": "PUBLISHED",
-    "reactions": 67
+    "reactions": 67,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Poultry & Hatchery Supply"
   },
   {
     "id": "art-haringhata-dairy-poultry-bn-32",
@@ -1793,7 +1886,11 @@
     "seoDescription": "হরিণঘাটার পোল্ট্রি ও ডেইরি খামারিদের জন্য দৈনিক পাইকারি দাম ব্রডকাস্ট ও হোয়াটসঅ্যাপ অর্ডার ম্যানেজমেন্ট সিস্টেম।",
     "canonicalUrl": "https://confluxai.in/blog/haringhata-dairy-poultry-farms-direct-wholesale-whatsapp-supply-chain",
     "status": "PUBLISHED",
-    "reactions": 45
+    "reactions": 45,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Dairy & Poultry Supply"
   },
   {
     "id": "art-chakdaha-hardware-building-bn-33",
@@ -1889,7 +1986,11 @@
     "seoDescription": "চাকদহের বিল্ডিং মেটেরিয়াল ও হার্ডওয়্যার শোরুমের জন্য ৫-সেকেন্ডে হোয়াটসঅ্যাপ পিডিএফ কোটেশন ও গুগল ম্যাপস এসইও গাইড।",
     "canonicalUrl": "https://confluxai.in/blog/chakdaha-building-materials-hardware-cement-whatsapp-quotation-automation",
     "status": "PUBLISHED",
-    "reactions": 52
+    "reactions": 52,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Building Materials & Hardware"
   },
   {
     "id": "art-howrah-foundry-engineering-en-34",
@@ -1983,7 +2084,12 @@
     "seoDescription": "Automate RFQ quotations and direct B2B contract acquisition for Howrah foundries and precision metal engineering workshops.",
     "canonicalUrl": "https://confluxai.in/blog/howrah-foundry-cnc-machining-metal-fabrication-b2b-lead-quotation-engine",
     "status": "PUBLISHED",
-    "reactions": 67
+    "reactions": 67,
+    "districts": [
+      "howrah",
+      "kolkata"
+    ],
+    "category": "Foundry & CNC Machining"
   },
   {
     "id": "art-nabadwip-mayapur-hotels-bn-35",
@@ -2079,7 +2185,11 @@
     "seoDescription": "নবদ্বীপ ও মায়াপুরের হোটেল ও ধর্মশালার জন্য জিরো কমিশন হোয়াটসঅ্যাপ রুম বুকিং ও স্বয়ংক্রিয় অ্যাডভান্স পেমেন্ট ব্যবস্থা।",
     "canonicalUrl": "https://confluxai.in/blog/nabadwip-mayapur-hotels-guest-houses-direct-whatsapp-booking-zero-commission",
     "status": "PUBLISHED",
-    "reactions": 79
+    "reactions": 79,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Pilgrim Hospitality & Hotels"
   },
   {
     "id": "art-barasat-barrackpore-coaching-en-36",
@@ -2173,7 +2283,12 @@
     "seoDescription": "Automate student admissions, prospectus delivery, and fee collection via WhatsApp for coaching centers in Barasat & Barrackpore.",
     "canonicalUrl": "https://confluxai.in/blog/barasat-barrackpore-coaching-institutes-student-admission-whatsapp-automation",
     "status": "PUBLISHED",
-    "reactions": 81
+    "reactions": 81,
+    "districts": [
+      "north-24-parganas",
+      "kolkata"
+    ],
+    "category": "Education & Coaching"
   },
   {
     "id": "art-bagula-badkulla-machinery-bn-37",
@@ -2273,7 +2388,11 @@
     "seoDescription": "বাগুলা ও বাদকুল্লার পাওয়ার টিলার ও পাম্পসেট ডিলারদের জন্য হোয়াটসঅ্যাপ ডিজিটাল ক্যাটালগ ও কিষাণ ইনকোয়ারি গাইড।",
     "canonicalUrl": "https://confluxai.in/blog/bagula-badkulla-agricultural-machinery-fertilizer-dealers-digital-catalog",
     "status": "PUBLISHED",
-    "reactions": 64
+    "reactions": 64,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Agro-Machinery & Hardware"
   },
   {
     "id": "art-howrah-hooghly-cold-storage-bn-38",
@@ -2365,7 +2484,12 @@
     "seoDescription": "হুগলি ও হাওড়ার হিমঘরের জন্য হোয়াটসঅ্যাপে দৈনিক আলুর বাজার দর ব্রডকাস্ট ও কিউআর গেট পাস ম্যানেজমেন্ট সিস্টেম।",
     "canonicalUrl": "https://confluxai.in/blog/howrah-hooghly-cold-storage-potato-wholesale-rate-space-booking-automation",
     "status": "PUBLISHED",
-    "reactions": 73
+    "reactions": 73,
+    "districts": [
+      "howrah",
+      "hooghly"
+    ],
+    "category": "Cold Storage & Agro-Logistics"
   },
   {
     "id": "art-siliguri-travel-car-rental-en-39",
@@ -2464,7 +2588,13 @@
     "seoDescription": "Automate custom PDF tour itineraries, Sikkim permit guidance, and Bagdogra-NJP car rental quotations via WhatsApp for Siliguri operators.",
     "canonicalUrl": "https://confluxai.in/blog/siliguri-travel-agencies-sikkim-darjeeling-car-rental-whatsapp-itinerary-booking",
     "status": "PUBLISHED",
-    "reactions": 86
+    "reactions": 86,
+    "districts": [
+      "darjeeling",
+      "kalimpong",
+      "jalpaiguri"
+    ],
+    "category": "Travel Logistics & Car Rentals"
   },
   {
     "id": "art-geo-ai-overviews-2026-en-27",
@@ -2555,7 +2685,12 @@
     "seoDescription": "Master Generative Engine Optimization (GEO) in 2026. Step-by-step blueprint to rank on Google AI Overviews, Gemini, and Perplexity.",
     "canonicalUrl": "https://confluxai.in/blog/generative-engine-optimization-geo-ranking-guide-2026-google-ai-gemini",
     "status": "PUBLISHED",
-    "reactions": 74
+    "reactions": 74,
+    "districts": [
+      "kolkata",
+      "statewide"
+    ],
+    "category": "GEO & Technical SEO"
   },
   {
     "id": "art-whatsapp-speed-to-lead-funnel-2026-en-28",
@@ -2661,7 +2796,14 @@
     "seoDescription": "Automate lead response times to under 15 seconds with Meta WhatsApp Business API. Boost conversion rates by 4x for Indian B2B and real estate.",
     "canonicalUrl": "https://confluxai.in/blog/speed-to-lead-whatsapp-business-api-sales-automation-lead-qualification-2026",
     "status": "PUBLISHED",
-    "reactions": 62
+    "reactions": 62,
+    "districts": [
+      "kolkata",
+      "nadia",
+      "howrah",
+      "paschim-bardhaman"
+    ],
+    "category": "WhatsApp Sales Automation"
   },
   {
     "id": "art-enterprise-rag-ai-agents-ops-2026-en-29",
@@ -2762,7 +2904,13 @@
     "seoDescription": "Deploy private RAG AI agents and autonomous workflow automation for Indian enterprises. Eliminate repetitive ops with zero data leaks.",
     "canonicalUrl": "https://confluxai.in/blog/enterprise-ai-agents-secure-rag-workflows-operational-automation-2026",
     "status": "PUBLISHED",
-    "reactions": 88
+    "reactions": 88,
+    "districts": [
+      "kolkata",
+      "paschim-bardhaman",
+      "purba-medinipur"
+    ],
+    "category": "Enterprise AI Agents"
   },
   {
     "id": "art-durga-puja-2026-retail-wholesale-automation-bn-30",
@@ -2869,7 +3017,14 @@
     "seoDescription": "দুর্গাপূজা ২০২৬ উপলক্ষে পশ্চিমবঙ্গের খুচরো ও পাইকারি ব্যবসার জন্য WhatsApp ক্যাটালগ, ইনস্ট্যান্ট অর্ডার ও Google Local SEO রূপরেখা।",
     "canonicalUrl": "https://confluxai.in/blog/durga-puja-2026-west-bengal-retail-wholesale-business-ai-whatsapp-growth-guide",
     "status": "PUBLISHED",
-    "reactions": 95
+    "reactions": 95,
+    "districts": [
+      "kolkata",
+      "nadia",
+      "howrah",
+      "paschim-bardhaman"
+    ],
+    "category": "Festive Retail Growth"
   },
   {
     "id": "art-wb-healthcare-diagnostic-opd-whatsapp-bn-31",
@@ -2971,7 +3126,13 @@
     "seoDescription": "পশ্চিমবঙ্গের ডায়াগনস্টিক সেন্টার ও পলিক্লিনিকের জন্য হোয়াটসঅ্যাপে স্বয়ংক্রিয় টেস্ট রিপোর্ট ও OPD ডক্টর বুকিং ব্যবস্থা।",
     "canonicalUrl": "https://confluxai.in/blog/west-bengal-polyclinic-diagnostic-centre-opd-booking-whatsapp-reports-local-seo",
     "status": "PUBLISHED",
-    "reactions": 58
+    "reactions": 58,
+    "districts": [
+      "nadia",
+      "kolkata",
+      "paschim-bardhaman"
+    ],
+    "category": "Healthcare & Diagnostics"
   },
   {
     "id": "art-santipur-phulia-puja-bn-18",
@@ -3043,7 +3204,11 @@
     "seoDescription": "দুর্গাপূজার আগে শান্তিপুর ও ফুলিয়ার তাঁত শাড়ি ব্যবসায়ীদের জন্য হোয়াটসঅ্যাপ ক্যাটালগ ও বাল্ক বুকিং সিস্টেম।",
     "canonicalUrl": "https://confluxai.in/blog/santipur-phulia-saree-durga-puja-whatsapp-bulk-booking",
     "status": "PUBLISHED",
-    "reactions": 48
+    "reactions": 48,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Handloom Saree & Wholesale"
   },
   {
     "id": "art-krishnanagar-clay-bn-19",
@@ -3111,7 +3276,11 @@
     "seoDescription": "কৃষ্ণনগরের ঘূর্ণির মাটির পুতুল ও হস্তশিল্পীদের জন্য বিশ্বব্যাপী অনলাইন বায়ার কানেক্ট ও ডিজিটাল শোরুম।",
     "canonicalUrl": "https://confluxai.in/blog/krishnanagar-clay-dolls-handicrafts-global-buyer-digital-showroom",
     "status": "PUBLISHED",
-    "reactions": 40
+    "reactions": 40,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Handicrafts & Clay Models"
   },
   {
     "id": "art-ranaghat-fmcg-en-20",
@@ -3178,7 +3347,11 @@
     "seoDescription": "Streamline daily grocery shop orders, price list dispatch, and billing receipts for wholesale FMCG distributors in Ranaghat.",
     "canonicalUrl": "https://confluxai.in/blog/ranaghat-fmcg-wholesale-grocery-order-intake-automation",
     "status": "PUBLISHED",
-    "reactions": 34
+    "reactions": 34,
+    "districts": [
+      "nadia"
+    ],
+    "category": "FMCG & Grocery Wholesale"
   },
   {
     "id": "art-bethuadahari-furniture-bn-21",
@@ -3244,7 +3417,11 @@
     "seoDescription": "বেথুয়াডহরীর ফার্নিচার শোরুম ও কাঠ ব্যবসায়ীদের জন্য হোয়াটসঅ্যাপ ক্যাটালগ ও সরাসরি কাস্টমার ইনকোয়ারি অর্ডারিং গাইড।",
     "canonicalUrl": "https://confluxai.in/blog/bethuadahari-furniture-timber-whatsapp-catalog-inquiry-guide",
     "status": "PUBLISHED",
-    "reactions": 29
+    "reactions": 29,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Timber & Furniture"
   },
   {
     "id": "art-siliguri-tea-bn-22",
@@ -3309,7 +3486,12 @@
     "seoDescription": "শিলিগুড়ির চা ব্যবসায়ী ও রিসোর্ট মালিকদের জন্য হোয়াটসঅ্যাপ বুকিং বট ও পাইকারি ক্যাটালগ অর্ডারিং নির্দেশিকা।",
     "canonicalUrl": "https://confluxai.in/blog/siliguri-tea-merchants-north-bengal-resort-whatsapp-booking",
     "status": "PUBLISHED",
-    "reactions": 35
+    "reactions": 35,
+    "districts": [
+      "darjeeling",
+      "jalpaiguri"
+    ],
+    "category": "Tea Trade & Resorts"
   },
   {
     "id": "art-haldia-transport-bn-23",
@@ -3374,7 +3556,11 @@
     "seoDescription": "হলদিয়া সমুদ্র বন্দর ও ট্রান্সপোর্ট কোম্পানিগুলোর জন্য ট্রেইলার ও ট্রাক ভাড়ার অটোমেটেড হোয়াটসঅ্যাপ কোয়াটেশন সিস্টেম।",
     "canonicalUrl": "https://confluxai.in/blog/haldia-port-heavy-transport-truck-booking-whatsapp-bot",
     "status": "PUBLISHED",
-    "reactions": 31
+    "reactions": 31,
+    "districts": [
+      "purba-medinipur"
+    ],
+    "category": "Heavy Transport & Logistics"
   },
   {
     "id": "art-durgapur-safety-en-24",
@@ -3439,7 +3625,11 @@
     "seoDescription": "Automate B2B GST price quotations and PPE safety catalog distribution for suppliers in Durgapur.",
     "canonicalUrl": "https://confluxai.in/blog/durgapur-industrial-safety-equipment-b2b-quotation-catalog",
     "status": "PUBLISHED",
-    "reactions": 33
+    "reactions": 33,
+    "districts": [
+      "paschim-bardhaman"
+    ],
+    "category": "Industrial Safety & Equipment"
   },
   {
     "id": "art-kalyani-lab-en-25",
@@ -3504,7 +3694,11 @@
     "seoDescription": "Streamline home blood sample collection bookings and automated PDF report dispatch on WhatsApp for clinics in Kalyani.",
     "canonicalUrl": "https://confluxai.in/blog/kalyani-diagnostic-lab-report-home-sample-whatsapp-automation",
     "status": "PUBLISHED",
-    "reactions": 37
+    "reactions": 37,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Healthcare & Diagnostics"
   },
   {
     "id": "art-kolkata-agency-bn-26",
@@ -3572,7 +3766,12 @@
     "seoDescription": "কোলকাতা কেন্দ্রিক Remote-First AI Agency Conflux AI কীভাবে রিমোটলি নদীয়া, মেদিনীপুর, বর্ধমান ও উত্তরবঙ্গের ব্যবসা ডিজিটাইজ করে।",
     "canonicalUrl": "https://confluxai.in/blog/kolkata-remote-first-ai-agency-digitize-west-bengal-businesses",
     "status": "PUBLISHED",
-    "reactions": 55
+    "reactions": 55,
+    "districts": [
+      "kolkata",
+      "statewide"
+    ],
+    "category": "Remote AI Agency & Strategy"
   },
   {
     "id": "art-bagula-clothing-bn-01",
@@ -3653,7 +3852,11 @@
     "seoDescription": "বাগুলার পোশাকের দোকান, কোচিং ও স্থানীয় ব্যবসা কীভাবে ওয়েবসাইট, হোয়াটসঅ্যাপ ক্যাটালগ ও লোকাল সার্চের মাধ্যমে নতুন গ্রাহক পেতে পারে।",
     "canonicalUrl": "https://confluxai.in/blog/7-real-ways-for-bagula-small-businesses-to-get-online-customers",
     "status": "PUBLISHED",
-    "reactions": 42
+    "reactions": 42,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Small Business Growth"
   },
   {
     "id": "art-krishnanagar-coaching-en-02",
@@ -3722,7 +3925,11 @@
     "seoDescription": "Automate student inquiries, batch schedules, and fee prospectuses on WhatsApp for coaching institutes in Krishnanagar, Nadia.",
     "canonicalUrl": "https://confluxai.in/blog/krishnanagar-coaching-institutes-whatsapp-admission-automation",
     "status": "PUBLISHED",
-    "reactions": 38
+    "reactions": 38,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Education & Admissions"
   },
   {
     "id": "art-ranaghat-wholesale-bn-03",
@@ -3790,7 +3997,11 @@
     "seoDescription": "রানাঘাটের পাইকারি ও পরিবেশকদের জন্য হোয়াটসঅ্যাপ ক্যাটালগ, অটোমেটেড অর্ডার কনফার্মেশন ও ডিজিটাল বিলিং সিস্টেম।",
     "canonicalUrl": "https://confluxai.in/blog/ranaghat-wholesale-distributors-whatsapp-order-automation",
     "status": "PUBLISHED",
-    "reactions": 35
+    "reactions": 35,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Wholesale & Distribution"
   },
   {
     "id": "art-santipur-saree-bn-04",
@@ -3858,7 +4069,11 @@
     "seoDescription": "শান্তিপুরের তাঁতি ও শাড়ি উৎপাদনকারীদের জন্য হোয়াটসঅ্যাপ ক্যাটালগ ও সরাসরি অনলাইন বিক্রয় প্ল্যাটফর্ম।",
     "canonicalUrl": "https://confluxai.in/blog/santipur-handloom-saree-manufacturers-digital-catalog",
     "status": "PUBLISHED",
-    "reactions": 50
+    "reactions": 50,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Handloom Saree Manufacturers"
   },
   {
     "id": "art-nabadwip-hotel-bn-05",
@@ -3925,7 +4140,11 @@
     "seoDescription": "নবদ্বীপের হোটেল ও গেস্ট হাউস মালিকদের জন্য হোয়াটসঅ্যাপ রুম বুকিং বট ও ওটিএ কমিশন ছাড়া সরাসরি বুকিং সিস্টেম।",
     "canonicalUrl": "https://confluxai.in/blog/nabadwip-hotel-guest-house-direct-booking-system",
     "status": "PUBLISHED",
-    "reactions": 31
+    "reactions": 31,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Hospitality & Hotels"
   },
   {
     "id": "art-kalyani-health-en-06",
@@ -3992,7 +4211,11 @@
     "seoDescription": "Streamline doctor OPD schedules, lab test bookings, and automated WhatsApp reminders for polyclinics in Kalyani, Nadia.",
     "canonicalUrl": "https://confluxai.in/blog/kalyani-healthcare-clinics-opd-appointment-automation",
     "status": "PUBLISHED",
-    "reactions": 44
+    "reactions": 44,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Healthcare & OPD Appointments"
   },
   {
     "id": "art-haldia-industrial-en-07",
@@ -4058,7 +4281,11 @@
     "seoDescription": "Automate vendor onboarding, PDF quote parsing, and supplier communications for Haldia manufacturing plants.",
     "canonicalUrl": "https://confluxai.in/blog/haldia-industrial-manufacturing-vendor-quotation-automation",
     "status": "PUBLISHED",
-    "reactions": 29
+    "reactions": 29,
+    "districts": [
+      "purba-medinipur"
+    ],
+    "category": "Industrial Plants & Manufacturing"
   },
   {
     "id": "art-siliguri-travel-en-08",
@@ -4124,7 +4351,12 @@
     "seoDescription": "Automate Sikkim & Dooars tour itineraries, car rental prices, and hotel bookings for travel agencies in Siliguri.",
     "canonicalUrl": "https://confluxai.in/blog/siliguri-travel-operators-whatsapp-tour-itinerary-automation",
     "status": "PUBLISHED",
-    "reactions": 37
+    "reactions": 37,
+    "districts": [
+      "darjeeling",
+      "jalpaiguri"
+    ],
+    "category": "Tour Operators & Itineraries"
   },
   {
     "id": "art-chakdaha-retail-bn-09",
@@ -4193,7 +4425,11 @@
     "seoDescription": "চাকদহের ইলেকট্রনিক্স ও হার্ডওয়্যার দোকানদারদের জন্য গুগল লোকাল সার্চ ও হোয়াটসঅ্যাপ ক্যাটালগ ব্যবহারের গাইড।",
     "canonicalUrl": "https://confluxai.in/blog/chakdaha-electronics-hardware-local-search-whatsapp-guide",
     "status": "PUBLISHED",
-    "reactions": 28
+    "reactions": 28,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Electronics & Hardware Retail"
   },
   {
     "id": "art-tehatta-agro-bn-10",
@@ -4260,7 +4496,11 @@
     "seoDescription": "তেহট্ট ও করিমপুরের হিমঘর মালিক ও কৃষি আড়তদারদের জন্য প্রতিদিনের পাইকারি দাম এবং স্টক বিবরণী হোয়াটসঅ্যাপে অটোমেশন।",
     "canonicalUrl": "https://confluxai.in/blog/tehatta-karimpur-cold-storage-agro-wholesale-rate-system",
     "status": "PUBLISHED",
-    "reactions": 33
+    "reactions": 33,
+    "districts": [
+      "nadia"
+    ],
+    "category": "Cold Storage & Agro-Trade"
   },
   {
     "id": "art-bardhaman-agro-bn-11",
@@ -4325,7 +4565,11 @@
     "seoDescription": "বর্ধমানের রাইস মিল ও কৃষি যন্ত্রাংশ বিক্রেতাদের জন্য হোয়াটসঅ্যাপ B2B ইনকোয়ারি ও পাইকারি বায়ার অর্ডারিং সিস্টেম।",
     "canonicalUrl": "https://confluxai.in/blog/bardhaman-rice-mill-agro-machinery-b2b-inquiry-automation",
     "status": "PUBLISHED",
-    "reactions": 41
+    "reactions": 41,
+    "districts": [
+      "purba-bardhaman"
+    ],
+    "category": "Rice Mills & Agro-Machinery"
   },
   {
     "id": "art-baharampur-silk-bn-12",
@@ -4391,7 +4635,11 @@
     "seoDescription": "বহরমপুরের মুর্শিদাবাদী সিল্ক ও রেশম বস্ত্র বিক্রেতাদের জন্য হোয়াটসঅ্যাপ ক্যাটালগ ও ডিজিটাল শোরুম চালুর গাইড।",
     "canonicalUrl": "https://confluxai.in/blog/baharampur-murshidabad-silk-saree-digital-showroom-whatsapp",
     "status": "PUBLISHED",
-    "reactions": 36
+    "reactions": 36,
+    "districts": [
+      "murshidabad"
+    ],
+    "category": "Silk Saree & Wholesale"
   },
   {
     "id": "art-durgapur-engineering-en-13",
@@ -4456,7 +4704,11 @@
     "seoDescription": "Automate B2B RFQs, PDF quote parsing, and vendor updates for steel fabrication units in Durgapur.",
     "canonicalUrl": "https://confluxai.in/blog/durgapur-engineering-steel-fabricators-b2b-quotation-automation",
     "status": "PUBLISHED",
-    "reactions": 30
+    "reactions": 30,
+    "districts": [
+      "paschim-bardhaman"
+    ],
+    "category": "Steel & Engineering"
   },
   {
     "id": "art-asansol-mining-en-14",
@@ -4520,7 +4772,11 @@
     "seoDescription": "Streamline B2B equipment rental inquiries and logistics dispatch for mining services in Asansol.",
     "canonicalUrl": "https://confluxai.in/blog/asansol-mining-equipment-logistics-inquiry-automation",
     "status": "PUBLISHED",
-    "reactions": 27
+    "reactions": 27,
+    "districts": [
+      "paschim-bardhaman"
+    ],
+    "category": "Mining Equipment & Logistics"
   },
   {
     "id": "art-kharagpur-education-en-15",
@@ -4583,7 +4839,11 @@
     "seoDescription": "Automate course prospectus dispatch, batch timings, and student admission counseling for academies in Kharagpur.",
     "canonicalUrl": "https://confluxai.in/blog/kharagpur-skill-academies-student-admission-whatsapp-bot",
     "status": "PUBLISHED",
-    "reactions": 32
+    "reactions": 32,
+    "districts": [
+      "paschim-medinipur"
+    ],
+    "category": "Skill Academies & Education"
   },
   {
     "id": "art-malda-agro-bn-16",
@@ -4647,7 +4907,11 @@
     "seoDescription": "মালদার আম উৎপাদনকারী ও ফুড প্রসেসরদের জন্য হোয়াটসঅ্যাপ ক্যাটালগ ও প্যান-ইন্ডিয়া বায়ার সংযোগ।",
     "canonicalUrl": "https://confluxai.in/blog/malda-mango-food-processing-wholesale-buyer-catalog",
     "status": "PUBLISHED",
-    "reactions": 39
+    "reactions": 39,
+    "districts": [
+      "malda"
+    ],
+    "category": "Mango & Food Processing"
   },
   {
     "id": "art-kolkata-realestate-en-17",
@@ -4713,6 +4977,10 @@
     "seoDescription": "Achieve sub-5-second lead response, instant PDF floorplan dispatch, and site visit booking for Kolkata real estate projects.",
     "canonicalUrl": "https://confluxai.in/blog/kolkata-real-estate-speed-to-lead-whatsapp-floorplan-bots",
     "status": "PUBLISHED",
-    "reactions": 65
+    "reactions": 65,
+    "districts": [
+      "kolkata"
+    ],
+    "category": "Real Estate & Lead Automation"
   }
 ]

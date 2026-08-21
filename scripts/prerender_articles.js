@@ -647,31 +647,38 @@ districts.forEach(d => {
   const districtTitle = `AI Automation Agency Serving ${d.name} District | Conflux AI`;
   const districtDesc = `Conflux AI provides remote-first AI automation, WhatsApp lead bots, custom chatbots, and web development for businesses across ${d.name} district.`;
 
-  // Find related local articles matching this district
-  const districtArticles = articles.filter(a => 
-    (a.districtIds && a.districtIds.includes(`dist-${d.slug}`)) ||
-    (a.locationIds && a.locationIds.includes(`dist-${d.slug}`)) ||
-    a.slug.toLowerCase().includes(d.slug) ||
-    a.title.toLowerCase().includes(d.name.toLowerCase())
-  );
+  // Find related local articles matching this district using structured metadata
+  const districtArticles = articles.filter(a => {
+    const list = a.districts || a.districtIds || [];
+    const normalized = list.map(item => String(item).toLowerCase().replace(/^dist-/, '').trim());
+    return normalized.includes(d.slug.toLowerCase());
+  }).sort((a, b) => {
+    const dateA = new Date(a.publishedAt || a.updatedAt || 0).getTime();
+    const dateB = new Date(b.publishedAt || b.updatedAt || 0).getTime();
+    return dateB - dateA;
+  });
+
+  const visibleArticles = districtArticles.slice(0, 6);
 
   const getDistrictHtml = (currentUrl) => `
   <div id="root">
     <header style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
-      <div style="max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+      <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
         <a href="/" style="font-size: 18px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
         <nav style="font-size: 13px; font-weight: 700;">
-          <a href="/locations" style="color: #2563eb; text-decoration: none;">&larr; All Districts</a>
+          <a href="/locations" style="color: #2563eb; text-decoration: none; margin-right: 16px;">&larr; All Districts</a>
+          <a href="/blog" style="color: #475569; text-decoration: none; margin-right: 16px;">Blog</a>
+          <a href="/contact" style="color: #475569; text-decoration: none;">Contact</a>
         </nav>
       </div>
     </header>
-    <main style="max-width: 1000px; margin: 0 auto; padding: 40px 20px; font-family: 'Inter', sans-serif;">
+    <main style="max-width: 1100px; margin: 0 auto; padding: 40px 20px; font-family: 'Inter', sans-serif;">
       <nav aria-label="Breadcrumbs" style="font-size: 12px; margin-bottom: 20px; color: #64748b;">
-        <a href="/" style="color: #2563eb; text-decoration: none;">Home</a> &gt; <a href="/locations" style="color: #2563eb; text-decoration: none;">Locations</a> &gt; <span style="color: #0f172a;">${escapeHtml(d.name)} District</span>
+        <a href="/" style="color: #2563eb; text-decoration: none;">Home</a> &gt; <a href="/locations/west-bengal" style="color: #2563eb; text-decoration: none;">West Bengal</a> &gt; <span style="color: #0f172a;">${escapeHtml(d.name)} District</span>
       </nav>
 
       <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #2563eb; letter-spacing: 0.1em; display: inline-block; margin-bottom: 10px;">
-        West Bengal Regional Intelligence
+        West Bengal Regional Intelligence &bull; ${escapeHtml(d.name)}
       </span>
       <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; line-height: 1.15; margin-bottom: 16px;">
         AI Automation &amp; Digital Growth for Businesses in ${escapeHtml(d.name)}
@@ -681,32 +688,74 @@ districts.forEach(d => {
       </p>
 
       <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 32px;">
-        <h3 style="font-size: 14px; font-weight: 800; text-transform: uppercase; color: #2563eb; margin-bottom: 8px;">Remote-First Service Delivery</h3>
+        <h3 style="font-size: 14px; font-weight: 800; text-transform: uppercase; color: #2563eb; margin-bottom: 8px;">Remote-First Service Delivery to ${escapeHtml(d.name)}</h3>
         <p style="font-size: 14px; color: #475569; line-height: 1.6; margin: 0;">
-          Conflux AI operates a remote collaboration model from Kolkata. We collaborate with businesses across ${escapeHtml(d.name)} via video consultations, deploy systems to cloud sandboxes, and provide ongoing remote support.
+          Conflux AI operates a remote collaboration model from Kolkata. We partner with businesses across ${escapeHtml(d.name)} via video consultations, deploy systems to cloud sandboxes, and provide ongoing remote support without physical office overhead.
         </p>
       </div>
 
-      ${districtArticles.length > 0 ? `
-      <section style="margin-top: 36px;">
-        <h2 style="font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">
-          Published Case Studies &amp; Local Business Guides for ${escapeHtml(d.name)}
-        </h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
-          ${districtArticles.map(art => `
-            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px;">
-              <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">
-                <a href="/blog/${art.slug}" style="color: #0f172a; text-decoration: none;">${escapeHtml(art.title)}</a>
-              </h3>
-              <p style="font-size: 12px; color: #64748b; line-height: 1.5; margin-bottom: 10px;">
-                ${escapeHtml(art.excerpt || art.title)}
-              </p>
-              <a href="/blog/${art.slug}" style="font-size: 11px; color: #2563eb; font-weight: 800; text-decoration: none;">Read Guide &rarr;</a>
-            </div>
-          `).join('')}
+      <!-- DISTRICT-BASED ARTICLE DISCOVERY LAYER -->
+      <section style="margin-top: 40px; margin-bottom: 40px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;">
+          <div>
+            <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #2563eb; letter-spacing: 0.08em; display: block; margin-bottom: 6px;">
+              Regional Knowledge Network
+            </span>
+            <h2 style="font-size: 26px; font-weight: 900; color: #0f172a; margin: 0;">
+              Latest Articles from ${escapeHtml(d.name)}
+            </h2>
+            <p style="font-size: 13px; color: #64748b; margin-top: 6px; margin-bottom: 0;">
+              Authoritative local guides, market research, and digital growth blueprints for ${escapeHtml(d.name)} district.
+            </p>
+          </div>
+          <div style="font-size: 12px; font-weight: 800; color: #475569; background: #f1f5f9; padding: 6px 14px; border-radius: 9999px; white-space: nowrap;">
+            ${districtArticles.length} Local ${districtArticles.length === 1 ? 'Article' : 'Articles'}
+          </div>
         </div>
+
+        ${districtArticles.length > 0 ? `
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+          ${visibleArticles.map(art => {
+            const authorName = typeof art.author === 'object' ? art.author.name : (art.author || 'Conflux AI Editorial');
+            return `
+            <article style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 10px; font-size: 10px; font-weight: 800; text-transform: uppercase;">
+                  <span style="background: #eff6ff; color: #2563eb; padding: 2px 8px; border-radius: 9999px; border: 1px solid #dbeafe;">${escapeHtml(art.category || 'Local Strategy')}</span>
+                  <span style="background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 9999px;">${art.language === 'bn' ? 'বাংলা' : 'English'}</span>
+                  <span style="background: #ecfdf5; color: #047857; padding: 2px 8px; border-radius: 9999px;">${escapeHtml(d.name)}</span>
+                </div>
+                <h3 style="font-size: 17px; font-weight: 900; color: #0f172a; line-height: 1.35; margin-bottom: 10px;">
+                  <a href="/blog/${escapeHtml(art.slug)}" style="color: #0f172a; text-decoration: none;">${escapeHtml(art.title)}</a>
+                </h3>
+                <p style="font-size: 13px; color: #64748b; line-height: 1.6; margin-bottom: 16px;">
+                  ${escapeHtml(art.excerpt || art.title)}
+                </p>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 12px; font-size: 11px;">
+                <span style="color: #94a3b8; font-weight: 700;">By ${escapeHtml(authorName)}</span>
+                <a href="/blog/${escapeHtml(art.slug)}" style="color: #2563eb; font-weight: 900; text-decoration: none;">Read Article &rarr;</a>
+              </div>
+            </article>
+            `;
+          }).join('')}
+        </div>
+
+        ${districtArticles.length > 6 ? `
+        <div style="margin-top: 24px; text-align: center;">
+          <a href="/blog?district=${escapeHtml(d.slug)}" style="display: inline-block; background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 10px 24px; border-radius: 12px; font-size: 12px; font-weight: 800; text-decoration: none;">
+            View all ${districtArticles.length} articles from ${escapeHtml(d.name)} &rarr;
+          </a>
+        </div>
+        ` : ''}
+        ` : `
+        <div style="padding: 36px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 16px; text-align: center;">
+          <h4 style="font-size: 16px; font-weight: 800; color: #334155; margin-bottom: 6px;">Articles for ${escapeHtml(d.name)} are coming soon.</h4>
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">Our research team is actively expanding local business case studies across all West Bengal districts.</p>
+          <a href="/blog" style="font-size: 12px; font-weight: 800; color: #2563eb; text-decoration: none;">Explore our West Bengal business &amp; technology insights &rarr;</a>
+        </div>
+        `}
       </section>
-      ` : ''}
 
       <div style="margin-top: 40px; padding: 32px; background: #0f172a; border-radius: 20px; color: white; text-align: center;">
         <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 10px;">Partner With Conflux AI in ${escapeHtml(d.name)}</h3>
@@ -721,17 +770,32 @@ districts.forEach(d => {
   </div>
 `;
 
+  // ItemList schema for static rendering
+  const itemListSchema = visibleArticles.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": `Local Business & Intelligence Articles from ${d.name}`,
+    "itemListElement": visibleArticles.map((art, idx) => ({
+      "@type": "ListItem",
+      "position": idx + 1,
+      "name": art.title,
+      "url": `https://confluxai.in/blog/${art.slug}`
+    }))
+  } : null;
+
   // Write /locations/:slug
   const shortUrl = `https://confluxai.in/locations/${d.slug}`;
   const shortSchema = { "@context": "https://schema.org", "@type": "WebPage", "name": districtTitle, "description": districtDesc, "url": shortUrl };
   const shortBreadcrumb = { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://confluxai.in/" }, { "@type": "ListItem", "position": 2, "name": "Locations", "item": "https://confluxai.in/locations" }, { "@type": "ListItem", "position": 3, "name": `${d.name} District`, "item": shortUrl }] };
-  writePage(`/locations/${d.slug}`, districtTitle, districtDesc, shortUrl, [shortSchema, shortBreadcrumb], getDistrictHtml(shortUrl));
+  const shortSchemas = itemListSchema ? [shortSchema, shortBreadcrumb, itemListSchema] : [shortSchema, shortBreadcrumb];
+  writePage(`/locations/${d.slug}`, districtTitle, districtDesc, shortUrl, shortSchemas, getDistrictHtml(shortUrl));
 
   // Write /locations/west-bengal/:slug
   const fullUrl = `https://confluxai.in/locations/west-bengal/${d.slug}`;
   const fullSchema = { "@context": "https://schema.org", "@type": "WebPage", "name": districtTitle, "description": districtDesc, "url": fullUrl };
   const fullBreadcrumb = { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://confluxai.in/" }, { "@type": "ListItem", "position": 2, "name": "West Bengal", "item": "https://confluxai.in/locations/west-bengal" }, { "@type": "ListItem", "position": 3, "name": `${d.name} District`, "item": fullUrl }] };
-  writePage(`/locations/west-bengal/${d.slug}`, districtTitle, districtDesc, fullUrl, [fullSchema, fullBreadcrumb], getDistrictHtml(fullUrl));
+  const fullSchemas = itemListSchema ? [fullSchema, fullBreadcrumb, itemListSchema] : [fullSchema, fullBreadcrumb];
+  writePage(`/locations/west-bengal/${d.slug}`, districtTitle, districtDesc, fullUrl, fullSchemas, getDistrictHtml(fullUrl));
 
   districtCount++;
 });

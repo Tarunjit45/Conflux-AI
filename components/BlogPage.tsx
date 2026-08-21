@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { Calendar, User, Tag, Heart, ArrowLeft, Loader2, Sparkles, MapPin, Globe, Filter, Share2, Check, Copy } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { getAllLocations, LocationItem } from '../data/locationsData';
+import { Link, useLocation } from 'react-router-dom';
+import { getAllLocations, WEST_BENGAL_DISTRICTS, LocationItem } from '../data/locationsData';
 import { ArticleKnowledgeObject, ContentLanguage } from '../types/article';
-import { STATIC_ARTICLES } from '../data/articlesData';
+import { STATIC_ARTICLES, getNormalizedDistricts } from '../data/articlesData';
 
 const BlogPage: React.FC = () => {
+    const location = useLocation();
     const [articles, setArticles] = useState<ArticleKnowledgeObject[]>(STATIC_ARTICLES);
     const [isLoading, setIsLoading] = useState(false);
     const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
@@ -18,6 +19,14 @@ const BlogPage: React.FC = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
 
     const allLocations: LocationItem[] = getAllLocations();
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const districtParam = params.get('district');
+        if (districtParam) {
+            setSelectedLocation(districtParam.toLowerCase().replace(/^dist-/, '').trim());
+        }
+    }, [location.search]);
 
     useEffect(() => {
         fetchArticles();
@@ -94,11 +103,19 @@ const BlogPage: React.FC = () => {
         if (selectedLanguage !== 'ALL' && a.language !== selectedLanguage) return false;
         if (selectedCategory !== 'ALL' && a.category !== selectedCategory) return false;
         if (selectedLocation !== 'ALL') {
-            const locs = a.locationIds || [];
-            if (!locs.includes(selectedLocation)) {
-                // Check string match in content
-                const locItem = allLocations.find(l => l.id === selectedLocation || l.slug === selectedLocation);
-                if (!locItem || !a.content?.toLowerCase().includes(locItem.name.toLowerCase())) return false;
+            const cleanSelected = selectedLocation.toLowerCase().replace(/^dist-/, '').trim();
+            const normalizedDistricts = getNormalizedDistricts(a);
+            const locs = (a.locationIds || []).map(id => id.toLowerCase().replace(/^dist-/, '').trim());
+
+            const matchesDistrict = normalizedDistricts.includes(cleanSelected);
+            const matchesLocationId = locs.includes(cleanSelected) || (a.locationIds || []).includes(selectedLocation);
+
+            if (!matchesDistrict && !matchesLocationId) {
+                // Check string match in content or title
+                const locItem = allLocations.find(l => l.id === selectedLocation || l.slug === selectedLocation || l.slug === cleanSelected);
+                if (!locItem || (!a.content?.toLowerCase().includes(locItem.name.toLowerCase()) && !a.title.toLowerCase().includes(locItem.name.toLowerCase()))) {
+                    return false;
+                }
             }
         }
         return true;
@@ -152,9 +169,16 @@ const BlogPage: React.FC = () => {
                             className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-800 outline-none focus:border-blue-500"
                         >
                             <option value="ALL">📍 All West Bengal Locations</option>
-                            {allLocations.filter(l => l.type === 'commercial_junction' || l.type === 'city' || l.type === 'district').map(loc => (
-                                <option key={loc.id} value={loc.id}>{loc.displayName || loc.name}</option>
-                            ))}
+                            <optgroup label="West Bengal Districts">
+                                {WEST_BENGAL_DISTRICTS.map(dist => (
+                                    <option key={dist.id} value={dist.slug}>📍 {dist.name} District</option>
+                                ))}
+                            </optgroup>
+                            <optgroup label="Cities & Commercial Hubs">
+                                {allLocations.filter(l => l.type === 'commercial_junction' || l.type === 'city').map(loc => (
+                                    <option key={loc.id} value={loc.id || loc.slug}>🏢 {loc.displayName || loc.name}</option>
+                                ))}
+                            </optgroup>
                         </select>
                     </div>
 
