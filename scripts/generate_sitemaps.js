@@ -17,17 +17,25 @@ const staticRoutes = [
   { url: 'https://confluxai.in/', changefreq: 'daily', priority: '1.0' },
   { url: 'https://confluxai.in/about', changefreq: 'monthly', priority: '0.9' },
   { url: 'https://confluxai.in/solutions', changefreq: 'weekly', priority: '0.9' },
+  { url: 'https://confluxai.in/services', changefreq: 'weekly', priority: '0.9' },
+  { url: 'https://confluxai.in/services/enterprise-ai-automation', changefreq: 'weekly', priority: '0.9' },
   { url: 'https://confluxai.in/services/ai-automation', changefreq: 'weekly', priority: '0.9' },
   { url: 'https://confluxai.in/services/ai-agents', changefreq: 'weekly', priority: '0.9' },
+  { url: 'https://confluxai.in/services/whatsapp-business-automation', changefreq: 'weekly', priority: '0.9' },
   { url: 'https://confluxai.in/services/whatsapp-automation', changefreq: 'weekly', priority: '0.9' },
+  { url: 'https://confluxai.in/services/ai-chatbot-development', changefreq: 'weekly', priority: '0.9' },
   { url: 'https://confluxai.in/services/chatbot-development', changefreq: 'weekly', priority: '0.9' },
+  { url: 'https://confluxai.in/services/business-workflow-automation', changefreq: 'weekly', priority: '0.8' },
   { url: 'https://confluxai.in/services/workflow-automation', changefreq: 'weekly', priority: '0.8' },
+  { url: 'https://confluxai.in/services/web-development', changefreq: 'weekly', priority: '0.9' },
   { url: 'https://confluxai.in/services/website-development', changefreq: 'weekly', priority: '0.9' },
+  { url: 'https://confluxai.in/services/seo', changefreq: 'weekly', priority: '0.9' },
   { url: 'https://confluxai.in/services/seo-geo', changefreq: 'weekly', priority: '0.9' },
   { url: 'https://confluxai.in/services/digital-marketing', changefreq: 'weekly', priority: '0.8' },
   { url: 'https://confluxai.in/services/ecommerce-development', changefreq: 'weekly', priority: '0.9' },
   { url: 'https://confluxai.in/services/meta-ads', changefreq: 'weekly', priority: '0.8' },
   { url: 'https://confluxai.in/services/google-ads', changefreq: 'weekly', priority: '0.8' },
+  { url: 'https://confluxai.in/services/rural-digital-solutions', changefreq: 'weekly', priority: '0.9' },
   { url: 'https://confluxai.in/services/digital-solutions-west-bengal', changefreq: 'weekly', priority: '0.9' },
   { url: 'https://confluxai.in/creative', changefreq: 'monthly', priority: '0.7' },
   { url: 'https://confluxai.in/impact', changefreq: 'monthly', priority: '0.7' },
@@ -38,6 +46,7 @@ const staticRoutes = [
   { url: 'https://confluxai.in/authority', changefreq: 'monthly', priority: '0.8' },
   { url: 'https://confluxai.in/faq', changefreq: 'monthly', priority: '0.8' },
   { url: 'https://confluxai.in/semantic-map', changefreq: 'monthly', priority: '0.7' },
+  { url: 'https://confluxai.in/locations', changefreq: 'daily', priority: '0.9' },
   { url: 'https://confluxai.in/locations/west-bengal', changefreq: 'daily', priority: '0.9' },
   { url: 'https://confluxai.in/blog', changefreq: 'daily', priority: '0.9' }
 ];
@@ -64,8 +73,14 @@ staticRoutes.forEach(r => {
   </url>`);
 });
 
-// District Hubs
+// District Hubs (/locations/:slug AND /locations/west-bengal/:slug)
 districtSlugs.forEach(slug => {
+  xmlEntries.push(`  <url>
+    <loc>https://confluxai.in/locations/${slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`);
   xmlEntries.push(`  <url>
     <loc>https://confluxai.in/locations/west-bengal/${slug}</loc>
     <lastmod>${today}</lastmod>

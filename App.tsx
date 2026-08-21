@@ -135,6 +135,42 @@ const routeMeta: Record<string, { title: string; description: string }> = {
     title: 'Google Ads & PPC Search Marketing | Conflux AI',
     description: 'High-intent search campaigns, keyword targeting, and conversion-focused landing pages.'
   },
+  '/services': {
+    title: 'Enterprise AI Solutions & Full-Stack Automation Services | Conflux AI',
+    description: 'Explore Conflux AI enterprise automation workflows, custom chatbot integrations, web architecture, and digital transformation solutions.'
+  },
+  '/locations': {
+    title: 'Remote AI Automation Services Across West Bengal | Conflux AI',
+    description: 'Conflux AI provides remote-first AI automation, WhatsApp lead bots, custom chatbots, and web development for businesses across all districts of West Bengal.'
+  },
+  '/services/enterprise-ai-automation': {
+    title: 'Enterprise AI Automation Services | Conflux AI',
+    description: 'Custom AI automation pipelines, system integrations, and process optimization by Conflux AI based in Kolkata, India.'
+  },
+  '/services/whatsapp-business-automation': {
+    title: 'WhatsApp Business Automation Systems | Conflux AI',
+    description: 'Automate WhatsApp lead generation, customer support, order tracking, and instant CRM synchronization.'
+  },
+  '/services/ai-chatbot-development': {
+    title: 'Custom AI Chatbot Development | Conflux AI',
+    description: '24/7 intelligent conversational chatbots trained on your company knowledge base using Retrieval-Augmented Generation (RAG).'
+  },
+  '/services/business-workflow-automation': {
+    title: 'Business Workflow Automation Services | Conflux AI',
+    description: 'Streamline multi-department workflows with custom Make.com, Zapier, and API integrations.'
+  },
+  '/services/web-development': {
+    title: 'High-Performance Web Development | Conflux AI',
+    description: 'Sub-second React + Vite + TypeScript web applications engineered for high conversion and fast loading.'
+  },
+  '/services/seo': {
+    title: 'SEO & Technical Search Engine Optimization | Conflux AI',
+    description: 'Technical SEO, Schema.org JSON-LD data structures, and crawl optimization for traditional and AI search engines.'
+  },
+  '/services/rural-digital-solutions': {
+    title: 'Digital Solutions for Businesses Across West Bengal | Conflux AI',
+    description: 'Conflux AI provides remote-first digital solutions, website development, WhatsApp automation, and AI chatbots for small and medium businesses across West Bengal.'
+  },
   '/thank-you': {
     title: 'Thank You | Conflux AI',
     description: 'Thank you for reaching out to Conflux AI. Our technical team will get back to you within 24 hours.'
@@ -256,6 +292,7 @@ const App: React.FC = () => {
         <Route path="/blog/:slug" element={<ArticleDetail />} />
         <Route path="/about" element={<AboutUsPage />} />
         <Route path="/solutions" element={<SolutionsPage />} />
+        <Route path="/services" element={<SolutionsPage />} />
         <Route path="/creative" element={<CreativePage />} />
         <Route path="/impact" element={<ImpactPage />} />
         <Route path="/portfolio" element={<PortfolioPage />} />
@@ -266,7 +303,11 @@ const App: React.FC = () => {
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/semantic-map" element={<SemanticPage />} />
         <Route path="/services/digital-solutions-west-bengal" element={<RuralDigitalSolutionsPage />} />
+        <Route path="/services/rural-digital-solutions" element={<RuralDigitalSolutionsPage />} />
         <Route path="/services/:serviceId" element={<ServiceDetailPage />} />
+        <Route path="/locations" element={<LocationHubPage />} />
+        <Route path="/locations/:districtSlug" element={<DistrictDirectoryPage />} />
+        <Route path="/locations/:districtSlug/:citySlug" element={<LocationDetailPage />} />
         <Route path="/locations/west-bengal" element={<LocationHubPage />} />
         <Route path="/locations/west-bengal/:districtSlug" element={<DistrictDirectoryPage />} />
         <Route path="/locations/west-bengal/:districtSlug/:citySlug" element={<LocationDetailPage />} />

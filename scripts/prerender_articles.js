@@ -115,7 +115,7 @@ const blogListHtml = `
         <nav style="font-size: 13px; font-weight: 700;">
           <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
           <a href="/solutions" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
-          <a href="/locations/west-bengal" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
+          <a href="/locations" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
           <a href="/blog" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Blog</a>
           <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
         </nav>
@@ -284,6 +284,7 @@ ${escapeHtml(article.content || '')}
 const servicesList = [
   {
     id: "ai-automation",
+    aliases: ["enterprise-ai-automation"],
     name: "Enterprise AI Automation",
     headline: "Streamline Business Operations with High-Throughput Autonomous AI Systems",
     problem: "Manual data entry, repetitive customer follow-ups, and disconnected software systems slow operational throughput and increase overhead.",
@@ -296,6 +297,7 @@ const servicesList = [
   },
   {
     id: "ai-agents",
+    aliases: [],
     name: "AI Agents & Autonomous Systems",
     headline: "Deploy Intelligent Autonomous Agents to Perform Complex Multi-Step Business Tasks",
     problem: "Traditional rule-based automation breaks when encountering variable user inputs, unstructured documents, or non-standard workflows.",
@@ -307,6 +309,7 @@ const servicesList = [
   },
   {
     id: "whatsapp-automation",
+    aliases: ["whatsapp-business-automation"],
     name: "WhatsApp Business Automation",
     headline: "Automate Instant Lead Response, Prospect Qualification, and Support via WhatsApp API",
     problem: "Businesses lose high-intent customer inquiries when leads wait hours for a manual WhatsApp reply.",
@@ -318,6 +321,7 @@ const servicesList = [
   },
   {
     id: "chatbot-development",
+    aliases: ["ai-chatbot-development"],
     name: "Custom AI Chatbot Development",
     headline: "Convert Website Visitors 24/7 with Intelligent RAG-Powered Conversational Widgets",
     problem: "Generic scripted chatbots frustrate visitors, while human support teams cannot operate around the clock.",
@@ -329,6 +333,7 @@ const servicesList = [
   },
   {
     id: "workflow-automation",
+    aliases: ["business-workflow-automation"],
     name: "Business Workflow Automation",
     headline: "Connect Disparate Software Systems into Seamless Automated Workflows",
     problem: "Information trapped in separate tools requires manual copy-pasting, causing delays, data errors, and operational friction.",
@@ -340,6 +345,7 @@ const servicesList = [
   },
   {
     id: "website-development",
+    aliases: ["web-development"],
     name: "High-Performance Web Development",
     headline: "Ultra-Fast, Sub-Second React Web Platforms Built for Maximum Lead Conversion",
     problem: "Slow, outdated WordPress websites lose up to 50% of mobile visitors before the page finishes loading.",
@@ -351,6 +357,7 @@ const servicesList = [
   },
   {
     id: "seo-geo",
+    aliases: ["seo"],
     name: "SEO & Technical Search Optimization",
     headline: "Rank High on Google & Optimize Technical Schema for AI & Traditional Crawlers",
     problem: "Search engines and AI systems skip websites lacking structured entity data, clear semantic HTML, or fast technical performance.",
@@ -362,6 +369,7 @@ const servicesList = [
   },
   {
     id: "digital-marketing",
+    aliases: [],
     name: "Digital Marketing & Growth Suite",
     headline: "Data-Driven Customer Acquisition, Content Strategy, and Visual Campaign Management",
     problem: "Unfocused marketing efforts waste capital on unqualified clicks without building a predictable pipeline.",
@@ -373,6 +381,7 @@ const servicesList = [
   },
   {
     id: "ecommerce-development",
+    aliases: [],
     name: "E-Commerce Development & Catalogs",
     headline: "High-Converting Online Stores, WhatsApp Product Catalogs & Instant UPI Checkout",
     problem: "Generic slow storefronts, high marketplace commission fees, and clunky checkouts eat into retail margins.",
@@ -384,6 +393,7 @@ const servicesList = [
   },
   {
     id: "meta-ads",
+    aliases: [],
     name: "Meta Ads & Paid Social Acquisition",
     headline: "Scale Targeted Lead Acquisition Across Facebook and Instagram",
     problem: "Generic ad copy and broad targeting waste budget on low-quality leads that never convert.",
@@ -395,6 +405,7 @@ const servicesList = [
   },
   {
     id: "google-ads",
+    aliases: [],
     name: "Google Ads & PPC Search Marketing",
     headline: "Capture High-Intent Customers Searching Active Buying Keywords on Google",
     problem: "Bidding on broad keywords burns ad budget on casual browsers instead of motivated buyers.",
@@ -406,6 +417,7 @@ const servicesList = [
   },
   {
     id: "digital-solutions-west-bengal",
+    aliases: ["rural-digital-solutions"],
     name: "Digital Solutions for Businesses Across West Bengal",
     headline: "Remote-First AI Automation, WhatsApp Bots & Web Platforms for All 23 West Bengal Districts",
     problem: "Businesses outside Kolkata often struggle to access high-end AI automation and modern web development agencies.",
@@ -442,7 +454,7 @@ servicesList.forEach(svc => {
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://confluxai.in/" },
-      { "@type": "ListItem", "position": 2, "name": "Services", "item": "https://confluxai.in/solutions" },
+      { "@type": "ListItem", "position": 2, "name": "Services", "item": "https://confluxai.in/services" },
       { "@type": "ListItem", "position": 3, "name": svc.name, "item": serviceUrl }
     ]
   };
@@ -467,14 +479,14 @@ servicesList.forEach(svc => {
       <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
         <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
         <nav style="font-size: 13px; font-weight: 700;">
-          <a href="/solutions" style="margin: 0 10px; color: #2563eb; text-decoration: none;">&larr; All Services</a>
+          <a href="/services" style="margin: 0 10px; color: #2563eb; text-decoration: none;">&larr; All Services</a>
           <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact Us</a>
         </nav>
       </div>
     </header>
     <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
       <nav aria-label="Breadcrumbs" style="font-size: 12px; margin-bottom: 24px; color: #64748b;">
-        <a href="/" style="color: #2563eb; text-decoration: none;">Home</a> &gt; <a href="/solutions" style="color: #2563eb; text-decoration: none;">Services</a> &gt; <span style="color: #0f172a;">${escapeHtml(svc.name)}</span>
+        <a href="/" style="color: #2563eb; text-decoration: none;">Home</a> &gt; <a href="/services" style="color: #2563eb; text-decoration: none;">Services</a> &gt; <span style="color: #0f172a;">${escapeHtml(svc.name)}</span>
       </nav>
 
       <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #2563eb; letter-spacing: 0.1em; display: inline-block; margin-bottom: 12px;">Commercial Solution</span>
@@ -535,8 +547,18 @@ servicesList.forEach(svc => {
   </div>
 `;
 
+  // Write Canonical
   writePage(`/services/${svc.id}`, serviceTitle, svc.headline, serviceUrl, schemas, serviceBodyHtml);
   serviceCount++;
+
+  // Write Aliases
+  if (svc.aliases && svc.aliases.length > 0) {
+    svc.aliases.forEach(alias => {
+      const aliasUrl = `https://confluxai.in/services/${alias}`;
+      writePage(`/services/${alias}`, serviceTitle, svc.headline, aliasUrl, schemas, serviceBodyHtml);
+      serviceCount++;
+    });
+  }
 });
 
 // ── 4. PRE-RENDER WEST BENGAL STATE & DISTRICT HUBS ───────────
@@ -566,13 +588,13 @@ const districts = [
   { slug: 'cooch-behar', name: 'Cooch Behar', hq: 'Cooch Behar', hubs: 'Cooch Behar Town, Dinhata, Mathabhanga, Tufanganj' }
 ];
 
-// Statewide Hub
+// Statewide Hubs (/locations AND /locations/west-bengal)
 const stateHubSchema = {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
   "name": "Remote AI Automation Services in West Bengal | Conflux AI",
   "description": "Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, serving businesses across West Bengal, India, and globally.",
-  "url": "https://confluxai.in/locations/west-bengal"
+  "url": "https://confluxai.in/locations"
 };
 
 const stateHubHtml = `
@@ -582,8 +604,8 @@ const stateHubHtml = `
         <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
         <nav style="font-size: 13px; font-weight: 700;">
           <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
-          <a href="/solutions" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
-          <a href="/locations/west-bengal" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Locations</a>
+          <a href="/services" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
+          <a href="/locations" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Locations</a>
           <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
           <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
         </nav>
@@ -601,13 +623,13 @@ const stateHubHtml = `
         ${districts.map(d => `
           <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
             <h2 style="font-size: 18px; font-weight: 900; color: #0f172a; margin-bottom: 8px;">
-              <a href="/locations/west-bengal/${d.slug}" style="color: #0f172a; text-decoration: none;">${escapeHtml(d.name)} District</a>
+              <a href="/locations/${d.slug}" style="color: #0f172a; text-decoration: none;">${escapeHtml(d.name)} District</a>
             </h2>
             <p style="font-size: 12px; color: #2563eb; font-weight: 700; margin-bottom: 8px;">HQ: ${escapeHtml(d.hq)}</p>
             <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 12px;">
               Key Hubs: ${escapeHtml(d.hubs)}
             </p>
-            <a href="/locations/west-bengal/${d.slug}" style="font-size: 12px; color: #2563eb; font-weight: 800; text-decoration: none;">View District Strategy &rarr;</a>
+            <a href="/locations/${d.slug}" style="font-size: 12px; color: #2563eb; font-weight: 800; text-decoration: none;">View District Strategy &rarr;</a>
           </div>
         `).join('')}
       </div>
@@ -615,40 +637,15 @@ const stateHubHtml = `
   </div>
 `;
 
-writePage(
-  '/locations/west-bengal',
-  'Remote AI Automation Services in West Bengal | Conflux AI',
-  'Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, serving businesses across West Bengal, India, and globally.',
-  'https://confluxai.in/locations/west-bengal',
-  [stateHubSchema],
-  stateHubHtml
-);
+writePage('/locations', 'Remote AI Automation Services Across West Bengal | Conflux AI', 'Conflux AI provides remote-first AI automation, WhatsApp lead bots, custom chatbots, and web development for businesses across all districts of West Bengal.', 'https://confluxai.in/locations', [stateHubSchema], stateHubHtml);
+writePage('/locations/west-bengal', 'Remote AI Automation Services in West Bengal | Conflux AI', 'Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, serving businesses across West Bengal, India, and globally.', 'https://confluxai.in/locations/west-bengal', [stateHubSchema], stateHubHtml);
 
-// Pre-render all 23 District Pages
+// Pre-render all 23 District Pages (/locations/:slug AND /locations/west-bengal/:slug)
 let districtCount = 0;
 
 districts.forEach(d => {
-  const districtUrl = `https://confluxai.in/locations/west-bengal/${d.slug}`;
   const districtTitle = `AI Automation Agency Serving ${d.name} District | Conflux AI`;
   const districtDesc = `Conflux AI provides remote-first AI automation, WhatsApp lead bots, custom chatbots, and web development for businesses across ${d.name} district.`;
-
-  const districtSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": districtTitle,
-    "description": districtDesc,
-    "url": districtUrl
-  };
-
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://confluxai.in/" },
-      { "@type": "ListItem", "position": 2, "name": "West Bengal", "item": "https://confluxai.in/locations/west-bengal" },
-      { "@type": "ListItem", "position": 3, "name": `${d.name} District`, "item": districtUrl }
-    ]
-  };
 
   // Find related local articles matching this district
   const districtArticles = articles.filter(a => 
@@ -658,19 +655,19 @@ districts.forEach(d => {
     a.title.toLowerCase().includes(d.name.toLowerCase())
   );
 
-  const districtHtml = `
+  const getDistrictHtml = (currentUrl) => `
   <div id="root">
     <header style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
       <div style="max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
         <a href="/" style="font-size: 18px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
         <nav style="font-size: 13px; font-weight: 700;">
-          <a href="/locations/west-bengal" style="color: #2563eb; text-decoration: none;">&larr; All West Bengal Districts</a>
+          <a href="/locations" style="color: #2563eb; text-decoration: none;">&larr; All Districts</a>
         </nav>
       </div>
     </header>
     <main style="max-width: 1000px; margin: 0 auto; padding: 40px 20px; font-family: 'Inter', sans-serif;">
       <nav aria-label="Breadcrumbs" style="font-size: 12px; margin-bottom: 20px; color: #64748b;">
-        <a href="/" style="color: #2563eb; text-decoration: none;">Home</a> &gt; <a href="/locations/west-bengal" style="color: #2563eb; text-decoration: none;">West Bengal</a> &gt; <span style="color: #0f172a;">${escapeHtml(d.name)} District</span>
+        <a href="/" style="color: #2563eb; text-decoration: none;">Home</a> &gt; <a href="/locations" style="color: #2563eb; text-decoration: none;">Locations</a> &gt; <span style="color: #0f172a;">${escapeHtml(d.name)} District</span>
       </nav>
 
       <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #2563eb; letter-spacing: 0.1em; display: inline-block; margin-bottom: 10px;">
@@ -724,17 +721,27 @@ districts.forEach(d => {
   </div>
 `;
 
-  writePage(`/locations/west-bengal/${d.slug}`, districtTitle, districtDesc, districtUrl, [districtSchema, breadcrumbSchema], districtHtml);
+  // Write /locations/:slug
+  const shortUrl = `https://confluxai.in/locations/${d.slug}`;
+  const shortSchema = { "@context": "https://schema.org", "@type": "WebPage", "name": districtTitle, "description": districtDesc, "url": shortUrl };
+  const shortBreadcrumb = { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://confluxai.in/" }, { "@type": "ListItem", "position": 2, "name": "Locations", "item": "https://confluxai.in/locations" }, { "@type": "ListItem", "position": 3, "name": `${d.name} District`, "item": shortUrl }] };
+  writePage(`/locations/${d.slug}`, districtTitle, districtDesc, shortUrl, [shortSchema, shortBreadcrumb], getDistrictHtml(shortUrl));
+
+  // Write /locations/west-bengal/:slug
+  const fullUrl = `https://confluxai.in/locations/west-bengal/${d.slug}`;
+  const fullSchema = { "@context": "https://schema.org", "@type": "WebPage", "name": districtTitle, "description": districtDesc, "url": fullUrl };
+  const fullBreadcrumb = { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://confluxai.in/" }, { "@type": "ListItem", "position": 2, "name": "West Bengal", "item": "https://confluxai.in/locations/west-bengal" }, { "@type": "ListItem", "position": 3, "name": `${d.name} District`, "item": fullUrl }] };
+  writePage(`/locations/west-bengal/${d.slug}`, districtTitle, districtDesc, fullUrl, [fullSchema, fullBreadcrumb], getDistrictHtml(fullUrl));
+
   districtCount++;
 });
 
-// ── 5. PRE-RENDER KEY STATIC PAGES ────────────────────────────
+// ── 5. PRE-RENDER CORE STATIC PAGES ───────────────────────────
 const staticPages = [
   {
     path: '/about',
     title: 'About Us | Conflux AI - Mission & Leadership',
     desc: 'Learn about Conflux AI, founded by Tarunjit Biswas & Shouvik Majumdar. We are a remote-first AI automation and digital solutions agency based in Kolkata, India.',
-    h1: 'Engineering the Future of Autonomous Business',
     body: `
     <div id="root">
       <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
@@ -742,8 +749,8 @@ const staticPages = [
           <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
           <nav style="font-size: 13px; font-weight: 700;">
             <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
-            <a href="/solutions" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
-            <a href="/locations/west-bengal" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
+            <a href="/services" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
+            <a href="/locations" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
             <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
             <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
           </nav>
@@ -774,7 +781,6 @@ const staticPages = [
     path: '/solutions',
     title: 'Enterprise AI Solutions & Automation Architecture | Conflux AI',
     desc: 'Explore Conflux AI enterprise automation workflows, custom chatbot integrations, web architecture, and digital transformation solutions.',
-    h1: 'Enterprise AI Solutions & Automation Architecture',
     body: `
     <div id="root">
       <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
@@ -782,8 +788,8 @@ const staticPages = [
           <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
           <nav style="font-size: 13px; font-weight: 700;">
             <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
-            <a href="/solutions" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Services</a>
-            <a href="/locations/west-bengal" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
+            <a href="/services" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Services</a>
+            <a href="/locations" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
             <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
             <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
           </nav>
@@ -808,10 +814,9 @@ const staticPages = [
     `
   },
   {
-    path: '/contact',
-    title: 'Contact Us | Conflux AI Kolkata',
-    desc: 'Connect with Conflux AI engineering leadership in Kolkata, India. Request custom proposals, AI blueprints, and project consultations.',
-    h1: 'Contact Conflux AI',
+    path: '/services',
+    title: 'Enterprise AI Solutions & Full-Stack Automation Services | Conflux AI',
+    desc: 'Explore Conflux AI enterprise automation workflows, custom chatbot integrations, web architecture, and digital transformation solutions.',
     body: `
     <div id="root">
       <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
@@ -819,8 +824,44 @@ const staticPages = [
           <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
           <nav style="font-size: 13px; font-weight: 700;">
             <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
-            <a href="/solutions" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
-            <a href="/locations/west-bengal" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
+            <a href="/services" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Services</a>
+            <a href="/locations" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
+            <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 40px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">Core Commercial Services</h1>
+        <p style="font-size: 18px; color: #475569; line-height: 1.6; margin-bottom: 40px;">Explore our end-to-end commercial AI systems, WhatsApp automation bots, sub-second web platforms, and SEO optimization.</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
+          ${servicesList.map(s => `
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+              <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">
+                <a href="/services/${s.id}" style="color: #0f172a; text-decoration: none;">${escapeHtml(s.name)}</a>
+              </h2>
+              <p style="font-size: 13px; color: #64748b; line-height: 1.6; margin-bottom: 12px;">${escapeHtml(s.headline)}</p>
+              <a href="/services/${s.id}" style="font-size: 12px; color: #2563eb; font-weight: 800; text-decoration: none;">Explore Details &rarr;</a>
+            </div>
+          `).join('')}
+        </div>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/contact',
+    title: 'Contact Us | Conflux AI Kolkata',
+    desc: 'Connect with Conflux AI engineering leadership in Kolkata, India. Request custom proposals, AI blueprints, and project consultations.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/services" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
+            <a href="/locations" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
             <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
             <a href="/contact" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Contact</a>
           </nav>
@@ -849,7 +890,6 @@ const staticPages = [
     path: '/faq',
     title: 'Frequently Asked Questions | Conflux AI',
     desc: 'Answers to common questions regarding AI automation, chatbot integrations, pricing, web development timelines, and services.',
-    h1: 'Frequently Asked Questions',
     body: `
     <div id="root">
       <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
@@ -857,8 +897,8 @@ const staticPages = [
           <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
           <nav style="font-size: 13px; font-weight: 700;">
             <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
-            <a href="/solutions" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
-            <a href="/locations/west-bengal" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
+            <a href="/services" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
+            <a href="/locations" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
             <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
             <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
           </nav>
@@ -891,8 +931,8 @@ staticPages.forEach(p => {
 console.log(`[Prerender] Successfully generated:
   - 1 /blog index catalog (62 articles)
   - ${articleCount} individual /blog/:slug articles
-  - ${serviceCount} /services/:id service pages
-  - 1 /locations/west-bengal state hub
-  - ${districtCount} /locations/west-bengal/:districtSlug pages
+  - ${serviceCount} service pages (including aliases)
+  - 2 statewide hub pages (/locations and /locations/west-bengal)
+  - ${districtCount * 2} district pages (/locations/:slug and /locations/west-bengal/:slug)
   - ${staticPages.length} core static pages
-Total pre-rendered snapshots: ${1 + articleCount + serviceCount + 1 + districtCount + staticPages.length}`);
+Total pre-rendered snapshots: ${1 + articleCount + serviceCount + 2 + (districtCount * 2) + staticPages.length}`);

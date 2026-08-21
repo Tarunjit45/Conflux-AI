@@ -335,9 +335,20 @@ const SERVICE_DETAILS: Record<string, ServiceDetail> = {
   }
 };
 
+const SERVICE_ALIAS_MAP: Record<string, string> = {
+  'enterprise-ai-automation': 'ai-automation',
+  'whatsapp-business-automation': 'whatsapp-automation',
+  'ai-chatbot-development': 'chatbot-development',
+  'business-workflow-automation': 'workflow-automation',
+  'web-development': 'website-development',
+  'seo': 'seo-geo',
+  'rural-digital-solutions': 'digital-solutions-west-bengal'
+};
+
 const ServiceDetailPage: React.FC = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
-  const service = serviceId ? SERVICE_DETAILS[serviceId] : null;
+  const resolvedId = serviceId ? (SERVICE_ALIAS_MAP[serviceId] || serviceId) : '';
+  const service = resolvedId ? SERVICE_DETAILS[resolvedId] : null;
 
   useEffect(() => {
     window.scrollTo(0, 0);
