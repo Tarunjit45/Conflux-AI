@@ -29,6 +29,7 @@ import IndustryLocationPage from './components/locations/IndustryLocationPage';
 import RuralDigitalSolutionsPage from './components/services/RuralDigitalSolutionsPage';
 import LocationCoverageDashboard from './components/admin/LocationCoverageDashboard';
 import NotFoundPage from './components/NotFoundPage';
+import VerifyPortal from './components/verify/VerifyPortal';
 
 const routeMeta: Record<string, { title: string; description: string }> = {
   '/services/digital-solutions-west-bengal': {
@@ -178,6 +179,10 @@ const routeMeta: Record<string, { title: string; description: string }> = {
   '/admin/cms': {
     title: 'Admin CMS | Conflux AI',
     description: 'Internal content management system for Conflux AI.'
+  },
+  '/verify': {
+    title: 'Business Claim & Evidence Verification | Conflux Verify',
+    description: 'Investigate and verify business claims against primary registrars, first-party filings, and authoritative evidence sources.'
   }
 };
 
@@ -313,6 +318,8 @@ const App: React.FC = () => {
         <Route path="/locations/west-bengal/:districtSlug/:citySlug" element={<LocationDetailPage />} />
         <Route path="/locations/west-bengal/:citySlug/:industrySlug" element={<IndustryLocationPage />} />
         <Route path="/thank-you" element={<ThankYouPage />} />
+        <Route path="/verify" element={<VerifyPortal />} />
+        <Route path="/verify/:entitySlug/:claimSlug" element={<VerifyPortal />} />
         <Route path="/admin/cms" element={<AdminCMS />} />
         <Route path="/admin/location-coverage" element={<LocationCoverageDashboard />} />
         <Route path="*" element={<NotFoundPage />} />

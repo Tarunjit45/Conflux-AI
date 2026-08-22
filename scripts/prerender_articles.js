@@ -1195,6 +1195,46 @@ const staticPages = [
       </main>
     </div>
     `
+  },
+  {
+    path: '/verify',
+    title: 'Business Claim & Evidence Verification | Conflux Verify',
+    desc: 'Investigate and verify business claims against primary registrars, first-party filings, and authoritative evidence sources.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/services" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
+            <a href="/locations" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
+            <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
+            <a href="/verify" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Verify</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <div style="display: inline-block; background: #eff6ff; color: #2563eb; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 16px; border: 1px solid #dbeafe;">
+          Conflux Verify
+        </div>
+        <h1 style="font-size: 38px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">Business Claim & Evidence Investigation</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 32px;">
+          Establish whether an economically important business claim is backed by authoritative primary registrars, first-party records, or unverified secondary assertions.
+        </p>
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+          <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 12px;">Query-Driven Verification Engine</h2>
+          <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin-bottom: 20px;">
+            Submit any business or entity claim to inspect its provenance, source tiers, corroborating evidence, and potential conflicting records.
+          </p>
+          <a href="/verify" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 14px;">
+            Launch Verification Portal &rarr;
+          </a>
+        </div>
+      </main>
+    </div>
+    `
   }
 ];
 

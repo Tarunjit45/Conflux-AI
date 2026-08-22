@@ -48,7 +48,8 @@ const staticRoutes = [
   { url: 'https://confluxai.in/semantic-map', changefreq: 'monthly', priority: '0.7' },
   { url: 'https://confluxai.in/locations', changefreq: 'daily', priority: '0.9' },
   { url: 'https://confluxai.in/locations/west-bengal', changefreq: 'daily', priority: '0.9' },
-  { url: 'https://confluxai.in/blog', changefreq: 'daily', priority: '0.9' }
+  { url: 'https://confluxai.in/blog', changefreq: 'daily', priority: '0.9' },
+  { url: 'https://confluxai.in/verify', changefreq: 'daily', priority: '0.9' }
 ];
 
 const districtSlugs = [
