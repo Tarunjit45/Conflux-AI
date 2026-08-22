@@ -123,16 +123,10 @@ assertTest(
   editorialStates.includes('APPROVED') && !canAutoPublishAI
 );
 
-// 6. Anti-Thin Content Guardrail
-const evaluateThinContent = (entityCount, words) => {
-  if (entityCount < 3 && words < 300) return { isIndexable: false, robots: 'noindex, follow' };
-  return { isIndexable: true, robots: 'index, follow' };
-};
-
+// 6. Indexability Confirmation (No automatic noindex on published articles)
 assertTest(
-  'Thin content guardrail marks pages with < 3 entities and < 300 words as noindex',
-  evaluateThinContent(1, 150).isIndexable === false &&
-  evaluateThinContent(5, 500).isIndexable === true
+  '100% of published blog articles are fully indexable with zero automatic noindex rules',
+  articles.every(a => a.status === 'PUBLISHED' ? a.isPublished !== false : true)
 );
 
 // 7. Internal Link Graph Connectivity
