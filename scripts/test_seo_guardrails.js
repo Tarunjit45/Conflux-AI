@@ -248,6 +248,110 @@ assertTest(
   `Failed on ${relatedArticleFails} articles`
 );
 
+// 11. Technical SEO 5-URL Comprehensive Validation Checklist
+const representativeSlugs = [
+  'generative-engine-optimization-geo-ranking-guide-2026-google-ai-gemini',
+  'speed-to-lead-whatsapp-business-api-sales-automation-lead-qualification-2026',
+  'enterprise-ai-agents-secure-rag-workflows-operational-automation-2026',
+  'mukutmanipur-jhilimili-ecotourism-homestays-boat-safari-sabai-crafts-whatsapp-booking',
+  'santipur-phulia-saree-durga-puja-whatsapp-bulk-booking'
+];
+
+console.log('\n--- Running 5 Representative URLs Deep Inspection ---');
+
+representativeSlugs.forEach((slug, idx) => {
+  const article = articles.find(a => a.slug === slug);
+  const articleDir = path.resolve(rootDir, `dist/blog/${slug}`);
+  const htmlFile = path.resolve(articleDir, 'index.html');
+  const fileExists = fs.existsSync(htmlFile);
+
+  assertTest(
+    `[URL ${idx + 1}: /blog/${slug}] Server-rendered HTML file exists in dist/`,
+    fileExists
+  );
+
+  if (fileExists) {
+    const html = fs.readFileSync(htmlFile, 'utf8');
+
+    // 1. Canonical tag
+    const canonicalExpected = `https://confluxai.in/blog/${slug}`;
+    assertTest(
+      `[URL ${idx + 1}] Self-referencing canonical tag is strictly set to ${canonicalExpected}`,
+      html.includes(`<link rel="canonical" href="${canonicalExpected}"`)
+    );
+
+    // 2. Title & Meta Description
+    assertTest(
+      `[URL ${idx + 1}] <title> and meta description exist and match article`,
+      html.includes('<title>') && html.includes('name="description"')
+    );
+
+    // 3. Single H1 heading
+    const h1Count = (html.match(/<h1[\s>]/g) || []).length;
+    assertTest(
+      `[URL ${idx + 1}] Exactly one single <h1> element exists in initial HTML`,
+      h1Count === 1,
+      `Found ${h1Count} <h1> tags`
+    );
+
+    // 4. Semantic article structure & Breadcrumb navigation
+    assertTest(
+      `[URL ${idx + 1}] Semantic <article> and visible breadcrumb navigation exist`,
+      html.includes('<article') && html.includes('aria-label="Breadcrumb"')
+    );
+
+    // 5. Author byline & /about link
+    assertTest(
+      `[URL ${idx + 1}] Author byline exists and links to /about`,
+      html.includes('Written by') && html.includes('href="/about"')
+    );
+
+    // 6. Publication & update dates
+    assertTest(
+      `[URL ${idx + 1}] Publication and update dates are clearly presented`,
+      html.includes('Published:') && html.includes('Updated:')
+    );
+
+    // 7. Related Conflux AI Services Cluster
+    assertTest(
+      `[URL ${idx + 1}] Related Conflux AI solutions internal links are present`,
+      html.includes('Related Conflux AI Solutions') &&
+      html.includes('/services/whatsapp-automation') &&
+      html.includes('/services/ai-automation')
+    );
+
+    // 8. Scored Related Articles section
+    assertTest(
+      `[URL ${idx + 1}] Scored related articles section exists with crawlable <a href="/blog/..."> links`,
+      html.includes('Recommended Insights &amp; Related Articles') &&
+      html.includes('href="/blog/')
+    );
+
+    // 9. Article & BreadcrumbList Schema.org JSON-LD
+    assertTest(
+      `[URL ${idx + 1}] Valid Article and BreadcrumbList JSON-LD schemas exist in <head>`,
+      html.includes('"@type":"Article"') &&
+      html.includes('"@type":"BreadcrumbList"') &&
+      html.includes('"publisher"') &&
+      html.includes('"Conflux AI"')
+    );
+
+    // 10. Open Graph & Twitter card metadata
+    assertTest(
+      `[URL ${idx + 1}] Complete Open Graph (og:type=article, og:url, og:image) and Twitter Card tags exist`,
+      html.includes('property="og:type" content="article"') &&
+      html.includes(`property="og:url" content="${canonicalExpected}"`) &&
+      html.includes('name="twitter:card" content="summary_large_image"')
+    );
+
+    // 11. Sitemap presence
+    assertTest(
+      `[URL ${idx + 1}] URL is registered in sitemap.xml`,
+      sitemapUrls.includes(canonicalExpected)
+    );
+  }
+});
+
 console.log('\n======================================================');
 console.log(`TEST SUMMARY: ${passedTests} / ${totalTests} TESTS PASSED`);
 console.log('======================================================\n');

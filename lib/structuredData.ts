@@ -26,15 +26,19 @@ export interface SchemaFAQItem {
 export const generateArticleSchema = (params: SchemaArticleParams) => {
   return {
     "@context": "https://schema.org",
-    "@type": "TechArticle",
+    "@type": "Article",
     "headline": params.title,
     "inLanguage": params.language === 'bn' ? 'bn-IN' : 'en-US',
-    "mainEntityOfPage": `https://confluxai.in/blog/${params.slug}`,
-    "articleSection": params.category || "AI Automation & Local Intelligence",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://confluxai.in/blog/${params.slug}`
+    },
+    "articleSection": params.category || "AI Automation & Digital Strategy",
     "author": {
       "@type": "Person",
       "name": params.authorName || "Tarunjit Biswas",
-      "jobTitle": params.authorRole || "Founder, CEO & CTO, Conflux AI"
+      "jobTitle": params.authorRole || "Founder & Principal Architect, Conflux AI",
+      "url": "https://confluxai.in/about"
     },
     "publisher": {
       "@type": "Organization",

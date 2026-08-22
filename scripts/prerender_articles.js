@@ -37,7 +37,7 @@ const replaceBody = (html, newBodyContent) => {
   return html.substring(0, bodyStart) + `<body>\n${newBodyContent}\n</body>` + html.substring(bodyEnd + 7);
 };
 
-const writePage = (routePath, pageTitle, metaDescription, canonicalUrl, schemas, bodyContent) => {
+const writePage = (routePath, pageTitle, metaDescription, canonicalUrl, schemas, bodyContent, extraMeta = {}) => {
   const targetDir = path.resolve(distDir, routePath.replace(/^\//, ''));
   const targetFile = path.resolve(targetDir, 'index.html');
 
@@ -60,26 +60,79 @@ const writePage = (routePath, pageTitle, metaDescription, canonicalUrl, schemas,
   // Meta Description
   if (html.includes('name="description"')) {
     html = html.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${escapeHtml(metaDescription)}" />`);
+  } else {
+    html = html.replace('</head>', `  <meta name="description" content="${escapeHtml(metaDescription)}" />\n</head>`);
+  }
+
+  // Author Meta
+  if (extraMeta.author) {
+    if (html.includes('name="author"')) {
+      html = html.replace(/<meta name="author"[^>]*>/, `<meta name="author" content="${escapeHtml(extraMeta.author)}" />`);
+    } else {
+      html = html.replace('</head>', `  <meta name="author" content="${escapeHtml(extraMeta.author)}" />\n</head>`);
+    }
   }
 
   // OG & Twitter Meta
+  const ogType = extraMeta.type || (routePath.startsWith('/blog/') && routePath !== '/blog' ? 'article' : 'website');
+  const imageUrl = extraMeta.image || 'https://confluxai.in/logo.png';
+
   if (html.includes('property="og:title"')) {
     html = html.replace(/<meta property="og:title"[^>]*>/, `<meta property="og:title" content="${escapeHtml(pageTitle)}" />`);
+  } else {
+    html = html.replace('</head>', `  <meta property="og:title" content="${escapeHtml(pageTitle)}" />\n</head>`);
   }
+
   if (html.includes('property="og:description"')) {
     html = html.replace(/<meta property="og:description"[^>]*>/, `<meta property="og:description" content="${escapeHtml(metaDescription)}" />`);
+  } else {
+    html = html.replace('</head>', `  <meta property="og:description" content="${escapeHtml(metaDescription)}" />\n</head>`);
   }
+
   if (html.includes('property="og:url"')) {
     html = html.replace(/<meta property="og:url"[^>]*>/, `<meta property="og:url" content="${canonicalUrl}" />`);
+  } else {
+    html = html.replace('</head>', `  <meta property="og:url" content="${canonicalUrl}" />\n</head>`);
   }
+
+  if (html.includes('property="og:type"')) {
+    html = html.replace(/<meta property="og:type"[^>]*>/, `<meta property="og:type" content="${ogType}" />`);
+  } else {
+    html = html.replace('</head>', `  <meta property="og:type" content="${ogType}" />\n</head>`);
+  }
+
+  if (html.includes('property="og:image"')) {
+    html = html.replace(/<meta property="og:image"[^>]*>/, `<meta property="og:image" content="${imageUrl}" />`);
+  } else {
+    html = html.replace('</head>', `  <meta property="og:image" content="${imageUrl}" />\n</head>`);
+  }
+
   if (html.includes('property="twitter:title"')) {
     html = html.replace(/<meta property="twitter:title"[^>]*>/, `<meta property="twitter:title" content="${escapeHtml(pageTitle)}" />`);
+  } else {
+    html = html.replace('</head>', `  <meta property="twitter:title" content="${escapeHtml(pageTitle)}" />\n</head>`);
   }
+
   if (html.includes('property="twitter:description"')) {
     html = html.replace(/<meta property="twitter:description"[^>]*>/, `<meta property="twitter:description" content="${escapeHtml(metaDescription)}" />`);
+  } else {
+    html = html.replace('</head>', `  <meta property="twitter:description" content="${escapeHtml(metaDescription)}" />\n</head>`);
   }
+
   if (html.includes('property="twitter:url"')) {
     html = html.replace(/<meta property="twitter:url"[^>]*>/, `<meta property="twitter:url" content="${canonicalUrl}" />`);
+  } else {
+    html = html.replace('</head>', `  <meta property="twitter:url" content="${canonicalUrl}" />\n</head>`);
+  }
+
+  if (html.includes('property="twitter:image"')) {
+    html = html.replace(/<meta property="twitter:image"[^>]*>/, `<meta property="twitter:image" content="${imageUrl}" />`);
+  } else {
+    html = html.replace('</head>', `  <meta property="twitter:image" content="${imageUrl}" />\n</head>`);
+  }
+
+  if (!html.includes('name="twitter:card"')) {
+    html = html.replace('</head>', `  <meta name="twitter:card" content="summary_large_image" />\n</head>`);
   }
 
   // Schemas
@@ -180,15 +233,19 @@ articles.forEach(article => {
 
   const articleSchema = {
     "@context": "https://schema.org",
-    "@type": "TechArticle",
+    "@type": "Article",
     "headline": article.title,
     "inLanguage": article.language === 'bn' ? 'bn-IN' : 'en-US',
-    "mainEntityOfPage": canonicalUrl,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": canonicalUrl
+    },
     "articleSection": article.category || "AI Automation & Local Intelligence",
     "author": {
       "@type": "Person",
       "name": authorName,
-      "jobTitle": authorRole
+      "jobTitle": authorRole,
+      "url": "https://confluxai.in/about"
     },
     "publisher": {
       "@type": "Organization",
@@ -269,20 +326,24 @@ articles.forEach(article => {
 
   const primaryDistrict = currentDistricts.find(d => d !== 'statewide');
 
+  const formattedPubDate = new Date(publishedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const formattedUpdDate = new Date(updatedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
   const serverRenderedBody = `
   <div id="root">
     <header style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
       <div style="max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
         <a href="/" style="font-size: 18px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
         <nav style="font-size: 13px; font-weight: 700;">
-          <a href="/blog" style="color: #2563eb; text-decoration: none; margin-right: 16px;">&larr; Back to Knowledge Base</a>
-          ${primaryDistrict ? `<a href="/locations/west-bengal/${primaryDistrict}" style="color: #475569; text-decoration: none;">${escapeHtml(primaryDistrict)} District Hub</a>` : ''}
+          <a href="/blog" style="color: #2563eb; text-decoration: none; margin-right: 16px;">&larr; Back to Blog</a>
+          <a href="/about" style="color: #475569; text-decoration: none; margin-right: 16px;">About Conflux AI</a>
+          ${primaryDistrict ? `<a href="/locations/west-bengal/${primaryDistrict}" style="color: #475569; text-decoration: none;">${escapeHtml(primaryDistrict)} Hub</a>` : ''}
         </nav>
       </div>
     </header>
     <article class="conflux-prerendered-content" style="max-width: 900px; margin: 0 auto; padding: 40px 20px; font-family: 'Inter', sans-serif;">
-      <nav aria-label="Breadcrumbs" style="font-size: 12px; margin-bottom: 20px; color: #64748b;">
-        <a href="/" style="color: #2563eb; text-decoration: none;">Home</a> &gt; <a href="/blog" style="color: #2563eb; text-decoration: none;">Knowledge Base</a> ${primaryDistrict ? `&gt; <a href="/locations/west-bengal/${primaryDistrict}" style="color: #2563eb; text-decoration: none;">${escapeHtml(primaryDistrict)}</a>` : ''} &gt; <span style="color: #0f172a;">${escapeHtml(article.title)}</span>
+      <nav aria-label="Breadcrumb" style="font-size: 12px; margin-bottom: 20px; color: #64748b;">
+        <a href="/" style="color: #2563eb; text-decoration: none;">Home</a> &gt; <a href="/blog" style="color: #2563eb; text-decoration: none;">Blog</a> ${primaryDistrict ? `&gt; <a href="/locations/west-bengal/${primaryDistrict}" style="color: #2563eb; text-decoration: none;">${escapeHtml(primaryDistrict)}</a>` : ''} &gt; <span style="color: #0f172a;">${escapeHtml(article.title)}</span>
       </nav>
       <header style="margin-bottom: 30px;">
         <div style="font-size: 11px; text-transform: uppercase; color: #2563eb; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
@@ -293,9 +354,9 @@ articles.forEach(article => {
         <h1 style="font-size: 34px; font-weight: 900; color: #0f172a; line-height: 1.2; margin-bottom: 16px;">
           ${escapeHtml(article.title)}
         </h1>
-        <div style="font-size: 13px; color: #475569; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 12px 0; display: flex; justify-content: space-between; align-items: center;">
-          <span>By <strong>${escapeHtml(authorName)}</strong> (${escapeHtml(authorRole)})</span>
-          <span>Published: ${new Date(publishedDate).toLocaleDateString()}</span>
+        <div style="font-size: 13px; color: #475569; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 12px 0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;">
+          <span>Written by <a href="/about" style="color: #2563eb; font-weight: 700; text-decoration: underline;">${escapeHtml(authorName)}</a> (${escapeHtml(authorRole)})</span>
+          <span style="font-size: 12px; color: #64748b;">Published: <strong>${formattedPubDate}</strong> &bull; Updated: <strong>${formattedUpdDate}</strong></span>
         </div>
       </header>
       <div class="article-body" style="color: #334155; line-height: 1.8; font-size: 16px; white-space: pre-wrap; font-family: 'Inter', sans-serif;">
@@ -328,13 +389,37 @@ ${escapeHtml(article.content || '')}
       </section>
       ` : ''}
 
+      <!-- INTERNAL LINKING CLUSTERS: CONFLUX AI SOLUTIONS -->
+      <section style="margin-top: 40px; padding: 28px; background: #0f172a; border-radius: 20px; color: white;">
+        <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #60a5fa; letter-spacing: 0.08em; display: block; margin-bottom: 6px;">Connected Digital Capabilities</span>
+        <h3 style="font-size: 20px; font-weight: 900; color: white; margin: 0 0 16px 0;">Related Conflux AI Solutions</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+          <a href="/services/whatsapp-automation" style="background: #1e293b; padding: 14px; border-radius: 12px; text-decoration: none; color: white; border: 1px solid #334155; display: block;">
+            <strong style="color: #38bdf8; font-size: 13px; display: block; margin-bottom: 4px;">WhatsApp Business Automation &rarr;</strong>
+            <span style="font-size: 11px; color: #94a3b8;">Instant lead qualification &amp; 24/7 order bots</span>
+          </a>
+          <a href="/services/ai-automation" style="background: #1e293b; padding: 14px; border-radius: 12px; text-decoration: none; color: white; border: 1px solid #334155; display: block;">
+            <strong style="color: #38bdf8; font-size: 13px; display: block; margin-bottom: 4px;">Enterprise AI Automation &rarr;</strong>
+            <span style="font-size: 11px; color: #94a3b8;">Autonomous business workflows &amp; CRM sync</span>
+          </a>
+          <a href="/services/website-development" style="background: #1e293b; padding: 14px; border-radius: 12px; text-decoration: none; color: white; border: 1px solid #334155; display: block;">
+            <strong style="color: #38bdf8; font-size: 13px; display: block; margin-bottom: 4px;">High-Performance Web Platforms &rarr;</strong>
+            <span style="font-size: 11px; color: #94a3b8;">Sub-second speed &amp; search optimized</span>
+          </a>
+          <a href="/services/seo-geo" style="background: #1e293b; padding: 14px; border-radius: 12px; text-decoration: none; color: white; border: 1px solid #334155; display: block;">
+            <strong style="color: #38bdf8; font-size: 13px; display: block; margin-bottom: 4px;">SEO &amp; GEO Optimization &rarr;</strong>
+            <span style="font-size: 11px; color: #94a3b8;">Rank #1 on Google AI, Perplexity &amp; Gemini</span>
+          </a>
+        </div>
+      </section>
+
       <!-- DYNAMIC RELATED ARTICLES SECTION -->
       ${relatedArticles.length > 0 ? `
       <section style="margin-top: 48px; padding-top: 32px; border-top: 2px solid #e2e8f0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <div>
             <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #2563eb; letter-spacing: 0.08em; display: block; margin-bottom: 4px;">Topical Intelligence</span>
-            <h3 style="font-size: 22px; font-weight: 900; color: #0f172a; margin: 0;">Recommended Insights &amp; Related Posts</h3>
+            <h3 style="font-size: 22px; font-weight: 900; color: #0f172a; margin: 0;">Recommended Insights &amp; Related Articles</h3>
           </div>
           <a href="/blog" style="font-size: 12px; font-weight: 800; color: #2563eb; text-decoration: none;">View All &rarr;</a>
         </div>
@@ -372,7 +457,11 @@ ${escapeHtml(article.content || '')}
   </div>
 `;
 
-  writePage(`/blog/${slug}`, title, description, canonicalUrl, schemas, serverRenderedBody);
+  writePage(`/blog/${slug}`, title, description, canonicalUrl, schemas, serverRenderedBody, {
+    type: 'article',
+    author: authorName,
+    image: imageUrl
+  });
   articleCount++;
 });
 
