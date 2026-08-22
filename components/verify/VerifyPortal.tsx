@@ -192,6 +192,100 @@ export const VerifyPortal: React.FC = () => {
           </div>
         )}
 
+        {/* Methodology & Guides Section */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900">
+                Verification Methodology &amp; Educational Guides
+              </h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Learn how Conflux Verify evaluates statutory provenance, handles record absence, and avoids false corroboration.
+              </p>
+            </div>
+            <Link
+              to="/verify/methodology"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 shrink-0"
+            >
+              Read Full Methodology <ArrowRight size={14} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-6">
+            <Link
+              to="/verify/guides/how-to-verify-indian-company-legal-existence"
+              className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-blue-500 hover:bg-blue-50/20 transition-all text-xs group"
+            >
+              <span className="font-bold text-slate-900 block mb-1 group-hover:text-blue-600 transition-colors">
+                Verify MCA Legal Existence
+              </span>
+              <span className="text-slate-500">
+                Decode 21-character CIN syntax and active ROC master records.
+              </span>
+            </Link>
+
+            <Link
+              to="/verify/guides/how-to-verify-gst-udyam-registration"
+              className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-blue-500 hover:bg-blue-50/20 transition-all text-xs group"
+            >
+              <span className="font-bold text-slate-900 block mb-1 group-hover:text-blue-600 transition-colors">
+                Verify GSTIN &amp; MSME Udyam
+              </span>
+              <span className="text-slate-500">
+                Inspect 15-digit GSTIN tax standing and 19-digit Udyam classifications.
+              </span>
+            </Link>
+
+            <Link
+              to="/verify/guides/how-to-verify-iso-certificate"
+              className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-blue-500 hover:bg-blue-50/20 transition-all text-xs group"
+            >
+              <span className="font-bold text-slate-900 block mb-1 group-hover:text-blue-600 transition-colors">
+                Verify ISO Certificates
+              </span>
+              <span className="text-slate-500">
+                Detect unaccredited certificate mills using IAF CertSearch.
+              </span>
+            </Link>
+
+            <Link
+              to="/verify/guides/how-to-check-expired-certification"
+              className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-blue-500 hover:bg-blue-50/20 transition-all text-xs group"
+            >
+              <span className="font-bold text-slate-900 block mb-1 group-hover:text-blue-600 transition-colors">
+                Check Expired Certifications
+              </span>
+              <span className="text-slate-500">
+                Track 3-year expiration cycles and surveillance audit milestones.
+              </span>
+            </Link>
+
+            <Link
+              to="/verify/guides/active-vs-struck-off-company"
+              className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-blue-500 hover:bg-blue-50/20 transition-all text-xs group"
+            >
+              <span className="font-bold text-slate-900 block mb-1 group-hover:text-blue-600 transition-colors">
+                Active vs Struck-Off Company
+              </span>
+              <span className="text-slate-500">
+                Legal implications of Section 248 MCA statutory closures.
+              </span>
+            </Link>
+
+            <Link
+              to="/verify/guides/company-not-found-does-not-mean-fake"
+              className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-blue-500 hover:bg-blue-50/20 transition-all text-xs group"
+            >
+              <span className="font-bold text-slate-900 block mb-1 group-hover:text-blue-600 transition-colors">
+                Absence ≠ Contradiction Guide
+              </span>
+              <span className="text-slate-500">
+                Why a missing database record does not imply fraud.
+              </span>
+            </Link>
+          </div>
+        </div>
+
         {/* Informational Footer Explaining Trust Model */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8 border-t border-slate-200 text-slate-600 text-xs">
           <div>

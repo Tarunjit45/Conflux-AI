@@ -34,6 +34,17 @@ const Footer: React.FC<{ siteLogo: string | null }> = ({ siteLogo }) => {
         { name: "FAQ", path: "/faq" },
         { name: "Authority Signals", path: "/authority" }
       ]
+    },
+    {
+      title: "Verification",
+      links: [
+        { name: "Conflux Verify Portal", path: "/verify" },
+        { name: "Evidence Methodology", path: "/verify/methodology" },
+        { name: "Verify Indian Company", path: "/verify/guides/how-to-verify-indian-company-legal-existence" },
+        { name: "Verify GST & Udyam", path: "/verify/guides/how-to-verify-gst-udyam-registration" },
+        { name: "Verify ISO Certificate", path: "/verify/guides/how-to-verify-iso-certificate" },
+        { name: "Absence ≠ Fake Guide", path: "/verify/guides/company-not-found-does-not-mean-fake" }
+      ]
     }
   ];
 

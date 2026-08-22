@@ -30,8 +30,42 @@ import RuralDigitalSolutionsPage from './components/services/RuralDigitalSolutio
 import LocationCoverageDashboard from './components/admin/LocationCoverageDashboard';
 import NotFoundPage from './components/NotFoundPage';
 import VerifyPortal from './components/verify/VerifyPortal';
+import MethodologyPage from './components/verify/MethodologyPage';
+import VerifyGuideDetailPage from './components/verify/guides/VerifyGuideDetailPage';
 
 const routeMeta: Record<string, { title: string; description: string }> = {
+  '/verify/methodology': {
+    title: 'Conflux Verify Methodology & Evidence Standards | Conflux AI',
+    description: 'Deterministic evidence evaluation framework for business claims against primary statutory registries, MCA master data, GSTIN, and accredited ISO repositories.'
+  },
+  '/verify/guides/how-to-verify-indian-company-legal-existence': {
+    title: 'How to Verify Indian Company Legal Existence (MCA Master Data Guide) | Conflux AI',
+    description: 'Step-by-step guide to verifying an Indian company’s legal existence, 21-character CIN syntax, active ROC status, and incorporation dockets on MCA Master Data.'
+  },
+  '/verify/guides/how-to-verify-gst-udyam-registration': {
+    title: 'How to Verify GSTIN & MSME Udyam Registration in India | Conflux AI',
+    description: 'Learn how to verify 15-digit GSTIN tax numbers and 19-digit MSME Udyam registration certificates using official government portals.'
+  },
+  '/verify/guides/how-to-verify-iso-certificate': {
+    title: 'How to Verify an ISO 9001 / 27001 Certificate (IAF CertSearch Guide) | Conflux AI',
+    description: 'Learn how to detect unaccredited certificate mills and verify authentic ISO 9001, ISO 14001, and ISO 27001 certifications via the IAF CertSearch database.'
+  },
+  '/verify/guides/how-to-check-expired-certification': {
+    title: 'How to Check Expired & Lapsed Certifications (Temporal Validity Guide) | Conflux AI',
+    description: 'Understand how temporal validity affects ISO accreditations, government licenses, and compliance claims, and learn how to identify lapsed certifications.'
+  },
+  '/verify/guides/active-vs-struck-off-company': {
+    title: 'Active vs Struck-Off Company: Legal Differences & Verification | Conflux AI',
+    description: 'Understand the legal consequences of MCA Section 248 Strike-Off status, and learn why struck-off companies cannot enter into enforceable commercial contracts.'
+  },
+  '/verify/guides/company-not-found-does-not-mean-fake': {
+    title: 'Why "Company Not Found" Does Not Mean Fake (Absence ≠ Contradiction) | Conflux AI',
+    description: 'Learn why the absence of a record in a single database does not prove a business is fake, and understand Conflux Verify’s core principle: Absence ≠ Contradiction.'
+  },
+  '/verify': {
+    title: 'Conflux Verify | Bounded Business Claim & Evidence Verification Engine',
+    description: 'Evaluate corporate legal existence, statutory GSTIN/Udyam registrations, and accredited certifications through deterministic verification and live registrar lookup.'
+  },
   '/services/digital-solutions-west-bengal': {
     title: 'Digital Solutions for Businesses Across West Bengal | Conflux AI',
     description: 'Conflux AI provides remote-first digital solutions, website development, WhatsApp automation, and AI chatbots for small and medium businesses across West Bengal.'
@@ -179,10 +213,6 @@ const routeMeta: Record<string, { title: string; description: string }> = {
   '/admin/cms': {
     title: 'Admin CMS | Conflux AI',
     description: 'Internal content management system for Conflux AI.'
-  },
-  '/verify': {
-    title: 'Business Claim & Evidence Verification | Conflux Verify',
-    description: 'Investigate and verify business claims against primary registrars, first-party filings, and authoritative evidence sources.'
   }
 };
 
@@ -319,6 +349,8 @@ const App: React.FC = () => {
         <Route path="/locations/west-bengal/:citySlug/:industrySlug" element={<IndustryLocationPage />} />
         <Route path="/thank-you" element={<ThankYouPage />} />
         <Route path="/verify" element={<VerifyPortal />} />
+        <Route path="/verify/methodology" element={<MethodologyPage />} />
+        <Route path="/verify/guides/:guideSlug" element={<VerifyGuideDetailPage />} />
         <Route path="/verify/:entitySlug/:claimSlug" element={<VerifyPortal />} />
         <Route path="/admin/cms" element={<AdminCMS />} />
         <Route path="/admin/location-coverage" element={<LocationCoverageDashboard />} />

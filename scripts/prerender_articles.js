@@ -1235,6 +1235,173 @@ const staticPages = [
       </main>
     </div>
     `
+  },
+  {
+    path: '/verify/methodology',
+    title: 'Conflux Verify Methodology & Evidence Standards | Conflux AI',
+    desc: 'Deterministic evidence evaluation framework for business claims against primary statutory registries, MCA master data, GSTIN, and accredited ISO repositories.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/verify" style="margin: 0 10px; color: #475569; text-decoration: none;">Verify</a>
+            <a href="/verify/methodology" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Methodology</a>
+            <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <div style="display: inline-block; background: #eff6ff; color: #2563eb; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 16px; border: 1px solid #dbeafe;">
+          Bounded Epistemic Architecture
+        </div>
+        <h1 style="font-size: 38px; font-weight: 900; color: #0f172a; line-height: 1.15; margin-bottom: 16px;">Conflux Verify Methodology & Evidence Standards</h1>
+        <p style="font-size: 18px; color: #475569; line-height: 1.6; margin-bottom: 32px;">
+          A deterministic evidence and verification framework designed to evaluate business assertions against primary statutory registries, accredited bodies, and verifiable provenance records.
+        </p>
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Core Safety Invariants</h2>
+          <ul style="font-size: 14px; color: #475569; line-height: 1.8; margin-left: 20px;">
+            <li><strong>Absence ≠ Contradiction:</strong> Missing records produce INSUFFICIENT_EVIDENCE, never false fraud labels.</li>
+            <li><strong>Network Failure ≠ Evidence:</strong> HTTP timeouts and drops degrade safely to UNVERIFIED.</li>
+            <li><strong>First-Party ≠ Independent:</strong> Self-disclosures require third-party registrar corroboration.</li>
+            <li><strong>Ambiguous Entity ≠ Verified:</strong> Generic trade names require exact registration identifiers.</li>
+            <li><strong>Expired ≠ Active:</strong> Lapsed historical certifications return OUTDATED status.</li>
+          </ul>
+        </div>
+        <div style="margin-top: 32px; text-align: center;">
+          <a href="/verify" style="display: inline-block; background: #2563eb; color: white; padding: 14px 28px; border-radius: 12px; font-weight: 800; text-decoration: none; font-size: 14px;">
+            Open Conflux Verify Portal &rarr;
+          </a>
+        </div>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/verify/guides/how-to-verify-indian-company-legal-existence',
+    title: 'How to Verify Indian Company Legal Existence (MCA Master Data Guide) | Conflux AI',
+    desc: 'Step-by-step guide to verifying an Indian company’s legal existence, 21-character CIN syntax, active ROC status, and incorporation dockets on MCA Master Data.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/verify" style="margin: 0 10px; color: #475569; text-decoration: none;">Verify</a>
+            <a href="/verify/methodology" style="margin: 0 10px; color: #475569; text-decoration: none;">Methodology</a>
+            <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 850px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; line-height: 1.15; margin-bottom: 16px;">How to Verify Indian Company Legal Existence</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 32px;">
+          Learn how to inspect 21-character Corporate Identity Numbers (CIN), check active Registrar of Companies (ROC) standing, and evaluate legal existence on mca.gov.in.
+        </p>
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
+          <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 12px;">Verification Protocol</h2>
+          <p style="font-size: 14px; color: #475569; line-height: 1.6;">1. Query MCA Master Data portal at mca.gov.in. 2. Verify CIN format and state ROC code. 3. Confirm Company Status is 'Active' rather than 'Strike Off' or 'Dissolved'.</p>
+        </div>
+        <a href="/verify" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 14px;">
+          Verify a Company on Conflux Verify &rarr;
+        </a>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/verify/guides/how-to-verify-gst-udyam-registration',
+    title: 'How to Verify GSTIN & MSME Udyam Registration in India | Conflux AI',
+    desc: 'Learn how to verify 15-digit GSTIN tax numbers and 19-digit MSME Udyam registration certificates using official government portals.',
+    body: `
+    <div id="root">
+      <main style="max-width: 850px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; line-height: 1.15; margin-bottom: 16px;">How to Verify GSTIN & MSME Udyam Registration</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 32px;">
+          Comprehensive guide to validating 15-digit GSTIN tax standing and 19-digit Udyam manufacturing certificates across Indian state jurisdictions.
+        </p>
+        <a href="/verify" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 14px;">
+          Open Conflux Verify &rarr;
+        </a>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/verify/guides/how-to-verify-iso-certificate',
+    title: 'How to Verify an ISO 9001 / 27001 Certificate (IAF CertSearch Guide) | Conflux AI',
+    desc: 'Learn how to detect unaccredited certificate mills and verify authentic ISO 9001, ISO 14001, and ISO 27001 certifications via the IAF CertSearch database.',
+    body: `
+    <div id="root">
+      <main style="max-width: 850px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; line-height: 1.15; margin-bottom: 16px;">How to Verify an ISO 9001 / 27001 Certificate</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 32px;">
+          Detect unaccredited certificate mills by validating accredited certification bodies against the International Accreditation Forum (IAF) CertSearch database.
+        </p>
+        <a href="/verify" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 14px;">
+          Open Conflux Verify &rarr;
+        </a>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/verify/guides/how-to-check-expired-certification',
+    title: 'How to Check Expired & Lapsed Certifications (Temporal Validity Guide) | Conflux AI',
+    desc: 'Understand how temporal validity affects ISO accreditations, government licenses, and compliance claims, and learn how to identify lapsed certifications.',
+    body: `
+    <div id="root">
+      <main style="max-width: 850px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; line-height: 1.15; margin-bottom: 16px;">How to Check Expired & Lapsed Certifications</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 32px;">
+          Understand 3-year certification cycles, surveillance audits, and why historical compliance differs from active legal standing.
+        </p>
+        <a href="/verify" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 14px;">
+          Open Conflux Verify &rarr;
+        </a>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/verify/guides/active-vs-struck-off-company',
+    title: 'Active vs Struck-Off Company: Legal Differences & Verification | Conflux AI',
+    desc: 'Understand the legal consequences of MCA Section 248 Strike-Off status, and learn why struck-off companies cannot enter into enforceable commercial contracts.',
+    body: `
+    <div id="root">
+      <main style="max-width: 850px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; line-height: 1.15; margin-bottom: 16px;">Active vs Struck-Off Company: Legal Differences</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 32px;">
+          Explore Section 248 of the Companies Act, 2013 and understand why struck-off corporate shells lose commercial contracting capacity.
+        </p>
+        <a href="/verify" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 14px;">
+          Open Conflux Verify &rarr;
+        </a>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/verify/guides/company-not-found-does-not-mean-fake',
+    title: 'Why "Company Not Found" Does Not Mean Fake (Absence ≠ Contradiction) | Conflux AI',
+    desc: 'Learn why the absence of a record in a single database does not prove a business is fake, and understand Conflux Verify’s core principle: Absence ≠ Contradiction.',
+    body: `
+    <div id="root">
+      <main style="max-width: 850px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; line-height: 1.15; margin-bottom: 16px;">Why "Company Not Found" Does Not Mean Fake</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 32px;">
+          Learn why database absence, unindexed proprietorships, and search timeouts must never be treated as fraud.
+        </p>
+        <a href="/verify" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 14px;">
+          Open Conflux Verify &rarr;
+        </a>
+      </main>
+    </div>
+    `
   }
 ];
 
