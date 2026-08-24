@@ -346,6 +346,67 @@ representativeSlugs.forEach((slug, idx) => {
   }
 });
 
+// 12. Fixed Core Static Routes Prerender & Single H1 Guardrails
+const fixedStaticRoutes = [
+  { path: '/creative', expectedH1: 'Digital Creative Suite' },
+  { path: '/impact', expectedH1: 'Client Impact & Growth Metrics' },
+  { path: '/portfolio', expectedH1: 'Selected Client Work & Case Studies' },
+  { path: '/work', expectedH1: 'Selected Client Work & Case Studies' },
+  { path: '/careers', expectedH1: 'Careers & Engineering Opportunities' },
+  { path: '/authority', expectedH1: 'Technical Authority & Security Standards' },
+  { path: '/semantic-map', expectedH1: 'Generative Engine Optimization & Semantic Map' }
+];
+
+console.log('\n--- Running Fixed Static Routes Inspection ---');
+
+fixedStaticRoutes.forEach(route => {
+  const rel = route.path.replace(/^\//, '');
+  const htmlFile = path.resolve(rootDir, `dist/${rel}/index.html`);
+  const fileExists = fs.existsSync(htmlFile);
+
+  assertTest(
+    `[Static Route: ${route.path}] Server-rendered HTML file exists in dist/`,
+    fileExists
+  );
+
+  if (fileExists) {
+    const html = fs.readFileSync(htmlFile, 'utf8');
+    const canonicalExpected = `https://confluxai.in${route.path}`;
+
+    // Canonical
+    assertTest(
+      `[Static Route: ${route.path}] Self-referencing canonical tag is strictly set to ${canonicalExpected}`,
+      html.includes(`<link rel="canonical" href="${canonicalExpected}"`)
+    );
+
+    // Title & Meta Description
+    assertTest(
+      `[Static Route: ${route.path}] <title> and meta description exist`,
+      html.includes('<title>') && html.includes('name="description"')
+    );
+
+    // Exactly one H1
+    const h1Matches = [...html.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/gi)];
+    assertTest(
+      `[Static Route: ${route.path}] Exactly one single <h1> element exists in initial HTML`,
+      h1Matches.length === 1,
+      `Found ${h1Matches.length} <h1> tags`
+    );
+
+    // No accidental noindex
+    assertTest(
+      `[Static Route: ${route.path}] No accidental noindex present`,
+      !html.includes('noindex')
+    );
+
+    // Registered in sitemap
+    assertTest(
+      `[Static Route: ${route.path}] URL is registered in sitemap.xml`,
+      sitemapUrls.includes(canonicalExpected)
+    );
+  }
+});
+
 console.log('\n======================================================');
 console.log(`TEST SUMMARY: ${passedTests} / ${totalTests} TESTS PASSED`);
 console.log('======================================================\n');

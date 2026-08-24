@@ -1710,6 +1710,328 @@ const staticPages = [
       </main>
     </div>
     `
+  },
+  {
+    path: '/creative',
+    title: 'Creative Suite & Video Editing Services | Conflux AI',
+    desc: 'High-impact video editing, social media management, graphic design, and retention-focused creative direction by Conflux AI.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/services" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
+            <a href="/creative" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Creative</a>
+            <a href="/work" style="margin: 0 10px; color: #475569; text-decoration: none;">Work</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 40px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">Digital Creative Suite</h1>
+        <p style="font-size: 18px; color: #475569; line-height: 1.6; margin-bottom: 36px;">
+          Premium visual assets, high-retention video editing, graphic design, and strategic branding that gives your business an unfair advantage in the attention economy.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 36px;">
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">High-Retention Video Editing</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Short-form and long-form video production, motion graphics, and retention-engineered pacing for commercial reach.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Brand Identity & UI Design</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Precision graphic design, high-converting thumbnails, social media creatives, and cohesive visual systems.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Social Media Growth Strategy</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Data-backed content distribution, audience engagement workflows, and continuous brand narrative scaling.</p>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="/contact" style="display: inline-block; background: #2563eb; color: white; padding: 14px 28px; border-radius: 12px; font-weight: 800; text-decoration: none; font-size: 14px;">
+            Book Creative Consultation &rarr;
+          </a>
+        </div>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/impact',
+    title: 'Client Impact & Growth Metrics | Conflux AI',
+    desc: 'See how Conflux AI delivers measurable ROI, autonomous workflows, and accelerated growth for modern enterprises.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/services" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
+            <a href="/impact" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Impact</a>
+            <a href="/work" style="margin: 0 10px; color: #475569; text-decoration: none;">Work</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 40px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">Client Impact & Growth Metrics</h1>
+        <p style="font-size: 18px; color: #475569; line-height: 1.6; margin-bottom: 36px;">
+          Scaling reach, fostering trust, and driving measurable social transformation through intelligent automation, autonomous lead pipelines, and community engagement.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 36px;">
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Empowerment</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Providing autonomous tools and digital infrastructure that allow local MSMEs and regional enterprises to compete on a global scale.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Transparency</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Building deterministic systems and verification engines that are open, auditable, and verifiable for every enterprise partner.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Innovation</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Pushing the boundaries of agentic AI workflows, sub-second web platforms, and generative search visibility.</p>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="/contact" style="display: inline-block; background: #2563eb; color: white; padding: 14px 28px; border-radius: 12px; font-weight: 800; text-decoration: none; font-size: 14px;">
+            Partner for Impact &rarr;
+          </a>
+        </div>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/portfolio',
+    title: 'Selected Client Work & Case Studies | Conflux AI',
+    desc: 'View live client projects, screen video demos, and visual web applications built by Conflux AI across e-commerce, hospitality, and consultancy.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/services" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
+            <a href="/work" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Work</a>
+            <a href="/locations" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 40px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">Selected Client Work & Case Studies</h1>
+        <p style="font-size: 18px; color: #475569; line-height: 1.6; margin-bottom: 36px;">
+          A curated selection of high-impact AI implementations, visual web applications, and growth strategies engineered by Conflux AI across e-commerce, hospitality, and consultancy.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 36px;">
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">AURA — Luxury Brand Platform</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">High-performance digital luxury experience featuring 3D product previews and automated WhatsApp inquiries.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">AURUM — High-Converting E-Commerce</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Sub-second product catalog with frictionless UPI payments and automated WhatsApp order dispatch.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Joy Consultancy — Enterprise Lead Engine</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Automated appointment booking and intelligent prospect qualification pipeline.</p>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="/contact" style="display: inline-block; background: #2563eb; color: white; padding: 14px 28px; border-radius: 12px; font-weight: 800; text-decoration: none; font-size: 14px;">
+            Launch Your Project &rarr;
+          </a>
+        </div>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/work',
+    title: 'Selected Client Work & Case Studies | Conflux AI',
+    desc: 'View live client projects, screen video demos, and visual web applications built by Conflux AI across e-commerce, hospitality, and consultancy.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/services" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
+            <a href="/work" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Work</a>
+            <a href="/locations" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 40px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">Selected Client Work & Case Studies</h1>
+        <p style="font-size: 18px; color: #475569; line-height: 1.6; margin-bottom: 36px;">
+          A curated selection of high-impact AI implementations, visual web applications, and growth strategies engineered by Conflux AI across e-commerce, hospitality, and consultancy.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 36px;">
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">AURA — Luxury Brand Platform</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">High-performance digital luxury experience featuring 3D product previews and automated WhatsApp inquiries.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">AURUM — High-Converting E-Commerce</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Sub-second product catalog with frictionless UPI payments and automated WhatsApp order dispatch.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Joy Consultancy — Enterprise Lead Engine</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Automated appointment booking and intelligent prospect qualification pipeline.</p>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="/contact" style="display: inline-block; background: #2563eb; color: white; padding: 14px 28px; border-radius: 12px; font-weight: 800; text-decoration: none; font-size: 14px;">
+            Launch Your Project &rarr;
+          </a>
+        </div>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/careers',
+    title: 'Careers & Engineering Opportunities | Join Conflux AI',
+    desc: 'Join Conflux AI in building next-generation AI automation, web infrastructure, and generative engine optimization tools.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/services" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
+            <a href="/careers" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Careers</a>
+            <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 40px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">Careers & Engineering Opportunities</h1>
+        <p style="font-size: 18px; color: #475569; line-height: 1.6; margin-bottom: 36px;">
+          We are a high-performance engineering team of AI architects, full-stack developers, and growth strategists building autonomous systems and next-generation web platforms.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 36px;">
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Autonomous First</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">We build self-healing, intelligent microservices and workflows that execute 24/7 with zero manual overhead.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">High Impact</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Every line of code directly drives measurable client throughput, revenue growth, and conversion acceleration.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Continuous Innovation</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Experimentation with cutting-edge LLMs, multi-agent frameworks, vector indexing, and edge architectures.</p>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="mailto:confluxdotai@gmail.com?subject=Spontaneous Application — Conflux AI Talent Pool" style="display: inline-block; background: #2563eb; color: white; padding: 14px 28px; border-radius: 12px; font-weight: 800; text-decoration: none; font-size: 14px;">
+            Send Portfolio to Talent Pool &rarr;
+          </a>
+        </div>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/authority',
+    title: 'Technical Authority & Security Standards | Conflux AI',
+    desc: 'Review Conflux AI verification signals, security benchmarks, clean web architecture, and data protection standards.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/services" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
+            <a href="/authority" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Authority</a>
+            <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 40px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">Technical Authority & Security Standards</h1>
+        <p style="font-size: 18px; color: #475569; line-height: 1.6; margin-bottom: 36px;">
+          Establishing unshakeable digital authority, entity signals, clean web architectures, and data verification across modern search and AI environments.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 36px;">
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Deterministic Verification</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Multi-tiered validation against statutory registries, MCA master records, GSTIN, and IAF accredited databases.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Security & Performance</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Sub-second TTFB, strict CSP guardrails, input sanitization, and enterprise-grade data isolation.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Entity Graph Signals</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Schema.org JSON-LD knowledge graphs engineered for Google AI Overviews, Perplexity, and ChatGPT citation.</p>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="/contact" style="display: inline-block; background: #2563eb; color: white; padding: 14px 28px; border-radius: 12px; font-weight: 800; text-decoration: none; font-size: 14px;">
+            Claim Your Authority &rarr;
+          </a>
+        </div>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/semantic-map',
+    title: 'Generative Engine Optimization (GEO) & Semantic Map | Conflux AI',
+    desc: 'Learn how Conflux AI optimizes entity graphs and knowledge bases for AI search engines like Gemini, ChatGPT, and Perplexity.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/services" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
+            <a href="/semantic-map" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Semantic Map</a>
+            <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 40px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">Generative Engine Optimization & Semantic Map</h1>
+        <p style="font-size: 18px; color: #475569; line-height: 1.6; margin-bottom: 36px;">
+          Deep ecosystem mapping, entity-relationship graphs, and knowledge connectivity strategies that position modern enterprises for next-generation AI model retrievals.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 36px;">
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Entity-Relationship Mapping</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Mapping relationships between business entities, geographic service areas, and commercial capabilities.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Vector Search & RAG Ready</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Structuring unstructured business data for high-accuracy embedding retrieval by AI search bots.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Knowledge Graph Optimization</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Nested JSON-LD schemas linking Organization, Services, Locations, FAQs, and Authoritative citations.</p>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="/contact" style="display: inline-block; background: #2563eb; color: white; padding: 14px 28px; border-radius: 12px; font-weight: 800; text-decoration: none; font-size: 14px;">
+            Start Semantic Mapping &rarr;
+          </a>
+        </div>
+      </main>
+    </div>
+    `
   }
 ];
 
