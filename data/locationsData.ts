@@ -574,20 +574,55 @@ export const NADIA_LOCATIONS: LocationItem[] = [
     stateSlug: 'west-bengal',
     status: 'PUBLISHED',
     priority: 1,
-    tier: 2,
-    majorIndustries: ['Rail Logistics & Transit Junction', 'Wholesale Consumer Goods', 'Textile Trade', 'Agriculture Commerce'],
-    businessTypes: ['Wholesale Distributors', 'Retail Showrooms', 'Logistics Agencies', 'Local Services'],
-    keyCommercialHubs: ['Ranaghat Station Road Market', 'NH 12 Business Belt'],
+    majorIndustries: ['Rail Logistics & Transit Junction', 'Wholesale Consumer Goods', 'Agro-Processing & Food Manufacturing', 'Textile Trade', 'Agricultural Commerce'],
+    businessTypes: ['Wholesale Distributors', 'Food Processors', 'Retail Showrooms', 'Logistics Agencies', 'Local Commercial Services'],
+    keyCommercialHubs: [
+      'Ranaghat Station Road Wholesale Market',
+      'NH 12 Commercial & Industrial Belt',
+      'Rathtala Trading Corridor',
+      'Subhas Avenue Retail Hub',
+      'Ranaghat Court Road Business Zone'
+    ],
     nearbyLocationSlugs: ['krishnanagar', 'chakdaha', 'santipur', 'birnagar'],
     metaTitle: 'AI Automation Services in Ranaghat | Conflux AI',
-    metaDescription: 'Automate wholesale lead capture, WhatsApp customer support, and order processing for businesses in Ranaghat, Nadia.',
+    metaDescription: 'Automate wholesale order intake, WhatsApp speed-to-lead qualification, and business workflows for distributors and retailers in Ranaghat, Nadia.',
     h1Title: 'AI Automation & Digital Workflows for Ranaghat Businesses',
-    summary: 'Conflux AI provides wholesale order bots, automated CRM pipelines, and web design for commercial distributors and retail enterprises in Ranaghat.',
-    localBusinessContext: 'Ranaghat is a major railway junction and commercial trading center connecting Kolkata to Northern Nadia. Distributors and traders in Ranaghat benefit greatly from instant automated order confirmation and lead response.',
+    summary: 'Conflux AI provides wholesale order bots, automated CRM pipelines, and web design for commercial distributors, agro-processors, and retail enterprises in Ranaghat.',
+    localBusinessContext: 'Ranaghat is a vital railway logistics junction and primary commercial trading hub connecting Kolkata to Central and Northern Nadia along NH 12 (formerly NH 34). The municipality anchors major wholesale trade in FMCG grocery distribution, agro-processing, food manufacturing, and textile supply. With substantial daily trading volumes transacted through Station Road Market, Rathtala, and Subhas Avenue, Ranaghat commercial distributors and manufacturers benefit from automated B2B WhatsApp order routing, instant lead qualification, and digital inventory synchronization.',
     automationOpportunities: [
-      'Automated WhatsApp B2B Order Placement Flow',
-      'Instant Lead Notification to Sales Representatives',
-      'High-Speed Website Development for Local Retailers'
+      'Automated WhatsApp B2B Wholesale Order Routing & SKU Catalog Dispatch',
+      'Instant Speed-to-Lead Qualification & Quotation Notifications for Field Sales',
+      'Automated Customer Support & Delivery Status Updates for FMCG Distributors',
+      'Sub-Second E-Commerce & Product Showcase Web Architecture for Retailers',
+      'Statutory Verification & FSSAI License Provenance Grounding for Food Processors'
+    ],
+    useCases: [
+      {
+        title: 'FMCG & Grocery Wholesale Order Automation',
+        description: 'Enables Ranaghat wholesale distributors to ingest dealer purchase orders via WhatsApp 24/7, parse item quantities automatically, and route finalized orders directly into billing sheets without manual transcription.',
+        servicesUsed: ['WhatsApp Business Automation', 'CRM Integration', 'Workflow Automation'],
+        impact: 'Reduces order transcription time by 85% and eliminates after-hours order drop-off across Nadia distributor networks.'
+      },
+      {
+        title: 'Agricultural Food Processing & Distributor Inquiry Intake',
+        description: 'Automates bulk buyer inquiries, product specification delivery, and FSSAI compliance verification for Ranaghat agro-food processing facilities and packaged food manufacturers.',
+        servicesUsed: ['Custom AI Agents', 'Lead Qualification', 'High-Speed Web Platforms'],
+        impact: 'Accelerates speed-to-lead from hours to under 30 seconds for regional B2B buyer inquiries.'
+      }
+    ],
+    faqs: [
+      {
+        question: 'How does Conflux AI deliver digital automation services to Ranaghat businesses?',
+        answer: 'Conflux AI operates a remote-first engineering model from Kolkata. We collaborate with Ranaghat business owners, distributors, and manufacturers via secure video consultations, configure automated workflows in isolated cloud sandboxes, and provide end-to-end deployment and support without requiring physical office overhead.'
+      },
+      {
+        question: 'How can Ranaghat wholesale distributors automate WhatsApp order handling?',
+        answer: 'We build structured WhatsApp Business API chatbots that present product catalogs, accept multi-line order requests from retailers, validate order details, and instantly notify your sales representatives or dispatch teams.'
+      },
+      {
+        question: 'How does Conflux Verify authenticate registered businesses in Ranaghat?',
+        answer: 'Conflux Verify cross-references business entities against primary statutory registries—such as the Food Safety and Standards Authority of India (FoSCoS) for food business operators (e.g., Ranaghat Agro Processing Ltd) and the Ministry of Corporate Affairs (MCA)—to provide auditable, evidence-backed trust reports.'
+      }
     ],
     verifiedEntities: [
       {

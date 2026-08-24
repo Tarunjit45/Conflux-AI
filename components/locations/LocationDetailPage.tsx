@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { NADIA_LOCATIONS, OTHER_MAJOR_WB_LOCATIONS, WEST_BENGAL_DISTRICTS } from '../../data/locationsData';
+import { getArticlesByDistrict } from '../../data/articlesData';
 import { MapPin, ArrowLeft, ArrowRight, ShieldCheck, Zap, MessageSquare, ExternalLink, CheckCircle2, HelpCircle, Building2, BookOpen, Clock, FileCheck, Award } from 'lucide-react';
 import { trackLocationEvent } from '../../lib/locationAnalytics';
 
@@ -10,6 +11,14 @@ const LocationDetailPage: React.FC = () => {
   const allLocations = [...NADIA_LOCATIONS, ...OTHER_MAJOR_WB_LOCATIONS];
   const location = allLocations.find(l => l.slug === citySlug && l.districtSlug === districtSlug);
   const parentDistrict = WEST_BENGAL_DISTRICTS.find(d => d.slug === districtSlug);
+
+  const districtArticles = parentDistrict ? getArticlesByDistrict(parentDistrict.slug) : [];
+  const relevantArticles = districtArticles.filter(a =>
+    a.slug.includes(location?.slug || '') ||
+    a.title.toLowerCase().includes((location?.name || '').toLowerCase()) ||
+    (a.excerpt || '').toLowerCase().includes((location?.name || '').toLowerCase())
+  );
+  const displayedArticles = relevantArticles.length >= 1 ? relevantArticles : districtArticles.slice(0, 3);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -304,6 +313,57 @@ const LocationDetailPage: React.FC = () => {
               ))}
             </div>
           </div>
+        )}
+
+        {/* RELATED LOCAL INDUSTRY STRATEGY ARTICLES */}
+        {displayedArticles.length > 0 && (
+          <section className="mb-20">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
+              <div>
+                <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100 text-[10px] font-black tracking-widest uppercase mb-3 inline-flex items-center gap-1.5">
+                  <BookOpen size={12} className="text-blue-600" /> Local Field Blueprints
+                </span>
+                <h2 className="text-3xl font-bold font-orbitron text-slate-900 tracking-tight">
+                  Automation &amp; Growth Case Studies for {location.name}
+                </h2>
+                <p className="text-slate-500 font-medium text-sm mt-2 max-w-2xl">
+                  Actionable market guides, wholesale ordering workflows, and technology blueprints relevant to {location.name} businesses.
+                </p>
+              </div>
+              <Link
+                to={`/blog?district=${districtSlug}`}
+                className="text-xs font-black text-blue-600 hover:text-blue-800 uppercase tracking-wider flex items-center gap-1 shrink-0"
+              >
+                All {parentDistrict?.name} Guides ({districtArticles.length}) <ArrowRight size={14} />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {displayedArticles.map((art) => (
+                <Link
+                  key={art.id}
+                  to={`/blog/${art.slug}`}
+                  className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-blue-500 hover:shadow-lg transition-all group flex flex-col justify-between"
+                >
+                  <div>
+                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-2">
+                      {art.primaryCategory || 'Local Strategy'}
+                    </span>
+                    <h3 className="font-bold text-slate-900 text-base leading-snug group-hover:text-blue-600 transition-colors mb-3">
+                      {art.title}
+                    </h3>
+                    <p className="text-xs text-slate-600 font-normal leading-relaxed line-clamp-3 mb-4">
+                      {art.excerpt || art.metaDescription}
+                    </p>
+                  </div>
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600">
+                    <span>Read Case Study</span>
+                    <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
         )}
 
         {/* Nearby Locations Navigation */}

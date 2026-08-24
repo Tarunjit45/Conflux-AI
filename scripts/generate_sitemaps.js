@@ -97,6 +97,21 @@ districtSlugs.forEach(slug => {
   </url>`);
 });
 
+// Published Town / Sub-Location Hubs
+const publishedSubLocations = [
+  { district: 'nadia', city: 'ranaghat', priority: '0.85' },
+  { district: 'nadia', city: 'santipur', priority: '0.85' }
+];
+
+publishedSubLocations.forEach(sub => {
+  xmlEntries.push(`  <url>
+    <loc>https://confluxai.in/locations/west-bengal/${sub.district}/${sub.city}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>${sub.priority}</priority>
+  </url>`);
+});
+
 // Articles (Strictly Published and Canonical)
 let articleCount = 0;
 articles.forEach(article => {

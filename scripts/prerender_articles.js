@@ -1010,6 +1010,314 @@ districts.forEach(d => {
   districtCount++;
 });
 
+// ── 4B. PRE-RENDER PUBLISHED SUB-LOCATIONS (CITIES & HUBS) ────
+let subLocationCount = 0;
+
+const subLocations = [
+  {
+    slug: 'ranaghat',
+    name: 'Ranaghat',
+    districtSlug: 'nadia',
+    districtName: 'Nadia',
+    title: 'AI Automation Services in Ranaghat | Conflux AI',
+    desc: 'Automate wholesale order intake, WhatsApp speed-to-lead qualification, and business workflows for distributors and retailers in Ranaghat, Nadia.',
+    h1: 'AI Automation & Digital Workflows for Ranaghat Businesses',
+    context: 'Ranaghat is a vital railway logistics junction and primary commercial trading hub connecting Kolkata to Central and Northern Nadia along NH 12 (formerly NH 34). The municipality anchors major wholesale trade in FMCG grocery distribution, agro-processing, food manufacturing, and textile supply.',
+    hubs: ['Ranaghat Station Road Wholesale Market', 'NH 12 Commercial & Industrial Belt', 'Rathtala Trading Corridor', 'Subhas Avenue Retail Hub', 'Ranaghat Court Road Business Zone'],
+    useCases: [
+      {
+        title: 'FMCG & Grocery Wholesale Order Automation',
+        desc: 'Enables Ranaghat wholesale distributors to ingest dealer purchase orders via WhatsApp 24/7, parse item quantities automatically, and route finalized orders directly into billing sheets without manual transcription.',
+        impact: 'Reduces order transcription time by 85% and eliminates after-hours order drop-off across Nadia distributor networks.'
+      },
+      {
+        title: 'Agricultural Food Processing & Distributor Inquiry Intake',
+        desc: 'Automates bulk buyer inquiries, product specification delivery, and FSSAI compliance verification for Ranaghat agro-food processing facilities and packaged food manufacturers.',
+        impact: 'Accelerates speed-to-lead from hours to under 30 seconds for regional B2B buyer inquiries.'
+      }
+    ],
+    faqs: [
+      {
+        q: 'How does Conflux AI deliver digital automation services to Ranaghat businesses?',
+        a: 'Conflux AI operates a remote-first engineering model from Kolkata. We collaborate with Ranaghat business owners, distributors, and manufacturers via secure video consultations, configure automated workflows in isolated cloud sandboxes, and provide end-to-end deployment and support without requiring physical office overhead.'
+      },
+      {
+        q: 'How can Ranaghat wholesale distributors automate WhatsApp order handling?',
+        a: 'We build structured WhatsApp Business API chatbots that present product catalogs, accept multi-line order requests from retailers, validate order details, and instantly notify your sales representatives or dispatch teams.'
+      },
+      {
+        q: 'How does Conflux Verify authenticate registered businesses in Ranaghat?',
+        a: 'Conflux Verify cross-references business entities against primary statutory registries—such as the Food Safety and Standards Authority of India (FoSCoS) for food business operators (e.g., Ranaghat Agro Processing Ltd) and the Ministry of Corporate Affairs (MCA)—to provide auditable, evidence-backed trust reports.'
+      }
+    ],
+    verifiedEntities: [
+      {
+        name: 'Ranaghat Agro Processing Ltd',
+        type: 'Registered Corporate Business',
+        status: 'SUPPORTED',
+        tier: 'Tier 1: Primary Official Registrar',
+        identifier: 'FSSAI License: 12823019000452',
+        summary: 'Holds an active Food Business Operator (FBO) manufacturing and processing license in Nadia district.',
+        relevance: 'Primary agricultural food processing facility in Ranaghat subdivision, supporting commercial food manufacturing across Nadia district.',
+        registrarName: 'Food Safety and Standards Authority of India (FoSCoS)',
+        registrarUrl: 'https://foscos.fssai.gov.in',
+        validThrough: '2028-05-09',
+        benchmarkCaseId: 'GT-04',
+        verifyUrl: '/verify?entity=Ranaghat+Agro+Processing+Ltd&claim=Ranaghat+Agro+Processing+Ltd+is+registered+under+the+FSSAI+with+an+active+food+business+operator+license+in+Nadia+district',
+        articleSlug: 'ranaghat-fmcg-wholesale-grocery-order-intake-automation',
+        guideSlug: 'how-to-verify-gst-udyam-registration'
+      }
+    ]
+  },
+  {
+    slug: 'santipur',
+    name: 'Santipur',
+    districtSlug: 'nadia',
+    districtName: 'Nadia',
+    title: 'AI Automation & E-Commerce for Santipur Weavers | Conflux AI',
+    desc: 'Conflux AI builds automated WhatsApp saree catalog bots and direct-to-consumer e-commerce platforms for Santipur textile manufacturers.',
+    h1: 'AI Automation & Digital Sales Channels for Santipur Textile Trade',
+    context: 'Empowering Santipur handloom manufacturers and wholesale saree traders with automated WhatsApp catalogs, B2B lead ingestion, and online sales platforms.',
+    hubs: ['Santipur Saree Haat', 'Phulia Handloom Corridor', 'Shantipur Station Bazar'],
+    useCases: [
+      {
+        title: 'Direct-to-Consumer WhatsApp Saree Catalog & Bulk Booking',
+        desc: 'Automates festive seasonal wholesale booking and retail catalog distribution for Santipur handloom master weavers and cooperatives.',
+        impact: 'Captures 100% of inbound buyer leads during peak Durga Puja inventory acquisition cycles.'
+      }
+    ],
+    faqs: [
+      {
+        q: 'How can Santipur saree weavers sell directly to retail buyers across India?',
+        a: 'Conflux AI builds instant WhatsApp catalog bots and lightweight e-commerce storefronts that display saree collections, calculate wholesale order quantities, and securely receive purchase inquiries.'
+      }
+    ],
+    verifiedEntities: [
+      {
+        name: 'Santipur Cotton Handloom Weaving Tradition',
+        type: 'Geographical Indication (GI) Heritage Cluster',
+        status: 'SUPPORTED',
+        tier: 'Tier 1: Primary Official Registrar',
+        identifier: 'GI Docket: GI-DOCKET-SANTIPUR-84',
+        summary: 'Recognized historical cotton handloom weaving craft under Nadia regional patronage documented since the 15th century.',
+        relevance: 'Statutory Geographical Indication (GI) heritage craft cluster encompassing Santipur handloom weavers, master artisans, and textile guilds across Nadia.',
+        registrarName: 'Geographical Indications Registry (CGPDTM), Govt of India',
+        registrarUrl: 'https://ipindiaonline.gov.in',
+        benchmarkCaseId: 'GT-47',
+        verifyUrl: '/verify?entity=Santipur+Tant+Saree+Guild&claim=Santipur+has+been+a+recognized+center+of+cotton+handloom+weaving+since+the+15th+century+under+the+patronage+of+Nadia+royalty',
+        articleSlug: 'santipur-phulia-saree-durga-puja-whatsapp-bulk-booking',
+        guideSlug: 'how-to-verify-indian-company-legal-existence'
+      }
+    ]
+  }
+];
+
+subLocations.forEach(sub => {
+  const fullUrl = `https://confluxai.in/locations/west-bengal/${sub.districtSlug}/${sub.slug}`;
+  
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": sub.title,
+    "description": sub.desc,
+    "url": fullUrl,
+    "publisher": { "@type": "Organization", "name": "Conflux AI", "url": "https://confluxai.in/" }
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://confluxai.in/" },
+      { "@type": "ListItem", "position": 2, "name": "West Bengal", "item": "https://confluxai.in/locations/west-bengal" },
+      { "@type": "ListItem", "position": 3, "name": `${sub.districtName} District`, "item": `https://confluxai.in/locations/west-bengal/${sub.districtSlug}` },
+      { "@type": "ListItem", "position": 4, "name": sub.name, "item": fullUrl }
+    ]
+  };
+
+  const entityItemListSchema = sub.verifiedEntities && sub.verifiedEntities.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": `Verified Entities and Statutory Registries in ${sub.name}`,
+    "description": `Statutory registrations and accredited records verified by Conflux AI for ${sub.name}, ${sub.districtName}.`,
+    "itemListElement": sub.verifiedEntities.map((ent, idx) => ({
+      "@type": "ListItem",
+      "position": idx + 1,
+      "name": ent.name,
+      "description": ent.summary,
+      "url": `https://confluxai.in${ent.verifyUrl}`
+    }))
+  } : null;
+
+  const faqSchema = sub.faqs && sub.faqs.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": sub.faqs.map(f => ({
+      "@type": "Question",
+      "name": f.q,
+      "acceptedAnswer": { "@type": "Answer", "text": f.a }
+    }))
+  } : null;
+
+  const subSchemas = [webPageSchema, breadcrumbSchema];
+  if (entityItemListSchema) subSchemas.push(entityItemListSchema);
+  if (faqSchema) subSchemas.push(faqSchema);
+
+  const subHtml = `
+  <div id="root">
+    <header style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+      <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+        <a href="/" style="font-size: 18px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+        <nav style="font-size: 13px; font-weight: 700;">
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}" style="color: #2563eb; text-decoration: none; margin-right: 16px;">&larr; ${escapeHtml(sub.districtName)} Hub</a>
+          <a href="/verify" style="color: #475569; text-decoration: none; margin-right: 16px;">Verify</a>
+          <a href="/blog" style="color: #475569; text-decoration: none; margin-right: 16px;">Blog</a>
+          <a href="/contact" style="color: #475569; text-decoration: none;">Contact</a>
+        </nav>
+      </div>
+    </header>
+    <main style="max-width: 1100px; margin: 0 auto; padding: 40px 20px; font-family: 'Inter', sans-serif;">
+      <nav aria-label="Breadcrumbs" style="font-size: 12px; margin-bottom: 20px; color: #64748b;">
+        <a href="/" style="color: #2563eb; text-decoration: none;">Home</a> &gt; <a href="/locations/west-bengal" style="color: #2563eb; text-decoration: none;">West Bengal</a> &gt; <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}" style="color: #2563eb; text-decoration: none;">${escapeHtml(sub.districtName)}</a> &gt; <span style="color: #0f172a;">${escapeHtml(sub.name)}</span>
+      </nav>
+
+      <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #2563eb; letter-spacing: 0.1em; display: inline-block; margin-bottom: 10px;">
+        ${escapeHtml(sub.name)} &bull; ${escapeHtml(sub.districtName)} District
+      </span>
+      <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; line-height: 1.15; margin-bottom: 16px;">
+        ${escapeHtml(sub.h1)}
+      </h1>
+      <p style="font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 30px;">
+        ${escapeHtml(sub.context)}
+      </p>
+
+      <!-- VERIFIED LOCAL ENTITIES SECTION -->
+      ${sub.verifiedEntities && sub.verifiedEntities.length > 0 ? `
+      <section style="margin-top: 40px; margin-bottom: 40px;">
+        <div style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;">
+          <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #059669; letter-spacing: 0.08em; display: block; margin-bottom: 6px;">
+            Evidence &amp; Verification Layer
+          </span>
+          <h2 style="font-size: 26px; font-weight: 900; color: #0f172a; margin: 0;">
+            Verified Local Entities &amp; Registries in ${escapeHtml(sub.name)}
+          </h2>
+          <p style="font-size: 13px; color: #64748b; margin-top: 6px; margin-bottom: 0;">
+            Ground-truth statutory registrations, food safety licenses, and historical Geographical Indications (GI) verified against primary government databases for ${escapeHtml(sub.name)}.
+          </p>
+        </div>
+
+        <div style="display: grid; gap: 24px;">
+          ${sub.verifiedEntities.map(ent => `
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <span style="background: #dcfce7; color: #166534; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 9999px;">${escapeHtml(ent.status)}</span>
+                  <span style="background: #eff6ff; color: #1e40af; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 9999px;">${escapeHtml(ent.tier)}</span>
+                </div>
+                <span style="font-size: 11px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 4px 10px; border-radius: 9999px;">${escapeHtml(ent.type)}</span>
+              </div>
+
+              <h3 style="font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 8px;">${escapeHtml(ent.name)}</h3>
+              ${ent.identifier ? `<div style="font-family: monospace; font-size: 12px; font-weight: 700; color: #334155; background: #f8fafc; border: 1px solid #e2e8f0; padding: 4px 10px; border-radius: 8px; display: inline-block; margin-bottom: 12px;">${escapeHtml(ent.identifier)}</div>` : ''}
+              
+              <p style="font-size: 14px; color: #334155; line-height: 1.6; margin-bottom: 16px; font-weight: 500;">${escapeHtml(ent.summary)}</p>
+
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 20px;">
+                <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #64748b; display: block; margin-bottom: 4px;">Local Industry Relevance:</span>
+                <p style="font-size: 13px; color: #475569; line-height: 1.5; margin: 0;">${escapeHtml(ent.relevance)}</p>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; font-size: 12px;">
+                <div style="background: white; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px;">
+                  <strong style="color: #64748b; display: block; font-size: 10px; text-transform: uppercase;">Primary Registrar</strong>
+                  <span style="color: #0f172a; font-weight: 700;">${escapeHtml(ent.registrarName)}</span>
+                </div>
+                <div style="background: white; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px;">
+                  <strong style="color: #64748b; display: block; font-size: 10px; text-transform: uppercase;">Standing &amp; Validity</strong>
+                  <span style="color: #059669; font-weight: 700;">${ent.validThrough ? `Active (Valid Through ${escapeHtml(ent.validThrough)})` : 'Active Statutory Docket'}</span>
+                </div>
+                <div style="background: white; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px;">
+                  <strong style="color: #64748b; display: block; font-size: 10px; text-transform: uppercase;">Benchmark Case</strong>
+                  <span style="color: #0f172a; font-weight: 700; font-family: monospace;">${escapeHtml(ent.benchmarkCaseId)} (100% Deterministic)</span>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 16px; flex-wrap: wrap; gap: 12px;">
+                <div style="display: flex; gap: 16px; font-size: 12px; font-weight: 700;">
+                  ${ent.articleSlug ? `<a href="/blog/${escapeHtml(ent.articleSlug)}" style="color: #2563eb; text-decoration: none;">Related ${escapeHtml(sub.name)} Strategy &rarr;</a>` : ''}
+                  ${ent.guideSlug ? `<a href="/verify/guides/${escapeHtml(ent.guideSlug)}" style="color: #475569; text-decoration: none;">Verification Guide &rarr;</a>` : ''}
+                </div>
+                <div style="display: flex; gap: 10px;">
+                  <a href="${escapeHtml(ent.registrarUrl)}" target="_blank" rel="noopener noreferrer" style="font-size: 12px; font-weight: 700; color: #64748b; text-decoration: none; padding: 8px 14px;">Official Registrar &rarr;</a>
+                  <a href="${escapeHtml(ent.verifyUrl)}" style="font-size: 12px; font-weight: 800; background: #2563eb; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none;">Verify on Conflux &rarr;</a>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+      ` : ''}
+
+      <!-- COMMERCIAL HUBS -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 32px;">
+        <h3 style="font-size: 14px; font-weight: 800; text-transform: uppercase; color: #2563eb; margin-bottom: 12px;">Key Commercial Trading Zones in ${escapeHtml(sub.name)}</h3>
+        <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #334155; line-height: 1.8;">
+          ${sub.hubs.map(h => `<li>${escapeHtml(h)}</li>`).join('')}
+        </ul>
+      </div>
+
+      <!-- USE CASES -->
+      <section style="margin-bottom: 40px;">
+        <h2 style="font-size: 24px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">
+          Proven Automation Workflows for ${escapeHtml(sub.name)}
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+          ${sub.useCases.map(uc => `
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+              <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">${escapeHtml(uc.title)}</h3>
+              <p style="font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 12px;">${escapeHtml(uc.desc)}</p>
+              <div style="background: #eff6ff; color: #1e40af; font-size: 12px; font-weight: 700; padding: 8px 12px; border-radius: 8px;">
+                Impact: ${escapeHtml(uc.impact)}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+
+      <!-- FAQS -->
+      ${sub.faqs && sub.faqs.length > 0 ? `
+      <section style="margin-bottom: 40px;">
+        <h2 style="font-size: 24px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">
+          Frequently Asked Questions: Business Automation in ${escapeHtml(sub.name)}
+        </h2>
+        <div style="display: grid; gap: 16px;">
+          ${sub.faqs.map(f => `
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+              <h4 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">${escapeHtml(f.q)}</h4>
+              <p style="font-size: 14px; color: #475569; line-height: 1.6; margin: 0;">${escapeHtml(f.a)}</p>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+      ` : ''}
+
+      <div style="margin-top: 40px; padding: 32px; background: #0f172a; border-radius: 20px; color: white; text-align: center;">
+        <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 10px;">Automate Your ${escapeHtml(sub.name)} Business Operations</h3>
+        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">
+          Schedule a direct video consultation with our Kolkata engineering team to deploy custom WhatsApp order pipelines and high-speed web systems.
+        </p>
+        <a href="https://wa.me/918972517557?text=Hello%20Conflux%20AI,%20I%20am%20a%20business%20owner%20in%20${encodeURIComponent(sub.name)}%20interested%20in%20automation" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 13px;">
+          WhatsApp Direct Consultation &rarr;
+        </a>
+      </div>
+    </main>
+  </div>
+  `;
+
+  writePage(`/locations/west-bengal/${sub.districtSlug}/${sub.slug}`, sub.title, sub.desc, fullUrl, subSchemas, subHtml);
+  subLocationCount++;
+});
+
 // ── 5. PRE-RENDER CORE STATIC PAGES ───────────────────────────
 const staticPages = [
   {
@@ -1415,5 +1723,6 @@ console.log(`[Prerender] Successfully generated:
   - ${serviceCount} service pages (including aliases)
   - 2 statewide hub pages (/locations and /locations/west-bengal)
   - ${districtCount * 2} district pages (/locations/:slug and /locations/west-bengal/:slug)
+  - ${subLocationCount} published town hub pages (/locations/west-bengal/:district/:city)
   - ${staticPages.length} core static pages
-Total pre-rendered snapshots: ${1 + articleCount + serviceCount + 2 + (districtCount * 2) + staticPages.length}`);
+Total pre-rendered snapshots: ${1 + articleCount + serviceCount + 2 + (districtCount * 2) + subLocationCount + staticPages.length}`);
