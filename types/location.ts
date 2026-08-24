@@ -71,6 +71,32 @@ export interface LocationItem {
   automationOpportunities?: string[];
   useCases?: IndustryUseCase[];
   faqs?: { question: string; answer: string }[];
+
+  // Evidence-Backed Verified Entity Grounding
+  verifiedEntities?: VerifiedLocationEntity[];
+}
+
+export type EntityVerificationCategory = 
+  | 'REGISTERED_BUSINESS'
+  | 'GI_HERITAGE_CLUSTER'
+  | 'STATUTORY_INSTITUTION';
+
+export interface VerifiedLocationEntity {
+  id: string;
+  name: string;
+  entityType: EntityVerificationCategory;
+  statutoryIdentifier?: string;
+  registrarName: string;
+  registrarUrl: string;
+  claimSummary: string;
+  verificationStatus: 'SUPPORTED' | 'PARTIALLY_SUPPORTED' | 'OUTDATED';
+  sourceTier: 'TIER_1_PRIMARY_AUTHORITATIVE' | 'TIER_2_FIRST_PARTY' | 'TIER_3_INDEPENDENT_HIGH_QUALITY';
+  validThrough?: string;
+  benchmarkCaseId?: string;
+  locationRelevance: string;
+  relatedArticleSlug?: string;
+  relatedGuideSlug?: string;
+  verifyQueryUrl: string;
 }
 
 export interface BusinessCategoryTaxonomy {

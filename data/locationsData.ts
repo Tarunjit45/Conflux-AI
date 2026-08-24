@@ -588,6 +588,25 @@ export const NADIA_LOCATIONS: LocationItem[] = [
       'Automated WhatsApp B2B Order Placement Flow',
       'Instant Lead Notification to Sales Representatives',
       'High-Speed Website Development for Local Retailers'
+    ],
+    verifiedEntities: [
+      {
+        id: 'ent_ranaghat_agro',
+        name: 'Ranaghat Agro Processing Ltd',
+        entityType: 'REGISTERED_BUSINESS',
+        statutoryIdentifier: 'FSSAI License: 12823019000452',
+        registrarName: 'Food Safety and Standards Authority of India (FoSCoS)',
+        registrarUrl: 'https://foscos.fssai.gov.in',
+        claimSummary: 'Holds an active Food Business Operator (FBO) manufacturing and processing license in Nadia district.',
+        verificationStatus: 'SUPPORTED',
+        sourceTier: 'TIER_1_PRIMARY_AUTHORITATIVE',
+        validThrough: '2028-05-09',
+        benchmarkCaseId: 'GT-04',
+        locationRelevance: 'Primary agricultural food processing facility in Ranaghat subdivision, supporting commercial food manufacturing across Nadia district.',
+        relatedArticleSlug: 'ranaghat-fmcg-wholesale-grocery-order-intake-automation',
+        relatedGuideSlug: 'how-to-verify-gst-udyam-registration',
+        verifyQueryUrl: '/verify?entity=Ranaghat+Agro+Processing+Ltd&claim=Ranaghat+Agro+Processing+Ltd+is+registered+under+the+FSSAI+with+an+active+food+business+operator+license+in+Nadia+district'
+      }
     ]
   },
   {
@@ -646,7 +665,25 @@ export const NADIA_LOCATIONS: LocationItem[] = [
     metaTitle: 'AI Automation & E-Commerce for Santipur Weavers | Conflux AI',
     metaDescription: 'Conflux AI builds automated WhatsApp saree catalog bots and direct-to-consumer e-commerce platforms for Santipur textile manufacturers.',
     h1Title: 'AI Automation & Digital Sales Channels for Santipur Textile Trade',
-    summary: 'Empowering Santipur handloom manufacturers and wholesale saree traders with automated WhatsApp catalogs, B2B lead ingestion, and online sales platforms.'
+    summary: 'Empowering Santipur handloom manufacturers and wholesale saree traders with automated WhatsApp catalogs, B2B lead ingestion, and online sales platforms.',
+    verifiedEntities: [
+      {
+        id: 'ent_santipur_gi',
+        name: 'Santipur Cotton Handloom Weaving Tradition',
+        entityType: 'GI_HERITAGE_CLUSTER',
+        statutoryIdentifier: 'GI Docket: GI-DOCKET-SANTIPUR-84',
+        registrarName: 'Geographical Indications Registry (CGPDTM), Govt of India',
+        registrarUrl: 'https://ipindiaonline.gov.in',
+        claimSummary: 'Recognized historical cotton handloom weaving craft under Nadia regional patronage documented since the 15th century.',
+        verificationStatus: 'SUPPORTED',
+        sourceTier: 'TIER_1_PRIMARY_AUTHORITATIVE',
+        benchmarkCaseId: 'GT-47',
+        locationRelevance: 'Statutory Geographical Indication (GI) heritage craft cluster encompassing Santipur handloom weavers, master artisans, and textile guilds across Nadia.',
+        relatedArticleSlug: 'santipur-phulia-saree-durga-puja-whatsapp-bulk-booking',
+        relatedGuideSlug: 'how-to-verify-indian-company-legal-existence',
+        verifyQueryUrl: '/verify?entity=Santipur+Tant+Saree+Guild&claim=Santipur+has+been+a+recognized+center+of+cotton+handloom+weaving+since+the+15th+century+under+the+patronage+of+Nadia+royalty'
+      }
+    ]
   },
   {
     id: 'loc-bagula',

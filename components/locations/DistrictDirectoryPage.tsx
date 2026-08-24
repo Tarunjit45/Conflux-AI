@@ -175,6 +175,96 @@ const DistrictDirectoryPage: React.FC = () => {
           </div>
         )}
 
+        {/* VERIFIED ENTITIES ACROSS DISTRICT */}
+        {(() => {
+          const districtVerifiedEntities = districtSubLocations.flatMap(l =>
+            (l.verifiedEntities || []).map(ent => ({ ...ent, locationName: l.name, locationSlug: l.slug }))
+          );
+          if (districtVerifiedEntities.length === 0) return null;
+
+          return (
+            <section className="mb-20">
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
+                <div>
+                  <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-black tracking-widest uppercase mb-3 inline-flex items-center gap-1.5">
+                    <ShieldCheck size={14} className="text-emerald-600" /> Evidence &amp; Trust Layer
+                  </span>
+                  <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-slate-900 tracking-tight">
+                    Verified Entities Across {district.name}
+                  </h2>
+                  <p className="text-slate-500 font-medium text-sm mt-2 max-w-2xl">
+                    Primary statutory business registrations, accredited food operator licenses, and historical Geographical Indication (GI) heritage clusters verified for {district.name} district.
+                  </p>
+                </div>
+                <Link
+                  to="/verify"
+                  className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-4 py-2.5 rounded-xl transition-all shrink-0"
+                >
+                  Conflux Verify Portal <ArrowRight size={14} />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {districtVerifiedEntities.map((ent) => (
+                  <div
+                    key={ent.id}
+                    className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-3">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-mono font-bold">
+                          <ShieldCheck size={13} className="text-emerald-600" /> {ent.verificationStatus}
+                        </span>
+                        <Link
+                          to={`/locations/west-bengal/${district.slug}/${ent.locationSlug}`}
+                          className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
+                        >
+                          <MapPin size={12} /> {ent.locationName} Hub
+                        </Link>
+                      </div>
+
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                        {ent.entityType === 'REGISTERED_BUSINESS' ? 'Registered Corporate Business' : 'Geographical Indication (GI) Heritage'}
+                      </span>
+                      <h3 className="text-xl font-bold font-orbitron text-slate-900 mb-2">{ent.name}</h3>
+
+                      {ent.statutoryIdentifier && (
+                        <div className="text-xs font-mono text-slate-700 bg-slate-100 px-3 py-1 rounded-lg mb-3 inline-block">
+                          {ent.statutoryIdentifier}
+                        </div>
+                      )}
+
+                      <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                        {ent.claimSummary}
+                      </p>
+
+                      <div className="text-xs text-slate-500 pt-3 border-t border-slate-100 space-y-1">
+                        <div><strong>Primary Authority:</strong> {ent.registrarName}</div>
+                        <div><strong>Evidence Standing:</strong> {ent.validThrough ? `Valid Through ${ent.validThrough}` : 'Statutory Historical Docket'}</div>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 flex items-center justify-between border-t border-slate-100">
+                      <Link
+                        to={`/locations/west-bengal/${district.slug}/${ent.locationSlug}`}
+                        className="text-xs font-bold text-slate-600 hover:text-blue-600 transition-colors"
+                      >
+                        Explore {ent.locationName} Profile &rarr;
+                      </Link>
+                      <Link
+                        to={ent.verifyQueryUrl}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all"
+                      >
+                        Verify Evidence <ArrowRight size={12} />
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          );
+        })()}
+
         {/* DISTRICT-BASED ARTICLE DISCOVERY LAYER */}
         <section className="mb-20">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 pb-4 border-b border-slate-200">

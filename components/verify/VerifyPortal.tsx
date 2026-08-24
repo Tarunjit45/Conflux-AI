@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import { ShieldCheck, Search, ArrowRight, CheckCircle2, AlertCircle, Sparkles, Building2, HelpCircle } from 'lucide-react';
 import { verificationService } from '../../lib/verify/verificationService';
 import type { VerificationResult } from '../../types/verify';
@@ -10,6 +10,16 @@ const SAMPLE_BENCHMARKS = [
     label: 'Conflux AI — Leadership & Kolkata HQ',
     entity: 'Conflux AI',
     claim: 'Conflux AI is an AI automation and digital solutions agency based in Kolkata, founded by Tarunjit Biswas and Shouvik Majumdar'
+  },
+  {
+    label: 'Ranaghat Agro Processing Ltd — FSSAI License (Nadia)',
+    entity: 'Ranaghat Agro Processing Ltd',
+    claim: 'Ranaghat Agro Processing Ltd is registered under the FSSAI with an active food business operator license in Nadia district'
+  },
+  {
+    label: 'Santipur Tant Saree Guild — GI Heritage (Nadia)',
+    entity: 'Santipur Tant Saree Guild',
+    claim: 'Santipur has been a recognized center of cotton handloom weaving since the 15th century under the patronage of Nadia royalty'
   },
   {
     label: 'ABC Manufacturing — ISO 9001 Certification',
@@ -25,6 +35,7 @@ const SAMPLE_BENCHMARKS = [
 
 export const VerifyPortal: React.FC = () => {
   const { entitySlug, claimSlug } = useParams<{ entitySlug?: string; claimSlug?: string }>();
+  const location = useLocation();
 
   const [entityName, setEntityName] = useState('');
   const [claimText, setClaimText] = useState('');
@@ -33,16 +44,41 @@ export const VerifyPortal: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<VerificationResult | null>(null);
 
-  // Load benchmark on initial URL if specified
+  // Load benchmark on initial URL or search parameters if specified
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const qEntity = params.get('entity');
+    const qClaim = params.get('claim');
+
+    if (qEntity && qClaim) {
+      setEntityName(qEntity);
+      setClaimText(qClaim);
+      setIsLoading(true);
+      verificationService.verifyClaim({
+        entityName: qEntity,
+        claimText: qClaim
+      }).then(res => {
+        setResult(res);
+        setIsLoading(false);
+      }).catch(err => {
+        setError(err.message || 'Verification service error.');
+        setIsLoading(false);
+      });
+      return;
+    }
+
     if (entitySlug) {
       if (entitySlug.includes('conflux')) {
         handleSampleSelect(SAMPLE_BENCHMARKS[0]);
-      } else if (entitySlug.includes('abc')) {
+      } else if (entitySlug.includes('ranaghat')) {
         handleSampleSelect(SAMPLE_BENCHMARKS[1]);
+      } else if (entitySlug.includes('santipur')) {
+        handleSampleSelect(SAMPLE_BENCHMARKS[2]);
+      } else if (entitySlug.includes('abc')) {
+        handleSampleSelect(SAMPLE_BENCHMARKS[3]);
       }
     }
-  }, [entitySlug, claimSlug]);
+  }, [entitySlug, claimSlug, location.search]);
 
   const handleVerify = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();

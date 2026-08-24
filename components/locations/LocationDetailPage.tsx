@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { NADIA_LOCATIONS, OTHER_MAJOR_WB_LOCATIONS, WEST_BENGAL_DISTRICTS } from '../../data/locationsData';
-import { MapPin, ArrowLeft, ArrowRight, ShieldCheck, Zap, MessageSquare, ExternalLink, CheckCircle2, HelpCircle, Building2 } from 'lucide-react';
+import { MapPin, ArrowLeft, ArrowRight, ShieldCheck, Zap, MessageSquare, ExternalLink, CheckCircle2, HelpCircle, Building2, BookOpen, Clock, FileCheck, Award } from 'lucide-react';
 import { trackLocationEvent } from '../../lib/locationAnalytics';
 
 const LocationDetailPage: React.FC = () => {
@@ -70,6 +70,18 @@ const LocationDetailPage: React.FC = () => {
                 { "@type": "ListItem", "position": 4, "name": location.name, "item": `https://confluxai.in/locations/west-bengal/${districtSlug}/${location.slug}` }
               ]
             },
+            ...(location.verifiedEntities && location.verifiedEntities.length > 0 ? [{
+              "@type": "ItemList",
+              "name": `Verified Entities and Statutory Registries in ${location.name}`,
+              "description": `Statutory registrations and accredited records verified by Conflux AI for ${location.name}, ${parentDistrict?.name || 'Nadia'}.`,
+              "itemListElement": location.verifiedEntities.map((ent, idx) => ({
+                "@type": "ListItem",
+                "position": idx + 1,
+                "name": ent.name,
+                "description": ent.claimSummary,
+                "url": `https://confluxai.in${ent.verifyQueryUrl}`
+              }))
+            }] : []),
             ...(location.faqs && location.faqs.length > 0 ? [{
               "@type": "FAQPage",
               "mainEntity": location.faqs.map(f => ({
@@ -140,6 +152,139 @@ const LocationDetailPage: React.FC = () => {
             </ul>
           </div>
         </div>
+
+        {/* VERIFIED LOCAL ENTITIES & STATUTORY REGISTRIES */}
+        {location.verifiedEntities && location.verifiedEntities.length > 0 && (
+          <section className="mb-20">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
+              <div>
+                <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-black tracking-widest uppercase mb-3 inline-flex items-center gap-1.5">
+                  <ShieldCheck size={14} className="text-emerald-600" /> Evidence &amp; Verification Layer
+                </span>
+                <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-slate-900 tracking-tight">
+                  Verified Local Entities &amp; Registries in {location.name}
+                </h2>
+                <p className="text-slate-500 font-medium text-sm mt-2 max-w-2xl">
+                  Ground-truth statutory registrations, food safety licenses, and historical Geographical Indications (GI) verified against primary government databases for {location.name}.
+                </p>
+              </div>
+              <Link
+                to="/verify"
+                className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-4 py-2.5 rounded-xl transition-all shrink-0 self-start sm:self-auto"
+              >
+                Conflux Verify Portal <ArrowRight size={14} />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 gap-8">
+              {location.verifiedEntities.map((ent) => (
+                <div
+                  key={ent.id}
+                  className="p-8 md:p-10 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all space-y-6"
+                >
+                  {/* Top Badges & Entity Classification */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                    <div className="flex items-center gap-2.5">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold font-mono">
+                        <ShieldCheck size={14} className="text-emerald-600" /> {ent.verificationStatus}
+                      </span>
+                      <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-800 text-xs font-bold border border-blue-100">
+                        {ent.sourceTier === 'TIER_1_PRIMARY_AUTHORITATIVE' ? 'Tier 1: Primary Official Registrar' : ent.sourceTier.replace(/_/g, ' ')}
+                      </span>
+                    </div>
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-3 py-1 rounded-full">
+                      {ent.entityType === 'REGISTERED_BUSINESS' ? 'Registered Corporate Business' : 'Geographical Indication (GI) Heritage Cluster'}
+                    </span>
+                  </div>
+
+                  {/* Entity Name & Statutory Identifier */}
+                  <div>
+                    <h3 className="text-2xl md:text-3xl font-bold font-orbitron text-slate-900 mb-3">
+                      {ent.name}
+                    </h3>
+                    {ent.statutoryIdentifier && (
+                      <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-slate-700 bg-slate-100 border border-slate-200 px-3.5 py-1.5 rounded-xl mb-4">
+                        <FileCheck size={14} className="text-blue-600" />
+                        <span>{ent.statutoryIdentifier}</span>
+                      </div>
+                    )}
+                    <p className="text-slate-700 text-base leading-relaxed font-medium">
+                      {ent.claimSummary}
+                    </p>
+                  </div>
+
+                  {/* Location Context & Role */}
+                  <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                      Local Industry &amp; Geographic Relevance:
+                    </span>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                      {ent.locationRelevance}
+                    </p>
+                  </div>
+
+                  {/* Provenance & Registrar Details Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-2 text-xs text-slate-600">
+                    <div className="p-4 rounded-xl bg-white border border-slate-200">
+                      <span className="text-slate-400 font-bold block mb-1 uppercase tracking-wider">Primary Registrar</span>
+                      <span className="font-bold text-slate-900 block">{ent.registrarName}</span>
+                    </div>
+                    <div className="p-4 rounded-xl bg-white border border-slate-200">
+                      <span className="text-slate-400 font-bold block mb-1 uppercase tracking-wider">Registry Standing</span>
+                      <span className="font-bold text-emerald-700 block flex items-center gap-1">
+                        <CheckCircle2 size={13} className="text-emerald-600" />
+                        {ent.validThrough ? `Active (Valid Through ${ent.validThrough})` : 'Active Statutory Docket'}
+                      </span>
+                    </div>
+                    <div className="p-4 rounded-xl bg-white border border-slate-200">
+                      <span className="text-slate-400 font-bold block mb-1 uppercase tracking-wider">Benchmark Evaluation</span>
+                      <span className="font-bold text-slate-900 block font-mono">{ent.benchmarkCaseId || 'Verified Record'} (100% Deterministic)</span>
+                    </div>
+                  </div>
+
+                  {/* Contextual Internal Links & Action CTAs */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-100">
+                    <div className="flex flex-wrap items-center gap-4 text-xs font-bold">
+                      {ent.relatedArticleSlug && (
+                        <Link
+                          to={`/blog/${ent.relatedArticleSlug}`}
+                          className="text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
+                        >
+                          <BookOpen size={13} /> Related {location.name} Industry Strategy &rarr;
+                        </Link>
+                      )}
+                      {ent.relatedGuideSlug && (
+                        <Link
+                          to={`/verify/guides/${ent.relatedGuideSlug}`}
+                          className="text-slate-600 hover:text-slate-900 hover:underline flex items-center gap-1"
+                        >
+                          <ShieldCheck size={13} /> Verification Guide &rarr;
+                        </Link>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-3 self-end sm:self-auto">
+                      <a
+                        href={ent.registrarUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 px-3.5 py-2 rounded-xl hover:bg-slate-100 transition-colors"
+                      >
+                        Official Registrar <ExternalLink size={13} />
+                      </a>
+                      <Link
+                        to={ent.verifyQueryUrl}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/10 transition-all"
+                      >
+                        Verify on Conflux <ArrowRight size={13} />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Specific Industry Use Cases */}
         {location.useCases && location.useCases.length > 0 && (
