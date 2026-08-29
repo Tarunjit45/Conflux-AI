@@ -407,3 +407,36 @@ BEGIN
             USING (public.is_admin());
     END IF;
 END $$;
+
+-- ── 10. STORAGE BUCKETS & RLS POLICIES ───────────────────────────────────────
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('business-assets', 'business-assets', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('private-evidence', 'private-evidence', false)
+ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "Public can view business assets" ON storage.objects;
+CREATE POLICY "Public can view business assets"
+    ON storage.objects FOR SELECT
+    USING (bucket_id = 'business-assets');
+
+DROP POLICY IF EXISTS "Anyone can upload business assets" ON storage.objects;
+CREATE POLICY "Anyone can upload business assets"
+    ON storage.objects FOR INSERT
+    WITH CHECK (bucket_id = 'business-assets');
+
+DROP POLICY IF EXISTS "Private evidence only accessible by owner or admin" ON storage.objects;
+CREATE POLICY "Private evidence only accessible by owner or admin"
+    ON storage.objects FOR SELECT
+    USING (
+        bucket_id = 'private-evidence' AND
+        (auth.uid() = owner OR public.is_admin())
+    );
+
+DROP POLICY IF EXISTS "Anyone can upload private evidence" ON storage.objects;
+CREATE POLICY "Anyone can upload private evidence"
+    ON storage.objects FOR INSERT
+    WITH CHECK (bucket_id = 'private-evidence');
+
