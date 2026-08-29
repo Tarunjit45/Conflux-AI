@@ -38,6 +38,7 @@ import { BusinessSubmissionPage } from './components/submission/BusinessSubmissi
 import { AdminBusinessDashboard } from './components/admin/AdminBusinessDashboard';
 import { AuthModal } from './components/auth/AuthModal';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { UserOnboardingPrompt } from './components/auth/UserOnboardingPrompt';
 import { AuthProvider } from './lib/authContext';
 
 const routeMeta: Record<string, { title: string; description: string }> = {
@@ -386,6 +387,8 @@ const App: React.FC = () => {
           <Route path="/admin/cms" element={<AdminCMS />} />
           <Route path="/admin/location-coverage" element={<LocationCoverageDashboard />} />
           <Route path="/login" element={<AuthModal />} />
+          <Route path="/auth" element={<AuthModal />} />
+          <Route path="/register" element={<AuthModal />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
 
@@ -393,6 +396,9 @@ const App: React.FC = () => {
 
         {/* Manual Logo Upload Control */}
         <BrandingControl onUpload={handleLogoUpload} onReset={handleLogoReset} currentLogo={siteLogo} />
+
+        {/* First-Time User Onboarding & Role Selection Prompt */}
+        <UserOnboardingPrompt />
 
         {/* Integrated Chatbot */}
         <Chatbot />

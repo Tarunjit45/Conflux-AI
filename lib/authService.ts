@@ -136,6 +136,72 @@ export class AuthService {
   }
 
   /**
+   * Register a new user with designated role (BUSINESS_OWNER, USER, etc.)
+   */
+  async signUp(input: {
+    email: string;
+    password: string;
+    fullName?: string;
+    role: UserRole;
+    phone?: string;
+  }): Promise<{ success: boolean; error?: string; user?: UserProfile }> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email: input.email,
+          password: input.password,
+          options: {
+            data: {
+              full_name: input.fullName,
+              role: input.role,
+              phone: input.phone
+            }
+          }
+        });
+        if (error) {
+          return { success: false, error: error.message };
+        }
+        if (data.user) {
+          try {
+            await supabase.from('profiles').upsert({
+              id: data.user.id,
+              email: input.email,
+              full_name: input.fullName,
+              role: input.role,
+              phone: input.phone
+            });
+          } catch (e) {
+            console.warn('Profile creation notice:', e);
+          }
+          const profile = await this.getCurrentUser();
+          return { success: true, user: profile || undefined };
+        }
+      } catch (err: any) {
+        return { success: false, error: `[SUPABASE_AUTH_ERROR] ${err.message}` };
+      }
+    }
+
+    const isProd = (typeof import.meta !== 'undefined' && (import.meta as any).env?.PROD) || process.env.NODE_ENV === 'production';
+    if (!isProd) {
+      const mockUser: UserProfile = {
+        id: `usr_dev_${Date.now()}`,
+        email: input.email,
+        fullName: input.fullName || input.email.split('@')[0],
+        role: input.role,
+        phone: input.phone,
+        createdAt: new Date().toISOString()
+      };
+      this.setLocalSession(mockUser);
+      return { success: true, user: mockUser };
+    }
+
+    return {
+      success: false,
+      error: 'SUPABASE_NOT_CONFIGURED: Live Supabase database credentials are required for user registration.'
+    };
+  }
+
+  /**
    * Sign out
    */
   async signOut(): Promise<void> {

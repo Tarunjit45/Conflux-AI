@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ArrowRight, BookOpen } from 'lucide-react';
+import { Menu, X, ArrowRight, BookOpen, User, Building2, LogOut } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../lib/authContext';
 
 interface NavbarProps {
   customLogo?: string | null;
@@ -12,6 +13,7 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { user, role, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -21,6 +23,7 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
 
   const navItems = [
     { name: 'Discover', path: '/discover', isLink: true, id: 'discover' },
+    { name: 'List Business', path: '/list-business', isLink: true, id: 'list-business' },
     { name: 'Verify', path: '/verify', isLink: true, id: 'verify' },
     { name: 'Locations', path: '/locations', isLink: true, id: 'locations' },
     { name: 'Blog', path: '/blog', isLink: true, id: 'blog' },
@@ -112,32 +115,46 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
           ))}
         </div>
 
-        {/* CTAs */}
+        {/* CTAs & Auth Gating */}
         <div className="flex items-center gap-3">
-          <button
-            onClick={(e) => scrollToSection(e, 'contact')}
-            className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-lg font-inter font-bold text-[11px] tracking-wide transition-all duration-300"
-            style={{ border: `1px solid ${navyColor}44`, background: `${navyColor}08`, color: navyColor }}
-            onMouseEnter={e => {
-              (e.currentTarget as HTMLButtonElement).style.background = `${navyColor}15`;
-              (e.currentTarget as HTMLButtonElement).style.borderColor = navyColor;
-            }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLButtonElement).style.background = `${navyColor}08`;
-              (e.currentTarget as HTMLButtonElement).style.borderColor = `${navyColor}44`;
-            }}
-          >
-            CLIENT ACCESS
-          </button>
+          {user ? (
+            <div className="flex items-center gap-2">
+              <Link
+                to={role === 'ADMIN' ? '/admin/businesses' : role === 'BUSINESS_OWNER' ? '/list-business' : '/discover'}
+                className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold font-inter bg-slate-100 hover:bg-slate-200 text-slate-800 transition-all"
+              >
+                <User size={13} className="text-blue-600" />
+                <span className="max-w-[100px] truncate">{user.fullName || user.email.split('@')[0]}</span>
+                <span className="text-[10px] font-mono text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
+                  {role === 'BUSINESS_OWNER' ? 'OWNER' : role === 'ADMIN' ? 'ADMIN' : 'USER'}
+                </span>
+              </Link>
+              <button
+                onClick={() => logout()}
+                className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                title="Sign Out"
+              >
+                <LogOut size={16} />
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/auth"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl font-inter font-bold text-xs tracking-wide transition-all duration-300"
+              style={{ border: `1px solid ${navyColor}44`, background: `${navyColor}08`, color: navyColor }}
+            >
+              <User size={14} /> SIGN IN / REGISTER
+            </Link>
+          )}
 
-          <button
-            onClick={(e) => scrollToSection(e, 'contact')}
-            className="hidden lg:flex items-center gap-2 px-5 py-2.5 rounded-lg font-inter font-bold text-[11px] tracking-wide text-white transition-all duration-300 group shadow-lg"
-            style={{ background: navyColor }}
+          <Link
+            to="/list-business"
+            className="hidden lg:flex items-center gap-2 px-5 py-2.5 rounded-xl font-inter font-bold text-xs tracking-wide text-white transition-all duration-300 group shadow-md"
+            style={{ background: '#059669' }}
           >
-            GET STARTED
-            <ArrowRight size={12} className="transition-transform group-hover:translate-x-1" />
-          </button>
+            <Building2 size={14} />
+            LIST BUSINESS
+          </Link>
 
           {/* Mobile Toggle */}
           <button
