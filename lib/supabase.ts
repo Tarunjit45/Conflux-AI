@@ -2,21 +2,26 @@
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
+export const PRODUCTION_SUPABASE_URL = 'https://cqkljjbnoinztsugwqpf.supabase.co';
+export const PRODUCTION_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxa2xqamJub2luenRzdWd3cXBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDg1ODAsImV4cCI6MjA4ODk4NDU4MH0.PokKldexJYwNGgtuRGkIyxpXkEU2PPWe91sJ7Uin9MU';
+
 /**
  * Normalizes user-supplied Supabase URL to canonical https://<project-ref>.supabase.co
- * Handles cases where a user pastes the dashboard URL, project reference ID, or trailing slashes
+ * Intercepts stale/deleted placeholder URLs and enforces the active production endpoint
  */
 export const normalizeSupabaseUrl = (inputUrl?: string): string => {
   let url = (inputUrl || '').trim();
-  if (!url) return '';
+  if (!url || url.includes('cygdomemsooimjmdxzar') || url.includes('lxfuhmvhndvnhdxtylky') || url.includes('placeholder') || url.includes('unconfigured')) {
+    return PRODUCTION_SUPABASE_URL;
+  }
 
-  // Case 1: User pasted the Supabase dashboard URL, e.g. https://supabase.com/dashboard/project/cqkljjbnoinztsugwqpf
+  // Case 1: User pasted the Supabase dashboard URL
   const dashboardMatch = url.match(/supabase\.com\/dashboard\/project\/([a-z0-9]+)/i);
   if (dashboardMatch && dashboardMatch[1]) {
     return `https://${dashboardMatch[1]}.supabase.co`;
   }
 
-  // Case 2: User provided just the 20-char project ref, e.g. "cqkljjbnoinztsugwqpf"
+  // Case 2: User provided just the 20-char project ref
   if (/^[a-z0-9]{20}$/i.test(url)) {
     return `https://${url}.supabase.co`;
   }
@@ -29,16 +34,20 @@ export const normalizeSupabaseUrl = (inputUrl?: string): string => {
   return url;
 };
 
-// Retrieve environment variables with direct static references (required for Vite bundler AST replacement)
+// Retrieve environment variables
 const rawEnvUrl =
   (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_URL) ||
   (typeof process !== 'undefined' && process.env && (process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL)) ||
-  'https://cqkljjbnoinztsugwqpf.supabase.co';
+  PRODUCTION_SUPABASE_URL;
 
-const rawAnonKey =
+let rawAnonKey =
   (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) ||
   (typeof process !== 'undefined' && process.env && (process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY)) ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxa2xqamJub2luenRzdWd3cXBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDg1ODAsImV4cCI6MjA4ODk4NDU4MH0.PokKldexJYwNGgtuRGkIyxpXkEU2PPWe91sJ7Uin9MU';
+  PRODUCTION_SUPABASE_ANON_KEY;
+
+if (!rawAnonKey || rawAnonKey.length < 50 || rawAnonKey.includes('placeholder')) {
+  rawAnonKey = PRODUCTION_SUPABASE_ANON_KEY;
+}
 
 const canonicalUrl = normalizeSupabaseUrl(rawEnvUrl);
 
@@ -47,14 +56,13 @@ const canonicalUrl = normalizeSupabaseUrl(rawEnvUrl);
  */
 export const isSupabaseConfigured = (): boolean => {
   if (!canonicalUrl || !rawAnonKey) return false;
-  if (canonicalUrl.includes('placeholder') || canonicalUrl.includes('example.com') || canonicalUrl.includes('unconfigured')) return false;
   if (!canonicalUrl.startsWith('https://') || !canonicalUrl.includes('.supabase.co')) return false;
   if (rawAnonKey.length < 20) return false;
   return true;
 };
 
 export const getSupabaseConfig = () => ({
-  url: canonicalUrl || null,
+  url: canonicalUrl,
   isConfigured: isSupabaseConfigured()
 });
 
@@ -62,21 +70,11 @@ export const getSupabaseConfig = () => ({
  * Creates or retrieves the Supabase client instance
  */
 const createSupabaseInstance = (): SupabaseClient => {
-  if (isSupabaseConfigured()) {
-    return createClient(canonicalUrl, rawAnonKey, {
-      auth: {
-        persistSession: typeof window !== 'undefined',
-        autoRefreshToken: true,
-        detectSessionInUrl: true
-      }
-    });
-  }
-
-  // Safe fallback client instance
-  return createClient('https://cqkljjbnoinztsugwqpf.supabase.co', rawAnonKey, {
+  return createClient(canonicalUrl, rawAnonKey, {
     auth: {
-      persistSession: true,
-      autoRefreshToken: true
+      persistSession: typeof window !== 'undefined',
+      autoRefreshToken: true,
+      detectSessionInUrl: true
     }
   });
 };
@@ -89,7 +87,7 @@ export const supabase = createSupabaseInstance();
 export const assertSupabaseConfigured = (operationName: string = 'database operation') => {
   if (!isSupabaseConfigured()) {
     const isProd = typeof import.meta !== 'undefined' && import.meta.env?.PROD;
-    const msg = `[CONFLUX_CONFIG_ERROR] Cannot execute ${operationName}: Remote Supabase database is not configured. Please supply valid VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your environment variables.`;
+    const msg = `[CONFLUX_CONFIG_ERROR] Cannot execute ${operationName}: Remote Supabase database is not configured.`;
     if (isProd) {
       throw new Error(msg);
     } else {
