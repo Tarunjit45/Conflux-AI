@@ -1,4 +1,4 @@
-// Conflux Platform — Admin Business Management Command Center (Web-Operable CRUD & Revenue Validation Metrics)
+// Conflux Platform — Admin Business Management Command Center (Web-Operable CRUD, Claim Audits & Telemetry)
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -6,7 +6,8 @@ import {
   Building2, Plus, Search, Filter, ShieldCheck, ShieldAlert, CheckCircle2,
   XCircle, Edit3, Trash2, Globe, ExternalLink, RefreshCw, Phone, MessageSquare,
   MapPin, Check, AlertCircle, ArrowRight, X, Clock, Layers, BarChart3,
-  TrendingUp, Users, Send, Eye, MousePointer, Activity
+  TrendingUp, Users, Send, Eye, MousePointer, Activity, UserCheck, ShieldOff,
+  FileCheck, ThumbsUp, ThumbsDown, Lock
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { businessService } from '../../lib/businessService';
@@ -16,7 +17,7 @@ import { WEST_BENGAL_DISTRICTS } from '../../data/locationsData';
 import { BUSINESS_CATEGORY_TAXONOMY } from '../../data/taxonomiesData';
 
 export const AdminBusinessDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'ENTITIES' | 'MEASUREMENT'>('ENTITIES');
+  const [activeTab, setActiveTab] = useState<'ENTITIES' | 'CLAIMS' | 'MEASUREMENT'>('ENTITIES');
   const [businesses, setBusinesses] = useState<ConfluxBusiness[]>([]);
   const [measurementReport, setMeasurementReport] = useState<MeasurementReport | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,6 +44,8 @@ export const AdminBusinessDashboard: React.FC = () => {
     shortSummary: '',
     district: 'nadia',
     city: 'ranaghat',
+    landmark: '',
+    services: '',
     fullAddress: '',
     phone: '',
     whatsapp: '',
@@ -66,7 +69,7 @@ export const AdminBusinessDashboard: React.FC = () => {
 
   const showNotification = (msg: string) => {
     setStatusMessage(msg);
-    setTimeout(() => setStatusMessage(null), 3000);
+    setTimeout(() => setStatusMessage(null), 3500);
   };
 
   const handleOpenCreate = () => {
@@ -79,6 +82,8 @@ export const AdminBusinessDashboard: React.FC = () => {
       shortSummary: '',
       district: 'nadia',
       city: 'ranaghat',
+      landmark: '',
+      services: '',
       fullAddress: '',
       phone: '',
       whatsapp: '',
@@ -100,6 +105,8 @@ export const AdminBusinessDashboard: React.FC = () => {
       shortSummary: biz.shortSummary || '',
       district: biz.location.district,
       city: biz.location.city,
+      landmark: biz.landmark || '',
+      services: (biz.services || []).join(', '),
       fullAddress: biz.location.fullAddress,
       phone: biz.contact.phone || '',
       whatsapp: biz.contact.whatsapp || '',
@@ -116,6 +123,10 @@ export const AdminBusinessDashboard: React.FC = () => {
       return;
     }
 
+    const servicesArray = formState.services
+      ? formState.services.split(',').map(s => s.trim()).filter(Boolean)
+      : undefined;
+
     try {
       if (editingBusiness) {
         await businessService.updateBusiness(editingBusiness.id, {
@@ -125,10 +136,13 @@ export const AdminBusinessDashboard: React.FC = () => {
           categoryId: formState.categoryId,
           description: formState.description,
           shortSummary: formState.shortSummary || undefined,
+          landmark: formState.landmark || undefined,
+          services: servicesArray,
           location: {
             ...editingBusiness.location,
             district: formState.district,
             city: formState.city,
+            landmark: formState.landmark || undefined,
             fullAddress: formState.fullAddress
           },
           contact: {
@@ -151,6 +165,8 @@ export const AdminBusinessDashboard: React.FC = () => {
           shortSummary: formState.shortSummary || undefined,
           district: formState.district,
           city: formState.city,
+          landmark: formState.landmark || undefined,
+          services: servicesArray,
           fullAddress: formState.fullAddress,
           phone: formState.phone || undefined,
           whatsapp: formState.whatsapp || undefined,
@@ -176,10 +192,34 @@ export const AdminBusinessDashboard: React.FC = () => {
     await loadData();
   };
 
+  const handleSuspend = async (biz: ConfluxBusiness) => {
+    if (confirm(`Are you sure you want to SUSPEND "${biz.name}"? It will be removed from public discovery immediately.`)) {
+      await businessService.suspendBusiness(biz.id);
+      showNotification(`"${biz.name}" suspended successfully.`);
+      await loadData();
+    }
+  };
+
+  const handleApproveClaim = async (biz: ConfluxBusiness) => {
+    if (confirm(`Approve ownership claim for "${biz.name}"? The verified owner will gain full management privileges.`)) {
+      await businessService.approveClaim(biz.id);
+      showNotification(`Ownership claim for "${biz.name}" APPROVED.`);
+      await loadData();
+    }
+  };
+
+  const handleRejectClaim = async (biz: ConfluxBusiness) => {
+    if (confirm(`Reject ownership claim for "${biz.name}"? The entity will revert to publicly documented unclaimed status.`)) {
+      await businessService.rejectClaim(biz.id);
+      showNotification(`Ownership claim for "${biz.name}" REJECTED.`);
+      await loadData();
+    }
+  };
+
   const handleOpenVerifyModal = (biz: ConfluxBusiness) => {
     setVerifyingBusiness(biz);
     setVerifyClaimStatement(
-      `${biz.name} is a legitimate registered enterprise operating in ${biz.location.city}, ${biz.location.district}, West Bengal.`
+      `${biz.name} is an active registered enterprise operating in ${biz.location.city}, ${biz.location.district}, West Bengal.`
     );
   };
 
@@ -192,7 +232,7 @@ export const AdminBusinessDashboard: React.FC = () => {
         verifyingBusiness.id,
         verifyClaimStatement.trim()
       );
-      showNotification(`Verification completed. Status: ${updated.verificationStatus} (${updated.confidenceScore}% confidence)`);
+      showNotification(`Verification evaluated. Status: ${updated.verificationStatus} (${updated.confidenceScore}% confidence)`);
       setVerifyingBusiness(null);
       await loadData();
     } catch (err: any) {
@@ -203,7 +243,7 @@ export const AdminBusinessDashboard: React.FC = () => {
   };
 
   const handleDelete = async (biz: ConfluxBusiness) => {
-    if (confirm(`Are you sure you want to remove "${biz.name}" (${biz.confluxBusinessId}) from the Business Graph?`)) {
+    if (confirm(`CONFIRM DELETION: Are you sure you want to permanently remove "${biz.name}" (${biz.confluxBusinessId}) from the Business Graph?`)) {
       await businessService.deleteBusiness(biz.id);
       showNotification(`Removed "${biz.name}" from Business Graph.`);
       await loadData();
@@ -232,21 +272,23 @@ export const AdminBusinessDashboard: React.FC = () => {
     return true;
   });
 
+  const pendingClaims = businesses.filter(b => b.claimStatus === 'CLAIM_PENDING');
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-20 pt-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
-        {/* Header Bar */}
+        {/* Private Admin Header Bar */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-8 rounded-3xl bg-white border border-slate-200 shadow-sm">
           <div>
             <div className="flex items-center gap-2 text-xs font-bold text-blue-600 uppercase tracking-wider mb-1 font-mono">
-              <Building2 size={16} /> Conflux Business Graph OS
+              <Lock size={15} /> Conflux Private Admin Command Center
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold font-orbitron text-slate-900 tracking-tight">
-              Business Identity &amp; Revenue Validation Command Center
+              Business Graph &amp; Operational Management
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 mt-1">
-              Add, verify, manage, publish businesses, and track real-world connect telemetry.
+              Add businesses, review statutory evidence, audit ownership claims, and monitor real telemetry.
             </p>
           </div>
 
@@ -276,8 +318,20 @@ export const AdminBusinessDashboard: React.FC = () => {
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Building2 size={15} /> Business Graph Entities ({businesses.length})
+            <Building2 size={15} /> Business Entities ({businesses.length})
           </button>
+
+          <button
+            onClick={() => setActiveTab('CLAIMS')}
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeTab === 'CLAIMS'
+                ? 'bg-white text-amber-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <UserCheck size={15} /> Owner Claims ({pendingClaims.length})
+          </button>
+
           <button
             onClick={() => setActiveTab('MEASUREMENT')}
             className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
@@ -286,7 +340,7 @@ export const AdminBusinessDashboard: React.FC = () => {
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <BarChart3 size={15} /> Revenue Validation &amp; Telemetry
+            <BarChart3 size={15} /> Telemetry &amp; Revenue Metrics
           </button>
         </div>
 
@@ -385,6 +439,7 @@ export const AdminBusinessDashboard: React.FC = () => {
                         <th className="py-4 px-4">Location</th>
                         <th className="py-4 px-4">Verification</th>
                         <th className="py-4 px-4">Publish Status</th>
+                        <th className="py-4 px-4">Claim Status</th>
                         <th className="py-4 px-6 text-right">Actions</th>
                       </tr>
                     </thead>
@@ -392,6 +447,7 @@ export const AdminBusinessDashboard: React.FC = () => {
                       {filtered.map(biz => {
                         const isVerified = biz.verificationStatus === 'SUPPORTED';
                         const isPublished = biz.status === 'PUBLISHED';
+                        const isSuspended = biz.status === 'SUSPENDED';
                         const profilePath = `/business/india/west-bengal/${biz.location.district}/${biz.location.city}/${biz.slug}`;
 
                         return (
@@ -433,17 +489,41 @@ export const AdminBusinessDashboard: React.FC = () => {
                               </div>
                             </td>
 
+                            <td className="py-4 px-4 space-y-1.5">
+                              <div>
+                                <button
+                                  onClick={() => handleTogglePublish(biz)}
+                                  className={`inline-flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold font-mono transition-all cursor-pointer ${
+                                    isPublished
+                                      ? 'bg-emerald-600 text-white shadow-sm'
+                                      : isSuspended
+                                      ? 'bg-rose-100 text-rose-800'
+                                      : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                                  }`}
+                                >
+                                  {biz.status}
+                                </button>
+                              </div>
+                              {isPublished && (
+                                <button
+                                  onClick={() => handleSuspend(biz)}
+                                  className="text-[10px] text-rose-600 hover:text-rose-800 font-bold block cursor-pointer"
+                                >
+                                  Suspend Listing
+                                </button>
+                              )}
+                            </td>
+
                             <td className="py-4 px-4">
-                              <button
-                                onClick={() => handleTogglePublish(biz)}
-                                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold font-mono transition-all cursor-pointer ${
-                                  isPublished
-                                    ? 'bg-emerald-600 text-white shadow-sm'
-                                    : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
-                                }`}
-                              >
-                                {isPublished ? 'PUBLISHED' : 'DRAFT'}
-                              </button>
+                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold font-mono ${
+                                biz.claimStatus === 'VERIFIED_OWNER'
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                  : biz.claimStatus === 'CLAIM_PENDING'
+                                  ? 'bg-amber-50 text-amber-800 border border-amber-200 animate-pulse'
+                                  : 'bg-slate-100 text-slate-600'
+                              }`}>
+                                {biz.claimStatus || 'UNCLAIMED_PUBLIC'}
+                              </span>
                             </td>
 
                             <td className="py-4 px-6 text-right">
@@ -485,21 +565,95 @@ export const AdminBusinessDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* ── TAB 2: REVENUE VALIDATION & MEASUREMENT ─────────────── */}
+        {/* ── TAB 2: OWNER CLAIMS REVIEW ─────────────────────────── */}
+        {activeTab === 'CLAIMS' && (
+          <div className="space-y-6">
+            <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div>
+                  <h3 className="text-lg font-bold font-orbitron text-slate-900">
+                    Pending Ownership Claims Review ({pendingClaims.length})
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Review and corroborate ownership claims submitted by real business proprietors before unlocking profile control.
+                  </p>
+                </div>
+                <button
+                  onClick={loadData}
+                  className="text-xs font-bold text-slate-500 hover:text-blue-600 flex items-center gap-1.5 cursor-pointer"
+                >
+                  <RefreshCw size={14} /> Refresh Claims
+                </button>
+              </div>
+
+              {pendingClaims.length === 0 ? (
+                <div className="p-12 text-center text-slate-500 text-xs">
+                  No pending ownership claims awaiting review at this time.
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {pendingClaims.map(biz => (
+                    <div key={biz.id} className="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="space-y-1.5 max-w-2xl">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
+                            {biz.confluxBusinessId}
+                          </span>
+                          <span className="font-bold text-slate-900 text-sm">{biz.name}</span>
+                          <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold font-mono">
+                            CLAIM PENDING
+                          </span>
+                        </div>
+                        <div className="text-xs text-slate-600">
+                          <span className="font-semibold">Location:</span> {biz.location.fullAddress}
+                        </div>
+                        <div className="text-xs text-slate-600">
+                          <span className="font-semibold">Phone:</span> {biz.contact.phone || 'N/A'} • <span className="font-semibold">Email:</span> {biz.contact.email || 'N/A'}
+                        </div>
+                        {biz.evidenceSummary && (
+                          <div className="p-3 rounded-xl bg-slate-50 text-[11px] text-slate-700 font-mono">
+                            Claim Proof: {biz.evidenceSummary}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={() => handleApproveClaim(biz)}
+                          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <ThumbsUp size={14} /> Approve Claim
+                        </button>
+                        <button
+                          onClick={() => handleRejectClaim(biz)}
+                          className="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <ThumbsDown size={14} /> Reject
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB 3: REVENUE VALIDATION & MEASUREMENT ─────────────── */}
         {activeTab === 'MEASUREMENT' && measurementReport && (
           <div className="space-y-8">
             {/* Top Scorecard Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               {/* Card 1: Onboarded */}
-              <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-2">
+              <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-2">
                 <div className="flex items-center justify-between text-slate-500 text-xs font-bold font-mono uppercase">
-                  <span>Businesses Onboarded</span>
-                  <Building2 size={18} className="text-blue-600" />
+                  <span>Onboarded</span>
+                  <Building2 size={16} className="text-blue-600" />
                 </div>
-                <div className="text-3xl font-bold font-orbitron text-slate-900">
+                <div className="text-2xl sm:text-3xl font-bold font-orbitron text-slate-900">
                   {measurementReport.businessesOnboarded.total}
                 </div>
-                <div className="text-xs text-slate-500 flex gap-2">
+                <div className="text-[11px] text-slate-500 flex gap-1.5 flex-wrap">
                   <span className="text-emerald-700 font-bold">{measurementReport.businessesOnboarded.published} Published</span>
                   <span>•</span>
                   <span className="text-amber-700 font-bold">{measurementReport.businessesOnboarded.draft} Draft</span>
@@ -507,46 +661,62 @@ export const AdminBusinessDashboard: React.FC = () => {
               </div>
 
               {/* Card 2: Verified */}
-              <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-2">
+              <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-2">
                 <div className="flex items-center justify-between text-slate-500 text-xs font-bold font-mono uppercase">
-                  <span>Verified Businesses</span>
-                  <ShieldCheck size={18} className="text-emerald-600" />
+                  <span>Verified</span>
+                  <ShieldCheck size={16} className="text-emerald-600" />
                 </div>
-                <div className="text-3xl font-bold font-orbitron text-slate-900">
+                <div className="text-2xl sm:text-3xl font-bold font-orbitron text-slate-900">
                   {measurementReport.verifiedBusinesses.totalVerified}
                 </div>
-                <div className="text-xs text-slate-500 flex gap-2">
+                <div className="text-[11px] text-slate-500 flex gap-1.5 flex-wrap">
                   <span className="text-emerald-700 font-bold">{measurementReport.verifiedBusinesses.supported} Supported</span>
                   <span>•</span>
                   <span>{measurementReport.verifiedBusinesses.unverified} Unverified</span>
                 </div>
               </div>
 
-              {/* Card 3: Connect Actions */}
-              <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-2">
+              {/* Card 3: Claims Audited */}
+              <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-2">
                 <div className="flex items-center justify-between text-slate-500 text-xs font-bold font-mono uppercase">
-                  <span>Connect Actions</span>
-                  <MousePointer size={18} className="text-purple-600" />
+                  <span>Owner Claims</span>
+                  <UserCheck size={16} className="text-amber-600" />
                 </div>
-                <div className="text-3xl font-bold font-orbitron text-slate-900">
-                  {measurementReport.connectActions.total}
+                <div className="text-2xl sm:text-3xl font-bold font-orbitron text-slate-900">
+                  {measurementReport.claims?.total || 0}
                 </div>
-                <div className="text-xs text-slate-500">
-                  {measurementReport.connectActions.whatsapp} WhatsApp • {measurementReport.connectActions.calls} Calls • {measurementReport.connectActions.bookings} Bookings
+                <div className="text-[11px] text-slate-500 flex gap-1.5 flex-wrap">
+                  <span className="text-amber-700 font-bold">{measurementReport.claims?.pending || 0} Pending</span>
+                  <span>•</span>
+                  <span className="text-emerald-700 font-bold">{measurementReport.claims?.verifiedOwners || 0} Verified</span>
                 </div>
               </div>
 
-              {/* Card 4: Inbound Leads */}
-              <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-2">
+              {/* Card 4: Connect Actions */}
+              <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-2">
+                <div className="flex items-center justify-between text-slate-500 text-xs font-bold font-mono uppercase">
+                  <span>Connects</span>
+                  <MousePointer size={16} className="text-purple-600" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold font-orbitron text-slate-900">
+                  {measurementReport.connectActions.total}
+                </div>
+                <div className="text-[11px] text-slate-500">
+                  {measurementReport.connectActions.whatsapp} WA • {measurementReport.connectActions.calls} Calls • {measurementReport.connectActions.bookings} Book
+                </div>
+              </div>
+
+              {/* Card 5: Inbound Leads */}
+              <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-2">
                 <div className="flex items-center justify-between text-slate-500 text-xs font-bold font-mono uppercase">
                   <span>Inbound Leads</span>
-                  <Send size={18} className="text-indigo-600" />
+                  <Send size={16} className="text-indigo-600" />
                 </div>
-                <div className="text-3xl font-bold font-orbitron text-slate-900">
+                <div className="text-2xl sm:text-3xl font-bold font-orbitron text-slate-900">
                   {measurementReport.leads.total}
                 </div>
-                <div className="text-xs text-emerald-700 font-bold">
-                  Dispatched via Resend &amp; Logged
+                <div className="text-[11px] text-emerald-700 font-bold">
+                  Dispatched via Resend
                 </div>
               </div>
             </div>
@@ -560,7 +730,7 @@ export const AdminBusinessDashboard: React.FC = () => {
                 Ranaghat &amp; Nadia Pilot Onboarding Target: 10 Verified Businesses
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl">
-                Ready for manual onboarding of verified local enterprises (Agro-processors, Tant Weavers, Clinics, Diagnostic Labs, Machinists, and Local Food services).
+                Ready for manual onboarding of verified local enterprises (Agro-processors, Tant Weavers, Diagnostics &amp; Health Clinics, Gyms, HVAC Technicians, and Local Food services).
               </p>
             </div>
 
@@ -650,7 +820,7 @@ export const AdminBusinessDashboard: React.FC = () => {
                       type="text"
                       value={formState.name}
                       onChange={e => setFormState({ ...formState, name: e.target.value })}
-                      placeholder="e.g. Ranaghat Agro Processing"
+                      placeholder="e.g. Ranaghat Apex Diagnostic Centre"
                       className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                       required
                     />
@@ -662,7 +832,7 @@ export const AdminBusinessDashboard: React.FC = () => {
                       type="text"
                       value={formState.legalName}
                       onChange={e => setFormState({ ...formState, legalName: e.target.value })}
-                      placeholder="e.g. Ranaghat Agro Pvt Ltd"
+                      placeholder="e.g. Apex Health Diagnostic LLP"
                       className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     />
                   </div>
@@ -696,12 +866,23 @@ export const AdminBusinessDashboard: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Landmark (e.g. Near Station, Court More)</label>
+                  <input
+                    type="text"
+                    value={formState.landmark}
+                    onChange={e => setFormState({ ...formState, landmark: e.target.value })}
+                    placeholder="e.g. Near Sub-Divisional Hospital Gate"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  />
+                </div>
+
+                <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-700">Full Physical Address *</label>
                   <input
                     type="text"
                     value={formState.fullAddress}
                     onChange={e => setFormState({ ...formState, fullAddress: e.target.value })}
-                    placeholder="e.g. NH-12 Highway Junction, Ranaghat, Nadia, West Bengal 741201"
+                    placeholder="e.g. College Road, Near Sub-Divisional Hospital, Ranaghat, Nadia 741201"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     required
                   />
@@ -714,16 +895,28 @@ export const AdminBusinessDashboard: React.FC = () => {
                     onChange={e => setFormState({ ...formState, categoryId: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none"
                   >
-                    <option value="agriculture-farming">Agro-Processing &amp; Farming</option>
-                    <option value="handloom-textiles">Handloom &amp; Traditional Textiles</option>
-                    <option value="manufacturing-industrial">Manufacturing &amp; Precision Machining</option>
-                    <option value="it-software">IT, AI &amp; Software Development</option>
                     <option value="healthcare">Healthcare &amp; Diagnostics</option>
                     <option value="food-hospitality">Restaurants &amp; Food Services</option>
+                    <option value="fitness-wellness">Gyms &amp; Fitness</option>
+                    <option value="services-repairs">Repairs &amp; HVAC Services</option>
                     <option value="tourism-hospitality">Hotels &amp; Tourism</option>
-                    <option value="services-repairs">Repairs &amp; Maintenance</option>
-                    <option value="business-services">Business &amp; Commercial Services</option>
+                    <option value="salons-beauty">Salons &amp; Personal Care</option>
+                    <option value="handloom-textiles">Handloom &amp; Textiles</option>
+                    <option value="agriculture-farming">Agro-Processing &amp; Farming</option>
+                    <option value="manufacturing-industrial">Manufacturing &amp; Machining</option>
+                    <option value="it-software">IT, AI &amp; Software</option>
                   </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Services Offered (Comma Separated)</label>
+                  <input
+                    type="text"
+                    value={formState.services}
+                    onChange={e => setFormState({ ...formState, services: e.target.value })}
+                    placeholder="e.g. Ultrasound (USG), Digital X-Ray, Pathology Blood Tests, Doctor Chamber"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  />
                 </div>
 
                 <div className="space-y-1">
@@ -851,7 +1044,7 @@ export const AdminBusinessDashboard: React.FC = () => {
                 </div>
 
                 <p className="text-[11px] text-slate-500 leading-relaxed">
-                  Conflux Verify deterministically assesses this claim against primary statutory repositories (MCA, GSTIN, FSSAI, IAF CertSearch) and generates an authoritative confidence score.
+                  Conflux Verify deterministically assesses this claim against primary statutory repositories (MCA, GSTIN, FSSAI, Clinical Establishments, IAF CertSearch) and generates an authoritative confidence score.
                 </p>
               </div>
 

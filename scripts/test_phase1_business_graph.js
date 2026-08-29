@@ -76,10 +76,16 @@ async function runPhase1Tests() {
   const fetchedById = await businessService.getBusinessById(createdBiz.confluxBusinessId);
   assert('Retrieves business by Conflux Business ID', fetchedById !== null && fetchedById.name === 'Kalyani Modern Diagnostics');
 
-  // 6. Publishing Status Toggle
+  // 6. Publishing Status Toggle & Suspension
   const publishedBiz = await businessService.setPublishStatus(createdBiz.id, 'PUBLISHED');
   assert('Updates business publishing status to PUBLISHED', publishedBiz.status === 'PUBLISHED');
   assert('Sets isIndexable to true when published', publishedBiz.isIndexable === true);
+
+  const suspendedBiz = await businessService.suspendBusiness(createdBiz.id);
+  assert('Suspends business listing and disables indexability', suspendedBiz.status === 'SUSPENDED' && suspendedBiz.isIndexable === false);
+
+  // Restore to published for subsequent search checks
+  await businessService.setPublishStatus(createdBiz.id, 'PUBLISHED');
 
   // 7. Search & Discovery Filtering
   const allSearchResults = await businessService.searchBusinesses();
@@ -105,7 +111,7 @@ async function runPhase1Tests() {
   assert('Produces explainable organic rank score between 0 and 100', rankedItem.rankingExplanation.score >= 0 && rankedItem.rankingExplanation.score <= 100);
   assert('Includes transparent reason codes in ranking explanation', Array.isArray(rankedItem.rankingExplanation.reasonCodes) && rankedItem.rankingExplanation.reasonCodes.length > 0);
 
-  // 9. Claim Business Workflow
+  // 9. Claim Business Workflow & Admin Approval
   const claimResult = await businessService.claimBusiness(createdBiz.id, {
     ownerName: 'Subhasish Dutta',
     ownerEmail: 'subhasish@kalyanidiagnostics.in',
@@ -115,6 +121,12 @@ async function runPhase1Tests() {
   assert('Submits ownership claim request successfully', claimResult.success === true);
   const updatedClaimedBiz = await businessService.getBusinessById(createdBiz.id);
   assert('Business claimStatus is transitioned to CLAIM_PENDING', updatedClaimedBiz.claimStatus === 'CLAIM_PENDING');
+
+  const approvedBiz = await businessService.approveClaim(createdBiz.id);
+  assert('Admin can approve claim transitioning to VERIFIED_OWNER', approvedBiz.claimStatus === 'VERIFIED_OWNER' && approvedBiz.isClaimed === true);
+
+  const rejectedBiz = await businessService.rejectClaim(createdBiz.id, 'Insufficient credentials');
+  assert('Admin can reject claim reverting to UNCLAIMED_PUBLIC', rejectedBiz.claimStatus === 'UNCLAIMED_PUBLIC' && rejectedBiz.isClaimed === false);
 
   // 10. Conflux Verify Engine Integration
   const verifiedEntity = await businessService.verifyBusinessClaim(
@@ -126,7 +138,7 @@ async function runPhase1Tests() {
   assert('Verification attaches statutory confidence score >= 80%', verifiedEntity.confidenceScore >= 80);
   assert('Verification updates lastVerifiedAt timestamp', Boolean(verifiedEntity.lastVerifiedAt));
 
-  // 11. Connect Telemetry
+  // 11. Connect Telemetry & Measurement
   await connectService.logEvent({
     businessId: createdBiz.id,
     eventType: 'BUSINESS_VIEW',
@@ -140,6 +152,9 @@ async function runPhase1Tests() {
     channel: 'AI_AGENT_REST_API'
   });
   assert('Logs AGENT_API_QUERY telemetry event for AI agents', true);
+
+  const report = await connectService.getMeasurementReport();
+  assert('Calculates accurate measurement report with claims breakdown', report.claims !== undefined && report.claims.total >= 0);
 
   // 12. Business Removal
   const deleted = await businessService.deleteBusiness(createdBiz.id);

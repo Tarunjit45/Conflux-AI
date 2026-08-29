@@ -24,7 +24,6 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
     { name: 'Verify', path: '/verify', isLink: true, id: 'verify' },
     { name: 'Locations', path: '/locations', isLink: true, id: 'locations' },
     { name: 'Blog', path: '/blog', isLink: true, id: 'blog' },
-    { name: 'Admin', path: '/admin/businesses', isLink: true, id: 'admin' },
     { name: 'Contact', path: '/contact', isLink: true, id: 'contact' },
   ];
 

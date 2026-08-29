@@ -1189,6 +1189,36 @@ export class BusinessService {
   }
 
   /**
+   * Approve an owner claim after statutory review
+   */
+  async approveClaim(businessId: string): Promise<ConfluxBusiness> {
+    return this.updateBusiness(businessId, {
+      claimStatus: 'VERIFIED_OWNER',
+      isClaimed: true
+    });
+  }
+
+  /**
+   * Reject an owner claim after statutory review
+   */
+  async rejectClaim(businessId: string, rejectionReason?: string): Promise<ConfluxBusiness> {
+    return this.updateBusiness(businessId, {
+      claimStatus: 'UNCLAIMED_PUBLIC',
+      isClaimed: false
+    });
+  }
+
+  /**
+   * Suspend a business entity from public visibility
+   */
+  async suspendBusiness(businessId: string): Promise<ConfluxBusiness> {
+    return this.updateBusiness(businessId, {
+      status: 'SUSPENDED',
+      isIndexable: false
+    });
+  }
+
+  /**
    * Transition publication status
    */
   async setPublishStatus(id: string, status: BusinessPublishStatus): Promise<ConfluxBusiness> {

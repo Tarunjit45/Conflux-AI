@@ -38,6 +38,11 @@ export interface MeasurementReport {
   leads: {
     total: number;
   };
+  claims: {
+    total: number;
+    pending: number;
+    verifiedOwners: number;
+  };
   recentEvents: ConnectEventRecord[];
 }
 
@@ -147,6 +152,10 @@ export class ConnectService {
       .filter((intent): intent is string => Boolean(intent))
       .slice(0, 10);
 
+    const totalClaims = businesses.filter(b => b.isClaimed || b.claimStatus === 'CLAIM_PENDING').length;
+    const pendingClaimsCount = businesses.filter(b => b.claimStatus === 'CLAIM_PENDING').length;
+    const verifiedOwnersCount = businesses.filter(b => b.claimStatus === 'VERIFIED_OWNER').length;
+
     return {
       timestamp: new Date().toISOString(),
       businessesOnboarded: {
@@ -178,6 +187,11 @@ export class ConnectService {
       },
       leads: {
         total: leadEvents.length
+      },
+      claims: {
+        total: totalClaims,
+        pending: pendingClaimsCount,
+        verifiedOwners: verifiedOwnersCount
       },
       recentEvents: events.slice(0, 20)
     };
