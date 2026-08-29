@@ -1,7 +1,7 @@
 -- ==============================================================================
 -- CONFLUX PLATFORM — PRODUCTION SUPABASE POSTGRESQL SCHEMA & RLS HARDENING (MIGRATION 003)
 -- Framework: Supabase / PostgreSQL 15+
--- Security: Strict Multi-Tenant Row Level Security (RLS) + Private Document Isolation
+-- Security: Strict Multi-Tenant Row Level Security (RLS) + Non-Recursive Security Definer Helpers
 -- ==============================================================================
 
 -- ── 1. PROFILES & ROLE-BASED ACCESS CONTROL ──────────────────────────────────
@@ -20,27 +20,45 @@ CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
+-- Non-recursive Security Definer Helpers to prevent PostgreSQL RLS recursion (42P17)
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND role = 'ADMIN'
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+CREATE OR REPLACE FUNCTION public.get_my_role()
+RETURNS TEXT AS $$
+BEGIN
+  RETURN (SELECT role FROM public.profiles WHERE id = auth.uid());
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
 -- Profiles RLS:
--- 1. Users can read their own profile
+DROP POLICY IF EXISTS "Users can read own profile" ON public.profiles;
 CREATE POLICY "Users can read own profile"
     ON public.profiles FOR SELECT
     USING (auth.uid() = id);
 
--- 2. Platform Admins can read all profiles
+DROP POLICY IF EXISTS "Admins can read all profiles" ON public.profiles;
 CREATE POLICY "Admins can read all profiles"
     ON public.profiles FOR SELECT
-    USING ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'ADMIN');
+    USING (public.is_admin());
 
--- 3. Users can update their own non-role fields
+DROP POLICY IF EXISTS "Users can update own non-role fields" ON public.profiles;
 CREATE POLICY "Users can update own non-role fields"
     ON public.profiles FOR UPDATE
     USING (auth.uid() = id)
-    WITH CHECK (auth.uid() = id AND role = (SELECT role FROM public.profiles WHERE id = auth.uid()));
+    WITH CHECK (auth.uid() = id AND role = public.get_my_role());
 
--- 4. Admins can update any profile (including role changes)
+DROP POLICY IF EXISTS "Admins can update any profile" ON public.profiles;
 CREATE POLICY "Admins can update any profile"
     ON public.profiles FOR UPDATE
-    USING ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'ADMIN');
+    USING (public.is_admin());
 
 -- ── 2. CANONICAL BUSINESS GRAPH NODES ─────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.businesses (
@@ -94,25 +112,25 @@ CREATE INDEX IF NOT EXISTS idx_businesses_owner ON public.businesses(owner_id);
 
 ALTER TABLE public.businesses ENABLE ROW LEVEL SECURITY;
 
--- Businesses RLS:
--- 1. Anyone (public/anonymous) can read published businesses
+DROP POLICY IF EXISTS "Public can view published businesses" ON public.businesses;
 CREATE POLICY "Public can view published businesses"
     ON public.businesses FOR SELECT
     USING (status = 'PUBLISHED');
 
--- 2. Business Owners can read and update their own business entities
+DROP POLICY IF EXISTS "Owners can view own businesses" ON public.businesses;
 CREATE POLICY "Owners can view own businesses"
     ON public.businesses FOR SELECT
     USING (owner_id = auth.uid());
 
+DROP POLICY IF EXISTS "Owners can update own businesses" ON public.businesses;
 CREATE POLICY "Owners can update own businesses"
     ON public.businesses FOR UPDATE
     USING (owner_id = auth.uid());
 
--- 3. Admins have full access to all businesses
+DROP POLICY IF EXISTS "Admins have full business access" ON public.businesses;
 CREATE POLICY "Admins have full business access"
     ON public.businesses FOR ALL
-    USING ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'ADMIN');
+    USING (public.is_admin());
 
 -- ── 3. BUSINESS LOCATIONS & CAPABILITIES ──────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.business_locations (
@@ -140,13 +158,15 @@ CREATE INDEX IF NOT EXISTS idx_locations_biz_id ON public.business_locations(bus
 
 ALTER TABLE public.business_locations ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public can view locations of published businesses" ON public.business_locations;
 CREATE POLICY "Public can view locations of published businesses"
     ON public.business_locations FOR SELECT
     USING (EXISTS (SELECT 1 FROM public.businesses b WHERE b.id = business_id AND b.status = 'PUBLISHED'));
 
+DROP POLICY IF EXISTS "Admins manage all locations" ON public.business_locations;
 CREATE POLICY "Admins manage all locations"
     ON public.business_locations FOR ALL
-    USING ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'ADMIN');
+    USING (public.is_admin());
 
 CREATE TABLE IF NOT EXISTS public.business_capabilities (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -161,13 +181,15 @@ CREATE TABLE IF NOT EXISTS public.business_capabilities (
 
 ALTER TABLE public.business_capabilities ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public can view capabilities of published businesses" ON public.business_capabilities;
 CREATE POLICY "Public can view capabilities of published businesses"
     ON public.business_capabilities FOR SELECT
     USING (EXISTS (SELECT 1 FROM public.businesses b WHERE b.id = business_id AND b.status = 'PUBLISHED'));
 
+DROP POLICY IF EXISTS "Admins manage all capabilities" ON public.business_capabilities;
 CREATE POLICY "Admins manage all capabilities"
     ON public.business_capabilities FOR ALL
-    USING ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'ADMIN');
+    USING (public.is_admin());
 
 -- ── 4. INTAKE APPLICATIONS & PRIVATE EVIDENCE ISOLATION ───────────────────────
 CREATE TABLE IF NOT EXISTS public.business_applications (
@@ -204,21 +226,20 @@ CREATE TABLE IF NOT EXISTS public.business_applications (
 
 ALTER TABLE public.business_applications ENABLE ROW LEVEL SECURITY;
 
--- Applications RLS:
--- 1. Applicants can view their own application
+DROP POLICY IF EXISTS "Applicants can view own applications" ON public.business_applications;
 CREATE POLICY "Applicants can view own applications"
     ON public.business_applications FOR SELECT
     USING (applicant_user_id = auth.uid());
 
--- 2. Anyone can submit an application
+DROP POLICY IF EXISTS "Anyone can submit an application" ON public.business_applications;
 CREATE POLICY "Anyone can submit an application"
     ON public.business_applications FOR INSERT
     WITH CHECK (true);
 
--- 3. Admins have full access to review, approve, reject applications
+DROP POLICY IF EXISTS "Admins have full application access" ON public.business_applications;
 CREATE POLICY "Admins have full application access"
     ON public.business_applications FOR ALL
-    USING ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'ADMIN');
+    USING (public.is_admin());
 
 -- ── 5. PRIVATE EVIDENCE DOCUMENTS (STRICT PRIVATE ISOLATION) ─────────────────
 CREATE TABLE IF NOT EXISTS public.private_evidence_documents (
@@ -236,22 +257,23 @@ CREATE TABLE IF NOT EXISTS public.private_evidence_documents (
 
 ALTER TABLE public.private_evidence_documents ENABLE ROW LEVEL SECURITY;
 
--- STRICT PRIVATE EVIDENCE RLS:
--- Public / Anonymous / Unrelated users can NEVER select private documents
+DROP POLICY IF EXISTS "Strict private evidence access only for applicant or admin" ON public.private_evidence_documents;
 CREATE POLICY "Strict private evidence access only for applicant or admin"
     ON public.private_evidence_documents FOR SELECT
     USING (
         (auth.uid() IS NOT NULL AND applicant_user_id = auth.uid()) OR
-        ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'ADMIN')
+        public.is_admin()
     );
 
+DROP POLICY IF EXISTS "Applicants or Admins can insert private evidence" ON public.private_evidence_documents;
 CREATE POLICY "Applicants or Admins can insert private evidence"
     ON public.private_evidence_documents FOR INSERT
     WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Admins can manage private evidence" ON public.private_evidence_documents;
 CREATE POLICY "Admins can manage private evidence"
     ON public.private_evidence_documents FOR ALL
-    USING ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'ADMIN');
+    USING (public.is_admin());
 
 -- ── 6. USER CONTRIBUTIONS (REVIEWS, EDITS, REPORTS) ───────────────────────────
 CREATE TABLE IF NOT EXISTS public.user_contributions (
@@ -280,26 +302,25 @@ CREATE INDEX IF NOT EXISTS idx_contrib_status ON public.user_contributions(moder
 
 ALTER TABLE public.user_contributions ENABLE ROW LEVEL SECURITY;
 
--- Contributions RLS:
--- 1. Public can ONLY view APPROVED review contributions (Zero unmoderated leaks)
+DROP POLICY IF EXISTS "Public can view approved reviews" ON public.user_contributions;
 CREATE POLICY "Public can view approved reviews"
     ON public.user_contributions FOR SELECT
     USING (moderation_status = 'APPROVED' AND contribution_type = 'REVIEW_RATING');
 
--- 2. Authenticated users can view their own contributions
+DROP POLICY IF EXISTS "Users can view own contributions" ON public.user_contributions;
 CREATE POLICY "Users can view own contributions"
     ON public.user_contributions FOR SELECT
     USING (user_id = auth.uid());
 
--- 3. Authenticated users can insert contributions
+DROP POLICY IF EXISTS "Authenticated users can submit contributions" ON public.user_contributions;
 CREATE POLICY "Authenticated users can submit contributions"
     ON public.user_contributions FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
--- 4. Admins can view all contributions and perform moderation
+DROP POLICY IF EXISTS "Admins manage all contributions" ON public.user_contributions;
 CREATE POLICY "Admins manage all contributions"
     ON public.user_contributions FOR ALL
-    USING ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'ADMIN');
+    USING (public.is_admin());
 
 -- ── 7. TELEMETRY & LEADS ──────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.connect_telemetry_events (
@@ -314,13 +335,15 @@ CREATE TABLE IF NOT EXISTS public.connect_telemetry_events (
 
 ALTER TABLE public.connect_telemetry_events ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can insert telemetry events" ON public.connect_telemetry_events;
 CREATE POLICY "Anyone can insert telemetry events"
     ON public.connect_telemetry_events FOR INSERT
     WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Admins can view telemetry events" ON public.connect_telemetry_events;
 CREATE POLICY "Admins can view telemetry events"
     ON public.connect_telemetry_events FOR SELECT
-    USING ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'ADMIN');
+    USING (public.is_admin());
 
 CREATE TABLE IF NOT EXISTS public.leads (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -337,14 +360,16 @@ CREATE TABLE IF NOT EXISTS public.leads (
 
 ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can submit a lead" ON public.leads;
 CREATE POLICY "Anyone can submit a lead"
     ON public.leads FOR INSERT
     WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Business owners or Admins can view leads" ON public.leads;
 CREATE POLICY "Business owners or Admins can view leads"
     ON public.leads FOR SELECT
     USING (
-        ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'ADMIN') OR
+        public.is_admin() OR
         EXISTS (SELECT 1 FROM public.businesses b WHERE b.id = business_id AND b.owner_id = auth.uid())
     );
 
@@ -353,10 +378,11 @@ CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
   INSERT INTO public.profiles (id, email, full_name, role)
-  VALUES (new.id, new.email, new.raw_user_meta_data->>'full_name', COALESCE(new.raw_user_meta_data->>'role', 'USER'));
+  VALUES (new.id, new.email, new.raw_user_meta_data->>'full_name', COALESCE(new.raw_user_meta_data->>'role', 'USER'))
+  ON CONFLICT (id) DO NOTHING;
   RETURN new;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
@@ -378,6 +404,6 @@ BEGIN
         DROP POLICY IF EXISTS "Admins have full access to posts" ON public.posts;
         CREATE POLICY "Admins have full access to posts"
             ON public.posts FOR ALL
-            USING ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'ADMIN');
+            USING (public.is_admin());
     END IF;
 END $$;
