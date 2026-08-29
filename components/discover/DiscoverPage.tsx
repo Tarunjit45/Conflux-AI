@@ -7,7 +7,7 @@ import {
   Search, MapPin, Building2, ShieldCheck, Clock, Phone,
   MessageSquare, ArrowRight, Sparkles, AlertCircle, CheckCircle2,
   Compass, ExternalLink, Calendar, X, Filter, RotateCcw, Check,
-  Layers, ChevronRight, HelpCircle
+  Layers, ChevronRight, HelpCircle, Navigation
 } from 'lucide-react';
 import { businessService } from '../../lib/businessService';
 import { connectService } from '../../lib/connectService';
@@ -24,15 +24,16 @@ interface CategoryShortcut {
 
 const CATEGORY_SHORTCUTS: CategoryShortcut[] = [
   { id: 'all', name: 'All Categories', icon: '✨' },
-  { id: 'agro', name: 'Agro & Farming', icon: '🌾', categoryFilter: 'agriculture-farming' },
+  { id: 'health', name: 'Healthcare & Diagnostics', icon: '🏥', categoryFilter: 'healthcare' },
+  { id: 'food', name: 'Restaurants & Dining', icon: '🍽️', categoryFilter: 'food-hospitality' },
+  { id: 'gyms', name: 'Gyms & Fitness', icon: '💪', categoryFilter: 'fitness-wellness' },
+  { id: 'repairs', name: 'AC & Home Repairs', icon: '🛠️', categoryFilter: 'services-repairs' },
+  { id: 'hotels', name: 'Hotels & Lodging', icon: '🏨', categoryFilter: 'tourism-hospitality' },
+  { id: 'salons', name: 'Salons & Spa', icon: '✂️', categoryFilter: 'salons-beauty' },
   { id: 'textiles', name: 'Handloom & Textiles', icon: '🧵', categoryFilter: 'handloom-textiles' },
-  { id: 'mfg', name: 'Manufacturing & Industrial', icon: '⚙️', categoryFilter: 'manufacturing-industrial' },
-  { id: 'health', name: 'Clinics & Diagnostics', icon: '🏥', categoryFilter: 'healthcare' },
-  { id: 'it', name: 'IT & Software', icon: '💻', categoryFilter: 'it-software' },
-  { id: 'food', name: 'Restaurants & Food', icon: '🍽️', categoryFilter: 'food-hospitality' },
-  { id: 'hotels', name: 'Hotels & Tourism', icon: '🏨', categoryFilter: 'tourism-hospitality' },
-  { id: 'repairs', name: 'Repairs & Services', icon: '🛠️', categoryFilter: 'services-repairs' },
-  { id: 'services', name: 'Business Services', icon: '💼', categoryFilter: 'business-services' }
+  { id: 'agro', name: 'Agro & Cold Storage', icon: '🌾', categoryFilter: 'agriculture-farming' },
+  { id: 'mfg', name: 'Manufacturing & Machining', icon: '⚙️', categoryFilter: 'manufacturing-industrial' },
+  { id: 'it', name: 'IT & Software', icon: '💻', categoryFilter: 'it-software' }
 ];
 
 export const DiscoverPage: React.FC = () => {
@@ -41,18 +42,21 @@ export const DiscoverPage: React.FC = () => {
 
   // Search & Filter State
   const [whatQuery, setWhatQuery] = useState('');
-  const [whereQuery, setWhereQuery] = useState('');
+  const [whereQuery, setWhereQuery] = useState('Ranaghat');
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [openNowOnly, setOpenNowOnly] = useState(false);
   const [requiredAction, setRequiredAction] = useState<CapabilityActionType | 'all'>('all');
 
-  const executeSearch = async () => {
+  const executeSearch = async (overrideWhat?: string, overrideWhere?: string) => {
     setIsLoading(true);
 
+    const currentWhat = overrideWhat !== undefined ? overrideWhat : whatQuery;
+    const currentWhere = overrideWhere !== undefined ? overrideWhere : whereQuery;
+
     // Natural Intent Parser: Extract embedded "in <location>" from "what" query if whereQuery is empty
-    let parsedWhat = whatQuery.trim();
-    let parsedWhere = whereQuery.trim().toLowerCase();
+    let parsedWhat = currentWhat.trim();
+    let parsedWhere = currentWhere.trim().toLowerCase();
 
     if (!parsedWhere && parsedWhat) {
       const match = parsedWhat.match(/(.+?)\s+(?:in|at|near)\s+([a-zA-Z\s-]+)$/i);
@@ -112,6 +116,12 @@ export const DiscoverPage: React.FC = () => {
     executeSearch();
   };
 
+  const handleIntentShortcut = (what: string, where: string = 'Ranaghat') => {
+    setWhatQuery(what);
+    setWhereQuery(where);
+    executeSearch(what, where);
+  };
+
   const handleResetFilters = () => {
     setWhatQuery('');
     setWhereQuery('');
@@ -155,7 +165,7 @@ export const DiscoverPage: React.FC = () => {
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs font-bold tracking-wide uppercase font-mono"
           >
             <ShieldCheck size={15} className="text-emerald-400" />
-            Verified Local Business Discovery
+            Verified Local Business Discovery &amp; Decision Hub
           </motion.div>
 
           <motion.h1
@@ -173,7 +183,7 @@ export const DiscoverPage: React.FC = () => {
             transition={{ delay: 0.2 }}
             className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed"
           >
-            Tell Conflux what you need, where you need it, and discover statutory-verified enterprises, artisans, clinics, and services you can connect with directly.
+            Tell Conflux what you need, where you need it, and discover statutory-verified enterprises, clinics, diagnostic centers, artisans, and services you can connect with directly.
           </motion.p>
 
           {/* ── TWO-PART SEARCH INPUT BAR ─────────────────────────── */}
@@ -196,24 +206,15 @@ export const DiscoverPage: React.FC = () => {
                     type="text"
                     value={whatQuery}
                     onChange={e => setWhatQuery(e.target.value)}
-                    placeholder="e.g. Restaurants, Agro, Tant Sarees, Diagnostics..."
+                    placeholder="e.g. USG, AC Repair, Tant Saree, Gym, Hotel..."
                     className="w-full bg-transparent text-sm sm:text-base font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
                   />
                 </div>
-                {whatQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setWhatQuery('')}
-                    className="text-slate-400 hover:text-slate-600 p-1"
-                  >
-                    <X size={16} />
-                  </button>
-                )}
               </div>
 
               {/* Field 2: Where */}
               <div className="md:col-span-4 relative flex items-center px-3 py-2 bg-slate-50 md:bg-transparent rounded-2xl md:rounded-none">
-                <MapPin className="text-emerald-600 shrink-0 mr-3" size={20} />
+                <MapPin className="text-blue-600 shrink-0 mr-3" size={20} />
                 <div className="w-full text-left">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">
                     Where?
@@ -226,29 +227,42 @@ export const DiscoverPage: React.FC = () => {
                     className="w-full bg-transparent text-sm sm:text-base font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
                   />
                 </div>
-                {whereQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setWhereQuery('')}
-                    className="text-slate-400 hover:text-slate-600 p-1"
-                  >
-                    <X size={16} />
-                  </button>
-                )}
               </div>
 
-              {/* Submit CTA Button */}
+              {/* Action Button */}
               <div className="md:col-span-2">
                 <button
                   type="submit"
-                  className="w-full py-3.5 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold text-sm tracking-wide shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm shadow-lg shadow-blue-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
+                  <Sparkles size={16} />
                   <span>Discover</span>
-                  <ArrowRight size={16} />
                 </button>
               </div>
             </div>
           </motion.form>
+
+          {/* Quick Intent Shortcuts */}
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-2 text-xs">
+            <span className="text-slate-400 font-mono text-[11px]">Popular in Ranaghat:</span>
+            {[
+              { label: '🏥 Diagnostic & USG', query: 'USG' },
+              { label: '🍽️ Restaurants', query: 'Restaurant' },
+              { label: '💪 Gyms', query: 'Gym' },
+              { label: '❄️ AC Repair', query: 'AC Repair' },
+              { label: '🏨 Hotels', query: 'Hotel' },
+              { label: '🧵 Santipur Sarees', query: 'Saree' }
+            ].map(pill => (
+              <button
+                key={pill.label}
+                type="button"
+                onClick={() => handleIntentShortcut(pill.query, 'Ranaghat')}
+                className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-slate-200 text-[11px] font-semibold transition-colors cursor-pointer"
+              >
+                {pill.label}
+              </button>
+            ))}
+          </div>
 
           {/* Trust Value Badges Under Search */}
           <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-xs font-semibold text-slate-300">
@@ -396,7 +410,7 @@ export const DiscoverPage: React.FC = () => {
               <ul className="list-disc pl-4 space-y-1">
                 <li>Clear the &ldquo;Where&rdquo; field to browse verified enterprises across all districts.</li>
                 <li>Try selecting one of the popular category shortcuts above.</li>
-                <li>Try searching for statutory sectors like <em>Agro, Handloom, Machining, or Software</em>.</li>
+                <li>Try searching for local services like <em>USG, AC Repair, Tant Saree, Gym, or Dining</em>.</li>
               </ul>
             </div>
 
@@ -416,7 +430,7 @@ export const DiscoverPage: React.FC = () => {
             </div>
           </div>
         ) : (
-          /* Populated Results Grid */
+          /* Populated Results Grid — Decision-Grade Cards */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {results.map(({ business: biz, rankingExplanation }) => {
               const isOpenNow = businessService.isBusinessOpenNow(biz.operatingHours);
@@ -428,10 +442,10 @@ export const DiscoverPage: React.FC = () => {
                   key={biz.id}
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="p-7 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-6 group"
+                  className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-5 group"
                 >
                   <div className="space-y-4">
-                    {/* Top Identity & Verification Badge */}
+                    {/* Top Identity & Verification Pill */}
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-mono text-[11px] font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100">
                         {biz.confluxBusinessId}
@@ -447,9 +461,9 @@ export const DiscoverPage: React.FC = () => {
                       )}
                     </div>
 
-                    {/* Business Name & Category */}
+                    {/* WHO: Business Name & Category */}
                     <div>
-                      <h3 className="text-xl font-bold font-orbitron text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                      <h3 className="text-lg sm:text-xl font-bold font-orbitron text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">
                         <Link to={profileUrl}>{biz.name}</Link>
                       </h3>
                       <div className="text-xs font-bold text-slate-500 mt-1 capitalize flex items-center gap-2">
@@ -457,24 +471,29 @@ export const DiscoverPage: React.FC = () => {
                         {biz.legalName && (
                           <>
                             <span>•</span>
-                            <span className="text-slate-400 truncate max-w-[150px]">{biz.legalName}</span>
+                            <span className="text-slate-400 truncate max-w-[140px]">{biz.legalName}</span>
                           </>
                         )}
                       </div>
                     </div>
 
-                    {/* Location & Live Open Status */}
-                    <div className="space-y-1.5 text-xs text-slate-600">
+                    {/* WHERE: Location, Landmark & Live Open Status */}
+                    <div className="space-y-1 text-xs text-slate-600">
                       <div className="flex items-center gap-1.5">
                         <MapPin size={14} className="text-slate-400 shrink-0" />
-                        <span className="capitalize font-medium">
+                        <span className="capitalize font-medium text-slate-800">
                           {biz.location.city}, {biz.location.district}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1.5">
+                      {biz.landmark && (
+                        <div className="text-[11px] text-slate-500 pl-5 font-mono">
+                          Landmark: {biz.landmark}
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1.5 pt-0.5">
                         <Clock size={14} className="text-slate-400 shrink-0" />
                         <span
-                          className={`font-bold font-mono text-[11px] px-2 py-0.5 rounded-md ${
+                          className={`font-bold font-mono text-[10px] px-2 py-0.5 rounded-md ${
                             isOpenNow
                               ? 'bg-emerald-100 text-emerald-800'
                               : 'bg-slate-100 text-slate-600'
@@ -485,9 +504,28 @@ export const DiscoverPage: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Relevant Trust / Registrar Proof */}
+                    {/* WHAT THEY DO: Granular Services & Capabilities Badges */}
+                    {biz.services && biz.services.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {biz.services.slice(0, 3).map((svc, idx) => (
+                          <span
+                            key={idx}
+                            className="px-2.5 py-0.5 rounded-lg bg-blue-50/70 text-blue-900 border border-blue-100/60 text-[11px] font-semibold"
+                          >
+                            {svc}
+                          </span>
+                        ))}
+                        {biz.services.length > 3 && (
+                          <span className="text-[10px] font-mono text-slate-400 self-center">
+                            +{biz.services.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* WHY THEY ARE TRUSTWORTHY: Authoritative Registrar Proof */}
                     {biz.primaryRegistrar && (
-                      <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
+                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 space-y-0.5">
                         <div className="text-[10px] font-bold font-mono text-slate-500 uppercase tracking-wider">
                           Authoritative Evidence:
                         </div>
@@ -495,21 +533,16 @@ export const DiscoverPage: React.FC = () => {
                           {biz.primaryRegistrar}
                         </div>
                         {biz.evidenceSummary && (
-                          <p className="text-[11px] text-slate-600 line-clamp-2 leading-relaxed">
+                          <p className="text-[11px] text-slate-600 line-clamp-1 leading-relaxed">
                             {biz.evidenceSummary}
                           </p>
                         )}
                       </div>
                     )}
 
-                    {/* Short Description */}
-                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                      {biz.shortSummary || biz.description}
-                    </p>
-
-                    {/* Explainable Ranking Badges */}
+                    {/* WHY THEY MATCH: Explainable Ranking Badges */}
                     {rankingExplanation.reasonCodes.length > 0 && (
-                      <div className="pt-2 border-t border-slate-100 flex flex-wrap gap-1">
+                      <div className="pt-1 border-t border-slate-100 flex flex-wrap gap-1">
                         {rankingExplanation.reasonCodes.slice(0, 2).map(code => (
                           <span
                             key={code}
@@ -522,15 +555,15 @@ export const DiscoverPage: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Connect Action Buttons */}
+                  {/* WHAT TO DO NEXT: Connect Action Buttons */}
                   <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5">
                       {biz.contact.phone && (
                         <a
                           href={`tel:${biz.contact.phone}`}
                           onClick={() => handleActionClick(biz.id, 'PHONE_CLICK')}
-                          className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors"
-                          title="Call"
+                          className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors cursor-pointer"
+                          title="Call Directly"
                         >
                           <Phone size={14} />
                         </a>
@@ -541,8 +574,8 @@ export const DiscoverPage: React.FC = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => handleActionClick(biz.id, 'WHATSAPP_CLICK')}
-                          className="p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors"
-                          title="WhatsApp"
+                          className="p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors cursor-pointer"
+                          title="WhatsApp Inquiry"
                         >
                           <MessageSquare size={14} />
                         </a>
@@ -553,19 +586,29 @@ export const DiscoverPage: React.FC = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => handleActionClick(biz.id, 'BOOKING_CLICK')}
-                          className="p-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 transition-colors"
-                          title="Book Online"
+                          className="p-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 transition-colors cursor-pointer"
+                          title="Book / Reserve"
                         >
                           <Calendar size={14} />
                         </a>
                       )}
+                      <a
+                        href={`https://maps.google.com/?q=${encodeURIComponent(biz.location.fullAddress)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => handleActionClick(biz.id, 'DIRECTIONS_CLICK')}
+                        className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
+                        title="Get Directions"
+                      >
+                        <Navigation size={14} />
+                      </a>
                     </div>
 
                     <Link
                       to={profileUrl}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3.5 py-2 rounded-xl transition-all"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3.5 py-2 rounded-xl transition-all cursor-pointer"
                     >
-                      <span>View Profile</span>
+                      <span>Full Dossier</span>
                       <ChevronRight size={14} />
                     </Link>
                   </div>
@@ -628,10 +671,10 @@ export const DiscoverPage: React.FC = () => {
           <div className="p-8 rounded-3xl bg-gradient-to-r from-blue-900 to-indigo-900 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
             <div className="space-y-2 text-center sm:text-left">
               <h3 className="text-xl font-bold font-orbitron">
-                Are you a verified local business owner?
+                Are you a local business owner in Ranaghat or Nadia?
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
-                Get your statutory registration, credentials, and capabilities verified on the Conflux Business Graph to be discovered by local customers and AI search engines.
+                Claim your profile or submit your statutory credentials to the Conflux Business Graph to be discovered by local customers and AI search agents.
               </p>
             </div>
             <Link

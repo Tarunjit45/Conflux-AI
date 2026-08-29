@@ -55,6 +55,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       'addressCountry': 'IN',
       'postalCode': biz.location.postalCode || ''
     },
+    'geo': biz.location.latitude && biz.location.longitude ? {
+      '@type': 'GeoCoordinates',
+      'latitude': biz.location.latitude,
+      'longitude': biz.location.longitude
+    } : undefined,
     'openingHoursSpecification': biz.operatingHours
       .filter(h => !h.isClosed && h.opensAt && h.closesAt)
       .map(h => {
@@ -82,6 +87,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         name: biz.categoryName || biz.categoryId,
         subcategories: biz.subcategoryIds
       },
+      services_and_capabilities: biz.services || [],
+      claim_status: biz.claimStatus || 'UNCLAIMED_PUBLIC',
+      landmark: biz.landmark,
       location: biz.location,
       contact: biz.contact,
       trust_dossier: {
@@ -90,6 +98,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         confidence_score: biz.confidenceScore,
         primary_registrar: biz.primaryRegistrar,
         evidence_summary: biz.evidenceSummary,
+        verification_breakdown: biz.verificationBreakdown,
         last_verified_at: biz.lastVerifiedAt,
         methodology_url: 'https://confluxai.in/verify/methodology'
       },

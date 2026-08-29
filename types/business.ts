@@ -22,7 +22,9 @@ export type BusinessType =
   | 'INSTITUTION'
   | 'RETAIL'
   | 'AGRO_PROCESSING'
-  | 'HANDLOOM_CRAFT';
+  | 'HANDLOOM_CRAFT'
+  | 'FITNESS_WELLNESS'
+  | 'HOME_REPAIR';
 
 export type BusinessPublishStatus =
   | 'DRAFT'
@@ -30,6 +32,11 @@ export type BusinessPublishStatus =
   | 'PUBLISHED'
   | 'SUSPENDED'
   | 'ARCHIVED';
+
+export type BusinessClaimStatus =
+  | 'UNCLAIMED_PUBLIC'
+  | 'CLAIM_PENDING'
+  | 'VERIFIED_OWNER';
 
 export type VerificationLevel =
   | 'NONE'
@@ -55,6 +62,7 @@ export interface BusinessLocation {
   district: string;
   city: string;
   locality?: string;
+  landmark?: string;
   postalCode?: string;
   fullAddress: string;
   latitude?: number;
@@ -96,6 +104,17 @@ export interface BusinessCapability {
   verificationStatus: 'VERIFIED' | 'UNVERIFIED' | 'DEPRECATED';
 }
 
+export interface VerificationBreakdown {
+  identityVerified: boolean;
+  locationVerified: boolean;
+  statutoryLicenseVerified: boolean;
+  capabilitiesVerified: boolean;
+  contactVerified: boolean;
+  primaryRegistrarName?: string;
+  statutoryLicenseNumber?: string;
+  verificationMethodologyUrl: string;
+}
+
 export interface ConfluxBusiness {
   id: string;
   confluxBusinessId: string; // e.g. CFX-IN-WB-NADIA-000001
@@ -106,15 +125,19 @@ export interface ConfluxBusiness {
   categoryId: string;
   categoryName?: string;
   subcategoryIds?: string[];
+  services?: string[]; // Granular capabilities/services e.g. ['USG', 'Digital X-Ray', 'CT Scan']
+  landmark?: string;
   description: string;
   shortSummary?: string;
   ownerId?: string;
   status: BusinessPublishStatus;
+  claimStatus: BusinessClaimStatus;
   verificationStatus: VerificationStatus;
   verificationLevel: VerificationLevel;
   confidenceScore: number;
   primaryRegistrar?: string;
   evidenceSummary?: string;
+  verificationBreakdown?: VerificationBreakdown;
   lastVerifiedAt?: string;
   isClaimed: boolean;
   isIndexable: boolean;
@@ -134,6 +157,7 @@ export type ConnectEventType =
   | 'WEBSITE_CLICK'
   | 'DIRECTIONS_CLICK'
   | 'BOOKING_CLICK'
+  | 'CLAIM_CLICK'
   | 'LEAD_SUBMITTED'
   | 'AGENT_API_QUERY';
 
@@ -152,6 +176,7 @@ export interface BusinessSearchParams {
   district?: string;
   city?: string;
   category?: string;
+  service?: string;
   verifiedOnly?: boolean;
   openNow?: boolean;
   requiredAction?: CapabilityActionType;

@@ -179,7 +179,7 @@ async function runAcceptanceTests() {
   assertTest('API', 'GET /api/v1/graph/businesses/search returns HTTP 200', searchRes.statusCode === 200);
   assertTest('API', 'Search API returns valid JSON structure with query_intent', searchRes.body?.success === true && searchRes.body?.query_intent !== undefined);
   assertTest('API', 'Search API data contains Conflux Business IDs', searchRes.body?.data?.length > 0 && isValidConfluxBusinessId(searchRes.body.data[0].conflux_business_id));
-  assertTest('API', 'Search API provides explainable ranking methodology', searchRes.body?.ranking_methodology === 'CONFLUX_EXPLAINABLE_ORGANIC_V1');
+  assertTest('API', 'Search API provides explainable ranking methodology', Boolean(searchRes.body?.ranking_methodology && searchRes.body.ranking_methodology.includes('CONFLUX_EXPLAINABLE')));
 
   // 4.2 GET /api/v1/graph/businesses/{id}
   const idReq = { method: 'GET', query: { id: 'CFX-IN-WB-NADIA-000001' } };

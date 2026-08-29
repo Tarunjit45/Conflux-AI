@@ -23,6 +23,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     district,
     city,
     category,
+    service,
     verified_only,
     open_now,
     required_action
@@ -33,14 +34,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (q && typeof q === 'string') {
       const queryStr = q.toLowerCase().trim();
-      list = list.filter(b =>
-        b.name.toLowerCase().includes(queryStr) ||
-        b.description.toLowerCase().includes(queryStr) ||
-        b.categoryId.toLowerCase().includes(queryStr) ||
-        b.location.city.toLowerCase().includes(queryStr) ||
-        b.location.district.toLowerCase().includes(queryStr) ||
-        b.confluxBusinessId.toLowerCase().includes(queryStr)
-      );
+      list = list.filter(b => {
+        const servicesStr = (b.services || []).join(' ').toLowerCase();
+        const landmarkStr = (b.landmark || '').toLowerCase();
+        return (
+          b.name.toLowerCase().includes(queryStr) ||
+          b.description.toLowerCase().includes(queryStr) ||
+          b.categoryId.toLowerCase().includes(queryStr) ||
+          (b.categoryName && b.categoryName.toLowerCase().includes(queryStr)) ||
+          b.location.city.toLowerCase().includes(queryStr) ||
+          b.location.district.toLowerCase().includes(queryStr) ||
+          landmarkStr.includes(queryStr) ||
+          servicesStr.includes(queryStr) ||
+          b.confluxBusinessId.toLowerCase().includes(queryStr)
+        );
+      });
     }
 
     if (district && typeof district === 'string') {
@@ -52,7 +60,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (category && typeof category === 'string') {
-      list = list.filter(b => b.categoryId.toLowerCase().includes(category.toLowerCase().trim()));
+      const catStr = category.toLowerCase().trim();
+      list = list.filter(b =>
+        b.categoryId.toLowerCase().includes(catStr) ||
+        (b.categoryName && b.categoryName.toLowerCase().includes(catStr))
+      );
+    }
+
+    if (service && typeof service === 'string') {
+      const svcStr = service.toLowerCase().trim();
+      list = list.filter(b => b.services && b.services.some(s => s.toLowerCase().includes(svcStr)));
     }
 
     if (verified_only === 'true' || verified_only === '1') {
@@ -64,7 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       list = list.filter(b => b.capabilities.some(c => c.actionType === action && c.isSupported));
     }
 
-    // Format agent-friendly response
+    // Format agent-friendly structured response
     const agentFormatted = list.map(b => ({
       conflux_business_id: b.confluxBusinessId,
       name: b.name,
@@ -75,9 +92,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         id: b.categoryId,
         name: b.categoryName || b.categoryId
       },
+      services_and_capabilities: b.services || [],
+      claim_status: b.claimStatus || 'UNCLAIMED_PUBLIC',
       location: {
         district: b.location.district,
         city: b.location.city,
+        landmark: b.landmark,
         full_address: b.location.fullAddress,
         coordinates: {
           latitude: b.location.latitude,
@@ -90,6 +110,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         confidence_score: b.confidenceScore,
         primary_registrar: b.primaryRegistrar,
         evidence_summary: b.evidenceSummary,
+        verification_breakdown: b.verificationBreakdown,
         last_verified_at: b.lastVerifiedAt
       },
       supported_actions: b.capabilities
@@ -98,30 +119,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           action: c.actionType,
           target: c.phoneTarget || c.endpointUrl,
           endpoint_url: c.endpointUrl
-        })),
-      operating_hours: b.operatingHours
+        }))
     }));
 
     return res.status(200).json({
       success: true,
       query_intent: {
-        raw_query: q || null,
+        query: q || null,
         district: district || null,
         city: city || null,
         category: category || null,
-        applied_constraints: {
-          verified_only: verified_only === 'true',
-          required_action: required_action || null
-        }
+        service: service || null,
+        verified_only: verified_only === 'true'
       },
       total_matches: agentFormatted.length,
-      ranking_methodology: 'CONFLUX_EXPLAINABLE_ORGANIC_V1',
+      ranking_methodology: 'CONFLUX_EXPLAINABLE_STATUTORY_TRUST_V1',
       data: agentFormatted
     });
-  } catch (err: any) {
+  } catch (error: any) {
     return res.status(500).json({
       success: false,
-      error: err.message || 'Internal Agent Discovery Engine Error.'
+      error: 'Internal Business Graph error.',
+      details: error.message
     });
   }
 }
