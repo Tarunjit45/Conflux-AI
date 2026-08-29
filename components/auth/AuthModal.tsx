@@ -31,12 +31,22 @@ export const AuthModal: React.FC = () => {
   const [phone, setPhone] = useState('');
   
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<{ text: string; isError?: boolean } | null>(null);
+  const [message, setMessage] = useState<{
+    text: string;
+    isError?: boolean;
+    isRateLimit?: boolean;
+    isAlreadyRegistered?: boolean;
+  } | null>(null);
 
   useEffect(() => {
-    if (initialRoleParam === 'owner') setSelectedRole('BUSINESS_OWNER');
-    if (initialRoleParam === 'user' || initialRoleParam === 'customer') setSelectedRole('USER');
-    if (initialRoleParam === 'admin') setSelectedRole('ADMIN');
+    if (initialRoleParam === 'admin') {
+      setSelectedRole('ADMIN');
+      setAuthMode('SIGN_IN');
+    } else if (initialRoleParam === 'owner') {
+      setSelectedRole('BUSINESS_OWNER');
+    } else if (initialRoleParam === 'user' || initialRoleParam === 'customer') {
+      setSelectedRole('USER');
+    }
   }, [initialRoleParam]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,7 +55,10 @@ export const AuthModal: React.FC = () => {
     setIsLoading(true);
     setMessage(null);
 
-    if (authMode === 'REGISTER') {
+    // Administrator role is strictly Sign In only
+    const isActualRegister = authMode === 'REGISTER' && selectedRole !== 'ADMIN';
+
+    if (isActualRegister) {
       const res = await register({
         email,
         password,
@@ -64,8 +77,6 @@ export const AuthModal: React.FC = () => {
           setTimeout(() => {
             if (selectedRole === 'BUSINESS_OWNER') {
               navigate('/list-business');
-            } else if (selectedRole === 'ADMIN') {
-              navigate('/admin/businesses');
             } else {
               navigate('/discover');
             }
@@ -77,7 +88,21 @@ export const AuthModal: React.FC = () => {
         }
       } else {
         setIsLoading(false);
-        setMessage({ text: res.error || 'Registration failed', isError: true });
+        if (res.isRateLimit) {
+          setMessage({
+            text: 'Supabase email rate limit exceeded: Too many signups have been requested in the last hour. Please wait a few minutes, or try signing in if you already registered.',
+            isError: true,
+            isRateLimit: true
+          });
+        } else if (res.isAlreadyRegistered) {
+          setMessage({
+            text: 'This email is already registered with Conflux AI. Please switch to Sign In.',
+            isError: true,
+            isAlreadyRegistered: true
+          });
+        } else {
+          setMessage({ text: res.error || 'Registration failed', isError: true });
+        }
       }
     } else {
       const res = await login(email, password);
@@ -86,19 +111,23 @@ export const AuthModal: React.FC = () => {
       if (res.success) {
         setMessage({ text: 'Signed in successfully!' });
         setTimeout(() => {
-          if (selectedRole === 'BUSINESS_OWNER') {
-            navigate('/list-business');
-          } else if (selectedRole === 'ADMIN') {
+          if (selectedRole === 'ADMIN') {
             navigate('/admin/businesses');
+          } else if (selectedRole === 'BUSINESS_OWNER') {
+            navigate('/list-business');
           } else {
             navigate('/discover');
           }
         }, 800);
       } else {
-        const errorMsg = res.error?.includes('Email not confirmed')
+        const rawErr = res.error || '';
+        const isRateLimit = rawErr.toLowerCase().includes('rate limit');
+        const errorMsg = rawErr.includes('Email not confirmed')
           ? 'Email not confirmed yet. Please check your inbox or spam folder to verify your email.'
-          : res.error || 'Login failed';
-        setMessage({ text: errorMsg, isError: true });
+          : isRateLimit
+          ? 'Supabase email rate limit exceeded. Please wait a few minutes before trying again.'
+          : rawErr || 'Login failed';
+        setMessage({ text: errorMsg, isError: true, isRateLimit });
       }
     }
   };
@@ -117,14 +146,20 @@ export const AuthModal: React.FC = () => {
       >
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="w-14 h-14 mx-auto rounded-3xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <ShieldCheck size={28} />
+          <div className={`w-14 h-14 mx-auto rounded-3xl flex items-center justify-center shadow-lg transition-all ${
+            selectedRole === 'ADMIN'
+              ? 'bg-slate-900 text-blue-400 shadow-slate-900/30'
+              : 'bg-blue-600 text-white shadow-blue-500/20'
+          }`}>
+            {selectedRole === 'ADMIN' ? <Shield size={28} /> : <ShieldCheck size={28} />}
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold font-orbitron text-slate-900 tracking-tight">
-            Welcome to Conflux AI
+            {selectedRole === 'ADMIN' ? 'Conflux AI Admin Console' : 'Welcome to Conflux AI'}
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 max-w-sm mx-auto">
-            {authMode === 'REGISTER'
+            {selectedRole === 'ADMIN'
+              ? 'Sign in with your authorized platform administrator credentials to manage the Business Graph, review applications, and audit claims.'
+              : authMode === 'REGISTER'
               ? 'Create your account to get verified, list businesses, or discover trusted local services.'
               : 'Sign in to access your business profile, moderation queue, or saved services.'}
           </p>
@@ -150,30 +185,48 @@ export const AuthModal: React.FC = () => {
         )}
 
         {/* Auth Mode Tabs (Register / Log In) */}
-        <div className="grid grid-cols-2 p-1.5 rounded-2xl bg-slate-100 border border-slate-200">
-          <button
-            type="button"
-            onClick={() => setAuthMode('REGISTER')}
-            className={`py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              authMode === 'REGISTER'
-                ? 'bg-white text-blue-700 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Create Account (Sign Up)
-          </button>
-          <button
-            type="button"
-            onClick={() => setAuthMode('SIGN_IN')}
-            className={`py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              authMode === 'SIGN_IN'
-                ? 'bg-white text-blue-700 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Sign In (Log In)
-          </button>
-        </div>
+        {selectedRole === 'ADMIN' ? (
+          <div className="p-3 rounded-2xl bg-slate-900 text-white flex items-center justify-between px-4 border border-slate-800 shadow-inner">
+            <div className="flex items-center gap-2 text-xs font-bold font-orbitron">
+              <Shield size={16} className="text-blue-400" />
+              <span>Administrator Access Portal</span>
+            </div>
+            <span className="text-[10px] font-bold font-mono text-blue-300 bg-blue-950/80 border border-blue-800/60 px-2.5 py-1 rounded-full flex items-center gap-1">
+              <Lock size={10} /> Sign In Only
+            </span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 p-1.5 rounded-2xl bg-slate-100 border border-slate-200">
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode('REGISTER');
+                setMessage(null);
+              }}
+              className={`py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                authMode === 'REGISTER'
+                  ? 'bg-white text-blue-700 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Create Account (Sign Up)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode('SIGN_IN');
+                setMessage(null);
+              }}
+              className={`py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                authMode === 'SIGN_IN'
+                  ? 'bg-white text-blue-700 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Sign In (Log In)
+            </button>
+          </div>
+        )}
 
         {/* ── ROLE SELECTION: "WHO ARE YOU?" ──────────────────────── */}
         <div className="space-y-2.5">
@@ -184,7 +237,10 @@ export const AuthModal: React.FC = () => {
             
             {/* 1. Business Owner */}
             <div
-              onClick={() => setSelectedRole('BUSINESS_OWNER')}
+              onClick={() => {
+                setSelectedRole('BUSINESS_OWNER');
+                setMessage(null);
+              }}
               className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer space-y-1.5 ${
                 selectedRole === 'BUSINESS_OWNER'
                   ? 'border-emerald-600 bg-emerald-50/60 shadow-sm'
@@ -201,7 +257,10 @@ export const AuthModal: React.FC = () => {
 
             {/* 2. Customer / User */}
             <div
-              onClick={() => setSelectedRole('USER')}
+              onClick={() => {
+                setSelectedRole('USER');
+                setMessage(null);
+              }}
               className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer space-y-1.5 ${
                 selectedRole === 'USER'
                   ? 'border-blue-600 bg-blue-50/60 shadow-sm'
@@ -218,15 +277,26 @@ export const AuthModal: React.FC = () => {
 
             {/* 3. Platform Admin */}
             <div
-              onClick={() => setSelectedRole('ADMIN')}
+              onClick={() => {
+                setSelectedRole('ADMIN');
+                setAuthMode('SIGN_IN');
+                setMessage(null);
+              }}
               className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer space-y-1.5 ${
                 selectedRole === 'ADMIN'
-                  ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+                  ? 'border-slate-900 bg-slate-900 text-white shadow-md'
                   : 'border-slate-200 hover:border-slate-300 bg-white'
               }`}
             >
-              <div className={`flex items-center gap-1.5 text-xs font-bold font-orbitron ${selectedRole === 'ADMIN' ? 'text-white' : 'text-slate-900'}`}>
-                <Shield size={15} className={selectedRole === 'ADMIN' ? 'text-blue-400' : 'text-slate-600'} /> Administrator
+              <div className="flex items-center justify-between">
+                <div className={`flex items-center gap-1.5 text-xs font-bold font-orbitron ${selectedRole === 'ADMIN' ? 'text-white' : 'text-slate-900'}`}>
+                  <Shield size={15} className={selectedRole === 'ADMIN' ? 'text-blue-400' : 'text-slate-600'} /> Administrator
+                </div>
+                <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                  selectedRole === 'ADMIN' ? 'bg-slate-800 text-blue-300' : 'bg-slate-100 text-slate-500'
+                }`}>
+                  Sign In Only
+                </span>
               </div>
               <p className={`text-[10px] leading-tight ${selectedRole === 'ADMIN' ? 'text-slate-300' : 'text-slate-500'}`}>
                 Internal audit &amp; graph verification portal.
@@ -238,7 +308,7 @@ export const AuthModal: React.FC = () => {
 
         {/* ── FORM ────────────────────────────────────────────────── */}
         <form onSubmit={handleSubmit} className="space-y-4 pt-1">
-          {authMode === 'REGISTER' && (
+          {authMode === 'REGISTER' && selectedRole !== 'ADMIN' && (
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700">Full Name / Contact Person *</label>
               <div className="relative">
@@ -256,14 +326,16 @@ export const AuthModal: React.FC = () => {
           )}
 
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700">Email Address *</label>
+            <label className="text-xs font-bold text-slate-700">
+              {selectedRole === 'ADMIN' ? 'Administrator Email Address *' : 'Email Address *'}
+            </label>
             <div className="relative">
               <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="name@business.in"
+                placeholder={selectedRole === 'ADMIN' ? 'admin@confluxai.in' : 'name@business.in'}
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-medium"
                 required
               />
@@ -285,7 +357,7 @@ export const AuthModal: React.FC = () => {
             </div>
           </div>
 
-          {authMode === 'REGISTER' && (
+          {authMode === 'REGISTER' && selectedRole !== 'ADMIN' && (
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700">Phone Number (Optional)</label>
               <div className="relative">
@@ -302,21 +374,52 @@ export const AuthModal: React.FC = () => {
           )}
 
           {message && (
-            <div className={`p-3 rounded-xl text-xs font-bold flex items-center gap-2 ${
-              message.isError ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+            <div className={`p-4 rounded-2xl text-xs space-y-2.5 ${
+              message.isError ? 'bg-rose-50 text-rose-800 border border-rose-200' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
             }`}>
-              {message.isError ? <AlertCircle size={15} /> : <CheckCircle2 size={15} />}
-              <span>{message.text}</span>
+              <div className="flex items-start gap-2.5">
+                {message.isError ? <AlertCircle size={17} className="text-rose-600 shrink-0 mt-0.5" /> : <CheckCircle2 size={17} className="text-emerald-600 shrink-0 mt-0.5" />}
+                <div className="space-y-1 font-medium leading-relaxed">
+                  <p className="font-bold">{message.text}</p>
+                  
+                  {message.isRateLimit && (
+                    <p className="text-[11px] text-rose-700">
+                      Supabase limits verification emails to 3–4 requests/hour on default settings. If you already created your account in an earlier step, you can sign in directly.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {(message.isRateLimit || message.isAlreadyRegistered) && (
+                <div className="pt-2 border-t border-rose-200/70 flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthMode('SIGN_IN');
+                      setMessage(null);
+                    }}
+                    className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer inline-flex items-center gap-1.5"
+                  >
+                    Switch to Sign In (Log In) &rarr;
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className={`w-full py-3.5 rounded-2xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              selectedRole === 'ADMIN'
+                ? 'bg-slate-900 hover:bg-black text-white shadow-slate-900/20'
+                : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/20'
+            }`}
           >
             {isLoading ? (
               'Processing...'
+            ) : selectedRole === 'ADMIN' ? (
+              <>Sign In as Administrator <ArrowRight size={16} /></>
             ) : authMode === 'REGISTER' ? (
               <>Register as {selectedRole.replace(/_/g, ' ')} <ArrowRight size={16} /></>
             ) : (

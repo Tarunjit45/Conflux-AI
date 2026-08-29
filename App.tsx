@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useSpring } from 'framer-motion';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar.tsx';
 import Footer from './components/Footer.tsx';
 import LandingPage from './LandingPage.tsx';
@@ -230,6 +230,10 @@ const routeMeta: Record<string, { title: string; description: string }> = {
     title: 'Find a Local Business You Can Trust | Conflux Discover',
     description: 'Tell Conflux what you need, where you need it, and discover verified local businesses you can connect with across West Bengal.'
   },
+  '/admin': {
+    title: 'Admin Command Center | Conflux AI',
+    description: 'Internal audit and administrative portal for Conflux AI.'
+  },
   '/login': {
     title: 'Sign In | Conflux Platform Auth',
     description: 'Role-based access portal for administrators and verified business owners.'
@@ -379,6 +383,7 @@ const App: React.FC = () => {
           <Route path="/verify/methodology" element={<MethodologyPage />} />
           <Route path="/verify/guides/:guideSlug" element={<VerifyGuideDetailPage />} />
           <Route path="/verify/:entitySlug/:claimSlug" element={<VerifyPortal />} />
+          <Route path="/admin" element={<Navigate to="/admin/businesses" replace />} />
           <Route path="/admin/businesses" element={
             <ProtectedRoute allowedRoles={['ADMIN']}>
               <AdminBusinessDashboard />

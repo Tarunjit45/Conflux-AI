@@ -2060,6 +2060,78 @@ const staticPages = [
       </main>
     </div>
     `
+  },
+  {
+    path: '/auth',
+    title: 'Account Authentication & Registration | Conflux AI',
+    desc: 'Sign in or register your business profile to verify corporate identity, list services, or access verified leads.',
+    body: `
+    <div id="root">
+      <div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 480px; width: 100%; background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+          <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Conflux AI Auth Portal</h1>
+          <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Sign in to your business dashboard or create a new verified account.</p>
+          <div style="display: inline-block; padding: 12px 24px; background: #2563eb; color: white; border-radius: 12px; font-weight: 700; font-size: 14px;">
+            Loading Authentication Portal...
+          </div>
+        </div>
+      </div>
+    </div>
+    `
+  },
+  {
+    path: '/login',
+    title: 'Sign In | Conflux Platform Auth',
+    desc: 'Sign in to access your business profile, moderation queue, or saved services.',
+    body: `
+    <div id="root">
+      <div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 480px; width: 100%; background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+          <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Conflux AI Sign In</h1>
+          <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Sign in to your verified business account.</p>
+          <div style="display: inline-block; padding: 12px 24px; background: #2563eb; color: white; border-radius: 12px; font-weight: 700; font-size: 14px;">
+            Loading Sign In...
+          </div>
+        </div>
+      </div>
+    </div>
+    `
+  },
+  {
+    path: '/register',
+    title: 'Create an Account | Conflux Platform Auth',
+    desc: 'Create an account to list your business, upload verification proof, or access verified local services.',
+    body: `
+    <div id="root">
+      <div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 480px; width: 100%; background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+          <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Conflux AI Registration</h1>
+          <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Register as a Business Owner or Customer.</p>
+          <div style="display: inline-block; padding: 12px 24px; background: #2563eb; color: white; border-radius: 12px; font-weight: 700; font-size: 14px;">
+            Loading Registration...
+          </div>
+        </div>
+      </div>
+    </div>
+    `
+  },
+  {
+    path: '/admin',
+    title: 'Admin Command Center | Conflux AI',
+    desc: 'Internal audit and administrative portal for Conflux AI.',
+    body: `
+    <div id="root">
+      <div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 480px; width: 100%; background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+          <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Conflux AI Admin Console</h1>
+          <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Authenticating administrative access...</p>
+          <div style="display: inline-block; padding: 12px 24px; background: #0f172a; color: white; border-radius: 12px; font-weight: 700; font-size: 14px;">
+            Redirecting to Admin Portal...
+          </div>
+        </div>
+      </div>
+    </div>
+    `
   }
 ];
 

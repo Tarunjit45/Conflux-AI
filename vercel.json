@@ -3,7 +3,11 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/((?!api|data|assets|images|works|blog|services|locations|verify|about|solutions|contact|faq|creative|impact|portfolio|work|careers|authority|semantic-map|robots\\.txt|sitemap\\.xml|favicon\\.ico|.*\\..*).*)",
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/((?!api/|.*\\..*).*)",
       "destination": "/index.html"
     }
   ]

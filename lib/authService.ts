@@ -144,7 +144,7 @@ export class AuthService {
     fullName?: string;
     role: UserRole;
     phone?: string;
-  }): Promise<{ success: boolean; error?: string; user?: UserProfile }> {
+  }): Promise<{ success: boolean; error?: string; isRateLimit?: boolean; isAlreadyRegistered?: boolean; user?: UserProfile }> {
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase.auth.signUp({
@@ -159,7 +159,15 @@ export class AuthService {
           }
         });
         if (error) {
-          return { success: false, error: error.message };
+          const msg = error.message || '';
+          const isRateLimit = msg.toLowerCase().includes('rate limit') || (error as any).status === 429;
+          const isAlreadyRegistered = msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists');
+          return {
+            success: false,
+            error: msg,
+            isRateLimit,
+            isAlreadyRegistered
+          };
         }
         if (data.user) {
           try {
@@ -177,7 +185,9 @@ export class AuthService {
           return { success: true, user: profile || undefined };
         }
       } catch (err: any) {
-        return { success: false, error: `[SUPABASE_AUTH_ERROR] ${err.message}` };
+        const msg = err?.message || String(err);
+        const isRateLimit = msg.toLowerCase().includes('rate limit');
+        return { success: false, error: `[SUPABASE_AUTH_ERROR] ${msg}`, isRateLimit };
       }
     }
 

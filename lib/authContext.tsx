@@ -11,7 +11,7 @@ interface AuthContextType {
   isOwner: boolean;
   isLoading: boolean;
   login: (email: string, password?: string) => Promise<{ success: boolean; error?: string }>;
-  register: (input: { email: string; password: string; fullName?: string; role: UserRole; phone?: string }) => Promise<{ success: boolean; error?: string }>;
+  register: (input: { email: string; password: string; fullName?: string; role: UserRole; phone?: string }) => Promise<{ success: boolean; error?: string; isRateLimit?: boolean; isAlreadyRegistered?: boolean }>;
   logout: () => Promise<void>;
   switchRole: (role: UserRole) => void;
 }
@@ -42,7 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (res.success && res.user) {
       setUser(res.user);
     }
-    return { success: res.success, error: res.error };
+    return { success: res.success, error: res.error, isRateLimit: res.isRateLimit, isAlreadyRegistered: res.isAlreadyRegistered };
   };
 
   const logout = async () => {
