@@ -1,7 +1,7 @@
 // Conflux Platform — Machine / AI Agent Single Business Entity & Verification Dossier API
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { INITIAL_SEED_BUSINESSES } from '../../lib/businessService.ts';
+import { businessService } from '../../lib/businessService.ts';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -24,7 +24,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ success: false, error: 'Missing business id or slug parameter.' });
   }
 
-  const biz = INITIAL_SEED_BUSINESSES.find(b =>
+  const allBusinesses = await businessService.getAllBusinesses();
+  const biz = allBusinesses.find(b =>
     b.id.toLowerCase() === targetId ||
     b.confluxBusinessId.toLowerCase() === targetId ||
     b.slug.toLowerCase() === targetId
@@ -60,50 +61,57 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       'latitude': biz.location.latitude,
       'longitude': biz.location.longitude
     } : undefined,
-    'openingHoursSpecification': biz.operatingHours
-      .filter(h => !h.isClosed && h.opensAt && h.closesAt)
-      .map(h => {
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        return {
-          '@type': 'OpeningHoursSpecification',
-          'dayOfWeek': days[h.dayOfWeek],
-          'opens': h.opensAt,
-          'closes': h.closesAt
-        };
-      })
+    'openingHoursSpecification': (biz.operatingHours || []).filter(h => !h.isClosed).map(h => ({
+      '@type': 'OpeningHoursSpecification',
+      'dayOfWeek': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][h.dayOfWeek],
+      'opens': h.opensAt,
+      'closes': h.closesAt
+    }))
   };
 
   return res.status(200).json({
     success: true,
+    meta: {
+      conflux_business_id: biz.confluxBusinessId,
+      canonical_url: profileUrl,
+      graph_node_type: 'CONFLUX_VERIFIED_LOCAL_BUSINESS',
+      last_synced_at: new Date().toISOString()
+    },
     data: {
       conflux_business_id: biz.confluxBusinessId,
-      name: biz.name,
-      legal_name: biz.legalName,
       slug: biz.slug,
-      canonical_url: profileUrl,
+      name: biz.name,
+      legal_name: biz.legalName || biz.name,
       business_type: biz.businessType,
       category: {
         id: biz.categoryId,
         name: biz.categoryName || biz.categoryId,
-        subcategories: biz.subcategoryIds
+        subcategories: biz.subcategoryIds || []
       },
-      services_and_capabilities: biz.services || [],
-      claim_status: biz.claimStatus || 'UNCLAIMED_PUBLIC',
-      landmark: biz.landmark,
-      location: biz.location,
-      contact: biz.contact,
+      services: biz.services || [],
+      landmark: biz.landmark || null,
+      description: biz.description,
+      short_summary: biz.shortSummary,
+      publishing_status: biz.status,
+      claim_status: biz.claimStatus,
       trust_dossier: {
-        status: biz.verificationStatus,
+        verification_status: biz.verificationStatus,
         verification_level: biz.verificationLevel,
         confidence_score: biz.confidenceScore,
-        primary_registrar: biz.primaryRegistrar,
+        primary_registrar: biz.primaryRegistrar || 'Primary Statutory Registry Docket',
         evidence_summary: biz.evidenceSummary,
-        verification_breakdown: biz.verificationBreakdown,
-        last_verified_at: biz.lastVerifiedAt,
-        methodology_url: 'https://confluxai.in/verify/methodology'
+        last_verified_at: biz.lastVerifiedAt || null,
+        verification_breakdown: biz.verificationBreakdown || null
       },
-      supported_capabilities: biz.capabilities.filter(c => c.isSupported),
+      location: biz.location,
+      contact: biz.contact,
       operating_hours: biz.operatingHours,
+      supported_capabilities: (biz.capabilities || []).map(c => ({
+        action: c.actionType,
+        is_supported: c.isSupported,
+        target: c.phoneTarget || c.endpointUrl || null,
+        status: c.verificationStatus
+      })),
       json_ld: jsonLd
     }
   });

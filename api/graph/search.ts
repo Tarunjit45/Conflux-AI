@@ -1,7 +1,7 @@
 // Conflux Platform — Machine / AI Agent Graph Discovery API (GET /api/v1/graph/businesses/search)
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { INITIAL_SEED_BUSINESSES } from '../../lib/businessService.ts';
+import { businessService } from '../../lib/businessService.ts';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS Headers for AI Agents & Remote Consumers
@@ -30,7 +30,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } = req.query;
 
   try {
-    let list = INITIAL_SEED_BUSINESSES.filter(b => b.status === 'PUBLISHED');
+    const allBusinesses = await businessService.getAllBusinesses();
+    let list = allBusinesses.filter(b => b.status === 'PUBLISHED');
 
     if (q && typeof q === 'string') {
       const queryStr = q.toLowerCase().trim();
@@ -60,87 +61,117 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (category && typeof category === 'string') {
-      const catStr = category.toLowerCase().trim();
+      const cat = category.toLowerCase().trim();
       list = list.filter(b =>
-        b.categoryId.toLowerCase().includes(catStr) ||
-        (b.categoryName && b.categoryName.toLowerCase().includes(catStr))
+        b.categoryId.toLowerCase().includes(cat) ||
+        (b.categoryName && b.categoryName.toLowerCase().includes(cat))
       );
     }
 
     if (service && typeof service === 'string') {
-      const svcStr = service.toLowerCase().trim();
-      list = list.filter(b => b.services && b.services.some(s => s.toLowerCase().includes(svcStr)));
+      const svc = service.toLowerCase().trim();
+      list = list.filter(b => b.services && b.services.some(s => s.toLowerCase().includes(svc)));
     }
 
     if (verified_only === 'true' || verified_only === '1') {
       list = list.filter(b => b.verificationStatus === 'SUPPORTED');
     }
 
-    if (required_action && typeof required_action === 'string') {
-      const action = required_action.toUpperCase();
-      list = list.filter(b => b.capabilities.some(c => c.actionType === action && c.isSupported));
+    if (open_now === 'true' || open_now === '1') {
+      list = list.filter(b => businessService.isBusinessOpenNow(b.operatingHours));
     }
 
-    // Format agent-friendly structured response
-    const agentFormatted = list.map(b => ({
-      conflux_business_id: b.confluxBusinessId,
-      name: b.name,
-      legal_name: b.legalName,
-      slug: b.slug,
-      canonical_url: `https://confluxai.in/business/india/west-bengal/${b.location.district}/${b.location.city}/${b.slug}`,
-      category: {
-        id: b.categoryId,
-        name: b.categoryName || b.categoryId
-      },
-      services_and_capabilities: b.services || [],
-      claim_status: b.claimStatus || 'UNCLAIMED_PUBLIC',
-      location: {
-        district: b.location.district,
-        city: b.location.city,
-        landmark: b.landmark,
-        full_address: b.location.fullAddress,
-        coordinates: {
-          latitude: b.location.latitude,
-          longitude: b.location.longitude
-        }
-      },
-      trust: {
-        status: b.verificationStatus,
-        verification_level: b.verificationLevel,
-        confidence_score: b.confidenceScore,
-        primary_registrar: b.primaryRegistrar,
-        evidence_summary: b.evidenceSummary,
-        verification_breakdown: b.verificationBreakdown,
-        last_verified_at: b.lastVerifiedAt
-      },
-      supported_actions: b.capabilities
-        .filter(c => c.isSupported)
-        .map(c => ({
-          action: c.actionType,
-          target: c.phoneTarget || c.endpointUrl,
-          endpoint_url: c.endpointUrl
-        }))
-    }));
+    if (required_action && typeof required_action === 'string') {
+      const action = required_action.toUpperCase();
+      list = list.filter(b =>
+        b.capabilities.some(c => c.actionType === action && c.isSupported)
+      );
+    }
+
+    // Format structured machine responses
+    const formattedData = list.map(b => {
+      const isVerified = b.verificationStatus === 'SUPPORTED';
+      const rank = businessService.calculateOrganicRank(b, {
+        query: typeof q === 'string' ? q : undefined,
+        district: typeof district === 'string' ? district : undefined,
+        city: typeof city === 'string' ? city : undefined,
+        category: typeof category === 'string' ? category : undefined
+      });
+
+      return {
+        conflux_business_id: b.confluxBusinessId,
+        slug: b.slug,
+        name: b.name,
+        legal_name: b.legalName || b.name,
+        category: {
+          id: b.categoryId,
+          name: b.categoryName || b.categoryId
+        },
+        services: b.services || [],
+        landmark: b.landmark || null,
+        location: {
+          district: b.location.district,
+          city: b.location.city,
+          address: b.location.fullAddress,
+          coordinates: {
+            latitude: b.location.latitude || null,
+            longitude: b.location.longitude || null
+          }
+        },
+        contact: {
+          phone: b.contact.phone || null,
+          whatsapp: b.contact.whatsapp || null,
+          website: b.contact.websiteUrl || null,
+          booking_url: b.contact.bookingUrl || null
+        },
+        verification: {
+          status: b.verificationStatus,
+          confidence_score: b.confidenceScore,
+          primary_registrar: b.primaryRegistrar || 'Primary Statutory Registry Docket',
+          evidence_summary: b.evidenceSummary || 'Statutory verification docket record.',
+          last_verified_at: b.lastVerifiedAt || null
+        },
+        supported_capabilities: b.capabilities
+          .filter(c => c.isSupported)
+          .map(c => ({
+            action: c.actionType,
+            target: c.phoneTarget || c.endpointUrl || null
+          })),
+        organic_ranking: {
+          score: rank.score,
+          reason_codes: rank.reasonCodes
+        },
+        canonical_profile_url: `https://confluxai.in/business/india/west-bengal/${b.location.district}/${b.location.city}/${b.slug}`
+      };
+    });
+
+    // Sort by rank score descending
+    formattedData.sort((a, b) => b.organic_ranking.score - a.organic_ranking.score);
 
     return res.status(200).json({
       success: true,
+      meta: {
+        total_results: formattedData.length,
+        graph_node_type: 'CONFLUX_VERIFIED_LOCAL_BUSINESS',
+        api_version: 'v1'
+      },
       query_intent: {
         query: q || null,
         district: district || null,
         city: city || null,
         category: category || null,
         service: service || null,
-        verified_only: verified_only === 'true'
+        verified_only: verified_only === 'true',
+        open_now: open_now === 'true'
       },
-      total_matches: agentFormatted.length,
-      ranking_methodology: 'CONFLUX_EXPLAINABLE_STATUTORY_TRUST_V1',
-      data: agentFormatted
+      ranking_methodology: 'CONFLUX_EXPLAINABLE_DETERMINISTIC_ORGANIC_RANKING_V1',
+      data: formattedData
     });
-  } catch (error: any) {
+  } catch (err: any) {
     return res.status(500).json({
       success: false,
-      error: 'Internal Business Graph error.',
-      details: error.message
+      error: 'Failed to query Conflux Business Graph.',
+      details: err.message
     });
   }
 }

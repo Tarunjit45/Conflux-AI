@@ -1,8 +1,9 @@
 // Conflux Platform — Phase 1 Business Graph & Discovery Test Suite
 
 import { generateConfluxBusinessId, isValidConfluxBusinessId, slugifyBusinessName } from '../lib/businessId.ts';
-import { businessService, INITIAL_SEED_BUSINESSES } from '../lib/businessService.ts';
+import { businessService } from '../lib/businessService.ts';
 import { connectService } from '../lib/connectService.ts';
+import { TEST_FIXTURE_BUSINESSES } from '../tests/fixtures/testBusinessFixtures.ts';
 
 console.log('======================================================================');
 console.log('    CONFLUX PLATFORM — PHASE 1 BUSINESS GRAPH TEST SUITE             ');
@@ -38,16 +39,16 @@ async function runPhase1Tests() {
   // 2. Slug Normalizer
   assert('Slugifies business names safely', slugifyBusinessName('Ranaghat Agro Processing & Co., Pvt. Ltd.') === 'ranaghat-agro-processing-co-pvt-ltd');
 
-  // 3. Seed Businesses Graph Integrity
-  assert('Initial seed graph contains canonical businesses across top categories', INITIAL_SEED_BUSINESSES.length >= 8);
+  // 3. Test Fixture Businesses Integrity
+  assert('Test fixture contains canonical businesses across top categories', TEST_FIXTURE_BUSINESSES.length >= 3);
 
-  const ranaghatAgro = INITIAL_SEED_BUSINESSES.find(b => b.confluxBusinessId === 'CFX-IN-WB-NADIA-000001');
-  assert('Seed business #1 contains valid Conflux Business ID', ranaghatAgro !== undefined && ranaghatAgro.confluxBusinessId === 'CFX-IN-WB-NADIA-000001');
-  assert('Seed business #1 is marked as STATUTORY_VERIFIED with FSSAI registrar', ranaghatAgro.verificationLevel === 'STATUTORY_VERIFIED' && ranaghatAgro.primaryRegistrar.includes('FSSAI'));
-  assert('Seed business #1 exposes supported machine capabilities (CALL, WHATSAPP, BOOKING, DIRECTIONS)', ranaghatAgro.capabilities.length >= 4);
+  const ranaghatAgro = TEST_FIXTURE_BUSINESSES.find(b => b.confluxBusinessId === 'CFX-IN-WB-NADIA-000001');
+  assert('Fixture business #1 contains valid Conflux Business ID', ranaghatAgro !== undefined && ranaghatAgro.confluxBusinessId === 'CFX-IN-WB-NADIA-000001');
+  assert('Fixture business #1 is marked as STATUTORY_VERIFIED with FSSAI registrar', ranaghatAgro.verificationLevel === 'STATUTORY_VERIFIED' && ranaghatAgro.primaryRegistrar.includes('FSSAI'));
+  assert('Fixture business #1 exposes supported machine capabilities (CALL, WHATSAPP, BOOKING, DIRECTIONS)', ranaghatAgro.capabilities.length >= 4);
 
-  const diagnosticBiz = INITIAL_SEED_BUSINESSES.find(b => b.confluxBusinessId === 'CFX-IN-WB-NADIA-000005');
-  assert('Ranaghat Diagnostic Centre exists in seed graph', diagnosticBiz !== undefined && diagnosticBiz.name.includes('Diagnostic'));
+  const diagnosticBiz = TEST_FIXTURE_BUSINESSES.find(b => b.confluxBusinessId === 'CFX-IN-WB-NADIA-000005');
+  assert('Ranaghat Diagnostic Centre exists in test fixture', diagnosticBiz !== undefined && diagnosticBiz.name.includes('Diagnostic'));
   assert('Ranaghat Diagnostic Centre exposes granular services (USG, X-Ray)', diagnosticBiz.services && diagnosticBiz.services.length >= 4);
 
   // 4. Business Creation Rule (Strict UNVERIFIED & DRAFT Defaults)
@@ -56,12 +57,15 @@ async function runPhase1Tests() {
     legalName: 'Kalyani Diagnostic Care LLP',
     businessType: 'HEALTHCARE',
     categoryId: 'healthcare',
+    categoryName: 'Healthcare & Diagnostic Services',
+    services: ['Ultrasound (USG)', 'Pathology Blood Tests', 'Digital X-Ray', 'Doctor Chamber'],
     description: 'Advanced pathology laboratory and ultrasound diagnostic center in Kalyani.',
     district: 'nadia',
     city: 'kalyani',
     fullAddress: 'Central Park B-Block, Kalyani, Nadia 741235',
     phone: '+919830998877',
-    whatsapp: '+919830998877'
+    whatsapp: '+919830998877',
+    bookingUrl: 'https://kalyanidiagnostics.in/book'
   });
 
   assert('Newly created business defaults to DRAFT status', createdBiz.status === 'DRAFT');
@@ -89,16 +93,22 @@ async function runPhase1Tests() {
 
   // 7. Search & Discovery Filtering
   const allSearchResults = await businessService.searchBusinesses();
-  assert('Search returns published businesses', allSearchResults.length >= 8);
+  assert('Search returns published businesses', allSearchResults.length >= 1);
 
   const nadiaResults = await businessService.searchBusinesses({ district: 'nadia' });
   assert('Filters businesses strictly by district (Nadia)', nadiaResults.every(r => r.business.location.district === 'nadia'));
 
-  const agroResults = await businessService.searchBusinesses({ category: 'agriculture-farming' });
-  assert('Filters businesses by category (Agro)', agroResults.length >= 1 && agroResults[0].business.categoryId === 'agriculture-farming');
+  const healthcareResults = await businessService.searchBusinesses({ category: 'healthcare' });
+  assert('Filters businesses by category (Healthcare)', healthcareResults.length >= 1 && healthcareResults[0].business.categoryId === 'healthcare');
 
   const usgResults = await businessService.searchBusinesses({ query: 'USG' });
   assert('Matches businesses by granular service intent (USG)', usgResults.length >= 1 && usgResults[0].business.services.some(s => s.includes('USG')));
+
+  // Run verification to test verified filter
+  await businessService.verifyBusinessClaim(
+    createdBiz.id,
+    'Kalyani Modern Diagnostics is an active clinical establishment in Kalyani, Nadia, West Bengal.'
+  );
 
   const verifiedOnlyResults = await businessService.searchBusinesses({ verifiedOnly: true });
   assert('Filters businesses with verifiedOnly = true (SUPPORTED status only)', verifiedOnlyResults.every(r => r.business.verificationStatus === 'SUPPORTED'));

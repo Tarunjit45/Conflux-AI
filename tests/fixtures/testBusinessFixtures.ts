@@ -1,0 +1,248 @@
+// Conflux Platform — Test Suite Business Fixtures (For Automated Testing Only)
+
+import type { ConfluxBusiness } from '../../types/business.ts';
+
+export const TEST_FIXTURE_BUSINESSES: ConfluxBusiness[] = [
+  // ── 1. AGRO-PROCESSING & COLD STORAGE (TEST FIXTURE) ───────────
+  {
+    id: 'biz_cfx_001_ranaghat_agro',
+    confluxBusinessId: 'CFX-IN-WB-NADIA-000001',
+    slug: 'ranaghat-agro-processing',
+    name: 'Ranaghat Agro Processing Ltd',
+    legalName: 'Ranaghat Agro Processing Private Limited',
+    businessType: 'AGRO_PROCESSING',
+    categoryId: 'agriculture-farming',
+    categoryName: 'Agro-Processing & Cold Storage',
+    subcategoryIds: ['cold-storage', 'food-processing', 'wholesale-mandi'],
+    services: ['Cold Chain Storage', 'Fruit & Grain Packhouse', 'FSSAI Certified Grading', 'Wholesale Mandi Logistics'],
+    landmark: 'NH-12 Agro Hub Junction',
+    description: 'Premier food processing, packaging, and cold chain logistics facility serving fruit, vegetable, and grain farmers across Nadia and Murshidabad districts.',
+    shortSummary: 'Certified food processing and cold chain logistics unit in Ranaghat, Nadia.',
+    status: 'PUBLISHED',
+    claimStatus: 'VERIFIED_OWNER',
+    verificationStatus: 'SUPPORTED',
+    verificationLevel: 'STATUTORY_VERIFIED',
+    confidenceScore: 92.5,
+    primaryRegistrar: 'Food Safety and Standards Authority of India (FSSAI)',
+    evidenceSummary: 'Active FSSAI FoSCoS License #12823019000452 verified under Nadia district food processing category.',
+    verificationBreakdown: {
+      identityVerified: true,
+      locationVerified: true,
+      statutoryLicenseVerified: true,
+      capabilitiesVerified: true,
+      contactVerified: true,
+      primaryRegistrarName: 'FSSAI FoSCoS',
+      statutoryLicenseNumber: '12823019000452',
+      verificationMethodologyUrl: '/verify/methodology'
+    },
+    lastVerifiedAt: '2026-08-29T12:00:00Z',
+    isClaimed: true,
+    isIndexable: true,
+    location: {
+      id: 'loc_001',
+      businessId: 'biz_cfx_001_ranaghat_agro',
+      country: 'India',
+      state: 'West Bengal',
+      district: 'nadia',
+      city: 'ranaghat',
+      locality: 'Agro Processing Zone, NH-12 Corridor',
+      landmark: 'NH-12 Agro Hub Junction',
+      postalCode: '741201',
+      fullAddress: 'NH-12 Agro Corridor, Ranaghat, Nadia, West Bengal 741201',
+      latitude: 23.1802,
+      longitude: 88.5801,
+      serviceAreas: ['nadia', 'murshidabad', 'north-24-parganas'],
+      isPrimary: true
+    },
+    contact: {
+      id: 'cnt_001',
+      businessId: 'biz_cfx_001_ranaghat_agro',
+      phone: '+919830112233',
+      whatsapp: '+919830112233',
+      email: 'operations@ranaghatagro.in',
+      websiteUrl: 'https://ranaghatagro.in',
+      bookingUrl: 'https://ranaghatagro.in/procurement',
+      appointmentUrl: 'https://ranaghatagro.in/book-facility',
+      googleMapsUrl: 'https://maps.google.com/?q=Ranaghat+Nadia'
+    },
+    operatingHours: [
+      { dayOfWeek: 1, opensAt: '08:00', closesAt: '19:00', isClosed: false },
+      { dayOfWeek: 2, opensAt: '08:00', closesAt: '19:00', isClosed: false },
+      { dayOfWeek: 3, opensAt: '08:00', closesAt: '19:00', isClosed: false },
+      { dayOfWeek: 4, opensAt: '08:00', closesAt: '19:00', isClosed: false },
+      { dayOfWeek: 5, opensAt: '08:00', closesAt: '19:00', isClosed: false },
+      { dayOfWeek: 6, opensAt: '08:00', closesAt: '17:00', isClosed: false },
+      { dayOfWeek: 0, isClosed: true }
+    ],
+    capabilities: [
+      { id: 'cap_001_1', businessId: 'biz_cfx_001_ranaghat_agro', actionType: 'CALL', isSupported: true, phoneTarget: '+919830112233', verificationStatus: 'VERIFIED' },
+      { id: 'cap_001_2', businessId: 'biz_cfx_001_ranaghat_agro', actionType: 'WHATSAPP', isSupported: true, phoneTarget: '+919830112233', verificationStatus: 'VERIFIED' },
+      { id: 'cap_001_3', businessId: 'biz_cfx_001_ranaghat_agro', actionType: 'BOOKING', isSupported: true, endpointUrl: 'https://ranaghatagro.in/book-facility', verificationStatus: 'VERIFIED' },
+      { id: 'cap_001_4', businessId: 'biz_cfx_001_ranaghat_agro', actionType: 'DIRECTIONS', isSupported: true, endpointUrl: 'https://maps.google.com/?q=23.1802,88.5801', verificationStatus: 'VERIFIED' }
+    ],
+    createdAt: '2026-08-20T10:00:00Z',
+    updatedAt: '2026-08-29T12:00:00Z'
+  },
+
+  // ── 2. DIAGNOSTIC CENTRE (TEST FIXTURE) ───────────────────────────
+  {
+    id: 'biz_cfx_005_ranaghat_diagnostic',
+    confluxBusinessId: 'CFX-IN-WB-NADIA-000005',
+    slug: 'ranaghat-apex-diagnostic-centre',
+    name: 'Ranaghat Apex Diagnostic & Health Centre',
+    legalName: 'Apex Health Diagnostic & Scans Private Limited',
+    businessType: 'HEALTHCARE',
+    categoryId: 'healthcare',
+    categoryName: 'Healthcare & Diagnostics',
+    subcategoryIds: ['diagnostic-lab', 'ultrasound-usg', 'pathology', 'xray-imaging'],
+    services: ['Ultrasound (USG)', 'Digital X-Ray', 'Pathology Blood Tests', 'ECG', 'Doctor Chamber Consultation'],
+    landmark: 'Opposite Sub-Divisional Hospital Main Gate',
+    description: 'NABL accredited diagnostic centre providing digital ultrasound, computerised pathology, low-dose digital X-Ray, and multi-specialist clinical consultations in Ranaghat.',
+    shortSummary: 'NABL accredited pathology, digital USG & radiology centre in Ranaghat.',
+    status: 'PUBLISHED',
+    claimStatus: 'VERIFIED_OWNER',
+    verificationStatus: 'SUPPORTED',
+    verificationLevel: 'STATUTORY_VERIFIED',
+    confidenceScore: 91.0,
+    primaryRegistrar: 'West Bengal Clinical Establishments Regulatory Commission',
+    evidenceSummary: 'Active Clinical Establishment License #WB/CEA/NAD/2023-0941 verified on Department of Health & Family Welfare portal.',
+    verificationBreakdown: {
+      identityVerified: true,
+      locationVerified: true,
+      statutoryLicenseVerified: true,
+      capabilitiesVerified: true,
+      contactVerified: true,
+      primaryRegistrarName: 'WB Clinical Establishments Registry',
+      statutoryLicenseNumber: 'WB/CEA/NAD/2023-0941',
+      verificationMethodologyUrl: '/verify/methodology'
+    },
+    lastVerifiedAt: '2026-08-29T12:00:00Z',
+    isClaimed: true,
+    isIndexable: true,
+    location: {
+      id: 'loc_005',
+      businessId: 'biz_cfx_005_ranaghat_diagnostic',
+      country: 'India',
+      state: 'West Bengal',
+      district: 'nadia',
+      city: 'ranaghat',
+      locality: 'Hospital Road, College More',
+      landmark: 'Opposite Sub-Divisional Hospital Gate',
+      postalCode: '741201',
+      fullAddress: 'College Road, Near Hospital Gate, Ranaghat, Nadia, West Bengal 741201',
+      latitude: 23.1789,
+      longitude: 88.5810,
+      serviceAreas: ['ranaghat', 'santipur', 'taherpur', 'habibpur'],
+      isPrimary: true
+    },
+    contact: {
+      id: 'cnt_005',
+      businessId: 'biz_cfx_005_ranaghat_diagnostic',
+      phone: '+919830556677',
+      whatsapp: '+919830556677',
+      email: 'care@apexdiagnosticranaghat.in',
+      websiteUrl: 'https://apexdiagnosticranaghat.in',
+      bookingUrl: 'https://apexdiagnosticranaghat.in/book-test',
+      appointmentUrl: 'https://apexdiagnosticranaghat.in/book-usg',
+      googleMapsUrl: 'https://maps.google.com/?q=23.1789,88.5810'
+    },
+    operatingHours: [
+      { dayOfWeek: 1, opensAt: '07:00', closesAt: '21:00', isClosed: false },
+      { dayOfWeek: 2, opensAt: '07:00', closesAt: '21:00', isClosed: false },
+      { dayOfWeek: 3, opensAt: '07:00', closesAt: '21:00', isClosed: false },
+      { dayOfWeek: 4, opensAt: '07:00', closesAt: '21:00', isClosed: false },
+      { dayOfWeek: 5, opensAt: '07:00', closesAt: '21:00', isClosed: false },
+      { dayOfWeek: 6, opensAt: '07:00', closesAt: '21:00', isClosed: false },
+      { dayOfWeek: 0, opensAt: '08:00', closesAt: '14:00', isClosed: false }
+    ],
+    capabilities: [
+      { id: 'cap_005_1', businessId: 'biz_cfx_005_ranaghat_diagnostic', actionType: 'CALL', isSupported: true, phoneTarget: '+919830556677', verificationStatus: 'VERIFIED' },
+      { id: 'cap_005_2', businessId: 'biz_cfx_005_ranaghat_diagnostic', actionType: 'WHATSAPP', isSupported: true, phoneTarget: '+919830556677', verificationStatus: 'VERIFIED' },
+      { id: 'cap_005_3', businessId: 'biz_cfx_005_ranaghat_diagnostic', actionType: 'APPOINTMENT', isSupported: true, endpointUrl: 'https://apexdiagnosticranaghat.in/book-usg', verificationStatus: 'VERIFIED' },
+      { id: 'cap_005_4', businessId: 'biz_cfx_005_ranaghat_diagnostic', actionType: 'DIRECTIONS', isSupported: true, endpointUrl: 'https://maps.google.com/?q=23.1789,88.5810', verificationStatus: 'VERIFIED' }
+    ],
+    createdAt: '2026-08-20T10:00:00Z',
+    updatedAt: '2026-08-29T12:00:00Z'
+  },
+
+  // ── 3. RESTAURANTS & FOOD SERVICES (TEST FIXTURE) ───────────────────
+  {
+    id: 'biz_cfx_006_chitrakoot_restaurant',
+    confluxBusinessId: 'CFX-IN-WB-NADIA-000006',
+    slug: 'chitrakoot-multi-cuisine-restaurant',
+    name: 'Chitrakoot Multi-Cuisine Restaurant & Banquet',
+    legalName: 'Chitrakoot Hospitality LLP',
+    businessType: 'HOSPITALITY',
+    categoryId: 'food-hospitality',
+    categoryName: 'Restaurants & Food Services',
+    subcategoryIds: ['fine-dining', 'bengali-cuisine', 'chinese-indian', 'banquet-hall'],
+    services: ['Family Dining', 'Banquet Hall Reservation', 'Home Delivery', 'Corporate Catering'],
+    landmark: 'Opposite Ranaghat Railway Station Main Platform',
+    description: 'Premier air-conditioned family restaurant and banquet hall in Ranaghat serving authentic Bengali thalis, North Indian, Tandoori, and Indo-Chinese cuisine.',
+    shortSummary: 'FSSAI certified family multi-cuisine dining and AC banquet facility in Ranaghat.',
+    status: 'PUBLISHED',
+    claimStatus: 'VERIFIED_OWNER',
+    verificationStatus: 'SUPPORTED',
+    verificationLevel: 'STATUTORY_VERIFIED',
+    confidenceScore: 89.5,
+    primaryRegistrar: 'Food Safety and Standards Authority of India (FSSAI)',
+    evidenceSummary: 'Active FSSAI State Food License #22822019000874 and Trade License #RNG/TRD/2023/1104 verified.',
+    verificationBreakdown: {
+      identityVerified: true,
+      locationVerified: true,
+      statutoryLicenseVerified: true,
+      capabilitiesVerified: true,
+      contactVerified: true,
+      primaryRegistrarName: 'FSSAI State Licensing Authority',
+      statutoryLicenseNumber: '22822019000874',
+      verificationMethodologyUrl: '/verify/methodology'
+    },
+    lastVerifiedAt: '2026-08-29T12:00:00Z',
+    isClaimed: true,
+    isIndexable: true,
+    location: {
+      id: 'loc_006',
+      businessId: 'biz_cfx_006_chitrakoot_restaurant',
+      country: 'India',
+      state: 'West Bengal',
+      district: 'nadia',
+      city: 'ranaghat',
+      locality: 'Station Road, Ward 5',
+      landmark: 'Opposite Railway Station Main Platform',
+      postalCode: '741201',
+      fullAddress: 'Station Road, Opposite Platform 1, Ranaghat, Nadia, West Bengal 741201',
+      latitude: 23.1812,
+      longitude: 88.5825,
+      serviceAreas: ['ranaghat', 'aistala', 'begopara', 'nokari'],
+      isPrimary: true
+    },
+    contact: {
+      id: 'cnt_006',
+      businessId: 'biz_cfx_006_chitrakoot_restaurant',
+      phone: '+919830667788',
+      whatsapp: '+919830667788',
+      email: 'dine@chitrakootranaghat.com',
+      websiteUrl: 'https://chitrakootranaghat.com',
+      bookingUrl: 'https://chitrakootranaghat.com/reserve-table',
+      appointmentUrl: 'https://chitrakootranaghat.com/banquet-inquiry',
+      googleMapsUrl: 'https://maps.google.com/?q=23.1812,88.5825'
+    },
+    operatingHours: [
+      { dayOfWeek: 1, opensAt: '11:00', closesAt: '23:00', isClosed: false },
+      { dayOfWeek: 2, opensAt: '11:00', closesAt: '23:00', isClosed: false },
+      { dayOfWeek: 3, opensAt: '11:00', closesAt: '23:00', isClosed: false },
+      { dayOfWeek: 4, opensAt: '11:00', closesAt: '23:00', isClosed: false },
+      { dayOfWeek: 5, opensAt: '11:00', closesAt: '23:30', isClosed: false },
+      { dayOfWeek: 6, opensAt: '11:00', closesAt: '23:30', isClosed: false },
+      { dayOfWeek: 0, opensAt: '11:00', closesAt: '23:30', isClosed: false }
+    ],
+    capabilities: [
+      { id: 'cap_006_1', businessId: 'biz_cfx_006_chitrakoot_restaurant', actionType: 'CALL', isSupported: true, phoneTarget: '+919830667788', verificationStatus: 'VERIFIED' },
+      { id: 'cap_006_2', businessId: 'biz_cfx_006_chitrakoot_restaurant', actionType: 'WHATSAPP', isSupported: true, phoneTarget: '+919830667788', verificationStatus: 'VERIFIED' },
+      { id: 'cap_006_3', businessId: 'biz_cfx_006_chitrakoot_restaurant', actionType: 'BOOKING', isSupported: true, endpointUrl: 'https://chitrakootranaghat.com/reserve-table', verificationStatus: 'VERIFIED' },
+      { id: 'cap_006_4', businessId: 'biz_cfx_006_chitrakoot_restaurant', actionType: 'DIRECTIONS', isSupported: true, endpointUrl: 'https://maps.google.com/?q=23.1812,88.5825', verificationStatus: 'VERIFIED' }
+    ],
+    createdAt: '2026-08-20T10:00:00Z',
+    updatedAt: '2026-08-29T12:00:00Z'
+  }
+];

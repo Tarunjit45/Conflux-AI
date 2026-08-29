@@ -2,7 +2,7 @@
 
 import type { VerificationStatus, SourceTier } from './verify.ts';
 
-export type UserRole = 'ADMIN' | 'BUSINESS_OWNER' | 'PUBLIC_USER';
+export type UserRole = 'ADMIN' | 'BUSINESS_OWNER' | 'USER' | 'PUBLIC_USER';
 
 export interface UserProfile {
   id: string;

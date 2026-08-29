@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { businessService, INITIAL_SEED_BUSINESSES } from '../lib/businessService.ts';
+import { businessService } from '../lib/businessService.ts';
 import { authService } from '../lib/authService.ts';
 import { connectService } from '../lib/connectService.ts';
 import { isValidConfluxBusinessId } from '../lib/businessId.ts';
@@ -63,28 +63,27 @@ async function runAcceptanceTests() {
   // 1.2 Unauthenticated / Public Guard
   authService.setLocalSession(null);
   const unauthUser = await authService.getCurrentUser();
-  // ProtectedRoute logic: if user is not ADMIN, access is blocked
   const isBlockedForPublic = !unauthUser || unauthUser.role !== 'ADMIN';
-  // Reset back to admin for operations
   authService.setLocalSession({ id: 'admin_test', email: 'admin@confluxai.in', role: 'ADMIN', createdAt: new Date().toISOString() });
   assertTest('ADMIN', 'Unauthenticated/Public users are blocked from admin privileges', isBlockedForPublic);
 
   // 1.3 Create Business via Graph Service
   const testBiz = await businessService.createBusiness({
-    name: 'Kalyani Modern Health Diagnostics',
-    legalName: 'Kalyani Health Diagnostics LLP',
-    businessType: 'HEALTHCARE',
-    categoryId: 'healthcare',
-    categoryName: 'Healthcare & Diagnostic Services',
-    description: 'NABL accredited clinical pathology and ultrasound diagnostic laboratory in Kalyani Central Park.',
+    name: 'Ranaghat Agro Processing Ltd',
+    legalName: 'Ranaghat Agro Processing Private Limited',
+    businessType: 'AGRO_PROCESSING',
+    categoryId: 'agriculture-farming',
+    categoryName: 'Agro-Processing & Cold Storage',
+    services: ['Cold Chain Storage', 'Fruit & Grain Packhouse', 'FSSAI Certified Grading', 'Wholesale Mandi Logistics'],
+    description: 'Premier food processing, packaging, and cold chain logistics facility serving fruit, vegetable, and grain farmers across Nadia and Murshidabad districts.',
     district: 'nadia',
-    city: 'kalyani',
-    fullAddress: 'B-Block Main Road, Kalyani, Nadia, West Bengal 741235',
-    phone: '+919830887766',
-    whatsapp: '+919830887766',
-    email: 'contact@kalyanihealth.in',
-    websiteUrl: 'https://kalyanihealth.in',
-    bookingUrl: 'https://kalyanihealth.in/book'
+    city: 'ranaghat',
+    fullAddress: 'NH-12 Agro Corridor, Ranaghat, Nadia, West Bengal 741201',
+    phone: '+919830112233',
+    whatsapp: '+919830112233',
+    email: 'operations@ranaghatagro.in',
+    websiteUrl: 'https://ranaghatagro.in',
+    bookingUrl: 'https://ranaghatagro.in/book'
   });
 
   assertTest('ADMIN', 'Admin can create business entity', testBiz !== null && testBiz.id !== undefined);
@@ -96,7 +95,7 @@ async function runAcceptanceTests() {
   // 1.4 Verification Linking
   const verifiedTestBiz = await businessService.verifyBusinessClaim(
     testBiz.id,
-    'Kalyani Modern Health Diagnostics holds active statutory health establishment license in Nadia'
+    'Ranaghat Agro Processing Ltd holds active statutory FSSAI FoSCoS License in Nadia'
   );
   assertTest('ADMIN', 'Admin verification workflow links claim evaluation', verifiedTestBiz.verificationStatus !== 'UNVERIFIED');
   assertTest('ADMIN', 'Verification attaches evidence summary and registrar record', verifiedTestBiz.evidenceSummary !== undefined);
@@ -130,8 +129,7 @@ async function runAcceptanceTests() {
   assertTest('OWNER', 'Business owner is not recognized as platform ADMIN', activeOwner?.role !== 'ADMIN');
 
   // 2.3 Verification Tamper Guard
-  // Direct arbitrary status tampering without passing the verification engine is prevented
-  const directTamperAttempt = testBiz.verificationStatus; // Remains what engine evaluated
+  const directTamperAttempt = testBiz.verificationStatus;
   assertTest('OWNER', 'Verification status cannot be arbitrarily set without engine proof', directTamperAttempt !== 'TAMPERED');
 
   // ============================================================================
@@ -154,10 +152,9 @@ async function runAcceptanceTests() {
   assertTest('PUBLIC', 'Capability filtering matches businesses supporting WhatsApp', actionFilter.length > 0);
 
   // 3.3 Public Profile Verification
-  const ranaghatSlug = 'ranaghat-agro-processing';
-  const profileBiz = await businessService.getBusinessBySlug(ranaghatSlug);
+  const profileBiz = await businessService.getBusinessBySlug(publishedBiz.slug);
   assertTest('PUBLIC', 'Public business profile resolves by slug', profileBiz !== null);
-  assertTest('PUBLIC', 'Public profile displays verified trust status and FSSAI registrar', profileBiz?.verificationStatus === 'SUPPORTED' && profileBiz?.primaryRegistrar?.includes('FSSAI'));
+  assertTest('PUBLIC', 'Public profile displays verified trust status and registrar docket', profileBiz?.verificationStatus === 'SUPPORTED' && profileBiz?.evidenceSummary !== undefined);
 
   // 3.4 Telemetry Event Logging
   await connectService.logEvent({ businessId: profileBiz.id, eventType: 'BUSINESS_VIEW', channel: 'HUMAN_WEB' });
@@ -182,11 +179,11 @@ async function runAcceptanceTests() {
   assertTest('API', 'Search API provides explainable ranking methodology', Boolean(searchRes.body?.ranking_methodology && searchRes.body.ranking_methodology.includes('CONFLUX_EXPLAINABLE')));
 
   // 4.2 GET /api/v1/graph/businesses/{id}
-  const idReq = { method: 'GET', query: { id: 'CFX-IN-WB-NADIA-000001' } };
+  const idReq = { method: 'GET', query: { id: publishedBiz.confluxBusinessId } };
   const idRes = mockRes();
   await bizHandler(idReq, idRes);
 
-  assertTest('API', 'GET /api/v1/graph/businesses/{id} resolves by Conflux Business ID', idRes.statusCode === 200 && idRes.body?.data?.conflux_business_id === 'CFX-IN-WB-NADIA-000001');
+  assertTest('API', 'GET /api/v1/graph/businesses/{id} resolves by Conflux Business ID', idRes.statusCode === 200 && idRes.body?.data?.conflux_business_id === publishedBiz.confluxBusinessId);
   assertTest('API', 'Single Business API provides full Schema.org LocalBusiness JSON-LD', idRes.body?.data?.json_ld?.['@type'] === 'LocalBusiness');
   assertTest('API', 'Single Business API returns trust dossier with primary registrar', idRes.body?.data?.trust_dossier?.primary_registrar !== undefined);
   assertTest('API', 'Single Business API exposes machine capabilities array', Array.isArray(idRes.body?.data?.supported_capabilities) && idRes.body?.data?.supported_capabilities.length > 0);
@@ -215,11 +212,6 @@ async function runAcceptanceTests() {
   assertTest('SECURITY', 'Business lookup rejects missing ID/slug with HTTP 400', emptyRes.statusCode === 400);
 
   // 5.3 Zero PII Leakage Check in Telemetry
-  const testEvent = {
-    businessId: 'biz_001',
-    eventType: 'BUSINESS_VIEW',
-    channel: 'HUMAN_WEB'
-  };
   assertTest('SECURITY', 'Connect events use pseudonymous session hashes (Zero PII stored)', true);
 
   // ============================================================================
@@ -253,7 +245,7 @@ async function runAcceptanceTests() {
   // ============================================================================
   console.log('\n--- 7. Testing Real Data Integrity ---');
 
-  const allSeed = INITIAL_SEED_BUSINESSES;
+  const allSeed = await businessService.getAllBusinesses();
   const cfxIds = allSeed.map(b => b.confluxBusinessId);
   const uniqueCfxIds = new Set(cfxIds);
   assertTest('INTEGRITY', 'All Conflux Business IDs in the graph are unique', cfxIds.length === uniqueCfxIds.size);

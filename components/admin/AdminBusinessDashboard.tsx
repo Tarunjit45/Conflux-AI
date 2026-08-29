@@ -1,4 +1,4 @@
-// Conflux Platform — Admin Business Management Command Center (Web-Operable CRUD, Applications Queue, Claim Audits & Telemetry)
+// Conflux Platform — Admin Business Management Command Center (Web-Operable CRUD, Applications Queue, Claim Audits, Moderation & Telemetry)
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,24 +7,28 @@ import {
   XCircle, Edit3, Trash2, Globe, ExternalLink, RefreshCw, Phone, MessageSquare,
   MapPin, Check, AlertCircle, ArrowRight, X, Clock, Layers, BarChart3,
   TrendingUp, Users, Send, Eye, MousePointer, Activity, UserCheck, ShieldOff,
-  FileCheck, ThumbsUp, ThumbsDown, Lock, FileText, HelpCircle, AlertTriangle
+  FileCheck, ThumbsUp, ThumbsDown, Lock, FileText, HelpCircle, AlertTriangle,
+  Star, Flag, MessageCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { businessService } from '../../lib/businessService';
 import { connectService, type MeasurementReport } from '../../lib/connectService';
+import { contributionService } from '../../lib/contributionService';
 import type {
   ConfluxBusiness,
   BusinessPublishStatus,
   BusinessSubmissionApplication,
   SubmissionStatus
 } from '../../types/business';
+import type { UserContribution, ModerationStatus } from '../../types/contribution';
 import { WEST_BENGAL_DISTRICTS } from '../../data/locationsData';
 import { BUSINESS_CATEGORY_TAXONOMY } from '../../data/taxonomiesData';
 
 export const AdminBusinessDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'ENTITIES' | 'APPLICATIONS' | 'CLAIMS' | 'MEASUREMENT'>('ENTITIES');
+  const [activeTab, setActiveTab] = useState<'ENTITIES' | 'APPLICATIONS' | 'CLAIMS' | 'CONTRIBUTIONS' | 'MEASUREMENT'>('ENTITIES');
   const [businesses, setBusinesses] = useState<ConfluxBusiness[]>([]);
   const [applications, setApplications] = useState<BusinessSubmissionApplication[]>([]);
+  const [contributions, setContributions] = useState<UserContribution[]>([]);
   const [measurementReport, setMeasurementReport] = useState<MeasurementReport | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,12 +36,12 @@ export const AdminBusinessDashboard: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedVerStatus, setSelectedVerStatus] = useState('all');
   const [selectedAppStatus, setSelectedAppStatus] = useState('all');
+  const [selectedContribStatus, setSelectedContribStatus] = useState('all');
 
   // Modals state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingBusiness, setEditingBusiness] = useState<ConfluxBusiness | null>(null);
   const [verifyingBusiness, setVerifyingBusiness] = useState<ConfluxBusiness | null>(null);
-  const [selectedApplication, setSelectedApplication] = useState<BusinessSubmissionApplication | null>(null);
   const [verifyClaimStatement, setVerifyClaimStatement] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -68,6 +72,8 @@ export const AdminBusinessDashboard: React.FC = () => {
     setBusinesses(data);
     const apps = await businessService.getAllApplications();
     setApplications(apps);
+    const contribs = await contributionService.getAllContributions();
+    setContributions(contribs);
     const report = await connectService.getMeasurementReport();
     setMeasurementReport(report);
     setIsLoading(false);
@@ -231,7 +237,6 @@ export const AdminBusinessDashboard: React.FC = () => {
     if (confirm(`Approve "${app.businessName}" as Standard Listing? It will be published as an owner-claimed listing.`)) {
       await businessService.approveApplicationAsStandard(app.id);
       showNotification(`Application "${app.businessName}" APPROVED as Standard Listing.`);
-      setSelectedApplication(null);
       await loadData();
     }
   };
@@ -242,7 +247,6 @@ export const AdminBusinessDashboard: React.FC = () => {
     if (registrar) {
       await businessService.approveApplicationAsVerified(app.id, registrar);
       showNotification(`Application "${app.businessName}" APPROVED as CONFLUX VERIFIED.`);
-      setSelectedApplication(null);
       await loadData();
     }
   };
@@ -252,7 +256,6 @@ export const AdminBusinessDashboard: React.FC = () => {
     if (msg) {
       await businessService.requestApplicationChanges(app.id, msg);
       showNotification(`Changes requested for application "${app.businessName}".`);
-      setSelectedApplication(null);
       await loadData();
     }
   };
@@ -262,9 +265,22 @@ export const AdminBusinessDashboard: React.FC = () => {
     if (reason) {
       await businessService.rejectApplication(app.id, reason);
       showNotification(`Application "${app.businessName}" REJECTED.`);
-      setSelectedApplication(null);
       await loadData();
     }
+  };
+
+  // ── CONTRIBUTION MODERATION ACTIONS ──────────────────────────────
+  const handleApproveContribution = async (contribId: string) => {
+    await contributionService.moderateContribution(contribId, 'APPROVED');
+    showNotification('Contribution APPROVED and published to business profile.');
+    await loadData();
+  };
+
+  const handleRejectContribution = async (contribId: string) => {
+    const notes = prompt('Enter rejection reason for this contribution:') || 'Moderated out';
+    await contributionService.moderateContribution(contribId, 'REJECTED', notes);
+    showNotification('Contribution REJECTED.');
+    await loadData();
   };
 
   const handleOpenVerifyModal = (biz: ConfluxBusiness) => {
@@ -330,8 +346,16 @@ export const AdminBusinessDashboard: React.FC = () => {
     return true;
   });
 
+  const filteredContribs = contributions.filter(c => {
+    if (selectedContribStatus !== 'all' && c.moderationStatus !== selectedContribStatus) {
+      return false;
+    }
+    return true;
+  });
+
   const pendingClaims = businesses.filter(b => b.claimStatus === 'CLAIM_PENDING');
   const pendingApps = applications.filter(a => a.status === 'SUBMITTED' || a.status === 'UNDER_REVIEW');
+  const pendingContribs = contributions.filter(c => c.moderationStatus === 'PENDING_MODERATION');
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-20 pt-8">
@@ -344,10 +368,10 @@ export const AdminBusinessDashboard: React.FC = () => {
               <Lock size={15} /> Conflux Private Admin Command Center
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold font-orbitron text-slate-900 tracking-tight">
-              Business Graph &amp; Application Auditing
+              Business Graph &amp; Operational Auditing
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 mt-1">
-              Review submitted business applications, corroborate statutory evidence, and manage graph entities.
+              Review applications, moderate reviews &amp; contributions, audit ownership claims, and manage canonical entities.
             </p>
           </div>
 
@@ -404,6 +428,17 @@ export const AdminBusinessDashboard: React.FC = () => {
           </button>
 
           <button
+            onClick={() => setActiveTab('CONTRIBUTIONS')}
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeTab === 'CONTRIBUTIONS'
+                ? 'bg-white text-purple-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <MessageCircle size={15} /> User Contributions ({pendingContribs.length} Pending)
+          </button>
+
+          <button
             onClick={() => setActiveTab('MEASUREMENT')}
             className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'MEASUREMENT'
@@ -411,7 +446,7 @@ export const AdminBusinessDashboard: React.FC = () => {
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <BarChart3 size={15} /> Telemetry &amp; Revenue Metrics
+            <BarChart3 size={15} /> Telemetry &amp; Metrics
           </button>
         </div>
 
@@ -500,7 +535,10 @@ export const AdminBusinessDashboard: React.FC = () => {
               {isLoading ? (
                 <div className="p-16 text-center text-slate-400">Loading Business Graph nodes...</div>
               ) : filtered.length === 0 ? (
-                <div className="p-16 text-center text-slate-500">No businesses match the selected filters.</div>
+                <div className="p-16 text-center text-slate-500 space-y-2">
+                  <div className="font-bold text-slate-800 text-sm">No businesses listed in production graph yet.</div>
+                  <p className="text-xs text-slate-400">Add legitimate businesses manually or approve incoming applications.</p>
+                </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs sm:text-sm">
@@ -834,7 +872,130 @@ export const AdminBusinessDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* ── TAB 4: REVENUE VALIDATION & MEASUREMENT ─────────────── */}
+        {/* ── TAB 4: USER CONTRIBUTIONS MODERATION QUEUE ──────────── */}
+        {activeTab === 'CONTRIBUTIONS' && (
+          <div className="space-y-6">
+            <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                <div>
+                  <h3 className="text-lg font-bold font-orbitron text-slate-900">
+                    Community Reviews &amp; Knowledge Contributions ({contributions.length})
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Moderate customer reviews, verify suggested edits, and audit inaccuracy reports from authenticated users.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <select
+                    value={selectedContribStatus}
+                    onChange={e => setSelectedContribStatus(e.target.value)}
+                    className="px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold focus:outline-none"
+                  >
+                    <option value="all">All Moderation Statuses</option>
+                    <option value="PENDING_MODERATION">Pending Moderation ({pendingContribs.length})</option>
+                    <option value="APPROVED">Approved</option>
+                    <option value="REJECTED">Rejected</option>
+                  </select>
+
+                  <button
+                    onClick={loadData}
+                    className="text-xs font-bold text-slate-500 hover:text-blue-600 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <RefreshCw size={14} /> Refresh
+                  </button>
+                </div>
+              </div>
+
+              {filteredContribs.length === 0 ? (
+                <div className="p-12 text-center text-slate-500 text-xs">
+                  No contributions found matching the selected filter.
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {filteredContribs.map(c => (
+                    <div key={c.id} className="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="space-y-1.5 max-w-2xl">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
+                            {c.id}
+                          </span>
+                          <span className="font-bold text-slate-900 text-sm">
+                            {c.businessName || `Business ID: ${c.businessId}`}
+                          </span>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono ${
+                            c.contributionType === 'REVIEW_RATING'
+                              ? 'bg-amber-100 text-amber-900'
+                              : c.contributionType === 'SUGGESTED_EDIT'
+                              ? 'bg-blue-100 text-blue-900'
+                              : 'bg-rose-100 text-rose-900'
+                          }`}>
+                            {c.contributionType.replace(/_/g, ' ')}
+                          </span>
+                          <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold font-mono ${
+                            c.moderationStatus === 'APPROVED'
+                              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                              : c.moderationStatus === 'PENDING_MODERATION'
+                              ? 'bg-amber-50 text-amber-900 border border-amber-200 animate-pulse'
+                              : 'bg-slate-100 text-slate-600'
+                          }`}>
+                            {c.moderationStatus}
+                          </span>
+                        </div>
+
+                        <div className="text-xs text-slate-600">
+                          <span className="font-semibold">Contributor:</span> {c.userDisplayName} ({c.userEmail}) • <span className="font-mono text-[11px] text-slate-400">{new Date(c.createdAt).toLocaleDateString()}</span>
+                        </div>
+
+                        {c.contributionType === 'REVIEW_RATING' && (
+                          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 space-y-1">
+                            <div className="flex items-center gap-1 text-amber-500 font-bold">
+                              ★ {c.rating} / 5 Stars
+                            </div>
+                            <p className="leading-relaxed">&ldquo;{c.reviewText}&rdquo;</p>
+                          </div>
+                        )}
+
+                        {c.contributionType === 'SUGGESTED_EDIT' && (
+                          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 space-y-1">
+                            <div><span className="font-bold text-slate-700">Field:</span> {c.fieldName} &rarr; <span className="font-bold text-blue-700">{c.suggestedValue}</span></div>
+                            <div className="text-slate-600"><span className="font-semibold">Rationale:</span> {c.rationale}</div>
+                          </div>
+                        )}
+
+                        {c.contributionType === 'INACCURACY_REPORT' && (
+                          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-900 space-y-1">
+                            <div><span className="font-bold">Issue Type:</span> {c.issueType}</div>
+                            <div><span className="font-semibold">Details:</span> {c.details}</div>
+                          </div>
+                        )}
+                      </div>
+
+                      {c.moderationStatus === 'PENDING_MODERATION' && (
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            onClick={() => handleApproveContribution(c.id)}
+                            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                          >
+                            <ThumbsUp size={14} /> Approve
+                          </button>
+                          <button
+                            onClick={() => handleRejectContribution(c.id)}
+                            className="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                          >
+                            <ThumbsDown size={14} /> Reject
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB 5: REVENUE VALIDATION & MEASUREMENT ─────────────── */}
         {activeTab === 'MEASUREMENT' && measurementReport && (
           <div className="space-y-8">
             {/* Top Scorecard Grid */}
@@ -916,19 +1077,6 @@ export const AdminBusinessDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Ranaghat Corridor Focus Card */}
-            <div className="p-6 rounded-3xl bg-gradient-to-r from-blue-900 to-indigo-900 text-white space-y-3">
-              <div className="flex items-center gap-2 text-xs font-bold font-mono text-blue-300">
-                <MapPin size={16} /> Ranaghat Local Pilot Corridor Status
-              </div>
-              <h3 className="text-xl font-bold font-orbitron">
-                Ranaghat &amp; Nadia Pilot Onboarding Target: 10 Verified Businesses
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl">
-                Ready for manual onboarding of verified local enterprises (Agro-processors, Tant Weavers, Diagnostics &amp; Health Clinics, Gyms, HVAC Technicians, and Local Food services).
-              </p>
-            </div>
-
             {/* Real Recorded Telemetry Events Stream */}
             <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
               <div className="p-6 border-b border-slate-100 flex items-center justify-between">
@@ -940,7 +1088,7 @@ export const AdminBusinessDashboard: React.FC = () => {
 
               {measurementReport.recentEvents.length === 0 ? (
                 <div className="p-12 text-center text-slate-500 text-xs">
-                  No interaction events recorded yet. Perform searches on <Link to="/discover" className="text-blue-600 underline">/discover</Link> or click connect buttons on public profiles to see real events logged here.
+                  No interaction events recorded yet.
                 </div>
               ) : (
                 <div className="overflow-x-auto">
