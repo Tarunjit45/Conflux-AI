@@ -354,24 +354,47 @@ export const PublicBusinessProfile: React.FC = () => {
                 </div>
               </div>
 
-              {/* Primary Registrar Grounding */}
-              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  Primary Statutory Evidence:
-                </div>
-                <div className="text-sm font-bold text-slate-900">
-                  {business.primaryRegistrar || 'Statutory Master Docket'}
-                </div>
-                {business.evidenceSummary && (
-                  <p className="text-xs text-slate-700 leading-relaxed pt-1">
-                    &ldquo;{business.evidenceSummary}&rdquo;
-                  </p>
-                )}
-                {business.lastVerifiedAt && (
-                  <div className="text-[11px] text-slate-500 pt-1 font-mono">
-                    Audit Timestamp: {new Date(business.lastVerifiedAt).toLocaleDateString()}
+              {/* Provenance: Source Information vs Conflux Verification */}
+              <div className="space-y-3">
+                {/* 1. Source Information */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-slate-500 uppercase tracking-wider font-mono">
+                      Source Information:
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-slate-200/80 text-slate-700 font-mono text-[10px] font-bold">
+                      Official Public / Regulatory Registry
+                    </span>
                   </div>
-                )}
+                  <div className="text-sm font-bold text-slate-900">
+                    {business.primaryRegistrar || 'Primary Statutory Registry Docket'}
+                  </div>
+                  {business.evidenceSummary && (
+                    <p className="text-xs text-slate-700 leading-relaxed pt-0.5">
+                      &ldquo;{business.evidenceSummary}&rdquo;
+                    </p>
+                  )}
+                </div>
+
+                {/* 2. Conflux Verification Result */}
+                <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-emerald-900 uppercase tracking-wider font-mono flex items-center gap-1.5">
+                      <ShieldCheck size={15} className="text-emerald-700" /> Conflux Verification:
+                    </span>
+                    <span className="font-mono text-emerald-800 font-bold text-[11px]">
+                      {isVerified ? 'VERIFIED (STATUTORY)' : business.verificationStatus}
+                    </span>
+                  </div>
+                  <p className="text-xs text-emerald-900 leading-relaxed">
+                    Evaluated and corroboration grounded against primary statutory licensing records.
+                  </p>
+                  {business.lastVerifiedAt && (
+                    <div className="text-[11px] text-emerald-700 pt-0.5 font-mono">
+                      Last Verified: {new Date(business.lastVerifiedAt).toLocaleDateString()}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Strict Zero Fake Reviews Guarantee */}

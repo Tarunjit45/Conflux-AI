@@ -96,6 +96,16 @@ export const ClaimBusinessModal: React.FC<ClaimBusinessModalProps> = ({
           <div className="text-xs font-mono text-blue-700">Conflux Business ID: {business.confluxBusinessId}</div>
         </div>
 
+        {/* Business Value Proposition */}
+        <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/70 text-xs text-amber-900 space-y-1">
+          <div className="font-bold flex items-center gap-1.5">
+            <Building2 size={15} className="text-amber-700" /> Value to Business Owners:
+          </div>
+          <p className="text-[11px] text-amber-800 leading-relaxed">
+            Claim your existing profile &rarr; verify your business with official statutory evidence &rarr; control accurate business information &rarr; receive authentic local calls &amp; inquiries &rarr; measure genuine customer interactions.
+          </p>
+        </div>
+
         {successMessage ? (
           <div className="p-6 rounded-2xl bg-emerald-50 text-emerald-900 border border-emerald-200 space-y-3">
             <div className="flex items-center gap-2 font-bold text-sm">

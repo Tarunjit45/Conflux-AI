@@ -523,11 +523,11 @@ export const DiscoverPage: React.FC = () => {
                       </div>
                     )}
 
-                    {/* WHY THEY ARE TRUSTWORTHY: Authoritative Registrar Proof */}
+                    {/* WHY THEY ARE TRUSTWORTHY: Source Information from Official Registry */}
                     {biz.primaryRegistrar && (
                       <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 space-y-0.5">
                         <div className="text-[10px] font-bold font-mono text-slate-500 uppercase tracking-wider">
-                          Authoritative Evidence:
+                          Source Information:
                         </div>
                         <div className="text-xs font-bold text-slate-800 line-clamp-1">
                           {biz.primaryRegistrar}
