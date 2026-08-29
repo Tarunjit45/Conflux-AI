@@ -128,6 +128,7 @@ export interface ConfluxBusiness {
 
 export type ConnectEventType =
   | 'BUSINESS_VIEW'
+  | 'DISCOVERY_SEARCH'
   | 'PHONE_CLICK'
   | 'WHATSAPP_CLICK'
   | 'WEBSITE_CLICK'

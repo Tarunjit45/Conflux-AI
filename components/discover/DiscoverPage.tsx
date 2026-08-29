@@ -92,6 +92,15 @@ export const DiscoverPage: React.FC = () => {
 
     setResults(res);
     setIsLoading(false);
+
+    // Track search intent telemetry
+    if (parsedWhat || parsedWhere) {
+      connectService.logEvent({
+        businessId: 'conflux_discovery_hub',
+        eventType: 'DISCOVERY_SEARCH',
+        intentId: `${parsedWhat || 'all_services'} | ${parsedWhere || 'all_locations'}`
+      });
+    }
   };
 
   useEffect(() => {

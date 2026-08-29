@@ -1,11 +1,49 @@
-// Conflux Platform — Connect Telemetry & Lead Dispatch Service
+// Conflux Platform — Connect Telemetry & Measurement Service
 
 import { supabase } from './supabase.ts';
 import type { ConnectEventType, ConnectEventRecord } from '../types/business.ts';
+import { businessService } from './businessService.ts';
 
 const LOCAL_STORAGE_EVENTS_KEY = 'conflux_connect_telemetry_events';
 
+export interface MeasurementReport {
+  timestamp: string;
+  businessesOnboarded: {
+    total: number;
+    draft: number;
+    published: number;
+    suspended: number;
+  };
+  verifiedBusinesses: {
+    totalVerified: number;
+    supported: number;
+    partiallySupported: number;
+    unverified: number;
+  };
+  discoverySearches: {
+    total: number;
+    recentIntents: string[];
+  };
+  businessViews: {
+    total: number;
+  };
+  connectActions: {
+    total: number;
+    calls: number;
+    whatsapp: number;
+    website: number;
+    directions: number;
+    bookings: number;
+  };
+  leads: {
+    total: number;
+  };
+  recentEvents: ConnectEventRecord[];
+}
+
 export class ConnectService {
+  private memoryEvents: ConnectEventRecord[] = [];
+
   /**
    * Log an interaction event (human web click or AI agent query)
    */
@@ -24,6 +62,10 @@ export class ConnectService {
       sessionPseudonym: `ses_${Math.random().toString(36).substring(2, 10)}`,
       createdAt: new Date().toISOString()
     };
+
+    // Add to in-memory queue
+    this.memoryEvents.unshift(event);
+    if (this.memoryEvents.length > 500) this.memoryEvents.pop();
 
     // Store in local storage queue
     if (typeof localStorage !== 'undefined') {
@@ -52,6 +94,93 @@ export class ConnectService {
     } catch (e) {
       // Silent telemetry fail-open
     }
+  }
+
+  /**
+   * Retrieve all recorded telemetry events
+   */
+  getRecordedEvents(): ConnectEventRecord[] {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const raw = localStorage.getItem(LOCAL_STORAGE_EVENTS_KEY);
+        if (raw) {
+          const events: ConnectEventRecord[] = JSON.parse(raw);
+          if (Array.isArray(events)) {
+            return events;
+          }
+        }
+      } catch {
+        // Ignore storage parse error
+      }
+    }
+    return this.memoryEvents;
+  }
+
+  /**
+   * Generate an accurate, real-world Measurement Report from recorded graph data
+   */
+  async getMeasurementReport(): Promise<MeasurementReport> {
+    const businesses = await businessService.getAllBusinesses();
+    const events = this.getRecordedEvents();
+
+    const draftCount = businesses.filter(b => b.status === 'DRAFT').length;
+    const publishedCount = businesses.filter(b => b.status === 'PUBLISHED').length;
+    const suspendedCount = businesses.filter(b => b.status === 'SUSPENDED').length;
+
+    const supportedCount = businesses.filter(b => b.verificationStatus === 'SUPPORTED').length;
+    const partialCount = businesses.filter(b => b.verificationStatus === 'PARTIALLY_SUPPORTED').length;
+    const unverifiedCount = businesses.filter(b => b.verificationStatus === 'UNVERIFIED').length;
+
+    const searchEvents = events.filter(e => e.eventType === 'DISCOVERY_SEARCH');
+    const viewEvents = events.filter(e => e.eventType === 'BUSINESS_VIEW');
+    const callEvents = events.filter(e => e.eventType === 'PHONE_CLICK');
+    const waEvents = events.filter(e => e.eventType === 'WHATSAPP_CLICK');
+    const webEvents = events.filter(e => e.eventType === 'WEBSITE_CLICK');
+    const dirEvents = events.filter(e => e.eventType === 'DIRECTIONS_CLICK');
+    const bookEvents = events.filter(e => e.eventType === 'BOOKING_CLICK');
+    const leadEvents = events.filter(e => e.eventType === 'LEAD_SUBMITTED');
+
+    const totalConnectActions = callEvents.length + waEvents.length + webEvents.length + dirEvents.length + bookEvents.length;
+
+    const recentIntents = searchEvents
+      .map(e => e.intentId)
+      .filter((intent): intent is string => Boolean(intent))
+      .slice(0, 10);
+
+    return {
+      timestamp: new Date().toISOString(),
+      businessesOnboarded: {
+        total: businesses.length,
+        draft: draftCount,
+        published: publishedCount,
+        suspended: suspendedCount
+      },
+      verifiedBusinesses: {
+        totalVerified: supportedCount + partialCount,
+        supported: supportedCount,
+        partiallySupported: partialCount,
+        unverified: unverifiedCount
+      },
+      discoverySearches: {
+        total: searchEvents.length,
+        recentIntents
+      },
+      businessViews: {
+        total: viewEvents.length
+      },
+      connectActions: {
+        total: totalConnectActions,
+        calls: callEvents.length,
+        whatsapp: waEvents.length,
+        website: webEvents.length,
+        directions: dirEvents.length,
+        bookings: bookEvents.length
+      },
+      leads: {
+        total: leadEvents.length
+      },
+      recentEvents: events.slice(0, 20)
+    };
   }
 
   /**
@@ -86,7 +215,7 @@ export class ConnectService {
           goal: input.service,
           message: input.message,
           source: `Conflux Verified Profile (${input.businessName})`,
-          landing_page: window.location.pathname
+          landing_page: typeof window !== 'undefined' ? window.location.pathname : '/business'
         })
       });
 
