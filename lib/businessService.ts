@@ -1,6 +1,6 @@
-// Conflux Platform — Business Graph Service Layer (Local Market Domination & Real Entity Foundation)
+// Conflux Platform — Business Graph Service Layer (Remote Supabase PostgreSQL Engine with Production Validation)
 
-import { supabase } from './supabase.ts';
+import { supabase, isSupabaseConfigured, assertSupabaseConfigured } from './supabase.ts';
 import type {
   ConfluxBusiness,
   BusinessSearchParams,
@@ -14,49 +14,17 @@ import type {
 import { generateConfluxBusinessId, slugifyBusinessName } from './businessId.ts';
 import { verificationService } from './verify/verificationService.ts';
 
-const LOCAL_STORAGE_BUSINESSES_KEY = 'conflux_business_graph_entities';
-
-// Production Business Graph starts completely clean with ZERO fake/seed/demo businesses.
-export const INITIAL_SEED_BUSINESSES: ConfluxBusiness[] = [];
+// Test/Development Memory Cache
+let memoryStore: ConfluxBusiness[] = [];
+let memoryApplications: BusinessSubmissionApplication[] = [];
 
 export class BusinessService {
-  private memoryCache: ConfluxBusiness[] | null = null;
-
-  private getLocalStore(): ConfluxBusiness[] {
-    if (typeof localStorage === 'undefined') {
-      if (!this.memoryCache) {
-        this.memoryCache = [];
-      }
-      return this.memoryCache;
-    }
-
-    const raw = localStorage.getItem(LOCAL_STORAGE_BUSINESSES_KEY);
-    if (!raw) {
-      return [];
-    }
-    try {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        return parsed;
-      }
-    } catch {
-      // Fallback on parse error
-    }
-    return [];
-  }
-
-  private setLocalStore(data: ConfluxBusiness[]) {
-    this.memoryCache = data;
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(LOCAL_STORAGE_BUSINESSES_KEY, JSON.stringify(data));
-    }
-  }
-
   /**
-   * Reset local storage store to empty production state
+   * Clear in-memory store (for test suites)
    */
   clearGraphStore() {
-    this.setLocalStore([]);
+    memoryStore = [];
+    memoryApplications = [];
   }
 
   /**
@@ -148,11 +116,36 @@ export class BusinessService {
    * Search and filter businesses in the Business Graph with natural intent matching
    */
   async searchBusinesses(params: BusinessSearchParams = {}): Promise<BusinessSearchResult[]> {
-    let list = this.getLocalStore();
+    let list: ConfluxBusiness[] = [];
 
-    // Only published businesses for general search
-    list = list.filter(b => b.status === 'PUBLISHED');
+    if (isSupabaseConfigured()) {
+      try {
+        let query = supabase
+          .from('businesses')
+          .select('*, location:business_locations(*), capabilities:business_capabilities(*)')
+          .eq('status', 'PUBLISHED');
 
+        if (params.verifiedOnly) {
+          query = query.eq('verification_status', 'SUPPORTED');
+        }
+
+        const { data, error } = await query;
+        if (error) {
+          throw new Error(`[SUPABASE_QUERY_ERROR] Failed to query businesses from Supabase: ${error.message}`);
+        }
+
+        if (data) {
+          list = data.map(row => this.mapSupabaseRowToBusiness(row));
+        }
+      } catch (err: any) {
+        console.error('[BusinessService.searchBusinesses] Database error:', err);
+        throw err;
+      }
+    } else {
+      list = memoryStore.filter(b => b.status === 'PUBLISHED');
+    }
+
+    // Apply Client-Side & Natural Language Ranking Filters
     if (params.query) {
       const rawQ = params.query.toLowerCase().trim();
       const tokens = rawQ
@@ -226,15 +219,45 @@ export class BusinessService {
    * Get all businesses (including drafts, for admin console)
    */
   async getAllBusinesses(): Promise<ConfluxBusiness[]> {
-    return this.getLocalStore();
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('businesses')
+          .select('*, location:business_locations(*), capabilities:business_capabilities(*)')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          throw new Error(`[SUPABASE_QUERY_ERROR] Failed to fetch businesses: ${error.message}`);
+        }
+        return (data || []).map(row => this.mapSupabaseRowToBusiness(row));
+      } catch (err: any) {
+        console.error('[BusinessService.getAllBusinesses] Database error:', err);
+        throw err;
+      }
+    }
+    return memoryStore;
   }
 
   /**
    * Get single business by Conflux ID or slug
    */
   async getBusinessById(id: string): Promise<ConfluxBusiness | null> {
-    const list = this.getLocalStore();
-    const match = list.find(b => b.id === id || b.confluxBusinessId === id || b.slug === id);
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('businesses')
+          .select('*, location:business_locations(*), capabilities:business_capabilities(*)')
+          .or(`id.eq.${id},conflux_business_id.eq.${id},slug.eq.${id}`)
+          .maybeSingle();
+
+        if (error) throw error;
+        return data ? this.mapSupabaseRowToBusiness(data) : null;
+      } catch (err: any) {
+        console.error('[BusinessService.getBusinessById] Database error:', err);
+        throw err;
+      }
+    }
+    const match = memoryStore.find(b => b.id === id || b.confluxBusinessId === id || b.slug === id);
     return match || null;
   }
 
@@ -242,8 +265,22 @@ export class BusinessService {
    * Get single business by slug
    */
   async getBusinessBySlug(slug: string): Promise<ConfluxBusiness | null> {
-    const list = this.getLocalStore();
-    const match = list.find(b => b.slug.toLowerCase() === slug.toLowerCase());
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('businesses')
+          .select('*, location:business_locations(*), capabilities:business_capabilities(*)')
+          .eq('slug', slug.toLowerCase())
+          .maybeSingle();
+
+        if (error) throw error;
+        return data ? this.mapSupabaseRowToBusiness(data) : null;
+      } catch (err: any) {
+        console.error('[BusinessService.getBusinessBySlug] Database error:', err);
+        throw err;
+      }
+    }
+    const match = memoryStore.find(b => b.slug.toLowerCase() === slug.toLowerCase());
     return match || null;
   }
 
@@ -270,8 +307,8 @@ export class BusinessService {
     bookingUrl?: string;
     storefrontPhotoUrl?: string;
   }): Promise<ConfluxBusiness> {
-    const list = this.getLocalStore();
-    const sequenceNumber = list.length + 1;
+    const allBusinesses = await this.getAllBusinesses();
+    const sequenceNumber = allBusinesses.length + 1;
 
     const confluxBusinessId = generateConfluxBusinessId({
       district: input.district,
@@ -340,8 +377,64 @@ export class BusinessService {
       updatedAt: new Date().toISOString()
     };
 
-    list.unshift(newBiz);
-    this.setLocalStore(list);
+    if (isSupabaseConfigured()) {
+      try {
+        const { error: bizError } = await supabase.from('businesses').insert([{
+          id: newBiz.id,
+          conflux_business_id: newBiz.confluxBusinessId,
+          slug: newBiz.slug,
+          name: newBiz.name,
+          legal_name: newBiz.legalName,
+          business_type: newBiz.businessType,
+          category_id: newBiz.categoryId,
+          category_name: newBiz.categoryName,
+          services: newBiz.services,
+          landmark: newBiz.landmark,
+          storefront_photo_url: newBiz.storefrontPhotoUrl,
+          description: newBiz.description,
+          short_summary: newBiz.shortSummary,
+          status: newBiz.status,
+          claim_status: newBiz.claimStatus,
+          verification_status: newBiz.verificationStatus,
+          verification_level: newBiz.verificationLevel,
+          confidence_score: newBiz.confidenceScore,
+          created_at: newBiz.createdAt,
+          updated_at: newBiz.updatedAt
+        }]);
+        if (bizError) throw bizError;
+
+        await supabase.from('business_locations').insert([{
+          id: newBiz.location.id,
+          business_id: newBiz.id,
+          country: newBiz.location.country,
+          state: newBiz.location.state,
+          district: newBiz.location.district,
+          city: newBiz.location.city,
+          landmark: newBiz.location.landmark,
+          full_address: newBiz.location.fullAddress,
+          is_primary: true
+        }]);
+
+        if (newBiz.capabilities.length > 0) {
+          await supabase.from('business_capabilities').insert(
+            newBiz.capabilities.map(c => ({
+              id: c.id,
+              business_id: newBiz.id,
+              action_type: c.actionType,
+              is_supported: c.isSupported,
+              phone_target: c.phoneTarget,
+              endpoint_url: c.endpointUrl,
+              verification_status: c.verificationStatus
+            }))
+          );
+        }
+      } catch (err: any) {
+        console.error('[BusinessService.createBusiness] Database error:', err);
+        throw err;
+      }
+    }
+
+    memoryStore.unshift(newBiz);
     return newBiz;
   }
 
@@ -349,21 +442,48 @@ export class BusinessService {
    * Update an existing business node
    */
   async updateBusiness(id: string, updates: Partial<ConfluxBusiness>): Promise<ConfluxBusiness> {
-    const list = this.getLocalStore();
-    const idx = list.findIndex(b => b.id === id);
-    if (idx === -1) {
-      throw new Error(`Business with ID ${id} not found.`);
+    if (isSupabaseConfigured()) {
+      try {
+        const payload: any = { updated_at: new Date().toISOString() };
+        if (updates.name) payload.name = updates.name;
+        if (updates.legalName !== undefined) payload.legal_name = updates.legalName;
+        if (updates.businessType) payload.business_type = updates.businessType;
+        if (updates.categoryId) payload.category_id = updates.categoryId;
+        if (updates.categoryName) payload.category_name = updates.categoryName;
+        if (updates.services) payload.services = updates.services;
+        if (updates.landmark !== undefined) payload.landmark = updates.landmark;
+        if (updates.description) payload.description = updates.description;
+        if (updates.shortSummary !== undefined) payload.short_summary = updates.shortSummary;
+        if (updates.status) {
+          payload.status = updates.status;
+          payload.is_indexable = updates.status === 'PUBLISHED';
+        }
+        if (updates.claimStatus) payload.claim_status = updates.claimStatus;
+        if (updates.verificationStatus) payload.verification_status = updates.verificationStatus;
+        if (updates.verificationLevel) payload.verification_level = updates.verificationLevel;
+        if (updates.confidenceScore !== undefined) payload.confidence_score = updates.confidenceScore;
+        if (updates.primaryRegistrar) payload.primary_registrar = updates.primaryRegistrar;
+        if (updates.evidenceSummary) payload.evidence_summary = updates.evidenceSummary;
+        if (updates.verificationBreakdown) payload.verification_breakdown = updates.verificationBreakdown;
+        if (updates.lastVerifiedAt) payload.last_verified_at = updates.lastVerifiedAt;
+
+        const { error } = await supabase.from('businesses').update(payload).eq('id', id);
+        if (error) throw error;
+      } catch (err: any) {
+        console.error('[BusinessService.updateBusiness] Database error:', err);
+        throw err;
+      }
     }
 
-    const updated = {
-      ...list[idx],
-      ...updates,
-      updatedAt: new Date().toISOString()
-    };
+    const idx = memoryStore.findIndex(b => b.id === id);
+    if (idx !== -1) {
+      memoryStore[idx] = { ...memoryStore[idx], ...updates, updatedAt: new Date().toISOString() };
+      return memoryStore[idx];
+    }
 
-    list[idx] = updated;
-    this.setLocalStore(list);
-    return updated;
+    const fetched = await this.getBusinessById(id);
+    if (!fetched) throw new Error(`Business with ID ${id} not found.`);
+    return { ...fetched, ...updates };
   }
 
   /**
@@ -378,21 +498,21 @@ export class BusinessService {
       statutoryProofText: string;
     }
   ): Promise<{ success: boolean; message: string }> {
-    const list = this.getLocalStore();
-    const idx = list.findIndex(b => b.id === businessId || b.confluxBusinessId === businessId);
-    if (idx === -1) {
+    const biz = await this.getBusinessById(businessId);
+    if (!biz) {
       throw new Error('Business entity not found.');
     }
 
-    list[idx].claimStatus = 'CLAIM_PENDING';
-    list[idx].updatedAt = new Date().toISOString();
-    this.setLocalStore(list);
+    await this.updateBusiness(biz.id, {
+      claimStatus: 'CLAIM_PENDING',
+      evidenceSummary: `Ownership claim by ${ownerInfo.ownerName}: ${ownerInfo.statutoryProofText}`
+    });
 
     // Run verification on the claim statement
     await verificationService.verifyClaim({
-      entityName: list[idx].name,
-      claimText: `${list[idx].name} ownership claim by ${ownerInfo.ownerName}: ${ownerInfo.statutoryProofText}`,
-      sourceUrls: [list[idx].contact.websiteUrl || 'https://mca.gov.in']
+      entityName: biz.name,
+      claimText: `${biz.name} ownership claim by ${ownerInfo.ownerName}: ${ownerInfo.statutoryProofText}`,
+      sourceUrls: [biz.contact.websiteUrl || 'https://mca.gov.in']
     });
 
     return {
@@ -453,9 +573,7 @@ export class BusinessService {
     const result = await verificationService.verifyClaim({
       entityName: biz.name,
       claimText: claimStatement,
-      sourceUrls: [
-        biz.contact.websiteUrl || 'https://mca.gov.in'
-      ]
+      sourceUrls: [biz.contact.websiteUrl || 'https://mca.gov.in']
     });
 
     const confidenceScore = result.confidence || (result.status === 'SUPPORTED' ? 90.0 : 40.0);
@@ -484,44 +602,24 @@ export class BusinessService {
    * Delete a business node
    */
   async deleteBusiness(id: string): Promise<boolean> {
-    const list = this.getLocalStore();
-    const filtered = list.filter(b => b.id !== id && b.confluxBusinessId !== id);
-    if (filtered.length !== list.length) {
-      this.setLocalStore(filtered);
-      return true;
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase.from('businesses').delete().or(`id.eq.${id},conflux_business_id.eq.${id}`);
+        if (error) throw error;
+        return true;
+      } catch (err: any) {
+        console.error('[BusinessService.deleteBusiness] Database error:', err);
+        throw err;
+      }
     }
-    return false;
+    const initialLen = memoryStore.length;
+    memoryStore = memoryStore.filter(b => b.id !== id && b.confluxBusinessId !== id);
+    return memoryStore.length !== initialLen;
   }
 
   // ══════════════════════════════════════════════════════════════════════════
   // APPLICATION SUBMISSION & AUDIT METHODS
   // ══════════════════════════════════════════════════════════════════════════
-
-  private getApplicationsStore(): BusinessSubmissionApplication[] {
-    if (typeof localStorage !== 'undefined') {
-      try {
-        const raw = localStorage.getItem('conflux_business_applications');
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed)) return parsed;
-        }
-      } catch {
-        // Storage quota guard
-      }
-    }
-    return (this as any)._memoryApplications || [];
-  }
-
-  private setApplicationsStore(apps: BusinessSubmissionApplication[]) {
-    (this as any)._memoryApplications = apps;
-    if (typeof localStorage !== 'undefined') {
-      try {
-        localStorage.setItem('conflux_business_applications', JSON.stringify(apps));
-      } catch {
-        // Storage quota guard
-      }
-    }
-  }
 
   /**
    * Submit a new business listing or Conflux Verified application
@@ -529,7 +627,6 @@ export class BusinessService {
   async submitApplication(
     input: Omit<BusinessSubmissionApplication, 'id' | 'status' | 'createdAt' | 'updatedAt' | 'confluxBusinessId'>
   ): Promise<BusinessSubmissionApplication> {
-    // 1. Strict Validation
     if (!input.businessName || input.businessName.trim().length < 2) {
       throw new Error('Business name is required (minimum 2 characters).');
     }
@@ -555,12 +652,12 @@ export class BusinessService {
       throw new Error('You must confirm that photographs are genuine and not stock images.');
     }
 
-    const apps = this.getApplicationsStore();
-    const appId = `APP-2026-${String(apps.length + 1).padStart(4, '0')}`;
+    const allApps = await this.getAllApplications();
+    const appId = `APP-2026-${String(allApps.length + 1).padStart(4, '0')}`;
     const allBusinesses = await this.getAllBusinesses();
     const confluxBusinessId = generateConfluxBusinessId({
       district: input.district,
-      sequenceNumber: allBusinesses.length + apps.length + 1
+      sequenceNumber: allBusinesses.length + allApps.length + 1
     });
 
     const newApp: BusinessSubmissionApplication = {
@@ -572,8 +669,56 @@ export class BusinessService {
       updatedAt: new Date().toISOString()
     };
 
-    apps.unshift(newApp);
-    this.setApplicationsStore(apps);
+    if (isSupabaseConfigured()) {
+      try {
+        const { error: appError } = await supabase.from('business_applications').insert([{
+          id: newApp.id,
+          conflux_business_id: newApp.confluxBusinessId,
+          submission_type: newApp.submissionType,
+          business_name: newApp.businessName,
+          legal_name: newApp.legalName,
+          business_type: newApp.businessType,
+          category_id: newApp.categoryId,
+          category_name: newApp.categoryName,
+          description: newApp.description,
+          district: newApp.district,
+          city: newApp.city,
+          landmark: newApp.landmark,
+          full_address: newApp.fullAddress,
+          phone: newApp.phone,
+          whatsapp: newApp.whatsapp,
+          email: newApp.email,
+          website_url: newApp.websiteUrl,
+          booking_url: newApp.bookingUrl,
+          owner_name: newApp.ownerName,
+          owner_role: newApp.ownerRole,
+          storefront_photo_url: newApp.storefrontPhotoUrl,
+          status: newApp.status,
+          created_at: newApp.createdAt,
+          updated_at: newApp.updatedAt
+        }]);
+        if (appError) throw appError;
+
+        // Isolate Private Evidence Documents into dedicated private table with strict RLS
+        if (newApp.privateEvidence && newApp.privateEvidence.length > 0) {
+          await supabase.from('private_evidence_documents').insert(
+            newApp.privateEvidence.map(doc => ({
+              application_id: newApp.id,
+              document_type: doc.documentType,
+              document_name: doc.documentName,
+              document_number: doc.documentNumber,
+              document_file_url: doc.documentFileUrl,
+              is_private: true
+            }))
+          );
+        }
+      } catch (err: any) {
+        console.error('[BusinessService.submitApplication] Database error:', err);
+        throw err;
+      }
+    }
+
+    memoryApplications.unshift(newApp);
     return newApp;
   }
 
@@ -581,30 +726,76 @@ export class BusinessService {
    * Retrieve all submitted applications for admin review
    */
   async getAllApplications(): Promise<BusinessSubmissionApplication[]> {
-    return this.getApplicationsStore();
-  }
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('business_applications')
+          .select('*, private_evidence:private_evidence_documents(*)')
+          .order('created_at', { ascending: false });
 
-  /**
-   * Retrieve single application by ID
-   */
-  async getApplicationById(appId: string): Promise<BusinessSubmissionApplication | null> {
-    const apps = this.getApplicationsStore();
-    return apps.find(a => a.id === appId) || null;
+        if (error) throw error;
+        return (data || []).map(row => ({
+          id: row.id,
+          confluxBusinessId: row.conflux_business_id,
+          submissionType: row.submission_type,
+          businessName: row.business_name,
+          legalName: row.legal_name,
+          businessType: row.business_type,
+          categoryId: row.category_id,
+          categoryName: row.category_name,
+          description: row.description,
+          district: row.district,
+          city: row.city,
+          landmark: row.landmark,
+          fullAddress: row.full_address,
+          phone: row.phone,
+          whatsapp: row.whatsapp,
+          email: row.email,
+          websiteUrl: row.website_url,
+          bookingUrl: row.booking_url,
+          ownerName: row.owner_name,
+          ownerRole: row.owner_role,
+          storefrontPhotoUrl: row.storefront_photo_url,
+          status: row.status,
+          adminNotes: row.admin_notes,
+          changesRequestedMessage: row.changes_requested_message,
+          privateEvidence: (row.private_evidence || []).map((d: any) => ({
+            documentType: d.document_type,
+            documentName: d.document_name,
+            documentNumber: d.document_number,
+            documentFileUrl: d.document_file_url,
+            isPrivate: true
+          })),
+          declarationConfirmed: true,
+          noStockImagesConfirmed: true,
+          createdAt: row.created_at,
+          updatedAt: row.updated_at
+        }));
+      } catch (err: any) {
+        console.error('[BusinessService.getAllApplications] Database error:', err);
+        throw err;
+      }
+    }
+    return memoryApplications;
   }
 
   /**
    * Admin: Approve application as Standard Listing
    */
   async approveApplicationAsStandard(appId: string): Promise<ConfluxBusiness> {
-    const apps = this.getApplicationsStore();
+    const apps = await this.getAllApplications();
     const app = apps.find(a => a.id === appId);
     if (!app) throw new Error(`Application ${appId} not found.`);
 
+    if (isSupabaseConfigured()) {
+      await supabase.from('business_applications').update({
+        status: 'APPROVED',
+        updated_at: new Date().toISOString()
+      }).eq('id', appId);
+    }
     app.status = 'APPROVED';
     app.updatedAt = new Date().toISOString();
-    this.setApplicationsStore(apps);
 
-    // Create published business entity in the graph
     const created = await this.createBusiness({
       name: app.businessName,
       legalName: app.legalName,
@@ -625,7 +816,6 @@ export class BusinessService {
       storefrontPhotoUrl: app.storefrontPhotoUrl
     });
 
-    // Publish immediately with owner-claimed standing
     return this.updateBusiness(created.id, {
       status: 'PUBLISHED',
       claimStatus: 'VERIFIED_OWNER',
@@ -633,25 +823,30 @@ export class BusinessService {
       verificationLevel: 'BASIC',
       isIndexable: true,
       isClaimed: true,
-      evidenceSummary: 'Standard business listing submitted by authorized proprietor. Pending statutory evidence review.'
+      evidenceSummary: 'Standard business listing submitted by authorized proprietor.'
     });
   }
 
   /**
-   * Admin: Approve application as Conflux Verified (after statutory evidence corroboration)
+   * Admin: Approve application as Conflux Verified
    */
   async approveApplicationAsVerified(
     appId: string,
     primaryRegistrar?: string,
     evidenceSummary?: string
   ): Promise<ConfluxBusiness> {
-    const apps = this.getApplicationsStore();
+    const apps = await this.getAllApplications();
     const app = apps.find(a => a.id === appId);
     if (!app) throw new Error(`Application ${appId} not found.`);
 
+    if (isSupabaseConfigured()) {
+      await supabase.from('business_applications').update({
+        status: 'VERIFIED',
+        updated_at: new Date().toISOString()
+      }).eq('id', appId);
+    }
     app.status = 'VERIFIED';
     app.updatedAt = new Date().toISOString();
-    this.setApplicationsStore(apps);
 
     const created = await this.createBusiness({
       name: app.businessName,
@@ -703,14 +898,19 @@ export class BusinessService {
    * Admin: Request changes on an application
    */
   async requestApplicationChanges(appId: string, message: string): Promise<BusinessSubmissionApplication> {
-    const apps = this.getApplicationsStore();
+    if (isSupabaseConfigured()) {
+      await supabase.from('business_applications').update({
+        status: 'CHANGES_REQUESTED',
+        changes_requested_message: message,
+        updated_at: new Date().toISOString()
+      }).eq('id', appId);
+    }
+    const apps = await this.getAllApplications();
     const app = apps.find(a => a.id === appId);
     if (!app) throw new Error(`Application ${appId} not found.`);
-
     app.status = 'CHANGES_REQUESTED';
     app.changesRequestedMessage = message;
     app.updatedAt = new Date().toISOString();
-    this.setApplicationsStore(apps);
     return app;
   }
 
@@ -718,15 +918,99 @@ export class BusinessService {
    * Admin: Reject an application
    */
   async rejectApplication(appId: string, reason: string): Promise<BusinessSubmissionApplication> {
-    const apps = this.getApplicationsStore();
+    if (isSupabaseConfigured()) {
+      await supabase.from('business_applications').update({
+        status: 'REJECTED',
+        admin_notes: reason,
+        updated_at: new Date().toISOString()
+      }).eq('id', appId);
+    }
+    const apps = await this.getAllApplications();
     const app = apps.find(a => a.id === appId);
     if (!app) throw new Error(`Application ${appId} not found.`);
-
     app.status = 'REJECTED';
     app.adminNotes = reason;
     app.updatedAt = new Date().toISOString();
-    this.setApplicationsStore(apps);
     return app;
+  }
+
+  /**
+   * Helper to map Supabase database row to ConfluxBusiness entity model
+   */
+  private mapSupabaseRowToBusiness(row: any): ConfluxBusiness {
+    const loc = Array.isArray(row.location) ? row.location[0] : row.location;
+    const caps = Array.isArray(row.capabilities) ? row.capabilities : [];
+
+    return {
+      id: row.id,
+      confluxBusinessId: row.conflux_business_id,
+      slug: row.slug,
+      name: row.name,
+      legalName: row.legal_name,
+      businessType: row.business_type,
+      categoryId: row.category_id,
+      categoryName: row.category_name,
+      subcategoryIds: row.subcategory_ids || [],
+      services: row.services || [],
+      landmark: row.landmark,
+      storefrontPhotoUrl: row.storefront_photo_url,
+      description: row.description,
+      shortSummary: row.short_summary,
+      status: row.status,
+      claimStatus: row.claim_status,
+      verificationStatus: row.verification_status,
+      verificationLevel: row.verification_level,
+      confidenceScore: Number(row.confidence_score) || 0.0,
+      primaryRegistrar: row.primary_registrar,
+      evidenceSummary: row.evidence_summary,
+      verificationBreakdown: row.verification_breakdown,
+      lastVerifiedAt: row.last_verified_at,
+      isClaimed: row.is_claimed,
+      isIndexable: row.is_indexable,
+      location: {
+        id: loc?.id || `loc_${row.id}`,
+        businessId: row.id,
+        country: loc?.country || 'India',
+        state: loc?.state || 'West Bengal',
+        district: loc?.district || 'nadia',
+        city: loc?.city || 'ranaghat',
+        locality: loc?.locality,
+        landmark: loc?.landmark || row.landmark,
+        postalCode: loc?.postal_code,
+        fullAddress: loc?.full_address || 'Address on file',
+        latitude: loc?.latitude ? Number(loc.latitude) : undefined,
+        longitude: loc?.longitude ? Number(loc.longitude) : undefined,
+        isPrimary: true
+      },
+      contact: {
+        id: `cnt_${row.id}`,
+        businessId: row.id,
+        phone: caps.find((c: any) => c.action_type === 'CALL')?.phone_target,
+        whatsapp: caps.find((c: any) => c.action_type === 'WHATSAPP')?.phone_target,
+        websiteUrl: caps.find((c: any) => c.action_type === 'WEBSITE')?.endpoint_url,
+        bookingUrl: caps.find((c: any) => c.action_type === 'BOOKING')?.endpoint_url
+      },
+      operatingHours: [
+        { dayOfWeek: 1, opensAt: '09:00', closesAt: '19:00', isClosed: false },
+        { dayOfWeek: 2, opensAt: '09:00', closesAt: '19:00', isClosed: false },
+        { dayOfWeek: 3, opensAt: '09:00', closesAt: '19:00', isClosed: false },
+        { dayOfWeek: 4, opensAt: '09:00', closesAt: '19:00', isClosed: false },
+        { dayOfWeek: 5, opensAt: '09:00', closesAt: '19:00', isClosed: false },
+        { dayOfWeek: 6, opensAt: '09:00', closesAt: '17:00', isClosed: false },
+        { dayOfWeek: 0, isClosed: true }
+      ],
+      capabilities: caps.map((c: any) => ({
+        id: c.id,
+        businessId: row.id,
+        actionType: c.action_type,
+        isSupported: c.is_supported,
+        phoneTarget: c.phone_target,
+        endpointUrl: c.endpoint_url,
+        verificationStatus: c.verification_status
+      })),
+      createdAt: row.created_at,
+      updatedAt: row.updated_at
+    };
   }
 }
 

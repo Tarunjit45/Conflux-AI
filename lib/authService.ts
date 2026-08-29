@@ -1,6 +1,6 @@
-// Conflux Platform — Multi-Tenant Authentication & RBAC Service
+// Conflux Platform — Multi-Tenant Authentication & RBAC Service (Supabase Auth & Profiles)
 
-import { supabase } from './supabase.ts';
+import { supabase, isSupabaseConfigured } from './supabase.ts';
 import type { UserProfile, UserRole } from '../types/business.ts';
 
 const LOCAL_STORAGE_USER_KEY = 'conflux_active_user_session';
@@ -16,44 +16,46 @@ export class AuthService {
       return this.memorySession;
     }
 
-    try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (session?.user) {
-        // Fetch profile from Supabase
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
+    if (isSupabaseConfigured()) {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (session?.user) {
+          // Fetch authoritative profile from Supabase profiles table
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .maybeSingle();
 
-        if (profile) {
+          if (profile) {
+            const userObj: UserProfile = {
+              id: profile.id,
+              email: profile.email,
+              fullName: profile.full_name,
+              role: profile.role as UserRole,
+              phone: profile.phone,
+              createdAt: profile.created_at
+            };
+            this.memorySession = userObj;
+            return userObj;
+          }
+
+          // If profile table trigger hasn't fired yet, build from user metadata
           const userObj: UserProfile = {
-            id: profile.id,
-            email: profile.email,
-            fullName: profile.full_name,
-            role: profile.role as UserRole,
-            phone: profile.phone,
-            createdAt: profile.created_at
+            id: session.user.id,
+            email: session.user.email || '',
+            role: (session.user.user_metadata?.role as UserRole) || 'USER',
+            createdAt: session.user.created_at
           };
           this.memorySession = userObj;
           return userObj;
         }
-
-        // Return basic session profile if profile table entry is not yet created
-        const userObj: UserProfile = {
-          id: session.user.id,
-          email: session.user.email || '',
-          role: (session.user.user_metadata?.role as UserRole) || 'ADMIN',
-          createdAt: session.user.created_at
-        };
-        this.memorySession = userObj;
-        return userObj;
+      } catch (err) {
+        console.error('[AuthService.getCurrentUser] Database session error:', err);
       }
-    } catch (e) {
-      // Supabase offline / network fallback
     }
 
-    // Local Storage Session Fallback
+    // Local Storage Session (Development/Testing Mode only)
     if (typeof localStorage !== 'undefined') {
       const saved = localStorage.getItem(LOCAL_STORAGE_USER_KEY);
       if (saved) {
@@ -67,13 +69,12 @@ export class AuthService {
       }
     }
 
-    // Default: Unauthenticated
     this.memorySession = null;
     return null;
   }
 
   /**
-   * Set simulated / local session role for web testing
+   * Set simulated / local session role for test suites
    */
   setLocalSession(user: UserProfile | null) {
     this.memorySession = user;
@@ -90,64 +91,60 @@ export class AuthService {
    * Sign in with email/password via Supabase Auth
    */
   async signIn(email: string, password?: string): Promise<{ success: boolean; error?: string; user?: UserProfile }> {
-    try {
-      if (password) {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        if (data.user) {
-          const profile: UserProfile = {
-            id: data.user.id,
-            email: data.user.email || email,
-            role: (data.user.user_metadata?.role as UserRole) || 'ADMIN',
-            createdAt: data.user.created_at
-          };
-          this.setLocalSession(profile);
-          return { success: true, user: profile };
+    if (isSupabaseConfigured()) {
+      try {
+        if (password) {
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          if (error) {
+            return { success: false, error: error.message };
+          }
+          if (data.user) {
+            const profile = await this.getCurrentUser();
+            return { success: true, user: profile || undefined };
+          }
+        } else {
+          const { error } = await supabase.auth.signInWithOtp({ email });
+          if (error) {
+            return { success: false, error: error.message };
+          }
+          return { success: true };
         }
-      } else {
-        // Sign in via Magic Link
-        const { error } = await supabase.auth.signInWithOtp({ email });
-        if (error) throw error;
-        return { success: true };
+      } catch (err: any) {
+        return { success: false, error: `[SUPABASE_AUTH_ERROR] ${err.message}` };
       }
-    } catch (err: any) {
-      // Local fallback for internal admin mode
-      if (email.includes('admin')) {
-        const adminUser: UserProfile = {
-          id: `admin_${Date.now()}`,
-          email,
-          fullName: 'Conflux Administrator',
-          role: 'ADMIN',
-          createdAt: new Date().toISOString()
-        };
-        this.setLocalSession(adminUser);
-        return { success: true, user: adminUser };
-      }
-      if (email.includes('owner')) {
-        const ownerUser: UserProfile = {
-          id: `owner_${Date.now()}`,
-          email,
-          fullName: 'Verified Business Owner',
-          role: 'BUSINESS_OWNER',
-          createdAt: new Date().toISOString()
-        };
-        this.setLocalSession(ownerUser);
-        return { success: true, user: ownerUser };
-      }
-      return { success: false, error: err.message || 'Authentication failed.' };
     }
 
-    return { success: false, error: 'Unknown authentication response.' };
+    // When Supabase is not configured, development and test mode can use simulated local sessions
+    const isProd = (typeof import.meta !== 'undefined' && (import.meta as any).env?.PROD) || process.env.NODE_ENV === 'production';
+    if (!isProd) {
+      const testRole: UserRole = email.includes('admin') ? 'ADMIN' : email.includes('owner') ? 'BUSINESS_OWNER' : 'USER';
+      const mockUser: UserProfile = {
+        id: `usr_dev_${Date.now()}`,
+        email,
+        fullName: email.split('@')[0],
+        role: testRole,
+        createdAt: new Date().toISOString()
+      };
+      this.setLocalSession(mockUser);
+      return { success: true, user: mockUser };
+    }
+
+    return {
+      success: false,
+      error: 'SUPABASE_NOT_CONFIGURED: Live Supabase database credentials (VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY) are required for user authentication.'
+    };
   }
 
   /**
    * Sign out
    */
   async signOut(): Promise<void> {
-    try {
-      await supabase.auth.signOut();
-    } catch (e) {
-      console.warn('Supabase signout notice:', e);
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.auth.signOut();
+      } catch (e) {
+        console.warn('Supabase signout notice:', e);
+      }
     }
     this.setLocalSession(null);
   }

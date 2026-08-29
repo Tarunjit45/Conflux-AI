@@ -1,5 +1,6 @@
-// Conflux Platform — User Contribution Service (Reviews, Ratings, Edits & Reports)
+// Conflux Platform — User Contribution Service (Remote Supabase PostgreSQL Engine & Moderation)
 
+import { supabase, isSupabaseConfigured } from './supabase.ts';
 import type {
   UserContribution,
   ReviewRatingContribution,
@@ -9,36 +10,15 @@ import type {
   InaccuracyIssueType
 } from '../types/contribution.ts';
 
-const LOCAL_STORAGE_CONTRIBUTIONS_KEY = 'conflux_user_contributions';
+// Test/Development Memory Cache
+let memoryContributions: UserContribution[] = [];
 
 export class ContributionService {
-  private memoryContributions: UserContribution[] | null = null;
-
-  private getStore(): UserContribution[] {
-    if (typeof localStorage === 'undefined') {
-      return this.memoryContributions || [];
-    }
-
-    const raw = localStorage.getItem(LOCAL_STORAGE_CONTRIBUTIONS_KEY);
-    if (!raw) return [];
-    try {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
-    } catch {
-      // Storage error guard
-    }
-    return [];
-  }
-
-  private setStore(data: UserContribution[]) {
-    this.memoryContributions = data;
-    if (typeof localStorage !== 'undefined') {
-      try {
-        localStorage.setItem(LOCAL_STORAGE_CONTRIBUTIONS_KEY, JSON.stringify(data));
-      } catch {
-        // Storage quota guard
-      }
-    }
+  /**
+   * Clear in-memory contributions (for test suites)
+   */
+  clearStore() {
+    memoryContributions = [];
   }
 
   /**
@@ -57,12 +37,9 @@ export class ContributionService {
       businessName?: string;
     } = {}
   ): Promise<ReviewRatingContribution> {
-    // 1. Strict Authentication Check
     if (!userId || !userEmail || userId.trim() === '' || userEmail.trim() === '') {
       throw new Error('AUTHENTICATION_REQUIRED: You must be logged into an authenticated account to submit a review.');
     }
-
-    // 2. Rating & Content Validation
     if (typeof rating !== 'number' || rating < 1 || rating > 5) {
       throw new Error('Rating must be an integer between 1 and 5 stars.');
     }
@@ -70,14 +47,12 @@ export class ContributionService {
       throw new Error('Review text is required (minimum 10 characters explaining your customer experience).');
     }
 
-    // 3. Abuse & Duplicate Check
-    const store = this.getStore();
-    const existing = store.find(c =>
+    const allExisting = await this.getAllContributions();
+    const existing = allExisting.find(c =>
       c.contributionType === 'REVIEW_RATING' &&
       c.businessId === businessId &&
       c.userId === userId
     );
-
     if (existing) {
       throw new Error('You have already submitted a review for this business entity.');
     }
@@ -98,8 +73,31 @@ export class ContributionService {
       createdAt: new Date().toISOString()
     };
 
-    store.unshift(newReview);
-    this.setStore(store);
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase.from('user_contributions').insert([{
+          id: newReview.id,
+          business_id: newReview.businessId,
+          business_name: newReview.businessName,
+          user_id: newReview.userId,
+          user_email: newReview.userEmail,
+          user_display_name: newReview.userDisplayName,
+          contribution_type: newReview.contributionType,
+          rating: newReview.rating,
+          review_text: newReview.reviewText,
+          moderation_status: newReview.moderationStatus,
+          created_at: newReview.createdAt
+        }]);
+        if (error) {
+          throw new Error(`[SUPABASE_INSERT_ERROR] Failed to save review to Supabase: ${error.message}`);
+        }
+      } catch (err: any) {
+        console.error('[ContributionService.submitReview] Database error:', err);
+        throw err;
+      }
+    }
+
+    memoryContributions.unshift(newReview);
     return newReview;
   }
 
@@ -126,7 +124,6 @@ export class ContributionService {
       throw new Error('Please provide the rationale for this suggested edit.');
     }
 
-    const store = this.getStore();
     const newEdit: SuggestedEditContribution = {
       id: `contrib_edit_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
       businessId,
@@ -142,8 +139,30 @@ export class ContributionService {
       createdAt: new Date().toISOString()
     };
 
-    store.unshift(newEdit);
-    this.setStore(store);
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase.from('user_contributions').insert([{
+          id: newEdit.id,
+          business_id: newEdit.businessId,
+          business_name: newEdit.businessName,
+          user_id: newEdit.userId,
+          user_email: newEdit.userEmail,
+          user_display_name: newEdit.userDisplayName,
+          contribution_type: newEdit.contributionType,
+          field_name: newEdit.fieldName,
+          suggested_value: newEdit.suggestedValue,
+          rationale: newEdit.rationale,
+          moderation_status: newEdit.moderationStatus,
+          created_at: newEdit.createdAt
+        }]);
+        if (error) throw error;
+      } catch (err: any) {
+        console.error('[ContributionService.submitSuggestedEdit] Database error:', err);
+        throw err;
+      }
+    }
+
+    memoryContributions.unshift(newEdit);
     return newEdit;
   }
 
@@ -166,7 +185,6 @@ export class ContributionService {
       throw new Error('Please provide specific details about the inaccuracy.');
     }
 
-    const store = this.getStore();
     const newReport: InaccuracyReportContribution = {
       id: `contrib_rep_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
       businessId,
@@ -181,8 +199,29 @@ export class ContributionService {
       createdAt: new Date().toISOString()
     };
 
-    store.unshift(newReport);
-    this.setStore(store);
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase.from('user_contributions').insert([{
+          id: newReport.id,
+          business_id: newReport.businessId,
+          business_name: newReport.businessName,
+          user_id: newReport.userId,
+          user_email: newReport.userEmail,
+          user_display_name: newReport.userDisplayName,
+          contribution_type: newReport.contributionType,
+          issue_type: newReport.issueType,
+          details: newReport.details,
+          moderation_status: newReport.moderationStatus,
+          created_at: newReport.createdAt
+        }]);
+        if (error) throw error;
+      } catch (err: any) {
+        console.error('[ContributionService.submitInaccuracyReport] Database error:', err);
+        throw err;
+      }
+    }
+
+    memoryContributions.unshift(newReport);
     return newReport;
   }
 
@@ -190,8 +229,39 @@ export class ContributionService {
    * Get Approved Reviews for Public Profile View
    */
   async getApprovedReviewsForBusiness(businessId: string): Promise<ReviewRatingContribution[]> {
-    const store = this.getStore();
-    return store.filter((c): c is ReviewRatingContribution =>
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('user_contributions')
+          .select('*')
+          .eq('business_id', businessId)
+          .eq('contribution_type', 'REVIEW_RATING')
+          .eq('moderation_status', 'APPROVED')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return (data || []).map(row => ({
+          id: row.id,
+          businessId: row.business_id,
+          businessName: row.business_name,
+          userId: row.user_id,
+          userDisplayName: row.user_display_name,
+          userEmail: row.user_email,
+          contributionType: 'REVIEW_RATING',
+          rating: row.rating,
+          reviewText: row.review_text,
+          moderationStatus: 'APPROVED',
+          adminNotes: row.admin_notes,
+          reviewedAt: row.reviewed_at,
+          createdAt: row.created_at
+        }));
+      } catch (err: any) {
+        console.error('[ContributionService.getApprovedReviewsForBusiness] Database error:', err);
+        throw err;
+      }
+    }
+
+    return memoryContributions.filter((c): c is ReviewRatingContribution =>
       c.businessId === businessId &&
       c.contributionType === 'REVIEW_RATING' &&
       c.moderationStatus === 'APPROVED'
@@ -202,7 +272,41 @@ export class ContributionService {
    * Get All Contributions for Admin Queue
    */
   async getAllContributions(): Promise<UserContribution[]> {
-    return this.getStore();
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('user_contributions')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return (data || []).map(row => ({
+          id: row.id,
+          businessId: row.business_id,
+          businessName: row.business_name,
+          userId: row.user_id,
+          userDisplayName: row.user_display_name,
+          userEmail: row.user_email,
+          contributionType: row.contribution_type,
+          rating: row.rating,
+          reviewText: row.review_text,
+          fieldName: row.field_name,
+          suggestedValue: row.suggested_value,
+          rationale: row.rationale,
+          issueType: row.issue_type,
+          details: row.details,
+          moderationStatus: row.moderation_status,
+          adminNotes: row.admin_notes,
+          reviewedAt: row.reviewed_at,
+          createdAt: row.created_at
+        } as UserContribution));
+      } catch (err: any) {
+        console.error('[ContributionService.getAllContributions] Database error:', err);
+        throw err;
+      }
+    }
+
+    return memoryContributions;
   }
 
   /**
@@ -213,18 +317,36 @@ export class ContributionService {
     status: ModerationStatus,
     adminNotes?: string
   ): Promise<UserContribution> {
-    const store = this.getStore();
-    const idx = store.findIndex(c => c.id === contributionId);
-    if (idx === -1) {
-      throw new Error(`Contribution ${contributionId} not found.`);
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase
+          .from('user_contributions')
+          .update({
+            moderation_status: status,
+            admin_notes: adminNotes,
+            reviewed_at: new Date().toISOString()
+          })
+          .eq('id', contributionId);
+
+        if (error) throw error;
+      } catch (err: any) {
+        console.error('[ContributionService.moderateContribution] Database error:', err);
+        throw err;
+      }
     }
 
-    store[idx].moderationStatus = status;
-    store[idx].adminNotes = adminNotes;
-    store[idx].reviewedAt = new Date().toISOString();
+    const idx = memoryContributions.findIndex(c => c.id === contributionId);
+    if (idx !== -1) {
+      memoryContributions[idx].moderationStatus = status;
+      memoryContributions[idx].adminNotes = adminNotes;
+      memoryContributions[idx].reviewedAt = new Date().toISOString();
+      return memoryContributions[idx];
+    }
 
-    this.setStore(store);
-    return store[idx];
+    const all = await this.getAllContributions();
+    const match = all.find(c => c.id === contributionId);
+    if (!match) throw new Error(`Contribution ${contributionId} not found.`);
+    return { ...match, moderationStatus: status, adminNotes };
   }
 }
 
