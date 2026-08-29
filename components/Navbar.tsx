@@ -20,11 +20,11 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
   }, []);
 
   const navItems = [
-    { name: 'Services', path: '/solutions', isLink: true, id: 'solutions' },
-    { name: 'Work', path: '/work', isLink: true, id: 'portfolio' },
-    { name: 'Blog', path: '/blog', isLink: true, id: 'blog' },
+    { name: 'Discover', path: '/discover', isLink: true, id: 'discover' },
     { name: 'Verify', path: '/verify', isLink: true, id: 'verify' },
-    { name: 'FAQ', path: '/faq', isLink: true, id: 'faq' },
+    { name: 'Locations', path: '/locations', isLink: true, id: 'locations' },
+    { name: 'Blog', path: '/blog', isLink: true, id: 'blog' },
+    { name: 'Admin', path: '/admin/businesses', isLink: true, id: 'admin' },
     { name: 'Contact', path: '/contact', isLink: true, id: 'contact' },
   ];
 

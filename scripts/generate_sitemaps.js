@@ -49,6 +49,7 @@ const staticRoutes = [
   { url: 'https://confluxai.in/locations', changefreq: 'daily', priority: '0.9' },
   { url: 'https://confluxai.in/locations/west-bengal', changefreq: 'daily', priority: '0.9' },
   { url: 'https://confluxai.in/blog', changefreq: 'daily', priority: '0.9' },
+  { url: 'https://confluxai.in/discover', changefreq: 'daily', priority: '1.0' },
   { url: 'https://confluxai.in/verify', changefreq: 'daily', priority: '0.9' },
   { url: 'https://confluxai.in/verify/methodology', changefreq: 'weekly', priority: '0.9' },
   { url: 'https://confluxai.in/verify/guides/how-to-verify-indian-company-legal-existence', changefreq: 'weekly', priority: '0.8' },

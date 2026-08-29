@@ -32,6 +32,12 @@ import NotFoundPage from './components/NotFoundPage';
 import VerifyPortal from './components/verify/VerifyPortal';
 import MethodologyPage from './components/verify/MethodologyPage';
 import VerifyGuideDetailPage from './components/verify/guides/VerifyGuideDetailPage';
+import { DiscoverPage } from './components/discover/DiscoverPage';
+import { PublicBusinessProfile } from './components/business/PublicBusinessProfile';
+import { AdminBusinessDashboard } from './components/admin/AdminBusinessDashboard';
+import { AuthModal } from './components/auth/AuthModal';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { AuthProvider } from './lib/authContext';
 
 const routeMeta: Record<string, { title: string; description: string }> = {
   '/verify/methodology': {
@@ -213,6 +219,18 @@ const routeMeta: Record<string, { title: string; description: string }> = {
   '/admin/cms': {
     title: 'Admin CMS | Conflux AI',
     description: 'Internal content management system for Conflux AI.'
+  },
+  '/admin/businesses': {
+    title: 'Business Identity & Verification Management | Conflux AI',
+    description: 'Admin command center for managing, verifying, and publishing Conflux Business Graph entities.'
+  },
+  '/discover': {
+    title: 'Discover Verified Local Businesses | Conflux Business Graph',
+    description: 'Search statutory-verified enterprises, manufacturing plants, artisans, and commercial services across West Bengal.'
+  },
+  '/login': {
+    title: 'Sign In | Conflux Platform Auth',
+    description: 'Role-based access portal for administrators and verified business owners.'
   }
 };
 
@@ -310,61 +328,72 @@ const App: React.FC = () => {
   const scaleX = smoothProgress;
 
   return (
-    <div className="relative min-h-screen w-full bg-[#f8fafc] selection:bg-blue-600 selection:text-white overflow-x-hidden font-inter">
-      <ScrollToTop />
-      
-      {/* Scroll progress bar — blue */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-[3px] z-[200]"
-        style={{ scaleX, transformOrigin: 'left', background: 'linear-gradient(90deg, #0000ff, #3333ff, #6666ff)' }}
-      />
+    <AuthProvider>
+      <div className="relative min-h-screen w-full bg-[#f8fafc] selection:bg-blue-600 selection:text-white overflow-x-hidden font-inter">
+        <ScrollToTop />
+        
+        {/* Scroll progress bar — blue */}
+        <motion.div
+          className="fixed top-0 left-0 right-0 h-[3px] z-[200]"
+          style={{ scaleX, transformOrigin: 'left', background: 'linear-gradient(90deg, #0000ff, #3333ff, #6666ff)' }}
+        />
 
-      <Navbar customLogo={siteLogo} />
+        <Navbar customLogo={siteLogo} />
 
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/blog" element={<BlogPage />} />
-        <Route path="/blog/:slug" element={<ArticleDetail />} />
-        <Route path="/about" element={<AboutUsPage />} />
-        <Route path="/solutions" element={<SolutionsPage />} />
-        <Route path="/services" element={<SolutionsPage />} />
-        <Route path="/creative" element={<CreativePage />} />
-        <Route path="/impact" element={<ImpactPage />} />
-        <Route path="/portfolio" element={<PortfolioPage />} />
-        <Route path="/work" element={<PortfolioPage />} />
-        <Route path="/careers" element={<CareersPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/authority" element={<AuthorityPage />} />
-        <Route path="/faq" element={<FaqPage />} />
-        <Route path="/semantic-map" element={<SemanticPage />} />
-        <Route path="/services/digital-solutions-west-bengal" element={<RuralDigitalSolutionsPage />} />
-        <Route path="/services/rural-digital-solutions" element={<RuralDigitalSolutionsPage />} />
-        <Route path="/services/:serviceId" element={<ServiceDetailPage />} />
-        <Route path="/locations" element={<LocationHubPage />} />
-        <Route path="/locations/:districtSlug" element={<DistrictDirectoryPage />} />
-        <Route path="/locations/:districtSlug/:citySlug" element={<LocationDetailPage />} />
-        <Route path="/locations/west-bengal" element={<LocationHubPage />} />
-        <Route path="/locations/west-bengal/:districtSlug" element={<DistrictDirectoryPage />} />
-        <Route path="/locations/west-bengal/:districtSlug/:citySlug" element={<LocationDetailPage />} />
-        <Route path="/locations/west-bengal/:citySlug/:industrySlug" element={<IndustryLocationPage />} />
-        <Route path="/thank-you" element={<ThankYouPage />} />
-        <Route path="/verify" element={<VerifyPortal />} />
-        <Route path="/verify/methodology" element={<MethodologyPage />} />
-        <Route path="/verify/guides/:guideSlug" element={<VerifyGuideDetailPage />} />
-        <Route path="/verify/:entitySlug/:claimSlug" element={<VerifyPortal />} />
-        <Route path="/admin/cms" element={<AdminCMS />} />
-        <Route path="/admin/location-coverage" element={<LocationCoverageDashboard />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/discover" element={<DiscoverPage />} />
+          <Route path="/business/india/west-bengal/:district/:city/:slug" element={<PublicBusinessProfile />} />
+          <Route path="/business/:slug" element={<PublicBusinessProfile />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/:slug" element={<ArticleDetail />} />
+          <Route path="/about" element={<AboutUsPage />} />
+          <Route path="/solutions" element={<SolutionsPage />} />
+          <Route path="/services" element={<SolutionsPage />} />
+          <Route path="/creative" element={<CreativePage />} />
+          <Route path="/impact" element={<ImpactPage />} />
+          <Route path="/portfolio" element={<PortfolioPage />} />
+          <Route path="/work" element={<PortfolioPage />} />
+          <Route path="/careers" element={<CareersPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/authority" element={<AuthorityPage />} />
+          <Route path="/faq" element={<FaqPage />} />
+          <Route path="/semantic-map" element={<SemanticPage />} />
+          <Route path="/services/digital-solutions-west-bengal" element={<RuralDigitalSolutionsPage />} />
+          <Route path="/services/rural-digital-solutions" element={<RuralDigitalSolutionsPage />} />
+          <Route path="/services/:serviceId" element={<ServiceDetailPage />} />
+          <Route path="/locations" element={<LocationHubPage />} />
+          <Route path="/locations/:districtSlug" element={<DistrictDirectoryPage />} />
+          <Route path="/locations/:districtSlug/:citySlug" element={<LocationDetailPage />} />
+          <Route path="/locations/west-bengal" element={<LocationHubPage />} />
+          <Route path="/locations/west-bengal/:districtSlug" element={<DistrictDirectoryPage />} />
+          <Route path="/locations/west-bengal/:districtSlug/:citySlug" element={<LocationDetailPage />} />
+          <Route path="/locations/west-bengal/:citySlug/:industrySlug" element={<IndustryLocationPage />} />
+          <Route path="/thank-you" element={<ThankYouPage />} />
+          <Route path="/verify" element={<VerifyPortal />} />
+          <Route path="/verify/methodology" element={<MethodologyPage />} />
+          <Route path="/verify/guides/:guideSlug" element={<VerifyGuideDetailPage />} />
+          <Route path="/verify/:entitySlug/:claimSlug" element={<VerifyPortal />} />
+          <Route path="/admin/businesses" element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminBusinessDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/cms" element={<AdminCMS />} />
+          <Route path="/admin/location-coverage" element={<LocationCoverageDashboard />} />
+          <Route path="/login" element={<AuthModal />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
 
-      <Footer siteLogo={siteLogo} />
+        <Footer siteLogo={siteLogo} />
 
-      {/* Manual Logo Upload Control */}
-      <BrandingControl onUpload={handleLogoUpload} onReset={handleLogoReset} currentLogo={siteLogo} />
+        {/* Manual Logo Upload Control */}
+        <BrandingControl onUpload={handleLogoUpload} onReset={handleLogoReset} currentLogo={siteLogo} />
 
-      {/* Integrated Chatbot */}
-      <Chatbot />
-    </div>
+        {/* Integrated Chatbot */}
+        <Chatbot />
+      </div>
+    </AuthProvider>
   );
 };
 

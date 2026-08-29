@@ -1321,6 +1321,34 @@ subLocations.forEach(sub => {
 // ── 5. PRE-RENDER CORE STATIC PAGES ───────────────────────────
 const staticPages = [
   {
+    path: '/discover',
+    title: 'Discover Verified Local Businesses | Conflux Business Graph',
+    desc: 'Search statutory-verified enterprises, manufacturing plants, artisans, and commercial services across West Bengal.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/discover" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Discover</a>
+            <a href="/verify" style="margin: 0 10px; color: #475569; text-decoration: none;">Verify</a>
+            <a href="/locations" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
+            <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 40px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">Discover Verified Local Businesses & Industry Leaders</h1>
+        <p style="font-size: 18px; color: #475569; line-height: 1.6; margin-bottom: 30px;">
+          Search statutory-verified enterprises, manufacturing plants, artisans, and commercial services across West Bengal on the Conflux Business Graph.
+        </p>
+      </main>
+    </div>
+    `
+  },
+  {
     path: '/about',
     title: 'About Us | Conflux AI - Mission & Leadership',
     desc: 'Learn about Conflux AI, founded by Tarunjit Biswas & Shouvik Majumdar. We are a remote-first AI automation and digital solutions agency based in Kolkata, India.',

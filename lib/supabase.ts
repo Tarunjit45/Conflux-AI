@@ -1,10 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const getEnvVar = (key: string): string => {
+  if (typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env[key]) {
+    return (import.meta as any).env[key];
+  }
+  if (typeof process !== 'undefined' && process.env && process.env[key]) {
+    return process.env[key] as string;
+  }
+  return '';
+};
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase URL or Anon Key is missing. Check your .env file.');
-}
+const supabaseUrl = getEnvVar('VITE_SUPABASE_URL') || 'https://cygdomemsooimjmdxzar.supabase.co';
+const supabaseAnonKey = getEnvVar('VITE_SUPABASE_ANON_KEY') || 'sb_publishable_SdexMlTXy_Xouzer8YUF0Q_s6HZYS8q';
 
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
