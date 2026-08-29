@@ -1,4 +1,4 @@
-// Conflux Platform — Phase 1 Agent-Native Business Graph Type Definitions
+// Conflux Platform — Phase 1 Agent-Native Business Graph & Submission Type Definitions
 
 import type { VerificationStatus, SourceTier } from './verify.ts';
 
@@ -127,6 +127,7 @@ export interface ConfluxBusiness {
   subcategoryIds?: string[];
   services?: string[]; // Granular capabilities/services e.g. ['USG', 'Digital X-Ray', 'CT Scan']
   landmark?: string;
+  storefrontPhotoUrl?: string;
   description: string;
   shortSummary?: string;
   ownerId?: string;
@@ -149,6 +150,107 @@ export interface ConfluxBusiness {
   updatedAt: string;
 }
 
+// ── BUSINESS SUBMISSION APPLICATION TYPES ─────────────────────────────
+
+export type SubmissionType = 'STANDARD_LISTING' | 'CONFLUX_VERIFIED';
+
+export type SubmissionStatus =
+  | 'DRAFT'
+  | 'SUBMITTED'
+  | 'UNDER_REVIEW'
+  | 'CHANGES_REQUESTED'
+  | 'APPROVED'
+  | 'VERIFIED'
+  | 'REJECTED'
+  | 'SUSPENDED';
+
+export type PrivateDocumentType =
+  | 'FSSAI'
+  | 'CLINICAL_ESTABLISHMENT'
+  | 'TRADE_LICENSE'
+  | 'GSTIN'
+  | 'MSME_UDYAM'
+  | 'TOURISM_REG'
+  | 'PROFESSIONAL_COUNCIL'
+  | 'STOREFRONT_PHOTO'
+  | 'INTERIOR_PHOTO'
+  | 'OWNER_ID_PROOF'
+  | 'OTHER';
+
+export interface PrivateEvidenceDocument {
+  id: string;
+  documentType: PrivateDocumentType;
+  documentName: string;
+  documentNumber?: string;
+  mimeType: string;
+  fileSizeBytes: number;
+  uploadedAt: string;
+  isPrivate: boolean; // strictly true for government licenses and owner identification
+  fileData?: string;   // sanitized local data URI / blob reference
+}
+
+export interface BusinessSubmissionApplication {
+  id: string; // e.g. APP-2026-0001
+  confluxBusinessId?: string;
+  submissionType: SubmissionType;
+  status: SubmissionStatus;
+  
+  // 1. Business Identity
+  businessName: string;
+  legalName?: string;
+  businessType: BusinessType;
+  categoryId: string;
+  categoryName?: string;
+  yearEstablished?: number;
+  description: string;
+  history?: string;
+  services: string[];
+
+  // 2. Location
+  district: string;
+  city: string;
+  landmark?: string;
+  fullAddress: string;
+  premisesType?: 'OWNED' | 'LEASED' | 'COMMERCIAL_COMPLEX' | 'STANDALONE_BUILDING';
+
+  // 3. Contact & Connectivity
+  phone: string;
+  whatsapp?: string;
+  email: string;
+  websiteUrl?: string;
+  bookingUrl?: string;
+  operatingHoursSummary?: string;
+
+  // 4. Genuine Photographs (Stored separate from private docs)
+  storefrontPhotoUrl?: string;
+  interiorPhotoUrl?: string;
+
+  // 5. Owner / Responsible Person
+  ownerName: string;
+  ownerRole: string;
+  ownerPhone: string;
+  ownerEmail: string;
+
+  // 6. Private Official Evidence (Only accessible to authorized admins)
+  privateEvidence: PrivateEvidenceDocument[];
+
+  // 7. Category-Specific Depth
+  categorySpecificDetails?: Record<string, any>;
+
+  // 8. Mandatory Declarations
+  declarationConfirmed: boolean;
+  noStockImagesConfirmed: boolean;
+
+  // 9. Admin Auditing Records
+  adminNotes?: string;
+  changesRequestedMessage?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type ConnectEventType =
   | 'BUSINESS_VIEW'
   | 'DISCOVERY_SEARCH'
@@ -158,6 +260,8 @@ export type ConnectEventType =
   | 'DIRECTIONS_CLICK'
   | 'BOOKING_CLICK'
   | 'CLAIM_CLICK'
+  | 'SUBMISSION_STARTED'
+  | 'SUBMISSION_COMPLETED'
   | 'LEAD_SUBMITTED'
   | 'AGENT_API_QUERY';
 

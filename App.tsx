@@ -34,6 +34,7 @@ import MethodologyPage from './components/verify/MethodologyPage';
 import VerifyGuideDetailPage from './components/verify/guides/VerifyGuideDetailPage';
 import { DiscoverPage } from './components/discover/DiscoverPage';
 import { PublicBusinessProfile } from './components/business/PublicBusinessProfile';
+import { BusinessSubmissionPage } from './components/submission/BusinessSubmissionPage';
 import { AdminBusinessDashboard } from './components/admin/AdminBusinessDashboard';
 import { AuthModal } from './components/auth/AuthModal';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
@@ -343,6 +344,9 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/discover" element={<DiscoverPage />} />
+          <Route path="/list-business" element={<BusinessSubmissionPage />} />
+          <Route path="/submit-business" element={<BusinessSubmissionPage />} />
+          <Route path="/apply" element={<BusinessSubmissionPage />} />
           <Route path="/business/india/west-bengal/:district/:city/:slug" element={<PublicBusinessProfile />} />
           <Route path="/business/:slug" element={<PublicBusinessProfile />} />
           <Route path="/blog" element={<BlogPage />} />

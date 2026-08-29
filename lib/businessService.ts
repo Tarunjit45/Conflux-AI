@@ -1279,6 +1279,242 @@ export class BusinessService {
     }
     return false;
   }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // APPLICATION SUBMISSION & AUDIT METHODS
+  // ══════════════════════════════════════════════════════════════════════════
+
+  private getApplicationsStore(): BusinessSubmissionApplication[] {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const raw = localStorage.getItem('conflux_business_applications');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch {
+        // Storage quota guard
+      }
+    }
+    return (this as any)._memoryApplications || [];
+  }
+
+  private setApplicationsStore(apps: BusinessSubmissionApplication[]) {
+    (this as any)._memoryApplications = apps;
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem('conflux_business_applications', JSON.stringify(apps));
+      } catch {
+        // Storage quota guard
+      }
+    }
+  }
+
+  /**
+   * Submit a new business listing or Conflux Verified application
+   */
+  async submitApplication(
+    input: Omit<BusinessSubmissionApplication, 'id' | 'status' | 'createdAt' | 'updatedAt' | 'confluxBusinessId'>
+  ): Promise<BusinessSubmissionApplication> {
+    // 1. Strict Validation
+    if (!input.businessName || input.businessName.trim().length < 2) {
+      throw new Error('Business name is required (minimum 2 characters).');
+    }
+    if (!input.description || input.description.trim().length < 10) {
+      throw new Error('Description is required (minimum 10 characters).');
+    }
+    if (!input.fullAddress || input.fullAddress.trim().length < 5) {
+      throw new Error('Complete physical address is required.');
+    }
+    if (!input.phone || input.phone.trim().length < 8) {
+      throw new Error('Valid business contact phone is required.');
+    }
+    if (!input.email || !input.email.includes('@')) {
+      throw new Error('Valid contact email is required.');
+    }
+    if (!input.ownerName || input.ownerName.trim().length < 2) {
+      throw new Error('Responsible person/owner name is required.');
+    }
+    if (!input.declarationConfirmed) {
+      throw new Error('You must confirm the ownership and accuracy declaration.');
+    }
+    if (!input.noStockImagesConfirmed) {
+      throw new Error('You must confirm that photographs are genuine and not stock images.');
+    }
+
+    const apps = this.getApplicationsStore();
+    const appId = `APP-2026-${String(apps.length + 1).padStart(4, '0')}`;
+    const allBusinesses = await this.getAllBusinesses();
+    const confluxBusinessId = generateConfluxBusinessId({
+      district: input.district,
+      sequenceNumber: allBusinesses.length + apps.length + 1
+    });
+
+    const newApp: BusinessSubmissionApplication = {
+      ...input,
+      id: appId,
+      confluxBusinessId,
+      status: 'SUBMITTED',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    apps.unshift(newApp);
+    this.setApplicationsStore(apps);
+    return newApp;
+  }
+
+  /**
+   * Retrieve all submitted applications for admin review
+   */
+  async getAllApplications(): Promise<BusinessSubmissionApplication[]> {
+    return this.getApplicationsStore();
+  }
+
+  /**
+   * Retrieve single application by ID
+   */
+  async getApplicationById(appId: string): Promise<BusinessSubmissionApplication | null> {
+    const apps = this.getApplicationsStore();
+    return apps.find(a => a.id === appId) || null;
+  }
+
+  /**
+   * Admin: Approve application as Standard Listing
+   */
+  async approveApplicationAsStandard(appId: string): Promise<ConfluxBusiness> {
+    const apps = this.getApplicationsStore();
+    const app = apps.find(a => a.id === appId);
+    if (!app) throw new Error(`Application ${appId} not found.`);
+
+    app.status = 'APPROVED';
+    app.updatedAt = new Date().toISOString();
+    this.setApplicationsStore(apps);
+
+    // Create published business entity in the graph
+    const created = await this.createBusiness({
+      name: app.businessName,
+      legalName: app.legalName,
+      businessType: app.businessType,
+      categoryId: app.categoryId,
+      categoryName: app.categoryName,
+      description: app.description,
+      district: app.district,
+      city: app.city,
+      landmark: app.landmark,
+      services: app.services,
+      fullAddress: app.fullAddress,
+      phone: app.phone,
+      whatsapp: app.whatsapp,
+      email: app.email,
+      websiteUrl: app.websiteUrl,
+      bookingUrl: app.bookingUrl,
+      storefrontPhotoUrl: app.storefrontPhotoUrl
+    });
+
+    // Publish immediately with owner-claimed standing
+    return this.updateBusiness(created.id, {
+      status: 'PUBLISHED',
+      claimStatus: 'VERIFIED_OWNER',
+      verificationStatus: 'UNVERIFIED',
+      verificationLevel: 'BASIC',
+      isIndexable: true,
+      isClaimed: true,
+      evidenceSummary: 'Standard business listing submitted by authorized proprietor. Pending statutory evidence review.'
+    });
+  }
+
+  /**
+   * Admin: Approve application as Conflux Verified (after statutory evidence corroboration)
+   */
+  async approveApplicationAsVerified(
+    appId: string,
+    primaryRegistrar?: string,
+    evidenceSummary?: string
+  ): Promise<ConfluxBusiness> {
+    const apps = this.getApplicationsStore();
+    const app = apps.find(a => a.id === appId);
+    if (!app) throw new Error(`Application ${appId} not found.`);
+
+    app.status = 'VERIFIED';
+    app.updatedAt = new Date().toISOString();
+    this.setApplicationsStore(apps);
+
+    const created = await this.createBusiness({
+      name: app.businessName,
+      legalName: app.legalName,
+      businessType: app.businessType,
+      categoryId: app.categoryId,
+      categoryName: app.categoryName,
+      description: app.description,
+      district: app.district,
+      city: app.city,
+      landmark: app.landmark,
+      services: app.services,
+      fullAddress: app.fullAddress,
+      phone: app.phone,
+      whatsapp: app.whatsapp,
+      email: app.email,
+      websiteUrl: app.websiteUrl,
+      bookingUrl: app.bookingUrl,
+      storefrontPhotoUrl: app.storefrontPhotoUrl
+    });
+
+    const registrar = primaryRegistrar || 'Primary Statutory Regulatory Docket';
+    const evidence = evidenceSummary || `Statutory registration verified against official dockets for ${app.businessName}.`;
+
+    return this.updateBusiness(created.id, {
+      status: 'PUBLISHED',
+      claimStatus: 'VERIFIED_OWNER',
+      verificationStatus: 'SUPPORTED',
+      verificationLevel: 'STATUTORY_VERIFIED',
+      confidenceScore: 92.0,
+      primaryRegistrar: registrar,
+      evidenceSummary: evidence,
+      isIndexable: true,
+      isClaimed: true,
+      lastVerifiedAt: new Date().toISOString(),
+      verificationBreakdown: {
+        identityVerified: true,
+        locationVerified: true,
+        statutoryLicenseVerified: true,
+        capabilitiesVerified: true,
+        contactVerified: true,
+        primaryRegistrarName: registrar,
+        verificationMethodologyUrl: '/verify/methodology'
+      }
+    });
+  }
+
+  /**
+   * Admin: Request changes on an application
+   */
+  async requestApplicationChanges(appId: string, message: string): Promise<BusinessSubmissionApplication> {
+    const apps = this.getApplicationsStore();
+    const app = apps.find(a => a.id === appId);
+    if (!app) throw new Error(`Application ${appId} not found.`);
+
+    app.status = 'CHANGES_REQUESTED';
+    app.changesRequestedMessage = message;
+    app.updatedAt = new Date().toISOString();
+    this.setApplicationsStore(apps);
+    return app;
+  }
+
+  /**
+   * Admin: Reject an application
+   */
+  async rejectApplication(appId: string, reason: string): Promise<BusinessSubmissionApplication> {
+    const apps = this.getApplicationsStore();
+    const app = apps.find(a => a.id === appId);
+    if (!app) throw new Error(`Application ${appId} not found.`);
+
+    app.status = 'REJECTED';
+    app.adminNotes = reason;
+    app.updatedAt = new Date().toISOString();
+    this.setApplicationsStore(apps);
+    return app;
+  }
 }
 
 export const businessService = new BusinessService();

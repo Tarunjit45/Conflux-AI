@@ -397,21 +397,31 @@ export const DiscoverPage: React.FC = () => {
               <Building2 size={32} />
             </div>
             <div className="space-y-2">
-              <h3 className="text-xl font-bold font-orbitron text-slate-900">
-                No Verified Businesses Found
+              <h3 className="text-xl font-bold font-orbitron text-slate-900 capitalize">
+                {selectedCity && selectedCity !== 'all'
+                  ? `No businesses listed in ${selectedCity} yet.`
+                  : 'No businesses match this search yet.'}
               </h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                We couldn&apos;t find verified businesses matching your exact query. Conflux never fabricates fake business listings or unverified placeholder ratings.
+              <p className="text-sm text-slate-600 leading-relaxed max-w-lg mx-auto">
+                We are building the local business network with real businesses, not fabricated listings or synthetic placeholder ratings.
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left text-xs text-slate-600 space-y-1.5">
-              <div className="font-bold text-slate-800">Helpful Suggestions:</div>
-              <ul className="list-disc pl-4 space-y-1">
-                <li>Clear the &ldquo;Where&rdquo; field to browse verified enterprises across all districts.</li>
-                <li>Try selecting one of the popular category shortcuts above.</li>
-                <li>Try searching for local services like <em>USG, AC Repair, Tant Saree, Gym, or Dining</em>.</li>
-              </ul>
+            <div className="p-5 rounded-2xl bg-amber-50/70 border border-amber-200/80 text-xs text-amber-900 space-y-1.5 text-left">
+              <div className="font-bold flex items-center gap-1.5">
+                <Building2 size={15} className="text-amber-700" /> Are you a business owner in this area?
+              </div>
+              <p className="text-[11px] text-amber-800 leading-relaxed">
+                List your business on Conflux to establish your verified presence, control accurate operational details, and receive authentic direct customer inquiries.
+              </p>
+              <div className="pt-1">
+                <Link
+                  to="/list-business"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-amber-900 underline hover:text-amber-950"
+                >
+                  List Your Business on Conflux &rarr;
+                </Link>
+              </div>
             </div>
 
             <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
@@ -422,11 +432,17 @@ export const DiscoverPage: React.FC = () => {
                 Clear All Filters
               </button>
               <Link
-                to="/verify"
-                className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all"
+                to="/list-business"
+                className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all"
               >
-                Verify &amp; List Your Business &rarr;
+                List Your Business
               </Link>
+              <a
+                href="mailto:contact@confluxai.in?subject=Suggest%20a%20Local%20Business"
+                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all"
+              >
+                Invite a Business to Conflux
+              </a>
             </div>
           </div>
         ) : (

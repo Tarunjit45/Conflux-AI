@@ -1,4 +1,4 @@
-// Conflux Platform — Admin Business Management Command Center (Web-Operable CRUD, Claim Audits & Telemetry)
+// Conflux Platform — Admin Business Management Command Center (Web-Operable CRUD, Applications Queue, Claim Audits & Telemetry)
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,29 +7,37 @@ import {
   XCircle, Edit3, Trash2, Globe, ExternalLink, RefreshCw, Phone, MessageSquare,
   MapPin, Check, AlertCircle, ArrowRight, X, Clock, Layers, BarChart3,
   TrendingUp, Users, Send, Eye, MousePointer, Activity, UserCheck, ShieldOff,
-  FileCheck, ThumbsUp, ThumbsDown, Lock
+  FileCheck, ThumbsUp, ThumbsDown, Lock, FileText, HelpCircle, AlertTriangle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { businessService } from '../../lib/businessService';
 import { connectService, type MeasurementReport } from '../../lib/connectService';
-import type { ConfluxBusiness, BusinessPublishStatus } from '../../types/business';
+import type {
+  ConfluxBusiness,
+  BusinessPublishStatus,
+  BusinessSubmissionApplication,
+  SubmissionStatus
+} from '../../types/business';
 import { WEST_BENGAL_DISTRICTS } from '../../data/locationsData';
 import { BUSINESS_CATEGORY_TAXONOMY } from '../../data/taxonomiesData';
 
 export const AdminBusinessDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'ENTITIES' | 'CLAIMS' | 'MEASUREMENT'>('ENTITIES');
+  const [activeTab, setActiveTab] = useState<'ENTITIES' | 'APPLICATIONS' | 'CLAIMS' | 'MEASUREMENT'>('ENTITIES');
   const [businesses, setBusinesses] = useState<ConfluxBusiness[]>([]);
+  const [applications, setApplications] = useState<BusinessSubmissionApplication[]>([]);
   const [measurementReport, setMeasurementReport] = useState<MeasurementReport | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedVerStatus, setSelectedVerStatus] = useState('all');
+  const [selectedAppStatus, setSelectedAppStatus] = useState('all');
 
   // Modals state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingBusiness, setEditingBusiness] = useState<ConfluxBusiness | null>(null);
   const [verifyingBusiness, setVerifyingBusiness] = useState<ConfluxBusiness | null>(null);
+  const [selectedApplication, setSelectedApplication] = useState<BusinessSubmissionApplication | null>(null);
   const [verifyClaimStatement, setVerifyClaimStatement] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -58,6 +66,8 @@ export const AdminBusinessDashboard: React.FC = () => {
     setIsLoading(true);
     const data = await businessService.getAllBusinesses();
     setBusinesses(data);
+    const apps = await businessService.getAllApplications();
+    setApplications(apps);
     const report = await connectService.getMeasurementReport();
     setMeasurementReport(report);
     setIsLoading(false);
@@ -216,6 +226,47 @@ export const AdminBusinessDashboard: React.FC = () => {
     }
   };
 
+  // ── APPLICATION ACTIONS ──────────────────────────────────────────
+  const handleApproveStandardApp = async (app: BusinessSubmissionApplication) => {
+    if (confirm(`Approve "${app.businessName}" as Standard Listing? It will be published as an owner-claimed listing.`)) {
+      await businessService.approveApplicationAsStandard(app.id);
+      showNotification(`Application "${app.businessName}" APPROVED as Standard Listing.`);
+      setSelectedApplication(null);
+      await loadData();
+    }
+  };
+
+  const handleApproveVerifiedApp = async (app: BusinessSubmissionApplication) => {
+    const defaultRegistrar = app.privateEvidence?.[0]?.documentName || 'Official Regulatory Registry Docket';
+    const registrar = prompt('Enter primary statutory registrar / license identifier to ground this verification:', defaultRegistrar);
+    if (registrar) {
+      await businessService.approveApplicationAsVerified(app.id, registrar);
+      showNotification(`Application "${app.businessName}" APPROVED as CONFLUX VERIFIED.`);
+      setSelectedApplication(null);
+      await loadData();
+    }
+  };
+
+  const handleRequestChangesApp = async (app: BusinessSubmissionApplication) => {
+    const msg = prompt('Enter specific change or evidence required from applicant:');
+    if (msg) {
+      await businessService.requestApplicationChanges(app.id, msg);
+      showNotification(`Changes requested for application "${app.businessName}".`);
+      setSelectedApplication(null);
+      await loadData();
+    }
+  };
+
+  const handleRejectApp = async (app: BusinessSubmissionApplication) => {
+    const reason = prompt('Enter rejection reason:');
+    if (reason) {
+      await businessService.rejectApplication(app.id, reason);
+      showNotification(`Application "${app.businessName}" REJECTED.`);
+      setSelectedApplication(null);
+      await loadData();
+    }
+  };
+
   const handleOpenVerifyModal = (biz: ConfluxBusiness) => {
     setVerifyingBusiness(biz);
     setVerifyClaimStatement(
@@ -272,7 +323,15 @@ export const AdminBusinessDashboard: React.FC = () => {
     return true;
   });
 
+  const filteredApps = applications.filter(app => {
+    if (selectedAppStatus !== 'all' && app.status !== selectedAppStatus) {
+      return false;
+    }
+    return true;
+  });
+
   const pendingClaims = businesses.filter(b => b.claimStatus === 'CLAIM_PENDING');
+  const pendingApps = applications.filter(a => a.status === 'SUBMITTED' || a.status === 'UNDER_REVIEW');
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-20 pt-8">
@@ -285,31 +344,32 @@ export const AdminBusinessDashboard: React.FC = () => {
               <Lock size={15} /> Conflux Private Admin Command Center
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold font-orbitron text-slate-900 tracking-tight">
-              Business Graph &amp; Operational Management
+              Business Graph &amp; Application Auditing
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 mt-1">
-              Add businesses, review statutory evidence, audit ownership claims, and monitor real telemetry.
+              Review submitted business applications, corroborate statutory evidence, and manage graph entities.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            <Link
+              to="/list-business"
+              target="_blank"
+              className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm transition-all"
+            >
+              <ExternalLink size={16} /> Open Public Submission Form
+            </Link>
             <button
               onClick={handleOpenCreate}
               className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/20 transition-all cursor-pointer"
             >
-              <Plus size={16} /> Add Business
+              <Plus size={16} /> Manual Add
             </button>
-            <Link
-              to="/discover"
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm transition-all"
-            >
-              <Globe size={16} /> View Discover
-            </Link>
           </div>
         </div>
 
         {/* View Switcher Tabs */}
-        <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-200/70 w-fit">
+        <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-200/70 w-fit flex-wrap">
           <button
             onClick={() => setActiveTab('ENTITIES')}
             className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
@@ -319,6 +379,17 @@ export const AdminBusinessDashboard: React.FC = () => {
             }`}
           >
             <Building2 size={15} /> Business Entities ({businesses.length})
+          </button>
+
+          <button
+            onClick={() => setActiveTab('APPLICATIONS')}
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeTab === 'APPLICATIONS'
+                ? 'bg-white text-blue-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <FileText size={15} /> Applications ({pendingApps.length} Pending)
           </button>
 
           <button
@@ -565,7 +636,131 @@ export const AdminBusinessDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* ── TAB 2: OWNER CLAIMS REVIEW ─────────────────────────── */}
+        {/* ── TAB 2: BUSINESS APPLICATIONS QUEUE ──────────────────── */}
+        {activeTab === 'APPLICATIONS' && (
+          <div className="space-y-6">
+            <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                <div>
+                  <h3 className="text-lg font-bold font-orbitron text-slate-900">
+                    Business Submission Intake Queue ({applications.length})
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Review submitted business details, evaluate private statutory documents, and approve or request changes.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <select
+                    value={selectedAppStatus}
+                    onChange={e => setSelectedAppStatus(e.target.value)}
+                    className="px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold focus:outline-none"
+                  >
+                    <option value="all">All Application Statuses</option>
+                    <option value="SUBMITTED">Submitted (Pending Review)</option>
+                    <option value="APPROVED">Approved (Standard)</option>
+                    <option value="VERIFIED">Verified (Conflux Verified)</option>
+                    <option value="CHANGES_REQUESTED">Changes Requested</option>
+                    <option value="REJECTED">Rejected</option>
+                  </select>
+
+                  <button
+                    onClick={loadData}
+                    className="text-xs font-bold text-slate-500 hover:text-blue-600 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <RefreshCw size={14} /> Refresh
+                  </button>
+                </div>
+              </div>
+
+              {filteredApps.length === 0 ? (
+                <div className="p-12 text-center text-slate-500 text-xs">
+                  No applications found matching the selected filter.
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {filteredApps.map(app => (
+                    <div key={app.id} className="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="space-y-1.5 max-w-2xl">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
+                            {app.id}
+                          </span>
+                          <span className="font-bold text-slate-900 text-sm">{app.businessName}</span>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono ${
+                            app.submissionType === 'CONFLUX_VERIFIED'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : 'bg-slate-100 text-slate-700'
+                          }`}>
+                            {app.submissionType === 'CONFLUX_VERIFIED' ? 'CONFLUX VERIFIED APP' : 'STANDARD LISTING'}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-900 border border-amber-200 text-[10px] font-bold font-mono">
+                            {app.status}
+                          </span>
+                        </div>
+
+                        <div className="text-xs text-slate-600">
+                          <span className="font-semibold">Category:</span> {app.categoryName || app.categoryId} • <span className="font-semibold">Location:</span> {app.fullAddress}
+                        </div>
+
+                        <div className="text-xs text-slate-600">
+                          <span className="font-semibold">Owner / Contact:</span> {app.ownerName} ({app.ownerRole}) • {app.phone} • {app.email}
+                        </div>
+
+                        {app.privateEvidence && app.privateEvidence.length > 0 && (
+                          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-[11px] font-mono text-slate-700 space-y-1">
+                            <span className="font-bold text-slate-900">Private Statutory Evidence ({app.privateEvidence.length} docs):</span>
+                            {app.privateEvidence.map((d, i) => (
+                              <div key={i} className="flex items-center gap-1.5 text-blue-800">
+                                <Lock size={12} className="text-slate-500" />
+                                <span>{d.documentName}</span>
+                                {d.documentNumber && <span className="text-slate-600 font-bold">[{d.documentNumber}]</span>}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 shrink-0">
+                        {app.submissionType === 'CONFLUX_VERIFIED' ? (
+                          <button
+                            onClick={() => handleApproveVerifiedApp(app)}
+                            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                          >
+                            <ShieldCheck size={14} /> Approve Verified
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleApproveStandardApp(app)}
+                            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                          >
+                            <Check size={14} /> Approve Standard
+                          </button>
+                        )}
+
+                        <button
+                          onClick={() => handleRequestChangesApp(app)}
+                          className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold transition-all cursor-pointer"
+                        >
+                          Request Changes
+                        </button>
+
+                        <button
+                          onClick={() => handleRejectApp(app)}
+                          className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-all cursor-pointer"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB 3: OWNER CLAIMS REVIEW ─────────────────────────── */}
         {activeTab === 'CLAIMS' && (
           <div className="space-y-6">
             <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
@@ -639,7 +834,7 @@ export const AdminBusinessDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* ── TAB 3: REVENUE VALIDATION & MEASUREMENT ─────────────── */}
+        {/* ── TAB 4: REVENUE VALIDATION & MEASUREMENT ─────────────── */}
         {activeTab === 'MEASUREMENT' && measurementReport && (
           <div className="space-y-8">
             {/* Top Scorecard Grid */}
