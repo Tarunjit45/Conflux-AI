@@ -12,23 +12,51 @@ const getEnvVar = (key: string): string => {
   return '';
 };
 
-// Retrieve environment variables with zero hardcoded dummy project URLs or test keys
-const rawUrl = getEnvVar('VITE_SUPABASE_URL') || getEnvVar('SUPABASE_URL');
+/**
+ * Normalizes user-supplied Supabase URL to canonical https://<project-ref>.supabase.co
+ * Handles cases where a user pastes the dashboard URL, project reference ID, or trailing slashes
+ */
+export const normalizeSupabaseUrl = (inputUrl: string): string => {
+  let url = (inputUrl || '').trim();
+  if (!url) return '';
+
+  // Case 1: User pasted the Supabase dashboard URL, e.g. https://supabase.com/dashboard/project/cqkljjbnoinztsugwqpf
+  const dashboardMatch = url.match(/supabase\.com\/dashboard\/project\/([a-z0-9]+)/i);
+  if (dashboardMatch && dashboardMatch[1]) {
+    return `https://${dashboardMatch[1]}.supabase.co`;
+  }
+
+  // Case 2: User provided just the 20-char project ref, e.g. "cqkljjbnoinztsugwqpf"
+  if (/^[a-z0-9]{20}$/i.test(url)) {
+    return `https://${url}.supabase.co`;
+  }
+
+  // Case 3: URL with trailing slash or standard URL
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url.replace(/\/+$/, '');
+  }
+
+  return url;
+};
+
+// Retrieve environment variables
+const rawEnvUrl = getEnvVar('VITE_SUPABASE_URL') || getEnvVar('SUPABASE_URL');
+const canonicalUrl = normalizeSupabaseUrl(rawEnvUrl);
 const rawAnonKey = getEnvVar('VITE_SUPABASE_ANON_KEY') || getEnvVar('SUPABASE_ANON_KEY');
 
 /**
  * Validates whether Supabase environment variables are present and syntactically valid
  */
 export const isSupabaseConfigured = (): boolean => {
-  if (!rawUrl || !rawAnonKey) return false;
-  if (rawUrl.includes('placeholder') || rawUrl.includes('example.com')) return false;
-  if (!rawUrl.startsWith('https://')) return false;
+  if (!canonicalUrl || !rawAnonKey) return false;
+  if (canonicalUrl.includes('placeholder') || canonicalUrl.includes('example.com') || canonicalUrl.includes('unconfigured')) return false;
+  if (!canonicalUrl.startsWith('https://') || !canonicalUrl.includes('.supabase.co')) return false;
   if (rawAnonKey.length < 20) return false;
   return true;
 };
 
 export const getSupabaseConfig = () => ({
-  url: rawUrl || null,
+  url: canonicalUrl || null,
   isConfigured: isSupabaseConfigured()
 });
 
@@ -37,7 +65,7 @@ export const getSupabaseConfig = () => ({
  */
 const createSupabaseInstance = (): SupabaseClient => {
   if (isSupabaseConfigured()) {
-    return createClient(rawUrl, rawAnonKey, {
+    return createClient(canonicalUrl, rawAnonKey, {
       auth: {
         persistSession: typeof window !== 'undefined',
         autoRefreshToken: true,
@@ -46,8 +74,7 @@ const createSupabaseInstance = (): SupabaseClient => {
     });
   }
 
-  // When unconfigured, provide a client initialized with a safe dummy host,
-  // but any live query attempt will trigger a clear ConfigurationError
+  // When unconfigured, provide a safe client instance that warns on attempt
   return createClient('https://unconfigured-project.supabase.co', 'unconfigured-anon-key-placeholder', {
     auth: {
       persistSession: false,
