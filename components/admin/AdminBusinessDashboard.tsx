@@ -741,8 +741,26 @@ export const AdminBusinessDashboard: React.FC = () => {
                           <span className="font-semibold">Category:</span> {app.categoryName || app.categoryId} • <span className="font-semibold">Location:</span> {app.fullAddress}
                         </div>
 
-                        <div className="text-xs text-slate-600">
-                          <span className="font-semibold">Owner / Contact:</span> {app.ownerName} ({app.ownerRole}) • {app.phone} • {app.email}
+                        {/* Media Thumbnails & Owner Photo Preview */}
+                        <div className="flex flex-wrap items-center gap-3 pt-1">
+                          {app.storefrontPhotoUrl && (
+                            <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-50 border border-slate-200 text-[11px]">
+                              <img src={app.storefrontPhotoUrl} alt="Storefront" className="w-8 h-8 rounded object-cover" />
+                              <span className="font-semibold text-slate-700">Business Photo</span>
+                            </div>
+                          )}
+                          {app.logoUrl && (
+                            <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-50 border border-slate-200 text-[11px]">
+                              <img src={app.logoUrl} alt="Logo" className="w-8 h-8 rounded object-contain" />
+                              <span className="font-semibold text-slate-700">Logo</span>
+                            </div>
+                          )}
+                          {app.ownerPhotoUrl && (
+                            <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-900">
+                              <img src={app.ownerPhotoUrl} alt="Owner" className="w-8 h-8 rounded-full object-cover" />
+                              <span className="font-bold">Owner Original Photo</span>
+                            </div>
+                          )}
                         </div>
 
                         {app.privateEvidence && app.privateEvidence.length > 0 && (
@@ -753,6 +771,11 @@ export const AdminBusinessDashboard: React.FC = () => {
                                 <Lock size={12} className="text-slate-500" />
                                 <span>{d.documentName}</span>
                                 {d.documentNumber && <span className="text-slate-600 font-bold">[{d.documentNumber}]</span>}
+                                {d.fileData && (
+                                  <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">
+                                    File Attached
+                                  </span>
+                                )}
                               </div>
                             ))}
                           </div>

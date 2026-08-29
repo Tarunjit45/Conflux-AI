@@ -128,6 +128,8 @@ export interface ConfluxBusiness {
   services?: string[]; // Granular capabilities/services e.g. ['USG', 'Digital X-Ray', 'CT Scan']
   landmark?: string;
   storefrontPhotoUrl?: string;
+  logoUrl?: string;
+  ownerPhotoUrl?: string;
   description: string;
   shortSummary?: string;
   ownerId?: string;
@@ -175,6 +177,8 @@ export type PrivateDocumentType =
   | 'STOREFRONT_PHOTO'
   | 'INTERIOR_PHOTO'
   | 'OWNER_ID_PROOF'
+  | 'OWNER_PHOTO'
+  | 'BUSINESS_LOGO'
   | 'OTHER';
 
 export interface PrivateEvidenceDocument {
@@ -221,15 +225,17 @@ export interface BusinessSubmissionApplication {
   bookingUrl?: string;
   operatingHoursSummary?: string;
 
-  // 4. Genuine Photographs (Stored separate from private docs)
+  // 4. Genuine Photographs & Brand Assets
   storefrontPhotoUrl?: string;
   interiorPhotoUrl?: string;
+  logoUrl?: string;
 
   // 5. Owner / Responsible Person
   ownerName: string;
   ownerRole: string;
   ownerPhone: string;
   ownerEmail: string;
+  ownerPhotoUrl?: string;
 
   // 6. Private Official Evidence (Only accessible to authorized admins)
   privateEvidence: PrivateEvidenceDocument[];

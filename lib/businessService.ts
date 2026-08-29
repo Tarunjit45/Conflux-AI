@@ -306,6 +306,8 @@ export class BusinessService {
     websiteUrl?: string;
     bookingUrl?: string;
     storefrontPhotoUrl?: string;
+    logoUrl?: string;
+    ownerPhotoUrl?: string;
   }): Promise<ConfluxBusiness> {
     const allBusinesses = await this.getAllBusinesses();
     const sequenceNumber = allBusinesses.length + 1;
@@ -330,6 +332,8 @@ export class BusinessService {
       services: input.services || [],
       landmark: input.landmark,
       storefrontPhotoUrl: input.storefrontPhotoUrl,
+      logoUrl: input.logoUrl,
+      ownerPhotoUrl: input.ownerPhotoUrl,
       description: input.description,
       shortSummary: input.shortSummary || input.description.slice(0, 120),
       status: 'DRAFT',
@@ -693,6 +697,8 @@ export class BusinessService {
           owner_name: newApp.ownerName,
           owner_role: newApp.ownerRole,
           storefront_photo_url: newApp.storefrontPhotoUrl,
+          logo_url: newApp.logoUrl,
+          owner_photo_url: newApp.ownerPhotoUrl,
           status: newApp.status,
           created_at: newApp.createdAt,
           updated_at: newApp.updatedAt
@@ -707,7 +713,7 @@ export class BusinessService {
               document_type: doc.documentType,
               document_name: doc.documentName,
               document_number: doc.documentNumber,
-              document_file_url: doc.documentFileUrl,
+              document_file_url: doc.documentFileUrl || 'https://secure-vault.confluxai.in/private/docket.pdf',
               is_private: true
             }))
           );
@@ -756,6 +762,8 @@ export class BusinessService {
           ownerName: row.owner_name,
           ownerRole: row.owner_role,
           storefrontPhotoUrl: row.storefront_photo_url,
+          logoUrl: row.logo_url,
+          ownerPhotoUrl: row.owner_photo_url,
           status: row.status,
           adminNotes: row.admin_notes,
           changesRequestedMessage: row.changes_requested_message,
@@ -813,7 +821,9 @@ export class BusinessService {
       email: app.email,
       websiteUrl: app.websiteUrl,
       bookingUrl: app.bookingUrl,
-      storefrontPhotoUrl: app.storefrontPhotoUrl
+      storefrontPhotoUrl: app.storefrontPhotoUrl,
+      logoUrl: app.logoUrl,
+      ownerPhotoUrl: app.ownerPhotoUrl
     });
 
     return this.updateBusiness(created.id, {
@@ -865,7 +875,9 @@ export class BusinessService {
       email: app.email,
       websiteUrl: app.websiteUrl,
       bookingUrl: app.bookingUrl,
-      storefrontPhotoUrl: app.storefrontPhotoUrl
+      storefrontPhotoUrl: app.storefrontPhotoUrl,
+      logoUrl: app.logoUrl,
+      ownerPhotoUrl: app.ownerPhotoUrl
     });
 
     const registrar = primaryRegistrar || 'Primary Statutory Regulatory Docket';

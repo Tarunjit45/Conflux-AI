@@ -75,7 +75,7 @@ async function runSubmissionTests() {
   }
   assert('Rejects submission with unconfirmed ownership declaration', caughtDeclError === true);
 
-  // 2. Submit Standard Business Listing
+  // 2. Submit Standard Business Listing with Business Picture and Brand Logo
   const standardApp = await businessService.submitApplication({
     submissionType: 'STANDARD_LISTING',
     businessName: 'Ranaghat Modern Book House',
@@ -94,16 +94,20 @@ async function runSubmissionTests() {
     ownerRole: 'Managing Partner',
     ownerPhone: '+919830445566',
     ownerEmail: 'debabrata@modernbooks.in',
+    storefrontPhotoUrl: 'https://images.unsplash.com/photo-1507842229451-79b1be88688e',
+    logoUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c',
     declarationConfirmed: true,
     noStockImagesConfirmed: true,
     privateEvidence: []
   });
 
   assert('Submits standard business application with status SUBMITTED', standardApp.status === 'SUBMITTED');
+  assert('Standard application retains business photo', Boolean(standardApp.storefrontPhotoUrl));
+  assert('Standard application retains business brand logo', Boolean(standardApp.logoUrl));
   assert('Assigns valid application reference ID', standardApp.id.startsWith('APP-2026-'));
   assert('Pre-allocates Conflux Business ID', Boolean(standardApp.confluxBusinessId));
 
-  // 3. Submit Conflux Verified Application (with Statutory Evidence)
+  // 3. Submit Conflux Verified Application (with Owner Original Photo, Business Photo, Logo, & Statutory Evidence)
   const verifiedApp = await businessService.submitApplication({
     submissionType: 'CONFLUX_VERIFIED',
     businessName: 'Nadia Ortho Care & Physiotherapy Clinic',
@@ -122,6 +126,9 @@ async function runSubmissionTests() {
     ownerRole: 'Medical Director',
     ownerPhone: '+919830991122',
     ownerEmail: 'anirban@nadiaortho.in',
+    ownerPhotoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb',
+    storefrontPhotoUrl: 'https://images.unsplash.com/photo-1586773860418-d37222d8fce3',
+    logoUrl: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528',
     declarationConfirmed: true,
     noStockImagesConfirmed: true,
     privateEvidence: [
@@ -133,12 +140,17 @@ async function runSubmissionTests() {
         mimeType: 'application/pdf',
         fileSizeBytes: 1024 * 300,
         uploadedAt: new Date().toISOString(),
-        isPrivate: true
+        isPrivate: true,
+        fileData: 'data:application/pdf;base64,JVBERi0xLjQK...'
       }
     ]
   });
 
   assert('Submits Conflux Verified application with private statutory evidence', verifiedApp.submissionType === 'CONFLUX_VERIFIED');
+  assert('Verified application includes mandatory owner original photo', Boolean(verifiedApp.ownerPhotoUrl));
+  assert('Verified application includes mandatory business storefront photo', Boolean(verifiedApp.storefrontPhotoUrl));
+  assert('Verified application includes business logo', Boolean(verifiedApp.logoUrl));
+  assert('Private evidence document retains file payload reference', Boolean(verifiedApp.privateEvidence[0].fileData));
   assert('Private evidence is marked isPrivate = true', verifiedApp.privateEvidence[0].isPrivate === true);
 
   // 4. Admin Review: Retrieve All Applications

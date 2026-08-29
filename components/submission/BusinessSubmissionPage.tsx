@@ -1,11 +1,12 @@
 // Conflux Platform — Public Business Submission & Listing System (Standard & Conflux Verified)
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Building2, ShieldCheck, CheckCircle2, Upload, FileText, Lock,
   AlertCircle, ArrowRight, Check, Clock, Globe, Phone, MapPin,
-  Camera, UserCheck, HelpCircle, Sparkles, ChevronRight
+  Camera, UserCheck, HelpCircle, Sparkles, ChevronRight, X, Image as ImageIcon,
+  FileCheck, Shield, Trash2, Eye, Plus
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { businessService } from '../../lib/businessService';
@@ -29,7 +30,7 @@ export const BusinessSubmissionPage: React.FC = () => {
   } | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Form Fields
+  // Form Fields — 1. Business Identity
   const [businessName, setBusinessName] = useState('');
   const [legalName, setLegalName] = useState('');
   const [businessType, setBusinessType] = useState<BusinessType>('LOCAL_BUSINESS');
@@ -54,26 +55,41 @@ export const BusinessSubmissionPage: React.FC = () => {
   const [bookingUrl, setBookingUrl] = useState('');
   const [operatingHoursSummary, setOperatingHoursSummary] = useState('Mon - Sat: 09:00 AM - 08:00 PM');
 
-  // Genuine Photos
+  // 4. Media & Photographs (Storefront Photo, Business Logo, Owner Photo)
   const [storefrontPhotoUrl, setStorefrontPhotoUrl] = useState('');
-  const [interiorPhotoUrl, setInteriorPhotoUrl] = useState('');
+  const [storefrontPhotoFileName, setStorefrontPhotoFileName] = useState('');
+  
+  const [logoUrl, setLogoUrl] = useState('');
+  const [logoFileName, setLogoFileName] = useState('');
 
-  // Owner / Responsible Person
+  const [ownerPhotoUrl, setOwnerPhotoUrl] = useState('');
+  const [ownerPhotoFileName, setOwnerPhotoFileName] = useState('');
+
+  // 5. Owner / Responsible Person
   const [ownerName, setOwnerName] = useState('');
   const [ownerRole, setOwnerRole] = useState('Proprietor / Managing Director');
   const [ownerPhone, setOwnerPhone] = useState('');
   const [ownerEmail, setOwnerEmail] = useState('');
 
-  // Private Evidence Documents (Category-Aware)
+  // 6. Private Evidence Documents (For Conflux Verified)
+  const [selectedDocType, setSelectedDocType] = useState<PrivateDocumentType>('TRADE_LICENSE');
   const [docNumber, setDocNumber] = useState('');
-  const [uploadedEvidence, setUploadedEvidence] = useState<PrivateEvidenceDocument[]>([]);
   const [evidenceName, setEvidenceName] = useState('');
+  const [evidenceFileData, setEvidenceFileData] = useState<string>('');
+  const [evidenceFileName, setEvidenceFileName] = useState<string>('');
+  const [uploadedEvidence, setUploadedEvidence] = useState<PrivateEvidenceDocument[]>([]);
 
-  // Declarations
+  // 7. Declarations
   const [declarationConfirmed, setDeclarationConfirmed] = useState(false);
   const [noStockImagesConfirmed, setNoStockImagesConfirmed] = useState(false);
 
-  // Dynamic evidence guide based on selected category
+  // Hidden File Input Refs
+  const storefrontFileRef = useRef<HTMLInputElement>(null);
+  const logoFileRef = useRef<HTMLInputElement>(null);
+  const ownerPhotoFileRef = useRef<HTMLInputElement>(null);
+  const docFileRef = useRef<HTMLInputElement>(null);
+
+  // Dynamic evidence recommendation based on selected category
   const getCategoryEvidenceGuide = (cat: string) => {
     switch (cat) {
       case 'food-hospitality':
@@ -116,26 +132,84 @@ export const BusinessSubmissionPage: React.FC = () => {
 
   const currentEvidenceGuide = getCategoryEvidenceGuide(categoryId);
 
+  // Handle Image File Upload (Storefront, Logo, Owner Photo)
+  const handleImageFileUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: (url: string) => void,
+    nameSetter: (name: string) => void
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file (JPG, PNG, WebP).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image file size must be less than 5MB.');
+      return;
+    }
+
+    nameSetter(file.name);
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setter(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Handle Document File Upload for Statutory Evidence
+  const handleDocFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Document size must be less than 10MB.');
+      return;
+    }
+
+    setEvidenceFileName(file.name);
+    if (!evidenceName) {
+      setEvidenceName(file.name.replace(/\.[^/.]+$/, ''));
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setEvidenceFileData(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Add Evidence Document
   const handleAddEvidenceDoc = () => {
-    if (!docNumber.trim()) {
-      alert('Please enter the document / registration license number.');
+    if (!docNumber.trim() && !evidenceFileData) {
+      alert('Please provide either the document registration/license number or upload the document file.');
       return;
     }
 
     const newDoc: PrivateEvidenceDocument = {
-      id: `doc_${Date.now()}`,
-      documentType: currentEvidenceGuide.docType,
+      id: `doc_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+      documentType: selectedDocType,
       documentName: evidenceName.trim() || currentEvidenceGuide.recommendedDoc,
-      documentNumber: docNumber.trim(),
-      mimeType: 'application/pdf',
-      fileSizeBytes: 1024 * 250, // simulated 250KB metadata
+      documentNumber: docNumber.trim() || undefined,
+      mimeType: evidenceFileData.includes('data:application/pdf') ? 'application/pdf' : 'image/jpeg',
+      fileSizeBytes: evidenceFileData ? Math.round((evidenceFileData.length * 3) / 4) : 1024 * 150,
       uploadedAt: new Date().toISOString(),
-      isPrivate: true
+      isPrivate: true,
+      fileData: evidenceFileData || undefined
     };
 
     setUploadedEvidence([...uploadedEvidence, newDoc]);
     setDocNumber('');
     setEvidenceName('');
+    setEvidenceFileData('');
+    setEvidenceFileName('');
+    if (docFileRef.current) docFileRef.current.value = '';
   };
 
   const handleRemoveDoc = (id: string) => {
@@ -146,7 +220,7 @@ export const BusinessSubmissionPage: React.FC = () => {
     e.preventDefault();
     setErrorMessage(null);
 
-    // Validation
+    // Common Required Fields
     if (!businessName.trim()) {
       setErrorMessage('Please provide the business name.');
       return;
@@ -171,26 +245,38 @@ export const BusinessSubmissionPage: React.FC = () => {
       setErrorMessage('Please confirm all mandatory accuracy and genuine-media declarations.');
       return;
     }
-    if (submissionType === 'CONFLUX_VERIFIED' && uploadedEvidence.length === 0 && !docNumber.trim()) {
-      setErrorMessage('Conflux Verified applications require at least one official statutory registration/license reference.');
-      return;
+
+    // Specific Conflux Verified Mandatory Validations
+    if (submissionType === 'CONFLUX_VERIFIED') {
+      if (!ownerPhotoUrl.trim()) {
+        setErrorMessage('Conflux Verified applications require the owner/responsible person original photograph.');
+        return;
+      }
+      if (!storefrontPhotoUrl.trim()) {
+        setErrorMessage('Conflux Verified applications require an authentic operating business/storefront photograph.');
+        return;
+      }
+      if (uploadedEvidence.length === 0 && !docNumber.trim() && !evidenceFileData) {
+        setErrorMessage('Conflux Verified applications require at least one statutory registration document (e.g. Trade License, FSSAI, GSTIN, MSME Udyam).');
+        return;
+      }
     }
 
     setIsSubmitting(true);
 
     try {
-      // Auto-include typed doc if not explicitly added
       let finalEvidence = [...uploadedEvidence];
-      if (docNumber.trim()) {
+      if (docNumber.trim() || evidenceFileData) {
         finalEvidence.push({
           id: `doc_${Date.now()}`,
-          documentType: currentEvidenceGuide.docType,
+          documentType: selectedDocType,
           documentName: evidenceName.trim() || currentEvidenceGuide.recommendedDoc,
-          documentNumber: docNumber.trim(),
-          mimeType: 'application/pdf',
-          fileSizeBytes: 1024 * 200,
+          documentNumber: docNumber.trim() || undefined,
+          mimeType: evidenceFileData.includes('data:application/pdf') ? 'application/pdf' : 'image/jpeg',
+          fileSizeBytes: evidenceFileData ? Math.round((evidenceFileData.length * 3) / 4) : 1024 * 150,
           uploadedAt: new Date().toISOString(),
-          isPrivate: true
+          isPrivate: true,
+          fileData: evidenceFileData || undefined
         });
       }
 
@@ -222,7 +308,8 @@ export const BusinessSubmissionPage: React.FC = () => {
         bookingUrl: bookingUrl.trim() || undefined,
         operatingHoursSummary,
         storefrontPhotoUrl: storefrontPhotoUrl.trim() || undefined,
-        interiorPhotoUrl: interiorPhotoUrl.trim() || undefined,
+        logoUrl: logoUrl.trim() || undefined,
+        ownerPhotoUrl: ownerPhotoUrl.trim() || undefined,
         ownerName: ownerName.trim(),
         ownerRole: ownerRole.trim(),
         ownerPhone: ownerPhone.trim() || phone.trim(),
@@ -252,11 +339,11 @@ export const BusinessSubmissionPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-28 pt-8">
+    <div className="min-h-screen bg-slate-50 text-slate-900 pb-28 pt-8 font-inter">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
         {/* Navigation Breadcrumb */}
-        <nav className="flex items-center gap-2 text-xs font-bold text-slate-500">
+        <nav className="flex items-center gap-2 text-xs font-bold text-slate-500 font-mono">
           <Link to="/" className="hover:text-blue-600 transition-colors">Home</Link>
           <span>/</span>
           <Link to="/discover" className="hover:text-blue-600 transition-colors">Discover</Link>
@@ -283,7 +370,7 @@ export const BusinessSubmissionPage: React.FC = () => {
                 {submissionResult.businessName}
               </h1>
               <p className="text-sm text-slate-600 max-w-md mx-auto">
-                Your business submission has been registered and queued for administrative review.
+                Your business application has been recorded in the Conflux intake queue for statutory review and approval.
               </p>
             </div>
 
@@ -308,16 +395,13 @@ export const BusinessSubmissionPage: React.FC = () => {
               </div>
               <ul className="space-y-2 list-disc pl-4 leading-relaxed">
                 <li>
-                  <strong>Administrative Corroboration:</strong> Conflux administrators will evaluate your business identity and statutory registration credentials.
+                  <strong>Administrative Audit:</strong> Conflux administrators corroborate your business identity and statutory registration credentials against official dockets.
                 </li>
                 <li>
-                  <strong>Private Evidence Security:</strong> Your uploaded registration certificates remain private and are strictly used for verification auditing.
+                  <strong>Private Evidence Security:</strong> Uploaded government certificates and owner identity files remain in the secure vault and are <strong>never published publicly</strong>.
                 </li>
                 <li>
-                  <strong>Public Profile Publishing:</strong> Once approved, your structured profile will be published on the Conflux Business Graph with direct customer connect actions.
-                </li>
-                <li>
-                  <strong>Transparent Standards:</strong> Conflux does not sell organic search rankings or promise guaranteed Google/AI rankings. All discovery is explainable and relevance-grounded.
+                  <strong>Public Profile Publishing:</strong> Upon approval, your verified profile is indexed on the Conflux Business Graph with direct phone, WhatsApp, and booking connect channels.
                 </li>
               </ul>
             </div>
@@ -350,7 +434,7 @@ export const BusinessSubmissionPage: React.FC = () => {
                 List &amp; Verify Your Business on Conflux
               </h1>
               <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
-                Claim your official presence on the Conflux Business Graph. Control your business details, display authentic services, and receive direct phone, WhatsApp, and booking inquiries from local customers.
+                Establish your official presence on the Conflux Business Graph. Upload authentic business media, control operational details, and receive direct customer inquiries.
               </p>
 
               {/* Pathway Selector */}
@@ -368,11 +452,11 @@ export const BusinessSubmissionPage: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold font-orbitron text-slate-900">1. Standard Listing</span>
                     <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-slate-200/80 text-slate-700">
-                      Free Entry
+                      Standard Entry
                     </span>
                   </div>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Essential business profile with location, contact info, key services, and genuine storefront photo.
+                    Essential business profile with business photo, logo, location, contact channels, and core services.
                   </p>
                 </div>
 
@@ -390,11 +474,11 @@ export const BusinessSubmissionPage: React.FC = () => {
                       <ShieldCheck size={16} className="text-emerald-600" /> 2. Conflux Verified
                     </span>
                     <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                      Recommended
+                      High Trust Badge
                     </span>
                   </div>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Deep evidence-grounded application. Upload statutory registration proof to earn the <strong>Conflux Verified Trust Badge</strong>.
+                    Statutory evidence application. Upload owner original photo, business photo, logo, and registration license to earn the <strong>Conflux Verified Trust Badge</strong>.
                   </p>
                 </div>
               </div>
@@ -466,7 +550,7 @@ export const BusinessSubmissionPage: React.FC = () => {
                       <option value="HEALTHCARE">Healthcare &amp; Clinical Centre</option>
                       <option value="HOSPITALITY">Hospitality / Restaurant / Hotel</option>
                       <option value="MANUFACTURER">Manufacturer / Processing Unit</option>
-                      <option value="PROFESSIONAL_SERVICE">Professional Consulting Agency</option>
+                      <option value="PROFESSIONAL_SERVICE">Professional Service Agency</option>
                       <option value="RETAIL">Retail Store / Merchant</option>
                     </select>
                   </div>
@@ -484,17 +568,17 @@ export const BusinessSubmissionPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Key Services / Specialties (Comma Separated) *</label>
+                  <label className="text-xs font-bold text-slate-700">Key Services / Offerings (Comma Separated) *</label>
                   <input
                     type="text"
                     value={servicesInput}
                     onChange={e => setServicesInput(e.target.value)}
-                    placeholder="e.g. Ultrasound (USG), Digital X-Ray, Pathology Blood Tests, Doctor Consultation"
+                    placeholder="e.g. Ultrasound (USG), Digital X-Ray, Pathology Blood Tests, Doctor OPD"
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-medium"
                     required
                   />
                   <p className="text-[11px] text-slate-500">
-                    Customers search for specific services. Add your core capabilities so local searches find you.
+                    Customers search for specific services. Add your core capabilities so local intent searches match your business.
                   </p>
                 </div>
 
@@ -504,7 +588,7 @@ export const BusinessSubmissionPage: React.FC = () => {
                     rows={3}
                     value={description}
                     onChange={e => setDescription(e.target.value)}
-                    placeholder="Explain what your business offers, your standards, equipment, specialties, and customer service guarantees..."
+                    placeholder="Explain what your business offers, operational standards, equipment, specialties, and customer service commitments..."
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-medium"
                     required
                   />
@@ -559,7 +643,7 @@ export const BusinessSubmissionPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Local Landmark (e.g. Near Station, Court More)</label>
+                  <label className="text-xs font-bold text-slate-700">Local Landmark (e.g. Near Station, Hospital More)</label>
                   <input
                     type="text"
                     value={landmark}
@@ -585,7 +669,7 @@ export const BusinessSubmissionPage: React.FC = () => {
               {/* SECTION 3: DIRECT CONTACT & CONNECTIVITY */}
               <div className="space-y-4 pt-4 border-t border-slate-100">
                 <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-slate-900 font-bold text-base font-orbitron">
-                  <Phone size={18} className="text-blue-600" /> 3. Direct Contact &amp; Customer Channels
+                  <Phone size={18} className="text-blue-600" /> 3. Direct Contact &amp; Connect Channels
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -640,7 +724,7 @@ export const BusinessSubmissionPage: React.FC = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Online Appointment / Booking Link (Optional)</label>
+                    <label className="text-xs font-bold text-slate-700">Online Booking / Appointment Link (Optional)</label>
                     <input
                       type="url"
                       value={bookingUrl}
@@ -663,50 +747,189 @@ export const BusinessSubmissionPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* SECTION 4: GENUINE PHOTOGRAPHS */}
+              {/* ── SECTION 4: BUSINESS MEDIA & PHOTOGRAPHS (BUSINESS PIC + LOGO) ──────────────── */}
               <div className="space-y-4 pt-4 border-t border-slate-100">
-                <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-slate-900 font-bold text-base font-orbitron">
-                  <Camera size={18} className="text-blue-600" /> 4. Real Operating Photographs
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                  <div className="flex items-center gap-2 text-slate-900 font-bold text-base font-orbitron">
+                    <Camera size={18} className="text-blue-600" /> 4. Business Photographs &amp; Brand Logo
+                  </div>
+                  <span className="text-[11px] font-mono font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-md">
+                    {submissionType === 'CONFLUX_VERIFIED' ? 'Business Pic Required' : 'Standard Upload'}
+                  </span>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200/80 text-xs text-amber-900 space-y-1">
                   <div className="font-bold flex items-center gap-1.5">
-                    <AlertCircle size={14} className="text-amber-700" /> Anti-Stock Image Rule:
+                    <AlertCircle size={14} className="text-amber-700" /> Anti-Stock Image Guarantee:
                   </div>
                   <p className="leading-relaxed text-[11px] text-amber-800">
-                    Upload a real photograph of your exterior storefront or workshop. Do not upload stock photos, AI-generated imagery, or photos belonging to another business.
+                    Upload a real photograph of your exterior storefront, workshop, or clinical premises. Do not upload stock photos or synthetic placeholder graphics.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Exterior / Storefront Image URL</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  
+                  {/* 1. BUSINESS PHOTO (STOREFRONT / PREMISES) */}
+                  <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                        <ImageIcon size={15} className="text-blue-600" /> Business Picture (Storefront / Premises) {submissionType === 'CONFLUX_VERIFIED' && <span className="text-rose-600">*</span>}
+                      </label>
+                      {storefrontPhotoUrl && (
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded flex items-center gap-1">
+                          <Check size={11} /> Photo Loaded
+                        </span>
+                      )}
+                    </div>
+
+                    {storefrontPhotoUrl ? (
+                      <div className="space-y-2">
+                        <div className="relative rounded-xl overflow-hidden border border-slate-200 h-36 bg-slate-100 flex items-center justify-center">
+                          <img
+                            src={storefrontPhotoUrl}
+                            alt="Storefront Preview"
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setStorefrontPhotoUrl('');
+                              setStorefrontPhotoFileName('');
+                              if (storefrontFileRef.current) storefrontFileRef.current.value = '';
+                            }}
+                            className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/70 hover:bg-black text-white transition-all cursor-pointer"
+                            title="Remove Photo"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                        {storefrontPhotoFileName && (
+                          <div className="text-[11px] font-mono text-slate-500 truncate">{storefrontPhotoFileName}</div>
+                        )}
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => storefrontFileRef.current?.click()}
+                        className="h-36 rounded-xl border-2 border-dashed border-slate-300 hover:border-blue-500 bg-white flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors p-4 text-center"
+                      >
+                        <Camera size={24} className="text-slate-400" />
+                        <div>
+                          <span className="text-xs font-bold text-blue-600 hover:underline">Choose Business Photo</span>
+                          <p className="text-[10px] text-slate-400 mt-0.5">JPG, PNG, WebP (Max 5MB)</p>
+                        </div>
+                      </div>
+                    )}
+
                     <input
-                      type="url"
-                      value={storefrontPhotoUrl}
-                      onChange={e => setStorefrontPhotoUrl(e.target.value)}
-                      placeholder="https://images.unsplash.com/... or hosted image URL"
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none font-medium"
+                      ref={storefrontFileRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={e => handleImageFileUpload(e, setStorefrontPhotoUrl, setStorefrontPhotoFileName)}
                     />
+
+                    {/* Or URL input */}
+                    <div className="pt-1">
+                      <input
+                        type="url"
+                        value={storefrontPhotoUrl.startsWith('data:') ? '' : storefrontPhotoUrl}
+                        onChange={e => {
+                          setStorefrontPhotoUrl(e.target.value);
+                          setStorefrontPhotoFileName('');
+                        }}
+                        placeholder="Or paste image URL (https://...)"
+                        className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none"
+                      />
+                    </div>
                   </div>
 
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Interior / Facility Image URL (Optional)</label>
+                  {/* 2. BUSINESS LOGO */}
+                  <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                        <Sparkles size={15} className="text-blue-600" /> Business Brand Logo
+                      </label>
+                      {logoUrl && (
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded flex items-center gap-1">
+                          <Check size={11} /> Logo Loaded
+                        </span>
+                      )}
+                    </div>
+
+                    {logoUrl ? (
+                      <div className="space-y-2">
+                        <div className="relative rounded-xl overflow-hidden border border-slate-200 h-36 bg-slate-100 flex items-center justify-center p-3">
+                          <img
+                            src={logoUrl}
+                            alt="Logo Preview"
+                            className="max-h-full max-w-full object-contain rounded-lg shadow-sm"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setLogoUrl('');
+                              setLogoFileName('');
+                              if (logoFileRef.current) logoFileRef.current.value = '';
+                            }}
+                            className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/70 hover:bg-black text-white transition-all cursor-pointer"
+                            title="Remove Logo"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                        {logoFileName && (
+                          <div className="text-[11px] font-mono text-slate-500 truncate">{logoFileName}</div>
+                        )}
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => logoFileRef.current?.click()}
+                        className="h-36 rounded-xl border-2 border-dashed border-slate-300 hover:border-blue-500 bg-white flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors p-4 text-center"
+                      >
+                        <Upload size={24} className="text-slate-400" />
+                        <div>
+                          <span className="text-xs font-bold text-blue-600 hover:underline">Choose Logo File</span>
+                          <p className="text-[10px] text-slate-400 mt-0.5">PNG, JPG, SVG (Square / Transparent)</p>
+                        </div>
+                      </div>
+                    )}
+
                     <input
-                      type="url"
-                      value={interiorPhotoUrl}
-                      onChange={e => setInteriorPhotoUrl(e.target.value)}
-                      placeholder="https://images.unsplash.com/... or hosted image URL"
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none font-medium"
+                      ref={logoFileRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={e => handleImageFileUpload(e, setLogoUrl, setLogoFileName)}
                     />
+
+                    {/* Or URL input */}
+                    <div className="pt-1">
+                      <input
+                        type="url"
+                        value={logoUrl.startsWith('data:') ? '' : logoUrl}
+                        onChange={e => {
+                          setLogoUrl(e.target.value);
+                          setLogoFileName('');
+                        }}
+                        placeholder="Or paste logo URL (https://...)"
+                        className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* SECTION 5: OWNER / RESPONSIBLE PERSON */}
+              {/* ── SECTION 5: OWNER / RESPONSIBLE PERSON (+ OWNER ORIGINAL PHOTO) ──────────────── */}
               <div className="space-y-4 pt-4 border-t border-slate-100">
-                <div className="flex items-center gap-2 pb-2 border-b border-slate-100 text-slate-900 font-bold text-base font-orbitron">
-                  <UserCheck size={18} className="text-blue-600" /> 5. Owner / Responsible Person
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                  <div className="flex items-center gap-2 text-slate-900 font-bold text-base font-orbitron">
+                    <UserCheck size={18} className="text-blue-600" /> 5. Owner / Responsible Person
+                  </div>
+                  {submissionType === 'CONFLUX_VERIFIED' && (
+                    <span className="text-[11px] font-mono font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-md flex items-center gap-1">
+                      <ShieldCheck size={13} className="text-emerald-600" /> Owner Photo Mandatory for Verification
+                    </span>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -760,94 +983,239 @@ export const BusinessSubmissionPage: React.FC = () => {
                     />
                   </div>
                 </div>
+
+                {/* OWNER'S ORIGINAL PHOTOGRAPH UPLOAD */}
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <Camera size={15} className="text-emerald-600" /> Owner / Responsible Person Original Photo {submissionType === 'CONFLUX_VERIFIED' && <span className="text-rose-600">*</span>}
+                    </label>
+                    {ownerPhotoUrl && (
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded flex items-center gap-1">
+                        <Check size={11} /> Owner Photo Loaded
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-[11px] text-slate-600 leading-relaxed">
+                    Upload a clear portrait photograph of the business owner or designated responsible officer.
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row items-center gap-4">
+                    {ownerPhotoUrl ? (
+                      <div className="relative w-28 h-28 rounded-2xl overflow-hidden border border-slate-300 bg-slate-100 shrink-0">
+                        <img
+                          src={ownerPhotoUrl}
+                          alt="Owner Portrait"
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setOwnerPhotoUrl('');
+                            setOwnerPhotoFileName('');
+                            if (ownerPhotoFileRef.current) ownerPhotoFileRef.current.value = '';
+                          }}
+                          className="absolute top-1.5 right-1.5 p-1 rounded-md bg-black/70 hover:bg-black text-white cursor-pointer"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => ownerPhotoFileRef.current?.click()}
+                        className="w-28 h-28 rounded-2xl border-2 border-dashed border-slate-300 hover:border-emerald-500 bg-white flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-colors shrink-0 text-center p-2"
+                      >
+                        <UserCheck size={24} className="text-slate-400" />
+                        <span className="text-[10px] font-bold text-emerald-700 leading-tight">Upload Owner Photo</span>
+                      </div>
+                    )}
+
+                    <div className="space-y-2 flex-1 w-full">
+                      <button
+                        type="button"
+                        onClick={() => ownerPhotoFileRef.current?.click()}
+                        className="px-4 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-800 text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1.5"
+                      >
+                        <Upload size={14} /> Choose Portrait Photo
+                      </button>
+
+                      {ownerPhotoFileName && (
+                        <div className="text-[11px] font-mono text-slate-500">{ownerPhotoFileName}</div>
+                      )}
+
+                      <input
+                        type="url"
+                        value={ownerPhotoUrl.startsWith('data:') ? '' : ownerPhotoUrl}
+                        onChange={e => {
+                          setOwnerPhotoUrl(e.target.value);
+                          setOwnerPhotoFileName('');
+                        }}
+                        placeholder="Or paste owner photo URL (https://...)"
+                        className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <input
+                    ref={ownerPhotoFileRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={e => handleImageFileUpload(e, setOwnerPhotoUrl, setOwnerPhotoFileName)}
+                  />
+                </div>
               </div>
 
-              {/* SECTION 6: STATUTORY EVIDENCE (CONFLUX VERIFIED PATHWAY) */}
+              {/* ── SECTION 6: STATUTORY EVIDENCE (CONFLUX VERIFIED PATHWAY) ──────────────── */}
               {submissionType === 'CONFLUX_VERIFIED' && (
                 <div className="space-y-4 pt-4 border-t border-slate-100">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                     <div className="flex items-center gap-2 text-slate-900 font-bold text-base font-orbitron">
-                      <ShieldCheck size={18} className="text-emerald-600" /> 6. Statutory Evidence &amp; Official Dockets
+                      <ShieldCheck size={18} className="text-emerald-600" /> 6. Statutory Evidence &amp; Official Documents
                     </div>
-                    <span className="text-xs font-mono font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-md">
-                      Private Verification Material
+                    <span className="text-xs font-mono font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-md flex items-center gap-1">
+                      <Lock size={12} /> Private Document Vault
                     </span>
                   </div>
 
                   {/* Private Security Guarantee */}
                   <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/70 text-xs text-blue-950 space-y-1">
                     <div className="font-bold flex items-center gap-1.5">
-                      <Lock size={14} className="text-blue-700" /> Private Document Security Notice:
+                      <Lock size={14} className="text-blue-700" /> Strict Document Isolation Guarantee:
                     </div>
                     <p className="leading-relaxed text-[11px] text-blue-900">
-                      Uploaded government documents and identity proofs are treated as private verification material. They are stored securely, restricted to authorized administrators, and <strong>never exposed on public URLs, public profiles, or APIs</strong>.
+                      Uploaded government documents, licenses, and certificates are isolated in the encrypted private evidence vault. They are restricted to authorized administrators and <strong>never exposed on public URLs, profiles, or search APIs</strong>.
                     </p>
                   </div>
 
                   {/* Dynamic Category Recommendation */}
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">
-                      Category Requirement ({categoryId}):
+                  <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">
+                        Statutory Recommendation ({categoryId}):
+                      </div>
+                      <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                        Corroborated by Conflux
+                      </span>
                     </div>
-                    <div className="text-sm font-bold text-slate-900">
+
+                    <div className="text-sm font-bold text-slate-900 font-orbitron">
                       {currentEvidenceGuide.recommendedDoc}
                     </div>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-700">Document / License Identifier Number *</label>
+                        <label className="text-xs font-bold text-slate-700">Document Type *</label>
+                        <select
+                          value={selectedDocType}
+                          onChange={e => setSelectedDocType(e.target.value as PrivateDocumentType)}
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none bg-white"
+                        >
+                          <option value="TRADE_LICENSE">Municipal Trade License</option>
+                          <option value="FSSAI">FSSAI FoSCoS Certificate</option>
+                          <option value="CLINICAL_ESTABLISHMENT">Clinical Establishment Certificate</option>
+                          <option value="MSME_UDYAM">MSME Udyam Registration</option>
+                          <option value="GSTIN">GSTIN Registration Docket</option>
+                          <option value="TOURISM_REG">Tourism Directorate License</option>
+                          <option value="OWNER_ID_PROOF">Owner Govt ID (Aadhaar/PAN/Voter)</option>
+                          <option value="OTHER">Other Official Statutory License</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700">Document / License Number</label>
                         <input
                           type="text"
                           value={docNumber}
                           onChange={e => setDocNumber(e.target.value)}
                           placeholder={currentEvidenceGuide.placeholder}
-                          className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none font-mono"
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none font-mono bg-white"
                         />
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-700">Document Description (Optional)</label>
+                        <label className="text-xs font-bold text-slate-700">Document Label / Title</label>
                         <input
                           type="text"
                           value={evidenceName}
                           onChange={e => setEvidenceName(e.target.value)}
                           placeholder="e.g. 2024-2029 Active License Certificate"
-                          className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none"
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none bg-white"
                         />
                       </div>
+                    </div>
+
+                    {/* File Attachment Box */}
+                    <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                          <FileText size={14} className="text-blue-600" /> Upload Document File (PDF, PNG, JPG)
+                        </span>
+                        {evidenceFileName && (
+                          <span className="text-[11px] font-mono text-emerald-700 font-bold">
+                            ✓ {evidenceFileName}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => docFileRef.current?.click()}
+                          className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1.5"
+                        >
+                          <Upload size={14} /> Select Document File
+                        </button>
+                        <span className="text-[11px] text-slate-500">Max size: 10MB per document</span>
+                      </div>
+
+                      <input
+                        ref={docFileRef}
+                        type="file"
+                        accept=".pdf,image/png,image/jpeg,image/jpg"
+                        className="hidden"
+                        onChange={handleDocFileUpload}
+                      />
                     </div>
 
                     <button
                       type="button"
                       onClick={handleAddEvidenceDoc}
-                      className="mt-2 px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1.5"
+                      className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer inline-flex items-center gap-1.5"
                     >
-                      <Upload size={14} /> Attach Evidence Reference
+                      <Plus size={14} /> Attach This Document to Application
                     </button>
                   </div>
 
                   {/* Attached Documents List */}
                   {uploadedEvidence.length > 0 && (
-                    <div className="space-y-2 pt-1">
-                      <div className="text-xs font-bold text-slate-600 font-mono">Attached Evidence Records ({uploadedEvidence.length}):</div>
+                    <div className="space-y-2 pt-2">
+                      <div className="text-xs font-bold text-slate-700 font-mono flex items-center justify-between">
+                        <span>Attached Statutory Documents ({uploadedEvidence.length}):</span>
+                        <span className="text-emerald-700 font-normal">Ready for private verification</span>
+                      </div>
                       <div className="space-y-2">
                         {uploadedEvidence.map(doc => (
-                          <div key={doc.id} className="p-3 rounded-xl bg-white border border-emerald-200 flex items-center justify-between text-xs">
-                            <div className="flex items-center gap-2">
-                              <FileText size={16} className="text-emerald-600 shrink-0" />
+                          <div key={doc.id} className="p-3.5 rounded-2xl bg-white border border-emerald-200 shadow-sm flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                                <FileCheck size={18} />
+                              </div>
                               <div>
-                                <span className="font-bold text-slate-900">{doc.documentName}</span>
-                                {doc.documentNumber && (
-                                  <span className="font-mono text-slate-500 ml-2">({doc.documentNumber})</span>
-                                )}
+                                <div className="font-bold text-slate-900">{doc.documentName}</div>
+                                <div className="text-[11px] text-slate-500 font-mono">
+                                  {doc.documentType} {doc.documentNumber ? `• #${doc.documentNumber}` : ''} • Private Vault
+                                </div>
                               </div>
                             </div>
                             <button
                               type="button"
                               onClick={() => handleRemoveDoc(doc.id)}
-                              className="text-rose-600 hover:text-rose-800 font-bold cursor-pointer"
+                              className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                              title="Remove document"
                             >
-                              Remove
+                              <Trash2 size={15} />
                             </button>
                           </div>
                         ))}
@@ -868,7 +1236,7 @@ export const BusinessSubmissionPage: React.FC = () => {
                     type="checkbox"
                     checked={declarationConfirmed}
                     onChange={e => setDeclarationConfirmed(e.target.checked)}
-                    className="mt-1 w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                    className="mt-1 w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
                     required
                   />
                   <span className="text-xs text-slate-800 leading-relaxed font-medium">
@@ -881,7 +1249,7 @@ export const BusinessSubmissionPage: React.FC = () => {
                     type="checkbox"
                     checked={noStockImagesConfirmed}
                     onChange={e => setNoStockImagesConfirmed(e.target.checked)}
-                    className="mt-1 w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                    className="mt-1 w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
                     required
                   />
                   <span className="text-xs text-slate-800 leading-relaxed font-medium">
@@ -901,7 +1269,7 @@ export const BusinessSubmissionPage: React.FC = () => {
               {/* Submit CTA */}
               <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p className="text-xs text-slate-500 text-center sm:text-left">
-                  Applications are reviewed by the Conflux audit team within 24-48 hours.
+                  Applications are audited and verified by the Conflux team within 24-48 hours.
                 </p>
                 <button
                   type="submit"
