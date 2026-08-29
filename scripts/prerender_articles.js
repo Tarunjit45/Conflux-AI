@@ -1322,8 +1322,8 @@ subLocations.forEach(sub => {
 const staticPages = [
   {
     path: '/discover',
-    title: 'Discover Verified Local Businesses | Conflux Business Graph',
-    desc: 'Search statutory-verified enterprises, manufacturing plants, artisans, and commercial services across West Bengal.',
+    title: 'Find a Local Business You Can Trust | Conflux Discover',
+    desc: 'Tell Conflux what you need, where you need it, and discover verified local businesses you can connect with across West Bengal.',
     body: `
     <div id="root">
       <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
@@ -1340,9 +1340,9 @@ const staticPages = [
         </div>
       </header>
       <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
-        <h1 style="font-size: 40px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">Discover Verified Local Businesses & Industry Leaders</h1>
+        <h1 style="font-size: 40px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">Find a Local Business You Can Trust</h1>
         <p style="font-size: 18px; color: #475569; line-height: 1.6; margin-bottom: 30px;">
-          Search statutory-verified enterprises, manufacturing plants, artisans, and commercial services across West Bengal on the Conflux Business Graph.
+          Tell Conflux what you need, where you need it, and discover verified local businesses you can connect with across West Bengal.
         </p>
       </main>
     </div>

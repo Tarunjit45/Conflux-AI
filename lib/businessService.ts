@@ -493,16 +493,20 @@ export class BusinessService {
     list = list.filter(b => b.status === 'PUBLISHED');
 
     if (params.query) {
-      const q = params.query.toLowerCase().trim();
-      list = list.filter(b =>
-        b.name.toLowerCase().includes(q) ||
-        b.description.toLowerCase().includes(q) ||
-        b.categoryId.toLowerCase().includes(q) ||
-        b.categoryName?.toLowerCase().includes(q) ||
-        b.location.city.toLowerCase().includes(q) ||
-        b.location.district.toLowerCase().includes(q) ||
-        b.confluxBusinessId.toLowerCase().includes(q)
-      );
+      const rawQ = params.query.toLowerCase().trim();
+      const tokens = rawQ
+        .replace(/[^\w\s-]/g, ' ')
+        .split(/\s+/)
+        .filter(t => t.length > 1 && !['in', 'at', 'near', 'the', 'for', 'of', 'and', 'best', 'top'].includes(t));
+
+      list = list.filter(b => {
+        const haystack = `${b.name} ${b.legalName || ''} ${b.description} ${b.categoryId} ${b.categoryName || ''} ${b.location.city} ${b.location.district} ${b.confluxBusinessId}`.toLowerCase();
+        if (haystack.includes(rawQ)) return true;
+        if (tokens.length > 0) {
+          return tokens.every(token => haystack.includes(token)) || tokens.some(token => haystack.includes(token));
+        }
+        return false;
+      });
     }
 
     if (params.district) {

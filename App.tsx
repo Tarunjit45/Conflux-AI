@@ -225,8 +225,8 @@ const routeMeta: Record<string, { title: string; description: string }> = {
     description: 'Admin command center for managing, verifying, and publishing Conflux Business Graph entities.'
   },
   '/discover': {
-    title: 'Discover Verified Local Businesses | Conflux Business Graph',
-    description: 'Search statutory-verified enterprises, manufacturing plants, artisans, and commercial services across West Bengal.'
+    title: 'Find a Local Business You Can Trust | Conflux Discover',
+    description: 'Tell Conflux what you need, where you need it, and discover verified local businesses you can connect with across West Bengal.'
   },
   '/login': {
     title: 'Sign In | Conflux Platform Auth',
