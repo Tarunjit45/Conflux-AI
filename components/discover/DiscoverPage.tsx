@@ -40,9 +40,9 @@ export const DiscoverPage: React.FC = () => {
   const [results, setResults] = useState<BusinessSearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Search & Filter State
+  // Search & Filter State — Default is completely clean with no artificial location or intent preset
   const [whatQuery, setWhatQuery] = useState('');
-  const [whereQuery, setWhereQuery] = useState('Ranaghat');
+  const [whereQuery, setWhereQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [openNowOnly, setOpenNowOnly] = useState(false);
@@ -116,7 +116,7 @@ export const DiscoverPage: React.FC = () => {
     executeSearch();
   };
 
-  const handleIntentShortcut = (what: string, where: string = 'Ranaghat') => {
+  const handleIntentShortcut = (what: string, where: string = '') => {
     setWhatQuery(what);
     setWhereQuery(where);
     executeSearch(what, where);
@@ -165,7 +165,7 @@ export const DiscoverPage: React.FC = () => {
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs font-bold tracking-wide uppercase font-mono"
           >
             <ShieldCheck size={15} className="text-emerald-400" />
-            Verified Local Business Discovery &amp; Decision Hub
+            Verified Local Business Discovery &amp; Connection Hub
           </motion.div>
 
           <motion.h1
@@ -242,21 +242,21 @@ export const DiscoverPage: React.FC = () => {
             </div>
           </motion.form>
 
-          {/* Quick Intent Shortcuts */}
+          {/* Quick Category Shortcuts */}
           <div className="flex flex-wrap items-center justify-center gap-2 pt-2 text-xs">
-            <span className="text-slate-400 font-mono text-[11px]">Popular in Ranaghat:</span>
+            <span className="text-slate-400 font-mono text-[11px]">Search Suggestions:</span>
             {[
               { label: '🏥 Diagnostic & USG', query: 'USG' },
               { label: '🍽️ Restaurants', query: 'Restaurant' },
               { label: '💪 Gyms', query: 'Gym' },
               { label: '❄️ AC Repair', query: 'AC Repair' },
               { label: '🏨 Hotels', query: 'Hotel' },
-              { label: '🧵 Santipur Sarees', query: 'Saree' }
+              { label: '🧵 Handloom Sarees', query: 'Saree' }
             ].map(pill => (
               <button
                 key={pill.label}
                 type="button"
-                onClick={() => handleIntentShortcut(pill.query, 'Ranaghat')}
+                onClick={() => handleIntentShortcut(pill.query, '')}
                 className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-slate-200 text-[11px] font-semibold transition-colors cursor-pointer"
               >
                 {pill.label}
@@ -364,7 +364,11 @@ export const DiscoverPage: React.FC = () => {
           {/* Results Counter & Methodology Tag */}
           <div className="flex items-center gap-3 text-xs text-slate-500 font-mono">
             <span className="font-bold text-slate-900">
-              {isLoading ? 'Querying Graph...' : `${results.length} Verified Businesses Matched`}
+              {isLoading
+                ? 'Querying Graph...'
+                : results.length === 0
+                ? '0 Businesses Listed'
+                : `${results.length} ${results.length === 1 ? 'Business' : 'Businesses'} Found`}
             </span>
             <span className="hidden sm:inline text-slate-300">|</span>
             <span className="hidden sm:inline text-[11px] text-slate-400">
@@ -391,28 +395,28 @@ export const DiscoverPage: React.FC = () => {
             ))}
           </div>
         ) : results.length === 0 ? (
-          /* Empty / No Results State */
+          /* Honest Empty State — 0 Real Businesses in Clean Directory */
           <div className="p-12 sm:p-16 rounded-3xl bg-white border border-slate-200 text-center space-y-5 max-w-2xl mx-auto shadow-sm">
             <div className="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 mx-auto flex items-center justify-center">
               <Building2 size={32} />
             </div>
             <div className="space-y-2">
               <h3 className="text-xl font-bold font-orbitron text-slate-900 capitalize">
-                {selectedCity && selectedCity !== 'all'
-                  ? `No businesses listed in ${selectedCity} yet.`
-                  : 'No businesses match this search yet.'}
+                {whereQuery.trim()
+                  ? `No businesses listed in ${whereQuery.trim()} yet.`
+                  : 'No businesses listed yet.'}
               </h3>
               <p className="text-sm text-slate-600 leading-relaxed max-w-lg mx-auto">
-                We are building the local business network with real businesses, not fabricated listings or synthetic placeholder ratings.
+                We are building the local business network with real, verified businesses, not fabricated listings or synthetic placeholder ratings.
               </p>
             </div>
 
             <div className="p-5 rounded-2xl bg-amber-50/70 border border-amber-200/80 text-xs text-amber-900 space-y-1.5 text-left">
               <div className="font-bold flex items-center gap-1.5">
-                <Building2 size={15} className="text-amber-700" /> Are you a business owner in this area?
+                <Building2 size={15} className="text-amber-700" /> Are you a business owner?
               </div>
               <p className="text-[11px] text-amber-800 leading-relaxed">
-                List your business on Conflux to establish your verified presence, control accurate operational details, and receive authentic direct customer inquiries.
+                List your business on Conflux to establish your verified identity, control accurate operational details, and receive authentic direct customer inquiries.
               </p>
               <div className="pt-1">
                 <Link
@@ -425,12 +429,14 @@ export const DiscoverPage: React.FC = () => {
             </div>
 
             <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
-              <button
-                onClick={handleResetFilters}
-                className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all cursor-pointer"
-              >
-                Clear All Filters
-              </button>
+              {hasActiveFilters && (
+                <button
+                  onClick={handleResetFilters}
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all cursor-pointer"
+                >
+                  Clear All Filters
+                </button>
+              )}
               <Link
                 to="/list-business"
                 className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all"
@@ -446,7 +452,7 @@ export const DiscoverPage: React.FC = () => {
             </div>
           </div>
         ) : (
-          /* Populated Results Grid — Decision-Grade Cards */
+          /* Populated Results Grid — Decision-Grade Cards (When approved real businesses exist) */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {results.map(({ business: biz, rankingExplanation }) => {
               const isOpenNow = businessService.isBusinessOpenNow(biz.operatingHours);
@@ -687,17 +693,17 @@ export const DiscoverPage: React.FC = () => {
           <div className="p-8 rounded-3xl bg-gradient-to-r from-blue-900 to-indigo-900 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
             <div className="space-y-2 text-center sm:text-left">
               <h3 className="text-xl font-bold font-orbitron">
-                Are you a local business owner in Ranaghat or Nadia?
+                Are you a local business owner?
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
-                Claim your profile or submit your statutory credentials to the Conflux Business Graph to be discovered by local customers and AI search agents.
+                List your business or submit statutory credentials to the Conflux Business Graph to establish verified presence and connect directly with local customers.
               </p>
             </div>
             <Link
-              to="/verify"
+              to="/list-business"
               className="px-6 py-3 rounded-2xl bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold shadow-lg transition-all shrink-0 cursor-pointer"
             >
-              Verify Your Business &rarr;
+              List Your Business &rarr;
             </Link>
           </div>
         </div>
