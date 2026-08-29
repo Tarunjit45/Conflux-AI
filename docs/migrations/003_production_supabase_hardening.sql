@@ -362,3 +362,22 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- ── 9. POSTS & LEGACY CONTENT TABLE RLS HARDENING ─────────────────────────────
+-- Resolves Supabase Security Advisor Linter: "RLS Disabled in Public public.posts"
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'posts') THEN
+        ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
+        
+        DROP POLICY IF EXISTS "Public can view published posts" ON public.posts;
+        CREATE POLICY "Public can view published posts"
+            ON public.posts FOR SELECT
+            USING (true);
+
+        DROP POLICY IF EXISTS "Admins have full access to posts" ON public.posts;
+        CREATE POLICY "Admins have full access to posts"
+            ON public.posts FOR ALL
+            USING ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'ADMIN');
+    END IF;
+END $$;
