@@ -2,21 +2,11 @@
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-const getEnvVar = (key: string): string => {
-  if (typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env[key]) {
-    return String((import.meta as any).env[key]).trim();
-  }
-  if (typeof process !== 'undefined' && process.env && process.env[key]) {
-    return String(process.env[key]).trim();
-  }
-  return '';
-};
-
 /**
  * Normalizes user-supplied Supabase URL to canonical https://<project-ref>.supabase.co
  * Handles cases where a user pastes the dashboard URL, project reference ID, or trailing slashes
  */
-export const normalizeSupabaseUrl = (inputUrl: string): string => {
+export const normalizeSupabaseUrl = (inputUrl?: string): string => {
   let url = (inputUrl || '').trim();
   if (!url) return '';
 
@@ -39,10 +29,18 @@ export const normalizeSupabaseUrl = (inputUrl: string): string => {
   return url;
 };
 
-// Retrieve environment variables
-const rawEnvUrl = getEnvVar('VITE_SUPABASE_URL') || getEnvVar('SUPABASE_URL');
+// Retrieve environment variables with direct static references (required for Vite bundler AST replacement)
+const rawEnvUrl =
+  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_URL) ||
+  (typeof process !== 'undefined' && process.env && (process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL)) ||
+  'https://cqkljjbnoinztsugwqpf.supabase.co';
+
+const rawAnonKey =
+  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) ||
+  (typeof process !== 'undefined' && process.env && (process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY)) ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxa2xqamJub2luenRzdWd3cXBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDg1ODAsImV4cCI6MjA4ODk4NDU4MH0.PokKldexJYwNGgtuRGkIyxpXkEU2PPWe91sJ7Uin9MU';
+
 const canonicalUrl = normalizeSupabaseUrl(rawEnvUrl);
-const rawAnonKey = getEnvVar('VITE_SUPABASE_ANON_KEY') || getEnvVar('SUPABASE_ANON_KEY');
 
 /**
  * Validates whether Supabase environment variables are present and syntactically valid
@@ -74,11 +72,11 @@ const createSupabaseInstance = (): SupabaseClient => {
     });
   }
 
-  // When unconfigured, provide a safe client instance that warns on attempt
-  return createClient('https://unconfigured-project.supabase.co', 'unconfigured-anon-key-placeholder', {
+  // Safe fallback client instance
+  return createClient('https://cqkljjbnoinztsugwqpf.supabase.co', rawAnonKey, {
     auth: {
-      persistSession: false,
-      autoRefreshToken: false
+      persistSession: true,
+      autoRefreshToken: true
     }
   });
 };
@@ -90,7 +88,7 @@ export const supabase = createSupabaseInstance();
  */
 export const assertSupabaseConfigured = (operationName: string = 'database operation') => {
   if (!isSupabaseConfigured()) {
-    const isProd = typeof import.meta !== 'undefined' && (import.meta as any).env?.PROD;
+    const isProd = typeof import.meta !== 'undefined' && import.meta.env?.PROD;
     const msg = `[CONFLUX_CONFIG_ERROR] Cannot execute ${operationName}: Remote Supabase database is not configured. Please supply valid VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your environment variables.`;
     if (isProd) {
       throw new Error(msg);

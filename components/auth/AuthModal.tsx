@@ -53,20 +53,30 @@ export const AuthModal: React.FC = () => {
         role: selectedRole,
         phone
       });
-      setIsLoading(false);
 
       if (res.success) {
-        setMessage({ text: `Account created successfully as ${selectedRole.replace(/_/g, ' ')}!` });
-        setTimeout(() => {
-          if (selectedRole === 'BUSINESS_OWNER') {
-            navigate('/list-business');
-          } else if (selectedRole === 'ADMIN') {
-            navigate('/admin/businesses');
-          } else {
-            navigate('/discover');
-          }
-        }, 800);
+        // Try auto-login
+        const loginRes = await login(email, password);
+        setIsLoading(false);
+
+        if (loginRes.success) {
+          setMessage({ text: `Account created & signed in as ${selectedRole.replace(/_/g, ' ')}!` });
+          setTimeout(() => {
+            if (selectedRole === 'BUSINESS_OWNER') {
+              navigate('/list-business');
+            } else if (selectedRole === 'ADMIN') {
+              navigate('/admin/businesses');
+            } else {
+              navigate('/discover');
+            }
+          }, 800);
+        } else {
+          setMessage({
+            text: 'Account registered successfully! If required by your organization, please verify your email before logging in.'
+          });
+        }
       } else {
+        setIsLoading(false);
         setMessage({ text: res.error || 'Registration failed', isError: true });
       }
     } else {
@@ -85,7 +95,10 @@ export const AuthModal: React.FC = () => {
           }
         }, 800);
       } else {
-        setMessage({ text: res.error || 'Login failed', isError: true });
+        const errorMsg = res.error?.includes('Email not confirmed')
+          ? 'Email not confirmed yet. Please check your inbox or spam folder to verify your email.'
+          : res.error || 'Login failed';
+        setMessage({ text: errorMsg, isError: true });
       }
     }
   };
