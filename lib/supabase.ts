@@ -67,6 +67,25 @@ export const getSupabaseConfig = () => ({
 });
 
 /**
+ * Resilient In-Memory Lock implementation to prevent "Acquiring an exclusive Navigator LockManager lock immediately failed"
+ * in browsers with Fingerprinting Protection, Private Browsing, or strict privacy sandboxes (Firefox/Safari/Brave).
+ */
+const safeAuthLock = async (
+  _name: string,
+  _acquireTimeout: number,
+  fn: () => Promise<any>
+): Promise<any> => {
+  try {
+    return await fn();
+  } catch (err: any) {
+    if (err?.message?.includes('LockManager') || err?.name === 'AbortError') {
+      return null;
+    }
+    throw err;
+  }
+};
+
+/**
  * Creates or retrieves the Supabase client instance
  */
 const createSupabaseInstance = (): SupabaseClient => {
@@ -74,7 +93,8 @@ const createSupabaseInstance = (): SupabaseClient => {
     auth: {
       persistSession: typeof window !== 'undefined',
       autoRefreshToken: true,
-      detectSessionInUrl: true
+      detectSessionInUrl: true,
+      lock: safeAuthLock
     }
   });
 };
