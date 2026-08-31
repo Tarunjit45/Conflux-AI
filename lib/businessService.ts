@@ -673,47 +673,63 @@ export class BusinessService {
     if (!input.businessName || input.businessName.trim().length < 2) {
       throw new Error('Business name is required (minimum 2 characters).');
     }
-    if (!input.description || input.description.trim().length < 10) {
-      throw new Error('Description is required (minimum 10 characters).');
+    if (!input.description || input.description.trim().length < 5) {
+      throw new Error('Brief business description is required (minimum 5 characters).');
     }
-    if (!input.fullAddress || input.fullAddress.trim().length < 5) {
-      throw new Error('Complete physical address is required.');
+    if (!input.fullAddress || input.fullAddress.trim().length < 3) {
+      throw new Error('Business location or address is required.');
     }
-    if (!input.phone || input.phone.trim().length < 8) {
+    if (!input.phone || input.phone.trim().length < 6) {
       throw new Error('Valid business contact phone is required.');
     }
-    if (!input.email || !input.email.includes('@')) {
-      throw new Error('Valid contact email is required.');
-    }
     if (!input.ownerName || input.ownerName.trim().length < 2) {
-      throw new Error('Responsible person/owner name is required.');
-    }
-    if (!input.declarationConfirmed) {
-      throw new Error('You must confirm the ownership and accuracy declaration.');
-    }
-    if (!input.noStockImagesConfirmed) {
-      throw new Error('You must confirm that photographs are genuine and not stock images.');
+      throw new Error('Representative or owner name is required.');
     }
 
     const allApps = await this.getAllApplications();
     const appId = `APP-${new Date().getFullYear()}-${Date.now().toString().slice(-5)}${Math.floor(10 + Math.random() * 90)}`;
     const allBusinesses = await this.getAllBusinesses();
     const confluxBusinessId = generateConfluxBusinessId({
-      district: input.district,
+      district: input.district || 'nadia',
       sequenceNumber: allBusinesses.length + allApps.length + Math.floor(Math.random() * 1000) + 1
     });
+
+    const safeEmail = (input.email && input.email.trim()) ? input.email.trim() : 'contact@onboarding.confluxai.in';
+    const safePhone = input.phone.trim();
+    const safeOwnerPhone = (input.ownerPhone && input.ownerPhone.trim()) ? input.ownerPhone.trim() : safePhone;
 
     const newApp: BusinessSubmissionApplication = {
       ...input,
       id: appId,
       confluxBusinessId,
       status: 'SUBMITTED',
+      evidenceStatus: input.evidenceStatus || 'PENDING_REVIEW',
+      confluxPlan: input.confluxPlan || 'FREE',
+      paymentStatus: input.paymentStatus || 'NOT_APPLICABLE',
+      email: safeEmail,
+      phone: safePhone,
+      ownerPhone: safeOwnerPhone,
+      ownerEmail: (input.ownerEmail && input.ownerEmail.trim()) ? input.ownerEmail.trim() : safeEmail,
+      services: input.services || [],
+      privateEvidence: input.privateEvidence || [],
+      declarationConfirmed: input.declarationConfirmed ?? true,
+      noStockImagesConfirmed: input.noStockImagesConfirmed ?? true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
     if (isSupabaseConfigured()) {
       try {
+        // Serialize onlineSources & serviceInterestRequests into admin_notes for database persistence
+        const metadataNote = JSON.stringify({
+          onlineSources: newApp.onlineSources,
+          serviceInterestRequests: newApp.serviceInterestRequests,
+          hasWebsite: newApp.hasWebsite,
+          evidenceStatus: newApp.evidenceStatus,
+          confluxPlan: newApp.confluxPlan,
+          paymentStatus: newApp.paymentStatus
+        });
+
         const { error: appError } = await supabase.from('business_applications').insert([{
           id: newApp.id,
           conflux_business_id: newApp.confluxBusinessId,
@@ -729,7 +745,7 @@ export class BusinessService {
           landmark: newApp.landmark,
           full_address: newApp.fullAddress,
           phone: newApp.phone,
-          whatsapp: newApp.whatsapp,
+          whatsapp: newApp.whatsapp || newApp.phone,
           email: newApp.email,
           website_url: newApp.websiteUrl,
           booking_url: newApp.bookingUrl,
@@ -737,6 +753,7 @@ export class BusinessService {
           owner_role: newApp.ownerRole,
           storefront_photo_url: newApp.storefrontPhotoUrl,
           status: newApp.status,
+          admin_notes: metadataNote,
           created_at: newApp.createdAt,
           updated_at: newApp.updatedAt
         }]);
@@ -777,45 +794,64 @@ export class BusinessService {
           .order('created_at', { ascending: false });
 
         if (!error && data && data.length > 0) {
-          return data.map(row => ({
-            id: row.id,
-            confluxBusinessId: row.conflux_business_id,
-            submissionType: row.submission_type,
-            businessName: row.business_name,
-            legalName: row.legal_name,
-            businessType: row.business_type,
-            categoryId: row.category_id,
-            categoryName: row.category_name,
-            description: row.description,
-            district: row.district,
-            city: row.city,
-            landmark: row.landmark,
-            fullAddress: row.full_address,
-            phone: row.phone,
-            whatsapp: row.whatsapp,
-            email: row.email,
-            websiteUrl: row.website_url,
-            bookingUrl: row.booking_url,
-            ownerName: row.owner_name,
-            ownerRole: row.owner_role,
-            storefrontPhotoUrl: row.storefront_photo_url,
-            logoUrl: row.logo_url,
-            ownerPhotoUrl: row.owner_photo_url,
-            status: row.status,
-            adminNotes: row.admin_notes,
-            changesRequestedMessage: row.changes_requested_message,
-            privateEvidence: (row.private_evidence || []).map((d: any) => ({
-              documentType: d.document_type,
-              documentName: d.document_name,
-              documentNumber: d.document_number,
-              documentFileUrl: d.document_file_url,
-              isPrivate: true
-            })),
-            declarationConfirmed: true,
-            noStockImagesConfirmed: true,
-            createdAt: row.created_at,
-            updatedAt: row.updated_at
-          }));
+          return data.map(row => {
+            let meta: any = {};
+            try {
+              if (row.admin_notes && (row.admin_notes.startsWith('{') || row.admin_notes.startsWith('['))) {
+                meta = JSON.parse(row.admin_notes);
+              }
+            } catch (e) {}
+
+            return {
+              id: row.id,
+              confluxBusinessId: row.conflux_business_id,
+              submissionType: row.submission_type,
+              businessName: row.business_name,
+              legalName: row.legal_name,
+              businessType: row.business_type,
+              categoryId: row.category_id,
+              categoryName: row.category_name,
+              description: row.description,
+              district: row.district,
+              city: row.city,
+              landmark: row.landmark,
+              fullAddress: row.full_address,
+              phone: row.phone,
+              whatsapp: row.whatsapp,
+              email: row.email,
+              websiteUrl: row.website_url,
+              hasWebsite: meta.hasWebsite ?? Boolean(row.website_url),
+              bookingUrl: row.booking_url,
+              ownerName: row.owner_name,
+              ownerRole: row.owner_role,
+              ownerPhone: row.phone,
+              ownerEmail: row.email,
+              onlineSources: meta.onlineSources,
+              serviceInterestRequests: meta.serviceInterestRequests,
+              evidenceStatus: meta.evidenceStatus || 'PENDING_REVIEW',
+              detectedConflicts: meta.detectedConflicts || [],
+              confluxPlan: meta.confluxPlan || 'FREE',
+              paymentStatus: meta.paymentStatus || 'NOT_APPLICABLE',
+              storefrontPhotoUrl: row.storefront_photo_url,
+              logoUrl: row.logo_url,
+              ownerPhotoUrl: row.owner_photo_url,
+              status: row.status,
+              adminNotes: row.admin_notes,
+              changesRequestedMessage: row.changes_requested_message,
+              privateEvidence: (row.private_evidence || []).map((d: any) => ({
+                documentType: d.document_type,
+                documentName: d.document_name,
+                documentNumber: d.document_number,
+                documentFileUrl: d.document_file_url,
+                isPrivate: true
+              })),
+              declarationConfirmed: true,
+              noStockImagesConfirmed: true,
+              services: [],
+              createdAt: row.created_at,
+              updatedAt: row.updated_at
+            };
+          });
         }
       } catch (err: any) {
         console.error('[BusinessService.getAllApplications] Database error:', err);
@@ -959,6 +995,63 @@ export class BusinessService {
     if (!app) throw new Error(`Application ${appId} not found.`);
     app.status = 'CHANGES_REQUESTED';
     app.changesRequestedMessage = message;
+    app.updatedAt = new Date().toISOString();
+    return app;
+  }
+
+  /**
+   * Admin: Mark application as Insufficient Evidence
+   */
+  async markApplicationInsufficientEvidence(appId: string, notes: string): Promise<BusinessSubmissionApplication> {
+    const apps = await this.getAllApplications();
+    const app = apps.find(a => a.id === appId);
+    if (!app) throw new Error(`Application ${appId} not found.`);
+    
+    app.evidenceStatus = 'INSUFFICIENT_EVIDENCE';
+    app.adminNotes = notes;
+    app.updatedAt = new Date().toISOString();
+
+    if (isSupabaseConfigured()) {
+      await supabase.from('business_applications').update({
+        admin_notes: notes,
+        updated_at: app.updatedAt
+      }).eq('id', appId);
+    }
+    return app;
+  }
+
+  /**
+   * Admin: Update evidence status and detected conflicts
+   */
+  async updateApplicationEvidenceStatus(
+    appId: string,
+    evidenceStatus: BusinessSubmissionApplication['evidenceStatus'],
+    conflicts: string[] = []
+  ): Promise<BusinessSubmissionApplication> {
+    const apps = await this.getAllApplications();
+    const app = apps.find(a => a.id === appId);
+    if (!app) throw new Error(`Application ${appId} not found.`);
+
+    app.evidenceStatus = evidenceStatus;
+    app.detectedConflicts = conflicts;
+    app.updatedAt = new Date().toISOString();
+    return app;
+  }
+
+  /**
+   * Admin: Update commercial service plan & payment status (Strictly separated from verification!)
+   */
+  async updateApplicationCommercialPlan(
+    appId: string,
+    plan: BusinessSubmissionApplication['confluxPlan'],
+    paymentStatus: BusinessSubmissionApplication['paymentStatus']
+  ): Promise<BusinessSubmissionApplication> {
+    const apps = await this.getAllApplications();
+    const app = apps.find(a => a.id === appId);
+    if (!app) throw new Error(`Application ${appId} not found.`);
+
+    app.confluxPlan = plan;
+    app.paymentStatus = paymentStatus;
     app.updatedAt = new Date().toISOString();
     return app;
   }

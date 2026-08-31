@@ -193,6 +193,26 @@ export interface PrivateEvidenceDocument {
   fileData?: string;   // sanitized local data URI / blob reference
 }
 
+export interface SubmittedOnlineSources {
+  googleBusinessUrl?: string;
+  facebookUrl?: string;
+  instagramUrl?: string;
+  linkedinUrl?: string;
+  justdialUrl?: string;
+  indiamartUrl?: string;
+  otherUrl?: string;
+  otherPlatformName?: string;
+}
+
+export interface ServiceInterestRequests {
+  needWebsite?: boolean;
+  needGooglePresence?: boolean;
+  needSocialPresence?: boolean;
+  needWhatsAppSystem?: boolean;
+  needBookingSystem?: boolean;
+  otherNotes?: string;
+}
+
 export interface BusinessSubmissionApplication {
   id: string; // e.g. APP-2026-0001
   confluxBusinessId?: string;
@@ -222,34 +242,43 @@ export interface BusinessSubmissionApplication {
   whatsapp?: string;
   email: string;
   websiteUrl?: string;
+  hasWebsite?: boolean;
   bookingUrl?: string;
   operatingHoursSummary?: string;
 
-  // 4. Genuine Photographs & Brand Assets
+  // 4. Online Sources & Missing-Asset Requests (Phase 1 Onboarding)
+  onlineSources?: SubmittedOnlineSources;
+  serviceInterestRequests?: ServiceInterestRequests;
+
+  // 5. Genuine Photographs & Brand Assets (Optional)
   storefrontPhotoUrl?: string;
   interiorPhotoUrl?: string;
   logoUrl?: string;
 
-  // 5. Owner / Responsible Person
+  // 6. Owner / Responsible Person / Representative
   ownerName: string;
   ownerRole: string;
   ownerPhone: string;
   ownerEmail: string;
   ownerPhotoUrl?: string;
 
-  // 6. Private Official Evidence (Only accessible to authorized admins)
+  // 7. Private Official Evidence (Only accessible to authorized admins)
   privateEvidence: PrivateEvidenceDocument[];
 
-  // 7. Category-Specific Depth
+  // 8. Category-Specific Depth
   categorySpecificDetails?: Record<string, any>;
 
-  // 8. Mandatory Declarations
+  // 9. Mandatory Declarations
   declarationConfirmed: boolean;
   noStockImagesConfirmed: boolean;
 
-  // 9. Admin Auditing Records
+  // 10. Admin Auditing Records, Evidence Conflicts & Commercial Plan
   adminNotes?: string;
   changesRequestedMessage?: string;
+  evidenceStatus?: 'PENDING_REVIEW' | 'SOURCES_FOUND' | 'CONFLICT_DETECTED' | 'EVIDENCE_VERIFIED' | 'INSUFFICIENT_EVIDENCE';
+  detectedConflicts?: string[];
+  confluxPlan?: 'FREE' | 'STARTER' | 'GROWTH' | 'ENTERPRISE';
+  paymentStatus?: 'UNPAID' | 'PAID' | 'WAIVED' | 'NOT_APPLICABLE';
   reviewedBy?: string;
   reviewedAt?: string;
 

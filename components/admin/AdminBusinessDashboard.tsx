@@ -260,6 +260,25 @@ export const AdminBusinessDashboard: React.FC = () => {
     }
   };
 
+  const handleMarkInsufficientEvidenceApp = async (app: BusinessSubmissionApplication) => {
+    const notes = prompt('Enter notes detailing insufficient evidence or discrepancies for this application:', app.adminNotes || 'Public sources and submitted data are insufficient for statutory verification.');
+    if (notes) {
+      await businessService.markApplicationInsufficientEvidence(app.id, notes);
+      showNotification(`Application "${app.businessName}" marked as INSUFFICIENT EVIDENCE.`);
+      await loadData();
+    }
+  };
+
+  const handleUpdateCommercialPlanApp = async (app: BusinessSubmissionApplication) => {
+    const plan = prompt('Enter Conflux Plan (FREE, STARTER, GROWTH, ENTERPRISE):', app.confluxPlan || 'FREE') as any;
+    const payment = prompt('Enter Payment Status (UNPAID, PAID, WAIVED, NOT_APPLICABLE):', app.paymentStatus || 'NOT_APPLICABLE') as any;
+    if (plan && payment) {
+      await businessService.updateApplicationCommercialPlan(app.id, plan, payment);
+      showNotification(`Commercial plan for "${app.businessName}" updated to ${plan} (${payment}). Note: Verification status remains independent.`);
+      await loadData();
+    }
+  };
+
   const handleRejectApp = async (app: BusinessSubmissionApplication) => {
     const reason = prompt('Enter rejection reason:');
     if (reason) {
@@ -718,82 +737,135 @@ export const AdminBusinessDashboard: React.FC = () => {
               ) : (
                 <div className="divide-y divide-slate-100">
                   {filteredApps.map(app => (
-                    <div key={app.id} className="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div className="space-y-1.5 max-w-2xl">
+                    <div key={app.id} className="py-6 flex flex-col lg:flex-row lg:items-start justify-between gap-6 border-b border-slate-100 last:border-0">
+                      <div className="space-y-3 max-w-3xl flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
+                          <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-lg border border-blue-200">
                             {app.id}
                           </span>
-                          <span className="font-bold text-slate-900 text-sm">{app.businessName}</span>
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono ${
+                          <span className="font-bold text-slate-900 text-base">{app.businessName}</span>
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono ${
                             app.submissionType === 'CONFLUX_VERIFIED'
                               ? 'bg-emerald-100 text-emerald-800'
                               : 'bg-slate-100 text-slate-700'
                           }`}>
-                            {app.submissionType === 'CONFLUX_VERIFIED' ? 'CONFLUX VERIFIED APP' : 'STANDARD LISTING'}
+                            {app.submissionType === 'CONFLUX_VERIFIED' ? 'CONFLUX VERIFIED' : 'STANDARD LISTING'}
                           </span>
-                          <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-900 border border-amber-200 text-[10px] font-bold font-mono">
+                          <span className="px-2.5 py-0.5 rounded-md bg-amber-50 text-amber-900 border border-amber-200 text-[10px] font-bold font-mono">
                             {app.status}
                           </span>
+                          <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold font-mono ${
+                            app.evidenceStatus === 'EVIDENCE_VERIFIED' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+                            app.evidenceStatus === 'INSUFFICIENT_EVIDENCE' ? 'bg-rose-50 text-rose-800 border border-rose-200' :
+                            app.evidenceStatus === 'CONFLICT_DETECTED' ? 'bg-purple-50 text-purple-800 border border-purple-200' :
+                            'bg-slate-100 text-slate-700'
+                          }`}>
+                            EVIDENCE: {app.evidenceStatus || 'PENDING_REVIEW'}
+                          </span>
                         </div>
 
-                        <div className="text-xs text-slate-600">
-                          <span className="font-semibold">Category:</span> {app.categoryName || app.categoryId} • <span className="font-semibold">Location:</span> {app.fullAddress}
+                        {/* Location, Description & Representative */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600 bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200">
+                          <div>
+                            <span className="font-bold text-slate-700">Location:</span> {app.fullAddress}, {app.city}, {app.district}
+                          </div>
+                          <div>
+                            <span className="font-bold text-slate-700">Representative:</span> {app.ownerName} ({app.ownerRole})
+                          </div>
+                          <div>
+                            <span className="font-bold text-slate-700">Contact Phone:</span> {app.phone} {app.whatsapp ? `• WA: ${app.whatsapp}` : ''}
+                          </div>
+                          <div>
+                            <span className="font-bold text-slate-700">Website:</span> {app.websiteUrl ? (
+                              <a href={app.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                {app.websiteUrl}
+                              </a>
+                            ) : (
+                              <span className="text-slate-400 italic">No website provided</span>
+                            )}
+                          </div>
+                          {app.description && (
+                            <div className="col-span-1 sm:col-span-2 pt-1 border-t border-slate-200/60">
+                              <span className="font-bold text-slate-700">Description:</span> {app.description}
+                            </div>
+                          )}
                         </div>
 
-                        {/* Media Thumbnails & Owner Photo Preview */}
-                        <div className="flex flex-wrap items-center gap-3 pt-1">
-                          {app.storefrontPhotoUrl && (
-                            <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-50 border border-slate-200 text-[11px]">
-                              <img src={app.storefrontPhotoUrl} alt="Storefront" className="w-8 h-8 rounded object-cover" />
-                              <span className="font-semibold text-slate-700">Business Photo</span>
+                        {/* Submitted Online Sources */}
+                        {app.onlineSources && Object.values(app.onlineSources).some(Boolean) && (
+                          <div className="p-3 rounded-xl bg-blue-50/50 border border-blue-100 text-xs space-y-1.5">
+                            <span className="font-bold text-blue-900 uppercase tracking-wider text-[10px] font-mono block">
+                              Submitted Online Sources (For Attributable Evidence Discovery):
+                            </span>
+                            <div className="flex flex-wrap gap-2">
+                              {app.onlineSources.googleBusinessUrl && (
+                                <a href={app.onlineSources.googleBusinessUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-blue-600 text-[11px] font-medium">
+                                  <Globe size={12} /> Google Maps / GBP <ExternalLink size={10} />
+                                </a>
+                              )}
+                              {app.onlineSources.facebookUrl && (
+                                <a href={app.onlineSources.facebookUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-blue-600 text-[11px] font-medium">
+                                  Facebook <ExternalLink size={10} />
+                                </a>
+                              )}
+                              {app.onlineSources.instagramUrl && (
+                                <a href={app.onlineSources.instagramUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-blue-600 text-[11px] font-medium">
+                                  Instagram <ExternalLink size={10} />
+                                </a>
+                              )}
+                              {app.onlineSources.justdialUrl && (
+                                <a href={app.onlineSources.justdialUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-blue-600 text-[11px] font-medium">
+                                  Justdial / IndiaMART <ExternalLink size={10} />
+                                </a>
+                              )}
+                              {app.onlineSources.otherUrl && (
+                                <a href={app.onlineSources.otherUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-blue-600 text-[11px] font-medium">
+                                  Other Source <ExternalLink size={10} />
+                                </a>
+                              )}
                             </div>
-                          )}
-                          {app.logoUrl && (
-                            <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-50 border border-slate-200 text-[11px]">
-                              <img src={app.logoUrl} alt="Logo" className="w-8 h-8 rounded object-contain" />
-                              <span className="font-semibold text-slate-700">Logo</span>
-                            </div>
-                          )}
-                          {app.ownerPhotoUrl && (
-                            <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-900">
-                              <img src={app.ownerPhotoUrl} alt="Owner" className="w-8 h-8 rounded-full object-cover" />
-                              <span className="font-bold">Owner Original Photo</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {app.privateEvidence && app.privateEvidence.length > 0 && (
-                          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-[11px] font-mono text-slate-700 space-y-1">
-                            <span className="font-bold text-slate-900">Private Statutory Evidence ({app.privateEvidence.length} docs):</span>
-                            {app.privateEvidence.map((d, i) => (
-                              <div key={i} className="flex items-center gap-1.5 text-blue-800">
-                                <Lock size={12} className="text-slate-500" />
-                                <span>{d.documentName}</span>
-                                {d.documentNumber && <span className="text-slate-600 font-bold">[{d.documentNumber}]</span>}
-                                {d.fileData && (
-                                  <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">
-                                    File Attached
-                                  </span>
-                                )}
-                              </div>
-                            ))}
                           </div>
                         )}
+
+                        {/* Service Interest Requests */}
+                        {app.serviceInterestRequests && Object.values(app.serviceInterestRequests).some(Boolean) && (
+                          <div className="p-3 rounded-xl bg-amber-50/50 border border-amber-200/80 text-xs space-y-1">
+                            <span className="font-bold text-amber-900 uppercase tracking-wider text-[10px] font-mono block">
+                              Service Interest / Assistance Requests (Non-Verification Metadata):
+                            </span>
+                            <div className="flex flex-wrap gap-1.5 text-[11px] text-amber-800">
+                              {app.serviceInterestRequests.needWebsite && <span className="px-2 py-0.5 rounded bg-white border border-amber-200">&bull; Website Info</span>}
+                              {app.serviceInterestRequests.needGooglePresence && <span className="px-2 py-0.5 rounded bg-white border border-amber-200">&bull; Google Presence Help</span>}
+                              {app.serviceInterestRequests.needSocialPresence && <span className="px-2 py-0.5 rounded bg-white border border-amber-200">&bull; Social Presence Help</span>}
+                              {app.serviceInterestRequests.needWhatsAppSystem && <span className="px-2 py-0.5 rounded bg-white border border-amber-200">&bull; WhatsApp Routing</span>}
+                              {app.serviceInterestRequests.needBookingSystem && <span className="px-2 py-0.5 rounded bg-white border border-amber-200">&bull; Online Booking</span>}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Commercial Plan & Payment Status */}
+                        <div className="flex items-center gap-3 text-xs bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 w-fit">
+                          <span className="font-bold text-slate-700">Commercial Plan:</span>
+                          <span className="font-mono font-bold text-blue-600">{app.confluxPlan || 'FREE'}</span>
+                          <span className="text-slate-300">|</span>
+                          <span className="font-bold text-slate-700">Payment:</span>
+                          <span className="font-mono font-bold text-slate-700">{app.paymentStatus || 'NOT_APPLICABLE'}</span>
+                        </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-2 shrink-0">
+                      {/* Admin Decision Actions */}
+                      <div className="flex flex-row lg:flex-col items-center lg:items-end gap-2 shrink-0">
                         {app.submissionType === 'CONFLUX_VERIFIED' ? (
                           <button
                             onClick={() => handleApproveVerifiedApp(app)}
-                            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                            className="w-full px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                           >
                             <ShieldCheck size={14} /> Approve Verified
                           </button>
                         ) : (
                           <button
                             onClick={() => handleApproveStandardApp(app)}
-                            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                            className="w-full px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                           >
                             <Check size={14} /> Approve Standard
                           </button>
@@ -801,14 +873,28 @@ export const AdminBusinessDashboard: React.FC = () => {
 
                         <button
                           onClick={() => handleRequestChangesApp(app)}
-                          className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold transition-all cursor-pointer"
+                          className="w-full px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold transition-all cursor-pointer text-center"
                         >
-                          Request Changes
+                          Request Clarification
+                        </button>
+
+                        <button
+                          onClick={() => handleMarkInsufficientEvidenceApp(app)}
+                          className="w-full px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer text-center"
+                        >
+                          Mark Insufficient
+                        </button>
+
+                        <button
+                          onClick={() => handleUpdateCommercialPlanApp(app)}
+                          className="w-full px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition-all cursor-pointer text-center"
+                        >
+                          Plan &amp; Payment
                         </button>
 
                         <button
                           onClick={() => handleRejectApp(app)}
-                          className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-all cursor-pointer"
+                          className="w-full px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-all cursor-pointer text-center"
                         >
                           Reject
                         </button>
