@@ -26,6 +26,13 @@ export const AuthModal: React.FC = () => {
     isHelpfulHint?: boolean;
   } | null>(null);
 
+  // Auto-redirect if already authenticated
+  React.useEffect(() => {
+    if (user) {
+      navigate('/admin/businesses', { replace: true });
+    }
+  }, [user, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return;
@@ -38,9 +45,7 @@ export const AuthModal: React.FC = () => {
 
       if (res.success) {
         setMessage({ text: 'Authenticated successfully! Redirecting to Admin Command Center...' });
-        setTimeout(() => {
-          navigate('/admin/businesses');
-        }, 700);
+        navigate('/admin/businesses', { replace: true });
       } else {
         const rawErr = res.error || '';
         const isRateLimit = rawErr.toLowerCase().includes('rate limit');
@@ -48,7 +53,7 @@ export const AuthModal: React.FC = () => {
         
         let errorMsg = rawErr || 'Authentication failed. Please check your admin credentials.';
         if (isInvalid) {
-          errorMsg = 'Invalid email or password. If you have not created your admin account yet, switch to "Create Admin Account" below.';
+          errorMsg = 'Invalid email or password. If you have not created your admin account yet, switch to "Create Admin Account" above.';
         } else if (rawErr.includes('Email not confirmed')) {
           errorMsg = 'Email is not confirmed yet. In Supabase Dashboard -> Authentication -> Providers -> Email, disable "Confirm email" or verify in your mailbox.';
         } else if (isRateLimit) {
@@ -69,9 +74,7 @@ export const AuthModal: React.FC = () => {
 
       if (res.success) {
         setMessage({ text: 'Admin account created and authenticated! Redirecting to Admin Command Center...' });
-        setTimeout(() => {
-          navigate('/admin/businesses');
-        }, 700);
+        navigate('/admin/businesses', { replace: true });
       } else {
         const rawErr = res.error || '';
         const isRateLimit = res.isRateLimit || rawErr.toLowerCase().includes('rate limit');
@@ -136,34 +139,6 @@ export const AuthModal: React.FC = () => {
             Create Admin Account
           </button>
         </div>
-
-        {/* Active Session Info (If already signed in as ADMIN) */}
-        {user && (
-          <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-3 shadow-md">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Active Admin Session</div>
-                <div className="text-sm font-bold text-white truncate max-w-[220px]">{user.email}</div>
-                <div className="inline-flex items-center gap-1 text-xs font-bold text-blue-400">
-                  <Shield size={13} /> Role: <span className="font-mono">{role}</span>
-                </div>
-              </div>
-              <button
-                onClick={() => logout()}
-                className="text-xs font-bold text-rose-300 hover:text-rose-100 bg-rose-950/60 hover:bg-rose-900/80 px-3 py-1.5 rounded-xl border border-rose-800/60 shadow-sm transition-all cursor-pointer flex items-center gap-1"
-              >
-                <LogOut size={13} /> Sign Out
-              </button>
-            </div>
-
-            <Link
-              to="/admin/businesses"
-              className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm"
-            >
-              Open Admin Command Center <ArrowRight size={14} />
-            </Link>
-          </div>
-        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4 pt-1">
