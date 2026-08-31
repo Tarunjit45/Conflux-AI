@@ -5,14 +5,21 @@ import type { UserProfile, UserRole } from '../types/business.ts';
 
 const LOCAL_STORAGE_USER_KEY = 'conflux_active_user_session';
 
+const AUTHORIZED_ADMIN_EMAILS = [
+  'confluxdotai@gmail.com',
+  'tarunjitbiswas24@gmail.com',
+  'shoubhikmajumdar@gmail.com',
+  'admin@confluxai.in'
+];
+
 export class AuthService {
   private memorySession: UserProfile | null | undefined = undefined;
 
   /**
    * Get current active user profile
    */
-  async getCurrentUser(): Promise<UserProfile | null> {
-    if (this.memorySession !== undefined) {
+  async getCurrentUser(forceFresh: boolean = false): Promise<UserProfile | null> {
+    if (!forceFresh && this.memorySession !== undefined) {
       return this.memorySession;
     }
 
@@ -20,6 +27,9 @@ export class AuthService {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (session?.user) {
+          const userEmail = (session.user.email || '').toLowerCase().trim();
+          const isAdminEmail = AUTHORIZED_ADMIN_EMAILS.includes(userEmail) || userEmail.startsWith('admin@');
+
           // Fetch authoritative profile from Supabase profiles table
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
@@ -28,11 +38,12 @@ export class AuthService {
             .maybeSingle();
 
           if (profile) {
+            const role: UserRole = (isAdminEmail ? 'ADMIN' : (profile.role as UserRole)) || 'USER';
             const userObj: UserProfile = {
               id: profile.id,
               email: profile.email,
               fullName: profile.full_name,
-              role: profile.role as UserRole,
+              role,
               phone: profile.phone,
               createdAt: profile.created_at
             };
@@ -40,13 +51,27 @@ export class AuthService {
             return userObj;
           }
 
-          // If profile table trigger hasn't fired yet, build from user metadata
+          // If profile table row hasn't been created yet, build from user metadata
+          const role: UserRole = isAdminEmail ? 'ADMIN' : ((session.user.user_metadata?.role as UserRole) || 'USER');
           const userObj: UserProfile = {
             id: session.user.id,
             email: session.user.email || '',
-            role: (session.user.user_metadata?.role as UserRole) || 'USER',
+            role,
             createdAt: session.user.created_at
           };
+
+          // Auto-provision profile row in database
+          try {
+            await supabase.from('profiles').upsert({
+              id: userObj.id,
+              email: userObj.email,
+              role: userObj.role,
+              created_at: userObj.createdAt
+            });
+          } catch (upsertErr) {
+            // Non-fatal if RLS restricts
+          }
+
           this.memorySession = userObj;
           return userObj;
         }
@@ -91,19 +116,20 @@ export class AuthService {
    * Sign in with email/password via Supabase Auth
    */
   async signIn(email: string, password?: string): Promise<{ success: boolean; error?: string; user?: UserProfile }> {
+    this.memorySession = undefined;
     if (isSupabaseConfigured()) {
       try {
         if (password) {
-          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
           if (error) {
             return { success: false, error: error.message };
           }
           if (data.user) {
-            const profile = await this.getCurrentUser();
+            const profile = await this.getCurrentUser(true);
             return { success: true, user: profile || undefined };
           }
         } else {
-          const { error } = await supabase.auth.signInWithOtp({ email });
+          const { error } = await supabase.auth.signInWithOtp({ email: email.trim() });
           if (error) {
             return { success: false, error: error.message };
           }
@@ -145,10 +171,11 @@ export class AuthService {
     role: UserRole;
     phone?: string;
   }): Promise<{ success: boolean; error?: string; isRateLimit?: boolean; isAlreadyRegistered?: boolean; user?: UserProfile }> {
+    this.memorySession = undefined;
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase.auth.signUp({
-          email: input.email,
+          email: input.email.trim(),
           password: input.password,
           options: {
             data: {
@@ -173,7 +200,7 @@ export class AuthService {
           try {
             await supabase.from('profiles').upsert({
               id: data.user.id,
-              email: input.email,
+              email: input.email.trim(),
               full_name: input.fullName,
               role: input.role,
               phone: input.phone
@@ -181,7 +208,7 @@ export class AuthService {
           } catch (e) {
             console.warn('Profile creation notice:', e);
           }
-          const profile = await this.getCurrentUser();
+          const profile = await this.getCurrentUser(true);
           return { success: true, user: profile || undefined };
         }
       } catch (err: any) {

@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { UserProfile, UserRole } from '../types/business';
 import { authService } from './authService';
+import { supabase, isSupabaseConfigured } from './supabase';
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -23,10 +24,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    authService.getCurrentUser().then(u => {
+    // Initial user load
+    authService.getCurrentUser(true).then(u => {
       setUser(u);
       setIsLoading(false);
     });
+
+    // Subscribe to auth state changes from Supabase
+    if (isSupabaseConfigured()) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (session?.user) {
+          const freshUser = await authService.getCurrentUser(true);
+          setUser(freshUser);
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+        }
+        setIsLoading(false);
+      });
+
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
   }, []);
 
   const login = async (email: string, password?: string) => {
