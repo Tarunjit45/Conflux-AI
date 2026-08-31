@@ -794,7 +794,7 @@ export class BusinessService {
           .select('*, private_evidence:private_evidence_documents(*)')
           .order('created_at', { ascending: false });
 
-        if (!error && data && data.length > 0) {
+        if (!error && data) {
           return data.map(row => {
             let meta: any = {};
             try {
@@ -858,7 +858,26 @@ export class BusinessService {
         console.error('[BusinessService.getAllApplications] Database error:', err);
       }
     }
-    return memoryApplications;
+    return [];
+  }
+
+  /**
+   * Admin: Permanently delete an application and its associated private evidence
+   */
+  async deleteApplication(appId: string): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('private_evidence_documents').delete().eq('application_id', appId);
+        const { error } = await supabase.from('business_applications').delete().eq('id', appId);
+        if (error) {
+          console.error('[BusinessService.deleteApplication] Database error:', error);
+        }
+      } catch (err) {
+        console.error('[BusinessService.deleteApplication] Exception:', err);
+      }
+    }
+    memoryApplications = memoryApplications.filter(a => a.id !== appId);
+    return true;
   }
 
   /**
