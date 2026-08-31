@@ -258,14 +258,15 @@ const BlogPage: React.FC = () => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
                                                         const url = `https://confluxai.in/blog/${article.slug}`;
-                                                        if (typeof navigator !== 'undefined' && 'share' in navigator) {
-                                                            navigator.share({
+                                                        const nav = typeof window !== 'undefined' ? (window.navigator as any) : null;
+                                                        if (nav && typeof nav.share === 'function') {
+                                                            nav.share({
                                                                 title: article.title,
                                                                 text: article.excerpt || article.title,
                                                                 url: url
                                                             }).catch(() => {});
-                                                        } else {
-                                                            navigator.clipboard.writeText(url);
+                                                        } else if (nav && nav.clipboard) {
+                                                            nav.clipboard.writeText(url);
                                                             setCopiedSlug(article.slug);
                                                             setTimeout(() => setCopiedSlug(null), 2000);
                                                         }

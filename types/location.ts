@@ -21,6 +21,7 @@ export interface IndustryUseCase {
   title: string;
   description: string;
   impact: string;
+  servicesUsed?: string[];
 }
 
 export interface OpportunityScore {

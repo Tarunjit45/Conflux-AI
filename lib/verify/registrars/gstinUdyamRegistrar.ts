@@ -3,7 +3,7 @@
 import type { VerifySource, VerifyEvidence } from '../../../types/verify.ts';
 
 export interface RegistrationRecord {
-  regType: 'GSTIN' | 'MSME_UDYAM' | 'FSSAI' | 'TRADEMARK' | 'RBI_NBFC' | 'PESO' | 'SEIAA_LEASE' | 'GI_REGISTRATION' | 'DEALERSHIP_REGISTRY';
+  regType: 'GSTIN' | 'MSME_UDYAM' | 'FSSAI' | 'TRADEMARK' | 'RBI_NBFC' | 'PESO' | 'SEIAA_LEASE' | 'GI_REGISTRATION' | 'DEALERSHIP_REGISTRY' | 'REGISTRATION';
   identifier: string;
   entityName: string;
   status: 'ACTIVE' | 'CANCELLED' | 'SUSPENDED' | 'EXPIRED' | 'NOT_FOUND' | 'OPPOSED' | 'UNDER_QUERY' | 'TERMINATED' | 'AMBIGUOUS';

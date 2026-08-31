@@ -191,6 +191,7 @@ export interface PrivateEvidenceDocument {
   uploadedAt: string;
   isPrivate: boolean; // strictly true for government licenses and owner identification
   fileData?: string;   // sanitized local data URI / blob reference
+  documentFileUrl?: string; // secure storage URL reference
 }
 
 export interface SubmittedOnlineSources {

@@ -142,10 +142,10 @@ const Projects: React.FC = () => {
                   <VintagePhiGallery images={project.images} />
                 )}
 
-                {project.type === 'image' && project.image && (
+                {project.type === 'image' && ((project as any).image || project.images?.[0]) && (
                   <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-md group">
                     <img 
-                      src={project.image} 
+                      src={(project as any).image || project.images?.[0]} 
                       alt={project.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />

@@ -175,7 +175,7 @@ export const VerificationReportView: React.FC<VerificationReportViewProps> = ({ 
                         {tier.text}
                       </span>
                       <a
-                        href={ev.source.url}
+                        href={ev.source.canonicalUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs text-blue-600 font-bold hover:underline inline-flex items-center gap-1"
@@ -211,7 +211,7 @@ export const VerificationReportView: React.FC<VerificationReportViewProps> = ({ 
                         {tier.text}
                       </span>
                       <a
-                        href={ev.source.url}
+                        href={ev.source.canonicalUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs text-rose-600 font-bold hover:underline inline-flex items-center gap-1"

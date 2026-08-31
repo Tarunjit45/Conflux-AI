@@ -134,6 +134,7 @@ export interface VerificationResult {
   confidenceBreakdown?: ConfidenceBreakdown;
   explanation: string;
   limitations: string[];
+  findings?: any[];
   supportingEvidence: VerifyEvidence[];
   contradictingEvidence: VerifyEvidence[];
   neutralEvidence: VerifyEvidence[];
@@ -172,6 +173,7 @@ export interface VerifyRequest {
   entityName: string;
   claimText: string;
   entityUrl?: string;
+  sourceUrls?: string[];
   forceFresh?: boolean;
 }
 

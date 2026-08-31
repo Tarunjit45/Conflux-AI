@@ -615,12 +615,13 @@ export class BusinessService {
 
     const confidenceScore = result.confidence || (result.status === 'SUPPORTED' ? 90.0 : 40.0);
     const verificationLevel = result.status === 'SUPPORTED' ? 'STATUTORY_VERIFIED' : 'NONE';
+    const primaryRegistrarName = result.supportingEvidence?.[0]?.source?.publisher || result.supportingEvidence?.[0]?.source?.title || 'Primary Statutory Registry Docket';
 
     return this.updateBusiness(biz.id, {
       verificationStatus: result.status,
       verificationLevel,
       confidenceScore,
-      primaryRegistrar: result.findings?.[0]?.sourceName || 'Primary Statutory Registry Docket',
+      primaryRegistrar: primaryRegistrarName,
       evidenceSummary: result.explanation,
       verificationBreakdown: {
         identityVerified: result.status === 'SUPPORTED',
@@ -628,7 +629,7 @@ export class BusinessService {
         statutoryLicenseVerified: result.status === 'SUPPORTED',
         capabilitiesVerified: true,
         contactVerified: true,
-        primaryRegistrarName: result.findings?.[0]?.sourceName || 'Statutory Docket',
+        primaryRegistrarName,
         verificationMethodologyUrl: '/verify/methodology'
       },
       lastVerifiedAt: new Date().toISOString()

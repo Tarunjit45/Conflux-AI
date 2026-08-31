@@ -30,6 +30,7 @@ export interface RealityInvestigationResult {
   independentOriginsCount: number;
   discrepancies: string | null;
   retrievalFailureReason?: string;
+  failureReason?: string;
   reviewerAssessment: string;
 }
 

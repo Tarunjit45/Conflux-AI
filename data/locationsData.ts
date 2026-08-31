@@ -1,4 +1,5 @@
 import { LocationItem } from '../types/location';
+export type { LocationItem };
 
 export const WEST_BENGAL_STATE: LocationItem = {
   id: 'wb-state',
@@ -574,6 +575,7 @@ export const NADIA_LOCATIONS: LocationItem[] = [
     stateSlug: 'west-bengal',
     status: 'PUBLISHED',
     priority: 1,
+    tier: 2,
     majorIndustries: ['Rail Logistics & Transit Junction', 'Wholesale Consumer Goods', 'Agro-Processing & Food Manufacturing', 'Textile Trade', 'Agricultural Commerce'],
     businessTypes: ['Wholesale Distributors', 'Food Processors', 'Retail Showrooms', 'Logistics Agencies', 'Local Commercial Services'],
     keyCommercialHubs: [

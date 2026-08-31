@@ -18,7 +18,8 @@ import type { ReviewRatingContribution } from '../../types/contribution';
 
 export const PublicBusinessProfile: React.FC = () => {
   const { district, city, slug } = useParams<{ district: string; city: string; slug: string }>();
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
+  const isAuthenticated = Boolean(user);
   const [business, setBusiness] = useState<ConfluxBusiness | null>(null);
   const [reviews, setReviews] = useState<ReviewRatingContribution[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -91,15 +92,15 @@ export const PublicBusinessProfile: React.FC = () => {
       const res = await connectService.submitLead({
         businessId: business.id,
         businessName: business.name,
-        contactName: leadName,
-        contactEmail: leadEmail,
-        contactPhone: leadPhone,
-        serviceRequested: leadService || undefined,
+        name: leadName,
+        email: leadEmail,
+        phone: leadPhone || undefined,
+        service: leadService || 'General Inquiry',
         message: leadMessage
       });
 
       if (res.success) {
-        setLeadSuccessMessage(res.message);
+        setLeadSuccessMessage('Inquiry sent successfully to the business.');
         setLeadName('');
         setLeadEmail('');
         setLeadPhone('');

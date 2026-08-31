@@ -347,13 +347,13 @@ const LocationDetailPage: React.FC = () => {
                 >
                   <div>
                     <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-2">
-                      {art.primaryCategory || 'Local Strategy'}
+                      {art.category || 'Local Strategy'}
                     </span>
                     <h3 className="font-bold text-slate-900 text-base leading-snug group-hover:text-blue-600 transition-colors mb-3">
                       {art.title}
                     </h3>
                     <p className="text-xs text-slate-600 font-normal leading-relaxed line-clamp-3 mb-4">
-                      {art.excerpt || art.metaDescription}
+                      {art.excerpt || art.seoDescription}
                     </p>
                   </div>
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600">

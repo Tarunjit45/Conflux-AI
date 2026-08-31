@@ -249,7 +249,7 @@ export const runVerificationPipeline = async (req: VerifyRequest): Promise<Verif
   let rawScore = sourceAuthorityWeight + evidenceRelevanceWeight + independenceWeight + temporalValidityWeight + corroborationBonus - contradictionPenalty;
   
   // Calibrated scoring heuristics:
-  if (status === 'INSUFFICIENT_EVIDENCE' || status === 'UNVERIFIED') {
+  if (status === 'INSUFFICIENT_EVIDENCE' || (status as string) === 'UNVERIFIED') {
     rawScore = Math.min(rawScore, 30);
   } else if (status === 'PARTIALLY_SUPPORTED' && tier1Count === 0) {
     rawScore = Math.min(rawScore, 65); // First-party / syndicated cap
