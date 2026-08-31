@@ -229,8 +229,20 @@ const routeMeta: Record<string, { title: string; description: string }> = {
     description: 'Admin command center for managing, verifying, and publishing Conflux Business Graph entities.'
   },
   '/discover': {
-    title: 'Find a Local Business You Can Trust | Conflux Discover',
-    description: 'Tell Conflux what you need, where you need it, and discover verified local businesses you can connect with across West Bengal.'
+    title: 'Discover Verified Local Businesses in West Bengal | Conflux AI',
+    description: 'Find trusted local businesses across West Bengal. Check statutory evidence, verification dockets, operating hours, and contact verified proprietors directly.'
+  },
+  '/list-business': {
+    title: 'List & Verify Your Local Business | Conflux AI Onboarding',
+    description: 'Get your local business discoverable and trusted across Google, Maps, and AI search engines. Submit your business for statutory verification.'
+  },
+  '/submit-business': {
+    title: 'List & Verify Your Local Business | Conflux AI Onboarding',
+    description: 'Get your local business discoverable and trusted across Google, Maps, and AI search engines. Submit your business for statutory verification.'
+  },
+  '/apply': {
+    title: 'Apply for Conflux Verification | Conflux AI',
+    description: 'Submit your business credentials for statutory evidence verification and inclusion in the Conflux Business Graph.'
   },
   '/business': {
     title: 'For Businesses: Get Discovered, Trusted & Contacted | Conflux AI',
@@ -243,6 +255,10 @@ const routeMeta: Record<string, { title: string; description: string }> = {
   '/admin': {
     title: 'Admin Command Center | Conflux AI',
     description: 'Internal audit and administrative portal for Conflux AI.'
+  },
+  '/auth': {
+    title: 'Admin Authentication | Conflux Platform',
+    description: 'Secure administrative login portal for Conflux AI.'
   },
   '/login': {
     title: 'Sign In | Conflux Platform Auth',

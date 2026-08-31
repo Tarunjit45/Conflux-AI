@@ -2125,18 +2125,215 @@ const staticPages = [
     `
   },
   {
+    path: '/discover',
+    title: 'Discover Verified Local Businesses in West Bengal | Conflux AI',
+    desc: 'Find trusted local businesses across West Bengal. Check statutory evidence, verification dockets, operating hours, and contact verified proprietors directly.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/discover" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Discover</a>
+            <a href="/locations" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
+            <a href="/verify" style="margin: 0 10px; color: #475569; text-decoration: none;">Verify</a>
+            <a href="/list-business" style="margin: 0 10px; color: #16a34a; text-decoration: none;">List Business</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 1200px; margin: 0 auto; padding: 40px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 38px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 12px;">
+          Discover Verified Local Businesses Across West Bengal
+        </h1>
+        <p style="font-size: 16px; color: #64748b; max-width: 800px; line-height: 1.6; margin-bottom: 30px;">
+          Find businesses. Check the statutory evidence. Decide with confidence. Filter by all 23 districts of West Bengal, operating hours, and statutory verification status.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 40px;">
+          <a href="/locations/west-bengal/nadia" style="padding: 16px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; text-decoration: none; color: #0f172a; font-weight: 700;">
+            Nadia District Businesses &rarr;
+          </a>
+          <a href="/locations/west-bengal/kolkata" style="padding: 16px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; text-decoration: none; color: #0f172a; font-weight: 700;">
+            Kolkata District Businesses &rarr;
+          </a>
+          <a href="/locations/west-bengal/north-24-parganas" style="padding: 16px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; text-decoration: none; color: #0f172a; font-weight: 700;">
+            North 24 Parganas Businesses &rarr;
+          </a>
+          <a href="/locations/west-bengal/howrah" style="padding: 16px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; text-decoration: none; color: #0f172a; font-weight: 700;">
+            Howrah District Businesses &rarr;
+          </a>
+        </div>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/list-business',
+    title: 'List & Verify Your Local Business | Conflux AI Onboarding',
+    desc: 'Get your local business discovered and trusted on Google, Maps, and AI search engines. Submit your business for statutory verification.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/discover" style="margin: 0 10px; color: #475569; text-decoration: none;">Discover</a>
+            <a href="/verify" style="margin: 0 10px; color: #475569; text-decoration: none;">Verify</a>
+            <a href="/list-business" style="margin: 0 10px; color: #16a34a; text-decoration: none;">List Business</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 38px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">
+          List &amp; Verify Your Local Business on Conflux AI
+        </h1>
+        <p style="font-size: 16px; color: #64748b; line-height: 1.6; margin-bottom: 30px;">
+          Get your local business discoverable, understandable, trusted, and contactable across Google search, local maps, and AI engines (ChatGPT, Google Gemini, Perplexity).
+        </p>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/verify',
+    title: 'Conflux Verify | Bounded Business Claim & Evidence Verification Engine',
+    desc: 'Evaluate corporate legal existence, statutory GSTIN/Udyam registrations, and accredited certifications through deterministic verification and live registrar lookup.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/discover" style="margin: 0 10px; color: #475569; text-decoration: none;">Discover</a>
+            <a href="/verify" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Verify</a>
+            <a href="/verify/methodology" style="margin: 0 10px; color: #475569; text-decoration: none;">Methodology</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 40px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">
+          Conflux Verify &mdash; Bounded Claim &amp; Evidence Engine
+        </h1>
+        <p style="font-size: 18px; color: #475569; line-height: 1.6; margin-bottom: 30px;">
+          Deterministic evidence evaluation grounded in Ministry of Corporate Affairs (MCA), GSTIN, Udyam MSME, and IAF CertSearch statutory registries.
+        </p>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/verify/methodology',
+    title: 'Conflux Verify Methodology & Evidence Standards | Conflux AI',
+    desc: 'Deterministic evidence evaluation framework for business claims against primary statutory registries, MCA master data, GSTIN, and accredited ISO repositories.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/verify" style="margin: 0 10px; color: #475569; text-decoration: none;">Verify</a>
+            <a href="/verify/methodology" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Methodology</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 1000px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 38px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">
+          Conflux Verify Methodology &amp; Evidence Standards
+        </h1>
+        <p style="font-size: 18px; color: #475569; line-height: 1.6; margin-bottom: 30px;">
+          Deterministic evidence and verification framework designed to evaluate business assertions against primary statutory registries. Core Principle: Absence &ne; Contradiction.
+        </p>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/verify/guides/how-to-verify-indian-company-legal-existence',
+    title: 'How to Verify Indian Company Legal Existence (MCA Master Data Guide) | Conflux AI',
+    desc: 'Step-by-step guide to verifying an Indian company’s legal existence, 21-character CIN syntax, active ROC status, and incorporation dockets on MCA Master Data.',
+    body: `
+    <div id="root">
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">How to Verify Indian Company Legal Existence (MCA Master Data Guide)</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6;">Learn how to inspect 21-character CIN numbers and verify active Registrar of Companies (ROC) status on Ministry of Corporate Affairs portal.</p>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/verify/guides/how-to-verify-gst-udyam-registration',
+    title: 'How to Verify GSTIN & MSME Udyam Registration in India | Conflux AI',
+    desc: 'Learn how to verify 15-digit GSTIN tax numbers and 19-digit MSME Udyam registration certificates using official government portals.',
+    body: `
+    <div id="root">
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">How to Verify GSTIN &amp; MSME Udyam Registration in India</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6;">A step-by-step verification guide for cross-checking GSTIN state codes, PAN mappings, and official MSME Udyam certificates.</p>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/verify/guides/how-to-verify-iso-certificate',
+    title: 'How to Verify an ISO 9001 / 27001 Certificate (IAF CertSearch Guide) | Conflux AI',
+    desc: 'Learn how to detect unaccredited certificate mills and verify authentic ISO 9001, ISO 14001, and ISO 27001 certifications via the IAF CertSearch database.',
+    body: `
+    <div id="root">
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">How to Verify an ISO 9001 / 27001 Certificate (IAF CertSearch Guide)</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6;">How to check authentic accreditation bodies under International Accreditation Forum (IAF) and spot unaccredited ISO certificates.</p>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/verify/guides/how-to-check-expired-certification',
+    title: 'How to Check Expired & Lapsed Certifications (Temporal Validity Guide) | Conflux AI',
+    desc: 'Understand how temporal validity affects ISO accreditations, government licenses, and compliance claims, and learn how to identify lapsed certifications.',
+    body: `
+    <div id="root">
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">How to Check Expired &amp; Lapsed Certifications</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6;">Detailed guide on temporal validity windows, recertification audit periods, and lapsed statutory credentials.</p>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/verify/guides/active-vs-struck-off-company',
+    title: 'Active vs Struck-Off Company: Legal Differences & Verification | Conflux AI',
+    desc: 'Understand the legal consequences of MCA Section 248 Strike-Off status, and learn why struck-off companies cannot enter into enforceable commercial contracts.',
+    body: `
+    <div id="root">
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">Active vs Struck-Off Company: Legal Differences &amp; Verification</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6;">Understanding MCA Section 248 strike-off proceedings and the invalidity of commercial agreements with dissolved entities.</p>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/verify/guides/company-not-found-does-not-mean-fake',
+    title: 'Why "Company Not Found" Does Not Mean Fake (Absence ≠ Contradiction) | Conflux AI',
+    desc: 'Learn why the absence of a record in a single database does not prove a business is fake, and understand Conflux Verify’s core principle: Absence ≠ Contradiction.',
+    body: `
+    <div id="root">
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">Why "Company Not Found" Does Not Mean Fake (Absence &ne; Contradiction)</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6;">Understanding why sole proprietorships and partnership firms do not appear on MCA Master Data and how alternate evidence operates.</p>
+      </main>
+    </div>
+    `
+  },
+  {
     path: '/auth',
     title: 'Account Authentication & Registration | Conflux AI',
-    desc: 'Sign in or register your business profile to verify corporate identity, list services, or access verified leads.',
+    desc: 'Sign in to access your administrative dashboard and moderation console.',
     body: `
     <div id="root">
       <div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: 'Inter', sans-serif;">
         <div style="max-width: 480px; width: 100%; background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
-          <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Conflux AI Auth Portal</h1>
-          <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Sign in to your business dashboard or create a new verified account.</p>
-          <div style="display: inline-block; padding: 12px 24px; background: #2563eb; color: white; border-radius: 12px; font-weight: 700; font-size: 14px;">
-            Loading Authentication Portal...
-          </div>
+          <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Conflux AI Administrator Portal</h1>
+          <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Sign in to access administrative tools and moderation queues.</p>
         </div>
       </div>
     </div>
@@ -2145,34 +2342,13 @@ const staticPages = [
   {
     path: '/login',
     title: 'Sign In | Conflux Platform Auth',
-    desc: 'Sign in to access your business profile, moderation queue, or saved services.',
+    desc: 'Sign in to access your administrative dashboard.',
     body: `
     <div id="root">
       <div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: 'Inter', sans-serif;">
         <div style="max-width: 480px; width: 100%; background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
           <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Conflux AI Sign In</h1>
-          <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Sign in to your verified business account.</p>
-          <div style="display: inline-block; padding: 12px 24px; background: #2563eb; color: white; border-radius: 12px; font-weight: 700; font-size: 14px;">
-            Loading Sign In...
-          </div>
-        </div>
-      </div>
-    </div>
-    `
-  },
-  {
-    path: '/register',
-    title: 'Create an Account | Conflux Platform Auth',
-    desc: 'Create an account to list your business, upload verification proof, or access verified local services.',
-    body: `
-    <div id="root">
-      <div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: 'Inter', sans-serif;">
-        <div style="max-width: 480px; width: 100%; background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
-          <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Conflux AI Registration</h1>
-          <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Register as a Business Owner or Customer.</p>
-          <div style="display: inline-block; padding: 12px 24px; background: #2563eb; color: white; border-radius: 12px; font-weight: 700; font-size: 14px;">
-            Loading Registration...
-          </div>
+          <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Sign in to access the platform.</p>
         </div>
       </div>
     </div>
@@ -2188,9 +2364,6 @@ const staticPages = [
         <div style="max-width: 480px; width: 100%; background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
           <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Conflux AI Admin Console</h1>
           <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Authenticating administrative access...</p>
-          <div style="display: inline-block; padding: 12px 24px; background: #0f172a; color: white; border-radius: 12px; font-weight: 700; font-size: 14px;">
-            Redirecting to Admin Portal...
-          </div>
         </div>
       </div>
     </div>

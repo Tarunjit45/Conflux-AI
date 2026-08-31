@@ -53,7 +53,6 @@ export const PublicBusinessProfile: React.FC = () => {
       if (found) {
         setBusiness(found);
         setIsOpenNow(businessService.isBusinessOpenNow(found.operatingHours));
-        document.title = `${found.name} | Verified Business Identity | Conflux`;
 
         // Fetch approved reviews
         const approved = await contributionService.getApprovedReviewsForBusiness(found.id);
@@ -73,6 +72,179 @@ export const PublicBusinessProfile: React.FC = () => {
   useEffect(() => {
     fetchBusinessAndReviews();
   }, [slug]);
+
+  // ── SEO + GEO DYNAMIC METADATA & SCHEMA.ORG INJECTION ─────────────
+  useEffect(() => {
+    if (!business) return;
+
+    // 1. Dynamic Page Title
+    const formattedTitle = `${business.name} (${business.location.city}, ${business.location.district}) | Conflux Verified Business Profile`;
+    document.title = formattedTitle;
+
+    // 2. Dynamic Description
+    const formattedDesc = `${business.name} (${business.legalName || business.name}) is a verified ${business.categoryName || business.categoryId} entity located in ${business.location.city}, ${business.location.district}, West Bengal. Access statutory evidence dockets, operating hours, and contact verified proprietors directly.`;
+
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.setAttribute('name', 'description');
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', formattedDesc);
+
+    // 3. Dynamic Canonical URL
+    const canonicalUrl = `https://confluxai.in/business/${business.slug}`;
+    let canonicalEl = document.querySelector('link[rel="canonical"]');
+    if (!canonicalEl) {
+      canonicalEl = document.createElement('link');
+      canonicalEl.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalEl);
+    }
+    canonicalEl.setAttribute('href', canonicalUrl);
+
+    // 4. OpenGraph & Twitter Dynamic Tags
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', formattedTitle);
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', formattedDesc);
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) ogUrl.setAttribute('content', canonicalUrl);
+
+    // 5. Rich JSON-LD Schemas (LocalBusiness, BreadcrumbList, FAQPage)
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const openingHoursSpecs = (business.operatingHours || [])
+      .filter(h => !h.isClosed && h.opensAt && h.closesAt)
+      .map(h => ({
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": dayNames[h.dayOfWeek],
+        "opens": h.opensAt,
+        "closes": h.closesAt
+      }));
+
+    const schemaGraph = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "LocalBusiness",
+          "@id": `${canonicalUrl}#business`,
+          "name": business.name,
+          "legalName": business.legalName || business.name,
+          "description": business.description,
+          "url": canonicalUrl,
+          "telephone": business.contact.phone || undefined,
+          "priceRange": "₹₹",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": business.location.fullAddress,
+            "addressLocality": business.location.city,
+            "addressRegion": "West Bengal",
+            "addressCountry": "IN"
+          },
+          "geo": business.location.latitude && business.location.longitude ? {
+            "@type": "GeoCoordinates",
+            "latitude": business.location.latitude,
+            "longitude": business.location.longitude
+          } : undefined,
+          "openingHoursSpecification": openingHoursSpecs.length > 0 ? openingHoursSpecs : undefined,
+          "knowsAbout": business.services && business.services.length > 0 ? business.services : [business.categoryName || business.categoryId],
+          "sameAs": business.contact.websiteUrl ? [business.contact.websiteUrl] : [],
+          "hasCredential": business.primaryRegistrar ? [
+            {
+              "@type": "EducationalOccupationalCredential",
+              "name": business.primaryRegistrar,
+              "credentialCategory": "Statutory Business Registration"
+            }
+          ] : undefined,
+          "parentOrganization": {
+            "@type": "Organization",
+            "@id": "https://confluxai.in/#organization",
+            "name": "Conflux AI",
+            "url": "https://confluxai.in/"
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${canonicalUrl}#breadcrumb`,
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://confluxai.in/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Discover",
+              "item": "https://confluxai.in/discover"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": `${business.location.district.charAt(0).toUpperCase() + business.location.district.slice(1)} District`,
+              "item": `https://confluxai.in/locations/west-bengal/${business.location.district}`
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "name": business.location.city.charAt(0).toUpperCase() + business.location.city.slice(1),
+              "item": `https://confluxai.in/locations/west-bengal/${business.location.district}/${business.location.city}`
+            },
+            {
+              "@type": "ListItem",
+              "position": 5,
+              "name": business.name,
+              "item": canonicalUrl
+            }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "@id": `${canonicalUrl}#faq`,
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": `Is ${business.name} a verified business in ${business.location.city}?`,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": `${business.name} (${business.legalName || business.name}) is documented on Conflux AI with statutory verification status: ${business.verificationStatus} (${business.confidenceScore}% confidence) based on official registrar records.`
+              }
+            },
+            {
+              "@type": "Question",
+              "name": `Where is ${business.name} located?`,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": `${business.name} is located at ${business.location.fullAddress}, ${business.location.city}, ${business.location.district}, West Bengal, India.`
+              }
+            },
+            {
+              "@type": "Question",
+              "name": `How can I contact ${business.name}?`,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": `You can reach ${business.name} directly by phone at ${business.contact.phone || 'the listed number'} or send a verified customer inquiry through Conflux AI.`
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    let scriptEl = document.getElementById('conflux-business-jsonld') as HTMLScriptElement | null;
+    if (!scriptEl) {
+      scriptEl = document.createElement('script');
+      scriptEl.id = 'conflux-business-jsonld';
+      scriptEl.type = 'application/ld+json';
+      document.head.appendChild(scriptEl);
+    }
+    scriptEl.textContent = JSON.stringify(schemaGraph);
+
+    return () => {
+      const el = document.getElementById('conflux-business-jsonld');
+      if (el) el.remove();
+    };
+  }, [business]);
 
   const handleActionClick = (action: any) => {
     if (!business) return;
@@ -247,9 +419,15 @@ export const PublicBusinessProfile: React.FC = () => {
           <span>/</span>
           <Link to="/discover" className="hover:text-blue-600 transition-colors">Discover</Link>
           <span>/</span>
-          <span className="capitalize">{business.location.district}</span>
+          <Link to="/locations/west-bengal" className="hover:text-blue-600 transition-colors">West Bengal</Link>
           <span>/</span>
-          <span className="capitalize">{business.location.city}</span>
+          <Link to={`/locations/west-bengal/${business.location.district.toLowerCase()}`} className="hover:text-blue-600 transition-colors capitalize">
+            {business.location.district}
+          </Link>
+          <span>/</span>
+          <Link to={`/locations/west-bengal/${business.location.district.toLowerCase()}/${business.location.city.toLowerCase()}`} className="hover:text-blue-600 transition-colors capitalize">
+            {business.location.city}
+          </Link>
           <span>/</span>
           <span className="text-slate-800 font-bold truncate max-w-[200px]">{business.name}</span>
         </nav>
@@ -472,6 +650,56 @@ export const PublicBusinessProfile: React.FC = () => {
               </div>
             </div>
 
+            {/* ── ENTITY TRUTH & DIRECT ANSWERS (GEO / AI OVERVIEW GROUNDING) ── */}
+            <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-5">
+              <div className="flex items-center gap-2 text-base font-bold font-orbitron text-slate-900">
+                <Sparkles size={20} className="text-blue-600" /> Entity Truth &amp; Direct Answers
+              </div>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Structured knowledge summary formatted for search engines, generative AI overviews, and direct citation.
+              </p>
+
+              <div className="divide-y divide-slate-100 space-y-3 pt-1">
+                <div className="pt-3 first:pt-0 space-y-1">
+                  <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                    <HelpCircle size={14} className="text-blue-600" /> What is {business.name}?
+                  </div>
+                  <p className="text-xs text-slate-700 leading-relaxed">
+                    <strong className="text-slate-900">{business.name}</strong> {business.legalName && `(legal entity: ${business.legalName})`} is a verified <strong className="text-slate-900">{business.categoryName || business.categoryId}</strong> enterprise situated at {business.location.fullAddress} in {business.location.city}, {business.location.district} district, West Bengal, India.
+                  </p>
+                </div>
+
+                <div className="pt-3 space-y-1">
+                  <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                    <HelpCircle size={14} className="text-emerald-600" /> Is {business.name} an authentic, verified business?
+                  </div>
+                  <p className="text-xs text-slate-700 leading-relaxed">
+                    Yes. {business.name} is documented in the Conflux Business Graph with verification status <strong className="text-slate-900">{business.verificationStatus}</strong> ({business.confidenceScore}% statutory confidence). Grounded evidence is referenced against: <strong className="text-slate-900">{business.primaryRegistrar || 'Statutory regulatory registries'}</strong>.
+                  </p>
+                </div>
+
+                <div className="pt-3 space-y-1">
+                  <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                    <HelpCircle size={14} className="text-purple-600" /> What services does {business.name} provide?
+                  </div>
+                  <p className="text-xs text-slate-700 leading-relaxed">
+                    {business.services && business.services.length > 0
+                      ? `Verified service capabilities include: ${business.services.join(', ')}.`
+                      : `Provides primary services in the ${business.categoryName || business.categoryId} sector.`}
+                  </p>
+                </div>
+
+                <div className="pt-3 space-y-1">
+                  <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                    <HelpCircle size={14} className="text-amber-600" /> How can customers contact or visit {business.name}?
+                  </div>
+                  <p className="text-xs text-slate-700 leading-relaxed">
+                    Contact directly via phone at <strong className="text-slate-900">{business.contact.phone || 'the listed number'}</strong>{business.contact.whatsapp ? `, message on official WhatsApp at ${business.contact.whatsapp}` : ''}, or visit in person at {business.location.fullAddress}{business.landmark ? ` (Landmark: ${business.landmark})` : ''}.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* ── REVIEWS & VERIFIED CONTRIBUTIONS SECTION ─────────── */}
             <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
@@ -667,10 +895,34 @@ export const PublicBusinessProfile: React.FC = () => {
                 </div>
               )}
 
-              <div className="text-xs text-slate-500 space-y-1 pt-1 border-t border-slate-100 font-mono">
-                <div>City: <span className="capitalize text-slate-800">{business.location.city}</span></div>
-                <div>District: <span className="capitalize text-slate-800">{business.location.district}</span></div>
-                <div>State: West Bengal, India</div>
+              <div className="text-xs text-slate-500 space-y-1.5 pt-1 border-t border-slate-100 font-mono">
+                <div>
+                  City:{' '}
+                  <Link
+                    to={`/locations/west-bengal/${business.location.district.toLowerCase()}/${business.location.city.toLowerCase()}`}
+                    className="capitalize text-blue-600 hover:underline font-bold"
+                  >
+                    {business.location.city}
+                  </Link>
+                </div>
+                <div>
+                  District:{' '}
+                  <Link
+                    to={`/locations/west-bengal/${business.location.district.toLowerCase()}`}
+                    className="capitalize text-blue-600 hover:underline font-bold"
+                  >
+                    {business.location.district}
+                  </Link>
+                </div>
+                <div>
+                  State:{' '}
+                  <Link
+                    to="/locations/west-bengal"
+                    className="text-blue-600 hover:underline font-bold"
+                  >
+                    West Bengal, India
+                  </Link>
+                </div>
               </div>
 
               <a

@@ -1,39 +1,68 @@
 # Robots.txt for Conflux AI (https://confluxai.in)
 User-agent: *
 Allow: /
+Allow: /discover
+Allow: /business/
+Allow: /verify/
+Allow: /locations/
+Allow: /services/
+Allow: /blog/
 Disallow: /admin/
-Disallow: /admin/cms
-Disallow: /admin/location-coverage
+Disallow: /admin/*
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+Disallow: /api/
 
-# Explicit Allow for Search & AI Crawlers
+# Explicit Allow for Search & AI Overview Crawlers
 User-agent: Googlebot
 Allow: /
+Disallow: /admin/
+Disallow: /auth
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /admin/
+Disallow: /auth
 
 User-agent: Bingbot
 Allow: /
+Disallow: /admin/
+Disallow: /auth
 
 User-agent: OAI-SearchBot
 Allow: /
+Disallow: /admin/
+Disallow: /auth
 
 User-agent: GPTBot
 Allow: /
+Disallow: /admin/
+Disallow: /auth
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /admin/
+Disallow: /auth
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /admin/
+Disallow: /auth
 
 User-agent: Claude-Web
 Allow: /
+Disallow: /admin/
+Disallow: /auth
 
 User-agent: Applebot
 Allow: /
+Disallow: /admin/
+Disallow: /auth
 
 User-agent: Meta-ExternalAgent
 Allow: /
+Disallow: /admin/
+Disallow: /auth
 
 Sitemap: https://confluxai.in/sitemap.xml
