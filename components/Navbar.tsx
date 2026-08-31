@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ArrowRight, BookOpen, User, Building2, LogOut } from 'lucide-react';
+import { Menu, X, ArrowRight, BookOpen, User, Building2, LogOut, Shield } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/authContext';
 
@@ -117,33 +117,32 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
 
         {/* CTAs & Auth Gating */}
         <div className="flex items-center gap-3">
-          {user ? (
+          {user && role === 'ADMIN' ? (
             <div className="flex items-center gap-2">
               <Link
-                to={role === 'ADMIN' ? '/admin/businesses' : role === 'BUSINESS_OWNER' ? '/list-business' : '/discover'}
-                className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold font-inter bg-slate-100 hover:bg-slate-200 text-slate-800 transition-all"
+                to="/admin/businesses"
+                className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold font-inter bg-slate-900 hover:bg-black text-white transition-all shadow-sm"
               >
-                <User size={13} className="text-blue-600" />
-                <span className="max-w-[100px] truncate">{user.fullName || user.email.split('@')[0]}</span>
-                <span className="text-[10px] font-mono text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
-                  {role === 'BUSINESS_OWNER' ? 'OWNER' : role === 'ADMIN' ? 'ADMIN' : 'USER'}
+                <Shield size={13} className="text-blue-400" />
+                <span className="max-w-[120px] truncate">{user.fullName || user.email.split('@')[0]}</span>
+                <span className="text-[10px] font-mono text-blue-300 bg-slate-800 px-1.5 py-0.5 rounded">
+                  ADMIN
                 </span>
               </Link>
               <button
                 onClick={() => logout()}
                 className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                title="Sign Out"
+                title="Sign Out of Admin Console"
               >
                 <LogOut size={16} />
               </button>
             </div>
           ) : (
             <Link
-              to="/auth"
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl font-inter font-bold text-xs tracking-wide transition-all duration-300"
-              style={{ border: `1px solid ${navyColor}44`, background: `${navyColor}08`, color: navyColor }}
+              to="/admin"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-inter font-bold text-xs tracking-wide transition-all duration-300 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200"
             >
-              <User size={14} /> SIGN IN / REGISTER
+              <Shield size={13} className="text-slate-500" /> ADMIN
             </Link>
           )}
 

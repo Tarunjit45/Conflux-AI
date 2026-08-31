@@ -68,11 +68,6 @@ export const UserOnboardingPrompt: React.FC = () => {
     }
   };
 
-  const handleOpenAuth = (roleParam?: string) => {
-    handleDismiss();
-    navigate(roleParam ? `/auth?role=${roleParam}` : '/auth');
-  };
-
   if (!isVisible) return null;
 
   return (
@@ -119,14 +114,14 @@ export const UserOnboardingPrompt: React.FC = () => {
               id="onboarding-modal-title"
               className="text-2xl sm:text-3xl font-bold font-orbitron text-slate-900 tracking-tight"
             >
-              Who are you?
+              How can we help?
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
-              Join West Bengal's trust and connection graph. Select your journey below to get started:
+              Explore West Bengal's verified business and service directory, or list your business for direct customer leads:
             </p>
           </div>
 
-          {/* Role Choice Cards */}
+          {/* Action Choice Cards */}
           <div className="space-y-3 pt-1">
             
             {/* 1. BUSINESS OWNER CHOICE */}
@@ -141,20 +136,20 @@ export const UserOnboardingPrompt: React.FC = () => {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold font-orbitron text-emerald-950">
-                      I am a Business Owner
+                      List a Business
                     </span>
                     <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                      List &amp; Verify
+                      Free &amp; Verified
                     </span>
                   </div>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    List your business, upload license proof, get the <strong>Conflux Verified Badge</strong>, and receive direct phone, WhatsApp &amp; booking leads.
+                    Submit your business details, upload license proof, and get the <strong>Conflux Verified Badge</strong> with direct phone, WhatsApp &amp; leads.
                   </p>
                 </div>
               </div>
 
               <div className="shrink-0 flex items-center gap-1 text-xs font-bold text-emerald-700 group-hover:text-emerald-800">
-                <span>Start Listing</span>
+                <span>Submit Business</span>
                 <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
               </div>
             </div>
@@ -171,40 +166,33 @@ export const UserOnboardingPrompt: React.FC = () => {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold font-orbitron text-blue-950">
-                      I am a Customer / Buyer
+                      Explore Local Businesses
                     </span>
                     <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-blue-100 text-blue-800">
-                      Explore Free
+                      Discover
                     </span>
                   </div>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Discover verified local services, healthcare centres, workshops, and connect directly with verified proprietors.
+                    Discover verified local stores, healthcare centres, professional workshops, and contact verified proprietors across West Bengal.
                   </p>
                 </div>
               </div>
 
               <div className="shrink-0 flex items-center gap-1 text-xs font-bold text-blue-700 group-hover:text-blue-800">
-                <span>Explore Graph</span>
+                <span>Explore Directory</span>
                 <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
               </div>
             </div>
 
           </div>
 
-          {/* Quick Sign In & Dismiss Footer */}
-          <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-            <button
-              onClick={() => handleOpenAuth()}
-              className="font-bold text-blue-700 hover:text-blue-900 flex items-center gap-1.5 hover:underline cursor-pointer"
-            >
-              <UserCheck size={15} /> Already have an account? Sign In
-            </button>
-
+          {/* Dismiss Footer */}
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-end text-xs">
             <button
               onClick={handleDismiss}
-              className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer text-xs"
+              className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer text-xs font-medium"
             >
-              Close &amp; browse as guest &rarr;
+              Continue browsing as guest &rarr;
             </button>
           </div>
 
