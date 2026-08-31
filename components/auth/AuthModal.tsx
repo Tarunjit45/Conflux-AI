@@ -7,23 +7,18 @@ import { Shield, Lock, Mail, ArrowRight, CheckCircle2, AlertCircle, LogOut } fro
 import { useNavigate, Link } from 'react-router-dom';
 
 export const AuthModal: React.FC = () => {
-  const { user, role, login, register, logout } = useAuth();
+  const { user, login } = useAuth();
   const navigate = useNavigate();
-
-  // Mode: Sign In vs First-Time Admin Account Setup
-  const [mode, setMode] = useState<'LOGIN' | 'REGISTER'>('LOGIN');
 
   // Admin Credentials
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
   
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{
     text: string;
     isError?: boolean;
     isRateLimit?: boolean;
-    isHelpfulHint?: boolean;
   } | null>(null);
 
   // Auto-redirect if already authenticated
@@ -39,55 +34,27 @@ export const AuthModal: React.FC = () => {
     setIsLoading(true);
     setMessage(null);
 
-    if (mode === 'LOGIN') {
-      const res = await login(email, password);
-      setIsLoading(false);
+    const res = await login(email, password);
+    setIsLoading(false);
 
-      if (res.success) {
-        setMessage({ text: 'Authenticated successfully! Redirecting to Admin Command Center...' });
-        navigate('/admin/businesses', { replace: true });
-      } else {
-        const rawErr = res.error || '';
-        const isRateLimit = rawErr.toLowerCase().includes('rate limit');
-        const isInvalid = rawErr.includes('Invalid login credentials');
-        
-        let errorMsg = rawErr || 'Authentication failed. Please check your admin credentials.';
-        if (isInvalid) {
-          errorMsg = 'Invalid email or password. If you have not created your admin account yet, switch to "Create Admin Account" above.';
-        } else if (rawErr.includes('Email not confirmed')) {
-          errorMsg = 'Email is not confirmed yet. In Supabase Dashboard -> Authentication -> Providers -> Email, disable "Confirm email" or verify in your mailbox.';
-        } else if (isRateLimit) {
-          errorMsg = 'Too many login attempts. Please wait a moment or disable email confirmation in Supabase.';
-        }
-
-        setMessage({ text: errorMsg, isError: true, isRateLimit, isHelpfulHint: isInvalid });
-      }
+    if (res.success) {
+      setMessage({ text: 'Authenticated successfully! Redirecting to Admin Command Center...' });
+      navigate('/admin/businesses', { replace: true });
     } else {
-      // First-time Admin Registration
-      const res = await register({
-        email,
-        password,
-        fullName: fullName || email.split('@')[0],
-        role: 'ADMIN'
-      });
-      setIsLoading(false);
-
-      if (res.success) {
-        setMessage({ text: 'Admin account created and authenticated! Redirecting to Admin Command Center...' });
-        navigate('/admin/businesses', { replace: true });
-      } else {
-        const rawErr = res.error || '';
-        const isRateLimit = res.isRateLimit || rawErr.toLowerCase().includes('rate limit');
-        
-        let errorMsg = rawErr || 'Admin creation failed.';
-        if (isRateLimit) {
-          errorMsg = 'Supabase email rate limit exceeded. To bypass: in your Supabase Dashboard -> Authentication -> Providers -> Email, turn OFF "Confirm email" (or create your user directly under Authentication -> Users -> Add User with "Auto Confirm").';
-        } else if (res.isAlreadyRegistered) {
-          errorMsg = 'An account with this email already exists. Please switch to "Sign In".';
-        }
-
-        setMessage({ text: errorMsg, isError: true, isRateLimit });
+      const rawErr = res.error || '';
+      const isRateLimit = rawErr.toLowerCase().includes('rate limit');
+      const isInvalid = rawErr.includes('Invalid login credentials');
+      
+      let errorMsg = rawErr || 'Authentication failed. Please check your admin credentials.';
+      if (isInvalid) {
+        errorMsg = 'Invalid administrator email or password. Please verify your credentials.';
+      } else if (rawErr.includes('Email not confirmed')) {
+        errorMsg = 'Email is not confirmed yet. Please verify your email or check Supabase Auth settings.';
+      } else if (isRateLimit) {
+        errorMsg = 'Too many login attempts. Please wait a moment before trying again.';
       }
+
+      setMessage({ text: errorMsg, isError: true, isRateLimit });
     }
   };
 
@@ -104,57 +71,15 @@ export const AuthModal: React.FC = () => {
             <Shield size={28} />
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold font-orbitron text-slate-900 tracking-tight">
-            {mode === 'LOGIN' ? 'Admin Sign In' : 'Create Admin Account'}
+            Admin Console
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
-            {mode === 'LOGIN' 
-              ? 'Sign in to access the Conflux Knowledge Graph, audit verification claims, and manage submissions.'
-              : 'Initial setup for platform administrators with verified credentials.'
-            }
+            Restricted authentication portal for platform administrators to manage the Conflux Knowledge Graph, audit verification claims, and review submissions.
           </p>
-        </div>
-
-        {/* Mode Switcher Tabs */}
-        <div className="flex p-1 bg-slate-100 rounded-2xl border border-slate-200 text-xs font-bold">
-          <button
-            type="button"
-            onClick={() => { setMode('LOGIN'); setMessage(null); }}
-            className={`flex-1 py-2 rounded-xl transition-all cursor-pointer ${
-              mode === 'LOGIN' 
-                ? 'bg-white text-slate-900 shadow-sm' 
-                : 'text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            Sign In
-          </button>
-          <button
-            type="button"
-            onClick={() => { setMode('REGISTER'); setMessage(null); }}
-            className={`flex-1 py-2 rounded-xl transition-all cursor-pointer ${
-              mode === 'REGISTER' 
-                ? 'bg-white text-slate-900 shadow-sm' 
-                : 'text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            Create Admin Account
-          </button>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4 pt-1">
-          {mode === 'REGISTER' && (
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Administrator Full Name</label>
-              <input
-                type="text"
-                value={fullName}
-                onChange={e => setFullName(e.target.value)}
-                placeholder="Tarunjit Biswas"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/20 font-medium"
-              />
-            </div>
-          )}
-
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-700">Administrator Email *</label>
             <div className="relative">
@@ -194,15 +119,6 @@ export const AuthModal: React.FC = () => {
                 {message.isError ? <AlertCircle size={16} className="text-rose-600 shrink-0 mt-0.5" /> : <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />}
                 <span className="font-bold leading-relaxed">{message.text}</span>
               </div>
-              {message.isHelpfulHint && mode === 'LOGIN' && (
-                <button
-                  type="button"
-                  onClick={() => { setMode('REGISTER'); setMessage(null); }}
-                  className="mt-1 text-blue-600 underline font-bold hover:text-blue-800 cursor-pointer block"
-                >
-                  Click here to Create Admin Account →
-                </button>
-              )}
             </div>
           )}
 
@@ -212,11 +128,9 @@ export const AuthModal: React.FC = () => {
             className="w-full py-3.5 rounded-2xl bg-slate-900 hover:bg-black text-white font-bold text-sm shadow-md shadow-slate-900/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             {isLoading ? (
-              'Processing...'
-            ) : mode === 'LOGIN' ? (
-              <>Sign In as Administrator <ArrowRight size={16} /></>
+              'Authenticating...'
             ) : (
-              <>Create Admin Account <ArrowRight size={16} /></>
+              <>Sign In as Administrator <ArrowRight size={16} /></>
             )}
           </button>
         </form>
