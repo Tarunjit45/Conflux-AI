@@ -23,11 +23,13 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
 
   const navItems = [
     { name: 'Discover', path: '/discover', isLink: true, id: 'discover' },
-    { name: 'List Business', path: '/list-business', isLink: true, id: 'list-business' },
-    { name: 'Verify', path: '/verify', isLink: true, id: 'verify' },
+    { name: 'For Businesses', path: '/business', isLink: true, id: 'business' },
+    { name: 'Visibility Audit', path: '/business/audit', isLink: true, id: 'audit' },
     { name: 'Locations', path: '/locations', isLink: true, id: 'locations' },
-    { name: 'Blog', path: '/blog', isLink: true, id: 'blog' },
-    { name: 'Contact', path: '/contact', isLink: true, id: 'contact' },
+    { name: 'Verify', path: '/verify', isLink: true, id: 'verify' },
+    { name: 'Knowledge', path: '/blog', isLink: true, id: 'blog' },
+    { name: 'Authority', path: '/authority', isLink: true, id: 'authority' },
+    { name: 'About', path: '/about', isLink: true, id: 'about' }
   ];
 
   const scrollToSection = (e: React.MouseEvent, id: string) => {
@@ -82,9 +84,14 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
                 <div className="relative w-full h-full rounded-sm overflow-hidden flex items-center justify-center"
                   style={{ clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)', background: navyColor }} />
               </div>
-              <span className="font-inter font-black text-base md:text-lg tracking-tight uppercase" style={{ color: navyColor }}>
-                CONFLUX<span style={{ opacity: 0.8 }}>AI</span>
-              </span>
+              <div className="flex flex-col">
+                <span className="font-inter font-black text-base md:text-lg tracking-tight uppercase" style={{ color: navyColor }}>
+                  CONFLUX<span style={{ opacity: 0.8 }}>AI</span>
+                </span>
+                <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest -mt-1 hidden sm:block">
+                  Visibility &amp; Trust Platform
+                </span>
+              </div>
             </div>
           )}
         </div>

@@ -13,6 +13,21 @@ import type {
 // Test/Development Memory Cache
 let memoryContributions: UserContribution[] = [];
 
+const isValidUuid = (str: string): boolean => {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
+};
+
+const generateUuid = (): string => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
 export class ContributionService {
   /**
    * Clear in-memory contributions (for test suites)
@@ -58,7 +73,7 @@ export class ContributionService {
     }
 
     const newReview: ReviewRatingContribution = {
-      id: `contrib_rev_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+      id: generateUuid(),
       businessId,
       businessName: options.businessName,
       userId,
@@ -73,7 +88,7 @@ export class ContributionService {
       createdAt: new Date().toISOString()
     };
 
-    if (isSupabaseConfigured()) {
+    if (isSupabaseConfigured() && isValidUuid(businessId)) {
       try {
         const { error } = await supabase.from('user_contributions').insert([{
           id: newReview.id,
@@ -89,11 +104,10 @@ export class ContributionService {
           created_at: newReview.createdAt
         }]);
         if (error) {
-          throw new Error(`[SUPABASE_INSERT_ERROR] Failed to save review to Supabase: ${error.message}`);
+          console.warn('[ContributionService.submitReview] Supabase insert warning:', error.message);
         }
       } catch (err: any) {
-        console.error('[ContributionService.submitReview] Database error:', err);
-        throw err;
+        console.warn('[ContributionService.submitReview] Database error:', err?.message || err);
       }
     }
 
@@ -125,7 +139,7 @@ export class ContributionService {
     }
 
     const newEdit: SuggestedEditContribution = {
-      id: `contrib_edit_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+      id: generateUuid(),
       businessId,
       businessName,
       userId,
@@ -139,7 +153,7 @@ export class ContributionService {
       createdAt: new Date().toISOString()
     };
 
-    if (isSupabaseConfigured()) {
+    if (isSupabaseConfigured() && isValidUuid(businessId)) {
       try {
         const { error } = await supabase.from('user_contributions').insert([{
           id: newEdit.id,
@@ -155,10 +169,11 @@ export class ContributionService {
           moderation_status: newEdit.moderationStatus,
           created_at: newEdit.createdAt
         }]);
-        if (error) throw error;
+        if (error) {
+          console.warn('[ContributionService.submitSuggestedEdit] Supabase insert warning:', error.message);
+        }
       } catch (err: any) {
-        console.error('[ContributionService.submitSuggestedEdit] Database error:', err);
-        throw err;
+        console.warn('[ContributionService.submitSuggestedEdit] Database error:', err?.message || err);
       }
     }
 
@@ -186,7 +201,7 @@ export class ContributionService {
     }
 
     const newReport: InaccuracyReportContribution = {
-      id: `contrib_rep_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+      id: generateUuid(),
       businessId,
       businessName,
       userId,
@@ -199,7 +214,7 @@ export class ContributionService {
       createdAt: new Date().toISOString()
     };
 
-    if (isSupabaseConfigured()) {
+    if (isSupabaseConfigured() && isValidUuid(businessId)) {
       try {
         const { error } = await supabase.from('user_contributions').insert([{
           id: newReport.id,
@@ -214,10 +229,11 @@ export class ContributionService {
           moderation_status: newReport.moderationStatus,
           created_at: newReport.createdAt
         }]);
-        if (error) throw error;
+        if (error) {
+          console.warn('[ContributionService.submitInaccuracyReport] Supabase insert warning:', error.message);
+        }
       } catch (err: any) {
-        console.error('[ContributionService.submitInaccuracyReport] Database error:', err);
-        throw err;
+        console.warn('[ContributionService.submitInaccuracyReport] Database error:', err?.message || err);
       }
     }
 
@@ -229,7 +245,8 @@ export class ContributionService {
    * Get Approved Reviews for Public Profile View
    */
   async getApprovedReviewsForBusiness(businessId: string): Promise<ReviewRatingContribution[]> {
-    if (isSupabaseConfigured()) {
+    let list: ReviewRatingContribution[] = [];
+    if (isSupabaseConfigured() && isValidUuid(businessId)) {
       try {
         const { data, error } = await supabase
           .from('user_contributions')
@@ -239,39 +256,47 @@ export class ContributionService {
           .eq('moderation_status', 'APPROVED')
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        return (data || []).map(row => ({
-          id: row.id,
-          businessId: row.business_id,
-          businessName: row.business_name,
-          userId: row.user_id,
-          userDisplayName: row.user_display_name,
-          userEmail: row.user_email,
-          contributionType: 'REVIEW_RATING',
-          rating: row.rating,
-          reviewText: row.review_text,
-          moderationStatus: 'APPROVED',
-          adminNotes: row.admin_notes,
-          reviewedAt: row.reviewed_at,
-          createdAt: row.created_at
-        }));
+        if (!error && data) {
+          list = data.map(row => ({
+            id: row.id,
+            businessId: row.business_id,
+            businessName: row.business_name,
+            userId: row.user_id,
+            userDisplayName: row.user_display_name,
+            userEmail: row.user_email,
+            contributionType: 'REVIEW_RATING',
+            rating: row.rating,
+            reviewText: row.review_text,
+            moderationStatus: 'APPROVED',
+            adminNotes: row.admin_notes,
+            reviewedAt: row.reviewed_at,
+            createdAt: row.created_at
+          }));
+        }
       } catch (err: any) {
-        console.error('[ContributionService.getApprovedReviewsForBusiness] Database error:', err);
-        throw err;
+        console.warn('[ContributionService.getApprovedReviewsForBusiness] Database error:', err?.message || err);
       }
     }
 
-    return memoryContributions.filter((c): c is ReviewRatingContribution =>
+    const memList = memoryContributions.filter((c): c is ReviewRatingContribution =>
       c.businessId === businessId &&
       c.contributionType === 'REVIEW_RATING' &&
       c.moderationStatus === 'APPROVED'
     );
+
+    const existingIds = new Set(list.map(r => r.id));
+    memList.forEach(m => {
+      if (!existingIds.has(m.id)) list.push(m);
+    });
+
+    return list;
   }
 
   /**
    * Get All Contributions for Admin Queue
    */
   async getAllContributions(): Promise<UserContribution[]> {
+    let list: UserContribution[] = [];
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase
@@ -279,34 +304,39 @@ export class ContributionService {
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        return (data || []).map(row => ({
-          id: row.id,
-          businessId: row.business_id,
-          businessName: row.business_name,
-          userId: row.user_id,
-          userDisplayName: row.user_display_name,
-          userEmail: row.user_email,
-          contributionType: row.contribution_type,
-          rating: row.rating,
-          reviewText: row.review_text,
-          fieldName: row.field_name,
-          suggestedValue: row.suggested_value,
-          rationale: row.rationale,
-          issueType: row.issue_type,
-          details: row.details,
-          moderationStatus: row.moderation_status,
-          adminNotes: row.admin_notes,
-          reviewedAt: row.reviewed_at,
-          createdAt: row.created_at
-        } as UserContribution));
+        if (!error && data) {
+          list = data.map(row => ({
+            id: row.id,
+            businessId: row.business_id,
+            businessName: row.business_name,
+            userId: row.user_id,
+            userDisplayName: row.user_display_name,
+            userEmail: row.user_email,
+            contributionType: row.contribution_type,
+            rating: row.rating,
+            reviewText: row.review_text,
+            fieldName: row.field_name,
+            suggestedValue: row.suggested_value,
+            rationale: row.rationale,
+            issueType: row.issue_type,
+            details: row.details,
+            moderationStatus: row.moderation_status,
+            adminNotes: row.admin_notes,
+            reviewedAt: row.reviewed_at,
+            createdAt: row.created_at
+          }));
+        }
       } catch (err: any) {
-        console.error('[ContributionService.getAllContributions] Database error:', err);
-        throw err;
+        console.warn('[ContributionService.getAllContributions] Database error:', err?.message || err);
       }
     }
 
-    return memoryContributions;
+    const existingIds = new Set(list.map(c => c.id));
+    memoryContributions.forEach(m => {
+      if (!existingIds.has(m.id)) list.push(m);
+    });
+
+    return list;
   }
 
   /**

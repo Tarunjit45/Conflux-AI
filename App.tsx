@@ -33,6 +33,8 @@ import VerifyPortal from './components/verify/VerifyPortal';
 import MethodologyPage from './components/verify/MethodologyPage';
 import VerifyGuideDetailPage from './components/verify/guides/VerifyGuideDetailPage';
 import { DiscoverPage } from './components/discover/DiscoverPage';
+import { ForBusinessPage } from './components/business/ForBusinessPage';
+import { VisibilityAuditPage } from './components/business/VisibilityAuditPage';
 import { PublicBusinessProfile } from './components/business/PublicBusinessProfile';
 import { BusinessSubmissionPage } from './components/submission/BusinessSubmissionPage';
 import { AdminBusinessDashboard } from './components/admin/AdminBusinessDashboard';
@@ -230,6 +232,14 @@ const routeMeta: Record<string, { title: string; description: string }> = {
     title: 'Find a Local Business You Can Trust | Conflux Discover',
     description: 'Tell Conflux what you need, where you need it, and discover verified local businesses you can connect with across West Bengal.'
   },
+  '/business': {
+    title: 'For Businesses: Get Discovered, Trusted & Contacted | Conflux AI',
+    description: 'Make your local business discoverable across Google search, Maps, and AI engines with Schema.org markup, statutory verification trust badges, and direct WhatsApp lead routing.'
+  },
+  '/business/audit': {
+    title: 'Local Business Visibility & AI Readiness Audit | Conflux AI',
+    description: 'Free evidence-based audit evaluating technical SEO, Schema.org LocalBusiness markup, statutory evidence depth, and AI-search readiness.'
+  },
   '/admin': {
     title: 'Admin Command Center | Conflux AI',
     description: 'Internal audit and administrative portal for Conflux AI.'
@@ -349,6 +359,8 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/discover" element={<DiscoverPage />} />
+          <Route path="/business" element={<ForBusinessPage />} />
+          <Route path="/business/audit" element={<VisibilityAuditPage />} />
           <Route path="/list-business" element={<BusinessSubmissionPage />} />
           <Route path="/submit-business" element={<BusinessSubmissionPage />} />
           <Route path="/apply" element={<BusinessSubmissionPage />} />

@@ -2062,6 +2062,69 @@ const staticPages = [
     `
   },
   {
+    path: '/business',
+    title: 'For Businesses: Get Discovered, Trusted & Contacted | Conflux AI',
+    desc: 'Make your local business discoverable across Google search, Maps, and AI engines with Schema.org markup, statutory verification trust badges, and direct WhatsApp lead routing.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/discover" style="margin: 0 10px; color: #475569; text-decoration: none;">Discover</a>
+            <a href="/business" style="margin: 0 10px; color: #2563eb; text-decoration: none;">For Businesses</a>
+            <a href="/business/audit" style="margin: 0 10px; color: #475569; text-decoration: none;">Visibility Audit</a>
+            <a href="/list-business" style="margin: 0 10px; color: #16a34a; text-decoration: none;">List Business</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 42px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">
+          Get Discovered, <span style="color: #2563eb;">Trusted</span>, and Contacted.
+        </h1>
+        <p style="font-size: 18px; color: #475569; line-height: 1.6; margin-bottom: 36px;">
+          We make local businesses discoverable, understandable, trusted, and contactable across Google search, local maps, and AI engines (ChatGPT, Google Gemini, Perplexity).
+        </p>
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="/business/audit" style="display: inline-block; background: #2563eb; color: white; padding: 14px 28px; border-radius: 12px; font-weight: 800; text-decoration: none; font-size: 14px; margin-right: 12px;">
+            Check My Business Visibility &rarr;
+          </a>
+          <a href="/list-business" style="display: inline-block; background: #16a34a; color: white; padding: 14px 28px; border-radius: 12px; font-weight: 800; text-decoration: none; font-size: 14px;">
+            List &amp; Verify Business &rarr;
+          </a>
+        </div>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/business/audit',
+    title: 'Local Business Visibility & AI Readiness Audit | Conflux AI',
+    desc: 'Free evidence-based audit evaluating technical SEO, Schema.org LocalBusiness markup, statutory evidence depth, and AI-search readiness.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/discover" style="margin: 0 10px; color: #475569; text-decoration: none;">Discover</a>
+            <a href="/business" style="margin: 0 10px; color: #475569; text-decoration: none;">For Businesses</a>
+            <a href="/business/audit" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Visibility Audit</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 38px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">
+          Local Business Visibility &amp; AI Readiness Audit
+        </h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 30px;">
+          Run an instant, evidence-based audit measuring technical SEO, LocalBusiness Schema, statutory evidence, and AI search readiness.
+        </p>
+      </main>
+    </div>
+    `
+  },
+  {
     path: '/auth',
     title: 'Account Authentication & Registration | Conflux AI',
     desc: 'Sign in or register your business profile to verify corporate identity, list services, or access verified leads.',

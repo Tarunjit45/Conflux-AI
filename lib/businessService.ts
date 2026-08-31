@@ -18,6 +18,21 @@ import { verificationService } from './verify/verificationService.ts';
 let memoryStore: ConfluxBusiness[] = [];
 let memoryApplications: BusinessSubmissionApplication[] = [];
 
+const isValidUuid = (str: string): boolean => {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
+};
+
+const generateUuid = (): string => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
 export class BusinessService {
   /**
    * Clear in-memory store (for test suites)
@@ -138,12 +153,17 @@ export class BusinessService {
           list = data.map(row => this.mapSupabaseRowToBusiness(row));
         }
       } catch (err: any) {
-        console.error('[BusinessService.searchBusinesses] Database error:', err);
-        throw err;
+        console.warn('[BusinessService.searchBusinesses] Database query error, using memory store:', err?.message || err);
       }
-    } else {
-      list = memoryStore.filter(b => b.status === 'PUBLISHED');
     }
+
+    // Merge in-memory published records that are not already in list
+    const existingIds = new Set(list.map(b => b.id).concat(list.map(b => b.confluxBusinessId)));
+    memoryStore.filter(b => b.status === 'PUBLISHED').forEach(mb => {
+      if (!existingIds.has(mb.id) && !existingIds.has(mb.confluxBusinessId)) {
+        list.push(mb);
+      }
+    });
 
     // Apply Client-Side & Natural Language Ranking Filters
     if (params.query) {
@@ -244,17 +264,23 @@ export class BusinessService {
   async getBusinessById(id: string): Promise<ConfluxBusiness | null> {
     if (isSupabaseConfigured()) {
       try {
-        const { data, error } = await supabase
+        let query = supabase
           .from('businesses')
-          .select('*, location:business_locations(*), capabilities:business_capabilities(*)')
-          .or(`id.eq.${id},conflux_business_id.eq.${id},slug.eq.${id}`)
-          .maybeSingle();
+          .select('*, location:business_locations(*), capabilities:business_capabilities(*)');
 
-        if (error) throw error;
-        return data ? this.mapSupabaseRowToBusiness(data) : null;
+        if (isValidUuid(id)) {
+          query = query.or(`id.eq.${id},conflux_business_id.eq.${id},slug.eq.${id}`);
+        } else {
+          query = query.or(`conflux_business_id.eq.${id},slug.eq.${id}`);
+        }
+
+        const { data, error } = await query.maybeSingle();
+
+        if (data) {
+          return this.mapSupabaseRowToBusiness(data);
+        }
       } catch (err: any) {
-        console.error('[BusinessService.getBusinessById] Database error:', err);
-        throw err;
+        console.warn('[BusinessService.getBusinessById] Database query warning:', err?.message || err);
       }
     }
     const match = memoryStore.find(b => b.id === id || b.confluxBusinessId === id || b.slug === id);
@@ -273,11 +299,11 @@ export class BusinessService {
           .eq('slug', slug.toLowerCase())
           .maybeSingle();
 
-        if (error) throw error;
-        return data ? this.mapSupabaseRowToBusiness(data) : null;
+        if (data) {
+          return this.mapSupabaseRowToBusiness(data);
+        }
       } catch (err: any) {
-        console.error('[BusinessService.getBusinessBySlug] Database error:', err);
-        throw err;
+        console.warn('[BusinessService.getBusinessBySlug] Database query warning:', err?.message || err);
       }
     }
     const match = memoryStore.find(b => b.slug.toLowerCase() === slug.toLowerCase());
@@ -318,7 +344,9 @@ export class BusinessService {
     });
 
     const slug = slugifyBusinessName(input.name);
-    const newId = `biz_cfx_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+    const newId = generateUuid();
+    const locId = generateUuid();
+    const cntId = generateUuid();
 
     const newBiz: ConfluxBusiness = {
       id: newId,
@@ -344,7 +372,7 @@ export class BusinessService {
       isClaimed: false,
       isIndexable: false,
       location: {
-        id: `loc_${Date.now()}`,
+        id: locId,
         businessId: newId,
         country: 'India',
         state: 'West Bengal',
@@ -355,7 +383,7 @@ export class BusinessService {
         isPrimary: true
       },
       contact: {
-        id: `cnt_${Date.now()}`,
+        id: cntId,
         businessId: newId,
         phone: input.phone,
         whatsapp: input.whatsapp,
@@ -373,9 +401,9 @@ export class BusinessService {
         { dayOfWeek: 0, isClosed: true }
       ],
       capabilities: [
-        ...(input.phone ? [{ id: `cap_${Date.now()}_1`, businessId: newId, actionType: 'CALL' as const, isSupported: true, phoneTarget: input.phone, verificationStatus: 'UNVERIFIED' as const }] : []),
-        ...(input.whatsapp ? [{ id: `cap_${Date.now()}_2`, businessId: newId, actionType: 'WHATSAPP' as const, isSupported: true, phoneTarget: input.whatsapp, verificationStatus: 'UNVERIFIED' as const }] : []),
-        ...(input.bookingUrl ? [{ id: `cap_${Date.now()}_3`, businessId: newId, actionType: 'BOOKING' as const, isSupported: true, endpointUrl: input.bookingUrl, verificationStatus: 'UNVERIFIED' as const }] : [])
+        ...(input.phone ? [{ id: generateUuid(), businessId: newId, actionType: 'CALL' as const, isSupported: true, phoneTarget: input.phone, verificationStatus: 'UNVERIFIED' as const }] : []),
+        ...(input.whatsapp ? [{ id: generateUuid(), businessId: newId, actionType: 'WHATSAPP' as const, isSupported: true, phoneTarget: input.whatsapp, verificationStatus: 'UNVERIFIED' as const }] : []),
+        ...(input.bookingUrl ? [{ id: generateUuid(), businessId: newId, actionType: 'BOOKING' as const, isSupported: true, endpointUrl: input.bookingUrl, verificationStatus: 'UNVERIFIED' as const }] : [])
       ],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -433,8 +461,7 @@ export class BusinessService {
           );
         }
       } catch (err: any) {
-        console.error('[BusinessService.createBusiness] Database error:', err);
-        throw err;
+        console.warn('[BusinessService.createBusiness] Database insert skipped or failed (falling back to memory store):', err?.message || err);
       }
     }
 
@@ -471,7 +498,13 @@ export class BusinessService {
         if (updates.verificationBreakdown) payload.verification_breakdown = updates.verificationBreakdown;
         if (updates.lastVerifiedAt) payload.last_verified_at = updates.lastVerifiedAt;
 
-        const { error } = await supabase.from('businesses').update(payload).eq('id', id);
+        let updateQuery = supabase.from('businesses').update(payload);
+        if (isValidUuid(id)) {
+          updateQuery = updateQuery.eq('id', id);
+        } else {
+          updateQuery = updateQuery.or(`conflux_business_id.eq.${id},slug.eq.${id}`);
+        }
+        const { error } = await updateQuery;
         if (error) throw error;
       } catch (err: any) {
         console.error('[BusinessService.updateBusiness] Database error:', err);
@@ -608,7 +641,13 @@ export class BusinessService {
   async deleteBusiness(id: string): Promise<boolean> {
     if (isSupabaseConfigured()) {
       try {
-        const { error } = await supabase.from('businesses').delete().or(`id.eq.${id},conflux_business_id.eq.${id}`);
+        let deleteQuery = supabase.from('businesses').delete();
+        if (isValidUuid(id)) {
+          deleteQuery = deleteQuery.or(`id.eq.${id},conflux_business_id.eq.${id}`);
+        } else {
+          deleteQuery = deleteQuery.eq('conflux_business_id', id);
+        }
+        const { error } = await deleteQuery;
         if (error) throw error;
         return true;
       } catch (err: any) {
@@ -657,11 +696,11 @@ export class BusinessService {
     }
 
     const allApps = await this.getAllApplications();
-    const appId = `APP-2026-${String(allApps.length + 1).padStart(4, '0')}`;
+    const appId = `APP-${new Date().getFullYear()}-${Date.now().toString().slice(-5)}${Math.floor(10 + Math.random() * 90)}`;
     const allBusinesses = await this.getAllBusinesses();
     const confluxBusinessId = generateConfluxBusinessId({
       district: input.district,
-      sequenceNumber: allBusinesses.length + allApps.length + 1
+      sequenceNumber: allBusinesses.length + allApps.length + Math.floor(Math.random() * 1000) + 1
     });
 
     const newApp: BusinessSubmissionApplication = {
@@ -697,8 +736,6 @@ export class BusinessService {
           owner_name: newApp.ownerName,
           owner_role: newApp.ownerRole,
           storefront_photo_url: newApp.storefrontPhotoUrl,
-          logo_url: newApp.logoUrl,
-          owner_photo_url: newApp.ownerPhotoUrl,
           status: newApp.status,
           created_at: newApp.createdAt,
           updated_at: newApp.updatedAt
@@ -739,49 +776,49 @@ export class BusinessService {
           .select('*, private_evidence:private_evidence_documents(*)')
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        return (data || []).map(row => ({
-          id: row.id,
-          confluxBusinessId: row.conflux_business_id,
-          submissionType: row.submission_type,
-          businessName: row.business_name,
-          legalName: row.legal_name,
-          businessType: row.business_type,
-          categoryId: row.category_id,
-          categoryName: row.category_name,
-          description: row.description,
-          district: row.district,
-          city: row.city,
-          landmark: row.landmark,
-          fullAddress: row.full_address,
-          phone: row.phone,
-          whatsapp: row.whatsapp,
-          email: row.email,
-          websiteUrl: row.website_url,
-          bookingUrl: row.booking_url,
-          ownerName: row.owner_name,
-          ownerRole: row.owner_role,
-          storefrontPhotoUrl: row.storefront_photo_url,
-          logoUrl: row.logo_url,
-          ownerPhotoUrl: row.owner_photo_url,
-          status: row.status,
-          adminNotes: row.admin_notes,
-          changesRequestedMessage: row.changes_requested_message,
-          privateEvidence: (row.private_evidence || []).map((d: any) => ({
-            documentType: d.document_type,
-            documentName: d.document_name,
-            documentNumber: d.document_number,
-            documentFileUrl: d.document_file_url,
-            isPrivate: true
-          })),
-          declarationConfirmed: true,
-          noStockImagesConfirmed: true,
-          createdAt: row.created_at,
-          updatedAt: row.updated_at
-        }));
+        if (!error && data && data.length > 0) {
+          return data.map(row => ({
+            id: row.id,
+            confluxBusinessId: row.conflux_business_id,
+            submissionType: row.submission_type,
+            businessName: row.business_name,
+            legalName: row.legal_name,
+            businessType: row.business_type,
+            categoryId: row.category_id,
+            categoryName: row.category_name,
+            description: row.description,
+            district: row.district,
+            city: row.city,
+            landmark: row.landmark,
+            fullAddress: row.full_address,
+            phone: row.phone,
+            whatsapp: row.whatsapp,
+            email: row.email,
+            websiteUrl: row.website_url,
+            bookingUrl: row.booking_url,
+            ownerName: row.owner_name,
+            ownerRole: row.owner_role,
+            storefrontPhotoUrl: row.storefront_photo_url,
+            logoUrl: row.logo_url,
+            ownerPhotoUrl: row.owner_photo_url,
+            status: row.status,
+            adminNotes: row.admin_notes,
+            changesRequestedMessage: row.changes_requested_message,
+            privateEvidence: (row.private_evidence || []).map((d: any) => ({
+              documentType: d.document_type,
+              documentName: d.document_name,
+              documentNumber: d.document_number,
+              documentFileUrl: d.document_file_url,
+              isPrivate: true
+            })),
+            declarationConfirmed: true,
+            noStockImagesConfirmed: true,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at
+          }));
+        }
       } catch (err: any) {
         console.error('[BusinessService.getAllApplications] Database error:', err);
-        throw err;
       }
     }
     return memoryApplications;

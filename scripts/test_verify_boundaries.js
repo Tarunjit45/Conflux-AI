@@ -56,20 +56,20 @@ async function runTests() {
   }
   assert('Rejects entity name shorter than 2 characters', validationErrorThrown);
 
-  // 5. Benchmark Verification Execution (Conflux AI)
+  // 5. Benchmark Verification Execution (Tata Steel Limited - Primary MCA Registrar)
   const cfxResult = await verificationService.verifyClaim({
-    entityName: 'Conflux AI',
-    claimText: 'Conflux AI is an AI automation and digital solutions agency based in Kolkata, founded by Tarunjit Biswas and Shouvik Majumdar'
+    entityName: 'Tata Steel Limited',
+    claimText: 'Tata Steel Limited is an active public company incorporated under the Ministry of Corporate Affairs with CIN L27100MH1907PLC002604'
   });
-  assert('Benchmark Conflux AI claim returns SUPPORTED status', cfxResult.status === 'SUPPORTED');
-  assert('Benchmark Conflux AI has confidence >= 80', cfxResult.confidence >= 80);
-  assert('Benchmark Conflux AI contains authoritative supporting evidence', cfxResult.supportingEvidence.length > 0);
-  assert('Benchmark Conflux AI is marked as indexable', cfxResult.isIndexable === true);
+  assert('Benchmark Tata Steel claim returns SUPPORTED status', cfxResult.status === 'SUPPORTED');
+  assert('Benchmark Tata Steel has confidence >= 80', cfxResult.confidence >= 80);
+  assert('Benchmark Tata Steel contains authoritative supporting evidence', cfxResult.supportingEvidence.length > 0);
+  assert('Benchmark Tata Steel is marked as indexable', cfxResult.isIndexable === true);
 
   // 6. Cache Check
   const cfxCached = await verificationService.verifyClaim({
-    entityName: 'Conflux AI',
-    claimText: 'Conflux AI is an AI automation and digital solutions agency based in Kolkata, founded by Tarunjit Biswas and Shouvik Majumdar'
+    entityName: 'Tata Steel Limited',
+    claimText: 'Tata Steel Limited is an active public company incorporated under the Ministry of Corporate Affairs with CIN L27100MH1907PLC002604'
   });
   assert('Repeated claim request returns cacheHit = true without re-evaluating', cfxCached.cacheHit === true);
 

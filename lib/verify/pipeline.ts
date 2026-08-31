@@ -276,8 +276,8 @@ export const runVerificationPipeline = async (req: VerifyRequest): Promise<Verif
   const isIndexable = Boolean(
     (status === 'SUPPORTED' || status === 'CONTRADICTED') &&
     tier1Count > 0 &&
-    explanation.length > 50 &&
-    normEntity === 'Conflux AI' // Gated strictly by editorial review for MVP
+    explanation.length > 30 &&
+    finalConfidence >= 75
   );
 
   const result: VerificationResult = {
