@@ -1,7 +1,9 @@
+// Conflux Platform — About Us Page
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import Founders from './Founders.tsx';
-import { ArrowLeft, Sparkles, Target, Zap, Shield, MapPin, Mail, Phone, ExternalLink, Linkedin, Youtube, Instagram, Twitter, Facebook } from 'lucide-react';
+import { ArrowLeft, Sparkles, Target, Zap, Shield, MapPin, Mail, Phone, ExternalLink, Linkedin, Youtube, Instagram, Twitter, Facebook, Search, Building2, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const AboutUsPage: React.FC = () => {
@@ -14,7 +16,7 @@ const AboutUsPage: React.FC = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-white font-inter">
+        <div className="min-h-screen bg-white font-inter text-slate-900">
             <div className="pt-32 pb-20 px-4 md:px-6 max-w-7xl mx-auto">
                 {/* Back Link */}
                 <Link to="/" className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 uppercase tracking-widest mb-8 hover:gap-3 transition-all">
@@ -23,54 +25,63 @@ const AboutUsPage: React.FC = () => {
 
                 {/* Main Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
-                    <div className="max-w-3xl">
-                        <span className="px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider mb-4 inline-block">
+                    <div className="max-w-3xl space-y-4">
+                        <span className="px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider inline-block">
                             About Conflux AI
                         </span>
-                        <h1 className="font-orbitron text-4xl sm:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
-                            Engineering Intelligent <span className="text-blue-600">Business Systems</span>.
+                        <h1 className="font-orbitron text-4xl sm:text-6xl font-black text-slate-950 tracking-tight leading-[1.1]">
+                            Making Local Businesses <span className="text-blue-600">Discoverable</span> &amp; Trusted.
                         </h1>
-                        <p className="text-slate-600 font-normal text-base sm:text-lg mt-6 leading-relaxed">
-                            Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, India. Founded by Tarunjit Biswas and Shouvik Majumdar, Conflux AI combines AI engineering, software development, workflow automation, and digital strategy to help businesses operate with precision and scale efficiently.
+                        <p className="text-slate-600 font-normal text-base sm:text-lg leading-relaxed">
+                            Conflux AI is a Local Visibility &amp; Trust Platform based in Kolkata, West Bengal, India. Founded by Tarunjit Biswas and Shouvik Majumdar, Conflux AI makes local businesses discoverable, understandable, trusted, and contactable across Google search, local maps, and AI engines (ChatGPT, Google Gemini, Perplexity) through evidence-based verification and automated lead conversion.
                         </p>
                     </div>
                     
-                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 italic text-slate-500 text-xs font-semibold">
+                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 italic text-slate-600 text-xs font-semibold shrink-0">
                         <Sparkles size={18} className="text-blue-600" />
-                        "Practical AI Engineering for Real Business Outcomes"
+                        "Evidence-First Visibility &amp; Local Business Trust"
                     </div>
                 </div>
 
-                {/* AI-Readable Company Summary Block (Requirement 13) */}
-                <div className="mb-20 p-8 rounded-3xl bg-blue-50/60 border border-blue-100/80 shadow-sm">
-                    <div className="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-widest text-blue-700">
-                        <Shield size={16} className="text-blue-600" /> Verified Company Summary
+                {/* AI-Readable Company Summary Block */}
+                <div className="mb-20 p-8 rounded-3xl bg-blue-50/60 border border-blue-100/80 shadow-sm space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue-700">
+                        <Shield size={16} className="text-blue-600" /> Verified Canonical Summary
                     </div>
                     <p className="text-slate-800 text-base md:text-lg font-medium leading-relaxed">
-                        "Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, India, serving clients across India and globally."
+                        "Conflux AI is a Local Visibility &amp; Trust Platform based in Kolkata, West Bengal, India. Conflux connects local businesses to authoritative registries, Google search, and AI discovery engines to deliver verified trust badges and qualified customer leads."
                     </p>
                 </div>
 
                 {/* Detailed Overview: What We Do, Who We Serve, Where We Operate */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
                     <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200 space-y-4">
+                        <div className="w-10 h-10 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+                            <Search size={18} />
+                        </div>
                         <h2 className="text-xl font-bold font-orbitron text-slate-900">What We Do</h2>
                         <p className="text-slate-600 text-sm leading-relaxed">
-                            We architect end-to-end AI automation pipelines, autonomous AI agents, 24/7 conversational chatbots, WhatsApp Business API integrations, sub-second web platforms, and structured search engine optimizations.
+                            We build structured LocalBusiness entity graphs, Schema.org JSON-LD architectures, AI-search answer blocks (GEO/AEO), statutory registry verification dockets, and direct 1-tap WhatsApp lead conversion channels.
                         </p>
                     </div>
 
                     <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200 space-y-4">
+                        <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                            <Building2 size={18} />
+                        </div>
                         <h2 className="text-xl font-bold font-orbitron text-slate-900">Who We Serve</h2>
                         <p className="text-slate-600 text-sm leading-relaxed">
-                            We partner with growing companies, B2B agencies, e-commerce storefronts, professional consultants, local service providers, and enterprise teams seeking to reduce manual operational overhead.
+                            We serve local healthcare diagnostic centers, manufacturing workshops, retail showrooms, dining venues, and professional practitioners who need to be found by customers and trusted instantly.
                         </p>
                     </div>
 
                     <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200 space-y-4">
+                        <div className="w-10 h-10 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+                            <MapPin size={18} />
+                        </div>
                         <h2 className="text-xl font-bold font-orbitron text-slate-900">Where We Operate</h2>
                         <p className="text-slate-600 text-sm leading-relaxed">
-                            Conflux AI is structured as a remote-first agency based in Kolkata, West Bengal, India. We collaborate with business clients across Kolkata, West Bengal, India, and globally through digital communication channels.
+                            Conflux AI operates across Kolkata and all 23 districts of West Bengal (including Nadia, North 24 Parganas, Howrah, Hooghly, Murshidabad, and Darjeeling), expanding local business visibility across India.
                         </p>
                     </div>
                 </div>
@@ -78,13 +89,13 @@ const AboutUsPage: React.FC = () => {
                 {/* Core Operating Principles */}
                 <div className="mb-24">
                     <h2 className="font-orbitron text-3xl font-bold text-slate-900 mb-8 border-l-4 border-blue-600 pl-4">
-                        Our Operational Principles
+                        Our Core Platform Principles
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
-                            { icon: <Target className="text-blue-600" />, title: "Frictionless Utility", desc: "We design software around direct business goals—removing unnecessary fluff so users and internal teams accomplish tasks faster." },
-                            { icon: <Zap className="text-orange-500" />, title: "Technical Rigor", desc: "Every system is built on modern, lightweight frameworks (React, Vite, Python, Serverless Cloud) with strict error handling." },
-                            { icon: <Shield className="text-emerald-600" />, title: "Data Integrity & Security", desc: "We enforce zero-trust data protection, API encryption, and verified RAG guardrails across all customer automation pipelines." }
+                            { icon: <Shield className="text-blue-600" />, title: "Evidence-First Verification", desc: "We connect entity claims to authoritative primary registries (MCA, GSTIN, FSSAI, MSME Udyam) rather than inventing uncorroborated claims." },
+                            { icon: <Zap className="text-emerald-600" />, title: "Technical Discoverability", desc: "Every business node is built on sub-second, crawlable React architecture with structured Schema.org JSON-LD and AI-readable answer models." },
+                            { icon: <Target className="text-purple-600" />, title: "Measurable Lead Conversion", desc: "We track genuine customer interactions—calls, WhatsApp chats, and direction requests—with zero synthetic traffic or fabricated ranking claims." }
                         ].map((value, i) => (
                             <motion.div 
                                 key={i}
@@ -104,73 +115,42 @@ const AboutUsPage: React.FC = () => {
                 </div>
 
                 {/* Founders Section */}
-                <div className="mb-24">
-                    <Founders />
-                </div>
+                <Founders />
 
-                {/* Contact & Verification Information */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-24">
-                    <div className="lg:col-span-6 p-8 md:p-10 rounded-3xl bg-slate-50 border border-slate-200 space-y-6">
-                        <h2 className="font-orbitron font-bold text-2xl text-slate-900">
-                            Official Contact & Location
-                        </h2>
-                        <div className="space-y-4 text-sm text-slate-600">
-                            <div className="flex items-start gap-3">
-                                <MapPin size={18} className="text-blue-600 shrink-0 mt-1" />
-                                <div>
-                                    <strong className="block text-slate-900 font-bold">Base Location (Remote-First)</strong>
-                                    <span>Kolkata, West Bengal, India (Serving India & Global Clients)</span>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <Mail size={18} className="text-blue-600 shrink-0 mt-1" />
-                                <div>
-                                    <strong className="block text-slate-900 font-bold">Official Email</strong>
-                                    <a href="mailto:confluxdotai@gmail.com" className="text-blue-600 font-medium hover:underline">confluxdotai@gmail.com</a>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <Phone size={18} className="text-blue-600 shrink-0 mt-1" />
-                                <div>
-                                    <strong className="block text-slate-900 font-bold">Direct Client Line</strong>
-                                    <a href="tel:+918972517557" className="text-blue-600 font-medium hover:underline">+91-8972517557</a>
-                                </div>
-                            </div>
+                {/* Official Contact & Registry Information */}
+                <div className="mt-20 p-8 rounded-3xl bg-slate-900 text-white border border-slate-800 space-y-6">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+                        <div>
+                            <h3 className="font-orbitron text-xl font-bold">Conflux AI Operational Office</h3>
+                            <p className="text-xs text-slate-400 mt-1">
+                                Registered in Kolkata, West Bengal, India &bull; Serving Local Businesses
+                            </p>
                         </div>
-                    </div>
-
-                    <div className="lg:col-span-6 p-8 md:p-10 rounded-3xl bg-slate-50 border border-slate-200 space-y-6">
-                        <h2 className="font-orbitron font-bold text-2xl text-slate-900">
-                            Verified Official Profiles
-                        </h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {socialLinks.map((social, idx) => (
-                                <a
-                                    key={idx}
-                                    href={social.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="p-3.5 rounded-xl bg-white border border-slate-200 hover:border-blue-300 transition-all flex items-center justify-between group"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        {social.icon}
-                                        <span className="text-xs font-bold text-slate-800">{social.name}</span>
-                                    </div>
-                                    <ExternalLink size={14} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
+                        <div className="flex gap-2">
+                            {socialLinks.map((s, i) => (
+                                <a key={i} href={s.href} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 transition-colors">
+                                    {s.icon}
                                 </a>
                             ))}
                         </div>
                     </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-300">
+                        <div className="flex items-center gap-2">
+                            <MapPin size={15} className="text-blue-400" />
+                            <span>Kolkata, West Bengal, 700001, India</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Mail size={15} className="text-blue-400" />
+                            <a href="mailto:confluxai45@gmail.com" className="hover:text-white">confluxai45@gmail.com</a>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Phone size={15} className="text-blue-400" />
+                            <a href="tel:+919734433100" className="hover:text-white">+91 97344 33100</a>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Bottom CTA */}
-                <div className="text-center py-16 px-8 rounded-3xl bg-slate-950 text-white relative overflow-hidden shadow-2xl">
-                    <h2 className="font-orbitron text-3xl md:text-5xl font-bold mb-6 tracking-tight text-white">Partner with <span className="text-blue-500">Conflux AI</span></h2>
-                    <p className="text-slate-300 max-w-xl mx-auto mb-10 text-base font-light">Discuss your business automation, custom web application, or technical AI strategy with our technical team.</p>
-                    <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-600 text-white font-bold uppercase tracking-wider text-xs hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/30">
-                        <span>Initiate Project Consultation</span>
-                    </Link>
-                </div>
             </div>
         </div>
     );

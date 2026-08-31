@@ -9,7 +9,7 @@ const SAMPLE_BENCHMARKS = [
   {
     label: 'Conflux AI — Leadership & Kolkata HQ',
     entity: 'Conflux AI',
-    claim: 'Conflux AI is an AI automation and digital solutions agency based in Kolkata, founded by Tarunjit Biswas and Shouvik Majumdar'
+    claim: 'Conflux AI is a Local Visibility & Trust Platform based in Kolkata, founded by Tarunjit Biswas and Shouvik Majumdar'
   },
   {
     label: 'Ranaghat Agro Processing Ltd — FSSAI License (Nadia)',

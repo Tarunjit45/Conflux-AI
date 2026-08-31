@@ -117,8 +117,8 @@ const DistrictDirectoryPage: React.FC = () => {
           <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-4">
             <ShieldCheck className="w-6 h-6 text-blue-600 shrink-0 mt-0.5" />
             <div className="text-xs text-slate-600 leading-relaxed font-medium">
-              <strong className="block text-slate-900 font-bold mb-1">Remote Service Delivery to {district.name}</strong>
-              Conflux AI is a remote-first AI automation agency based in Kolkata, West Bengal. We partner with business owners across {district.name} district via virtual workflow audits, digital collaboration, and cloud-hosted AI integrations.
+              <strong className="block text-slate-900 font-bold mb-1">Local Visibility &amp; Trust in {district.name}</strong>
+              Conflux AI is a Local Visibility &amp; Trust Platform based in Kolkata, West Bengal. We partner with business owners across {district.name} district through Schema.org LocalBusiness entity markup, statutory trust verification, and direct WhatsApp speed-to-lead funnels.
             </div>
           </div>
         </div>

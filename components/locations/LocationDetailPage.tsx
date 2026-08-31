@@ -128,8 +128,8 @@ const LocationDetailPage: React.FC = () => {
           <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-4">
             <ShieldCheck className="w-6 h-6 text-blue-600 shrink-0 mt-0.5" />
             <div className="text-xs text-slate-600 leading-relaxed font-medium">
-              <strong className="block text-slate-900 font-bold mb-1">Remote Service Model for {location.name}</strong>
-              Conflux AI is a remote-first agency based in Kolkata, West Bengal. We collaborate with business clients in {location.name} via high-touch digital communication channels, virtual consultations, and remote cloud software deployment.
+              <strong className="block text-slate-900 font-bold mb-1">Local Visibility &amp; Trust in {location.name}</strong>
+              Conflux AI is a Local Visibility &amp; Trust Platform based in Kolkata, West Bengal. We connect local businesses in {location.name} to Google Search, Google Maps, AI search engines, and direct WhatsApp lead conversion channels.
             </div>
           </div>
         </div>

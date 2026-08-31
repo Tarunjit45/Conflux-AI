@@ -27,7 +27,7 @@ export const resolveMcaRecord = (entityName: string, claimText: string): {
   const claimNorm = claimText.toLowerCase();
 
   // 0. Conflux AI -> CLEARLY_SUPPORTED (Leadership & Governance)
-  if (norm.includes('conflux') && (claimNorm.includes('founded') || claimNorm.includes('director') || claimNorm.includes('tarunjit') || claimNorm.includes('shouvik') || claimNorm.includes('leadership') || claimNorm.includes('agency'))) {
+  if (norm.includes('conflux') && (claimNorm.includes('founded') || claimNorm.includes('director') || claimNorm.includes('tarunjit') || claimNorm.includes('shouvik') || claimNorm.includes('leadership') || claimNorm.includes('agency') || claimNorm.includes('platform') || claimNorm.includes('visibility'))) {
     const source: VerifySource = {
       id: 'src_cfx_firstparty',
       canonicalUrl: 'https://confluxai.in/about',
@@ -55,7 +55,7 @@ export const resolveMcaRecord = (entityName: string, claimText: string): {
         claimId: '',
         sourceId: source.id,
         source,
-        excerpt: 'Leadership & Enterprise Registration: Conflux AI is founded by Tarunjit Biswas and Shouvik Majumdar in Kolkata, delivering AI engineering solutions.',
+        excerpt: 'Leadership & Enterprise Registration: Conflux AI is founded by Tarunjit Biswas and Shouvik Majumdar in Kolkata, operating as a Local Visibility & Trust Platform.',
         stance: 'SUPPORTS',
         strength: 'HIGH',
         syndicationType: 'ORIGINAL',

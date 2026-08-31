@@ -65,15 +65,15 @@ const LocationHubPage: React.FC = () => {
             {WEST_BENGAL_STATE.h1Title}
           </h1>
           <p className="text-lg md:text-xl font-medium text-slate-600 leading-relaxed mb-8">
-            Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, serving commercial enterprises across all 23 districts of West Bengal, India, and globally.
+            Conflux AI is a Local Visibility &amp; Trust Platform based in Kolkata, West Bengal, making local businesses discoverable, trusted, and contactable across all 23 districts of West Bengal, India.
           </p>
 
           {/* Factual Positioning Banner */}
           <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-4">
             <ShieldCheck className="w-6 h-6 text-blue-600 shrink-0 mt-0.5" />
             <div className="text-xs text-slate-600 leading-relaxed font-medium">
-              <strong className="block text-slate-900 font-bold mb-1">Truthful Remote Service Model</strong>
-              We do not pretend to operate physical storefronts in every city. Instead, we deliver high-touch remote engineering, virtual workflow audits, official WhatsApp API setups, and custom AI agent deployments over secure cloud infrastructure.
+              <strong className="block text-slate-900 font-bold mb-1">Evidence-Based Local Visibility Model</strong>
+              We connect local businesses to authoritative registries, Google Search, Google Maps, and AI search engines with Schema.org LocalBusiness architecture, statutory trust badges, and direct 1-tap WhatsApp lead funnels.
             </div>
           </div>
         </div>
