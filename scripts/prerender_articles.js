@@ -1535,6 +1535,69 @@ const staticPages = [
     `
   },
   {
+    path: '/workplace-policy',
+    title: 'Workplace Policy & Operating Principles | Conflux AI',
+    desc: 'Learn about Conflux AI workplace policies, remote-first and flexible operating model, ownership expectations, asynchronous communication, accountability, and professional standards.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/discover" style="margin: 0 10px; color: #475569; text-decoration: none;">Discover</a>
+            <a href="/business" style="margin: 0 10px; color: #475569; text-decoration: none;">For Businesses</a>
+            <a href="/locations" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
+            <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <div style="display: inline-block; background: #eff6ff; color: #2563eb; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 16px; border: 1px solid #dbeafe;">
+          Workplace Standards
+        </div>
+        <h1 style="font-size: 38px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">Workplace Policy &amp; Operating Principles</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 32px;">
+          Conflux AI operates as a remote-first, flexible platform and organization based in Kolkata, West Bengal. We believe high-impact engineering and growth strategy thrive in an environment of high autonomy, ownership, and transparent communication.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 32px;">
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">End-to-End Ownership</h3>
+            <p style="font-size: 13px; color: #64748b; line-height: 1.6;">Contributors take full responsibility for projects from conception to deployment without needing micromanagement.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Async-First Communication</h3>
+            <p style="font-size: 13px; color: #64748b; line-height: 1.6;">We document decisions clearly, communicate proactively, and raise blockers early across distributed collaboration.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">High-Trust Collaboration</h3>
+            <p style="font-size: 13px; color: #64748b; line-height: 1.6;">Constructive peer review, shared knowledge, and an ego-free environment focused on building great products.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Rigorous Accountability</h3>
+            <p style="font-size: 13px; color: #64748b; line-height: 1.6;">Delivering on commitments, owning mistakes openly, and implementing automated guardrails for continuous reliability.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Continuous Learning</h3>
+            <p style="font-size: 13px; color: #64748b; line-height: 1.6;">Cultivating deep curiosity, refining skills, and staying ahead of developments across AI search and web architecture.</p>
+          </div>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+            <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Respectful &amp; Ethical Conduct</h3>
+            <p style="font-size: 13px; color: #64748b; line-height: 1.6;">Zero tolerance for harassment, discrimination, or dishonesty. We treat all colleagues, partners, and clients with integrity.</p>
+          </div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
+          <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Lean Team Transparency</h3>
+          <p style="font-size: 14px; color: #475569; line-height: 1.6; margin: 0;">
+            Conflux AI is a focused, agile organization founded by Tarunjit Biswas and Shouvik Majumdar, working alongside specialized engineers, researchers, and technical collaborators. We prioritize high-leverage execution over bureaucratic overhead.
+          </p>
+        </div>
+      </main>
+    </div>
+    `
+  },
+  {
     path: '/verify',
     title: 'Business Claim & Evidence Verification | Conflux Verify',
     desc: 'Investigate and verify business claims against primary registrars, first-party filings, and authoritative evidence sources.',

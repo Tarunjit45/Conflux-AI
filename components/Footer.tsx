@@ -41,6 +41,7 @@ const Footer: React.FC<{ siteLogo: string | null }> = ({ siteLogo }) => {
       links: [
         { name: "About Conflux", path: "/about" },
         { name: "Authority Signals", path: "/authority" },
+        { name: "Workplace Policy", path: "/workplace-policy" },
         { name: "Knowledge Blog", path: "/blog" },
         { name: "Social Impact", path: "/impact" },
         { name: "Contact Platform", path: "/contact" }
@@ -145,8 +146,9 @@ const Footer: React.FC<{ siteLogo: string | null }> = ({ siteLogo }) => {
           <div>
             &copy; {new Date().getFullYear()} Conflux AI. All rights reserved. Connecting local businesses to verifiable trust and customer demand.
           </div>
-          <div className="flex gap-6">
+          <div className="flex flex-wrap gap-4 sm:gap-6">
             <Link to="/about" className="hover:text-slate-200">About</Link>
+            <Link to="/workplace-policy" className="hover:text-slate-200">Workplace Policy</Link>
             <Link to="/business/audit" className="hover:text-slate-200">Visibility Audit</Link>
             <Link to="/verify/methodology" className="hover:text-slate-200">Verification Standards</Link>
             <Link to="/authority" className="hover:text-slate-200">Authority Signals</Link>

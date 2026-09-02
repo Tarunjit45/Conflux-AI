@@ -32,6 +32,7 @@ import NotFoundPage from './components/NotFoundPage';
 import VerifyPortal from './components/verify/VerifyPortal';
 import MethodologyPage from './components/verify/MethodologyPage';
 import VerifyGuideDetailPage from './components/verify/guides/VerifyGuideDetailPage';
+import WorkplacePolicyPage from './components/WorkplacePolicyPage';
 import { DiscoverPage } from './components/discover/DiscoverPage';
 import { ForBusinessPage } from './components/business/ForBusinessPage';
 import { VisibilityAuditPage } from './components/business/VisibilityAuditPage';
@@ -116,6 +117,10 @@ const routeMeta: Record<string, { title: string; description: string }> = {
   '/careers': {
     title: 'Careers & Engineering Opportunities | Join Conflux AI',
     description: 'Join Conflux AI in building next-generation AI automation, web infrastructure, and generative engine optimization tools.'
+  },
+  '/workplace-policy': {
+    title: 'Workplace Policy & Operating Principles | Conflux AI',
+    description: 'Conflux AI workplace principles, remote-first operational expectations, ownership standards, communication, and professional conduct.'
   },
   '/contact': {
     title: 'Contact Us | Conflux AI Kolkata',
@@ -400,6 +405,7 @@ const App: React.FC = () => {
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/work" element={<PortfolioPage />} />
           <Route path="/careers" element={<CareersPage />} />
+          <Route path="/workplace-policy" element={<WorkplacePolicyPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/authority" element={<AuthorityPage />} />
           <Route path="/faq" element={<FaqPage />} />
