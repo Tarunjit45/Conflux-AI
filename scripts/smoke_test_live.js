@@ -76,7 +76,7 @@ async function runLiveSmokeTests() {
   const realityCfx = await executeRealityInvestigation({
     caseId: 'SMOKE_CFX',
     entityName: 'Conflux AI',
-    claimText: 'Conflux AI is an AI automation and digital solutions agency founded by Tarunjit Biswas and Shouvik Majumdar in Kolkata',
+    claimText: 'Conflux AI is a Local Visibility + Trust Platform founded by Tarunjit Biswas and Shouvik Majumdar in Kolkata',
     expectedStatus: 'SUPPORTED'
   });
   assert('Live Conflux AI claim verified against live first-party endpoint', realityCfx.actualStatus === 'SUPPORTED');

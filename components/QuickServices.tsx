@@ -112,7 +112,7 @@ const QuickServices: React.FC = () => {
               Core Capabilities
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black font-orbitron tracking-tight text-slate-900">
-              Agency Solutions
+              Platform Solutions
             </h2>
           </div>
           <p className="text-slate-600 text-sm md:text-base max-w-md font-normal leading-relaxed">

@@ -183,7 +183,7 @@ export const DiscoverPage: React.FC = () => {
             transition={{ delay: 0.2 }}
             className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed"
           >
-            Tell Conflux what you need, where you need it, and discover statutory-verified enterprises, clinics, diagnostic centers, artisans, and services you can connect with directly.
+            Find a business. Check the evidence. Decide with confidence. Discover statutory-verified enterprises, clinics, diagnostic centers, artisans, and services you can connect with directly.
           </motion.p>
 
           {/* ── TWO-PART SEARCH INPUT BAR ─────────────────────────── */}

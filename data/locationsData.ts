@@ -21,11 +21,11 @@ export const WEST_BENGAL_STATE: LocationItem = {
     'Textile & Handloom Logistics',
     'Real Estate & Construction'
   ],
-  metaTitle: 'Remote AI Automation Services in West Bengal | Conflux AI',
-  metaDescription: 'Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, serving businesses across West Bengal, India, and globally.',
-  h1Title: 'AI Automation & Digital Solutions for West Bengal Businesses',
-  summary: 'Conflux AI delivers custom AI agents, automated workflow pipelines, WhatsApp Business API integrations, and sub-second React platforms for commercial enterprises across all 23 districts of West Bengal.',
-  localBusinessContext: 'West Bengal is a major commercial engine in Eastern India. From Kolkata to Siliguri and industrial zones like Durgapur and Haldia, businesses require modern automation to reduce operational friction and scale client acquisition.',
+  metaTitle: 'Local Business Visibility & Verification in West Bengal | Conflux AI',
+  metaDescription: 'Conflux AI is a Local Visibility + Trust Platform that helps local businesses become discoverable, trusted, and contactable across Google and AI search.',
+  h1Title: 'Local Business Visibility & Verification for West Bengal',
+  summary: 'Conflux AI delivers structured local business verification, Schema.org LocalBusiness entity graphs, and lead conversion systems for commercial enterprises across all 23 districts of West Bengal.',
+  localBusinessContext: 'West Bengal is a major commercial engine in Eastern India. From Kolkata to Siliguri and industrial zones like Durgapur and Haldia, businesses require modern visibility and verification to build trust and acquire high-intent clients.',
   automationOpportunities: [
     'Instant WhatsApp Speed-to-Lead Response Pipelines',
     'Automated Multi-Channel Lead Scoring & CRM Sync',
@@ -47,7 +47,7 @@ export const WEST_BENGAL_STATE: LocationItem = {
   faqs: [
     {
       question: 'Does Conflux AI operate a physical office in every district of West Bengal?',
-      answer: 'No. Conflux AI is a remote-first AI automation agency based in Kolkata, West Bengal. We collaborate with business clients across all districts of West Bengal through high-touch digital communication, video sessions, and automated workflow integrations.'
+      answer: 'No. Conflux AI is a Local Visibility + Trust Platform based in Kolkata, West Bengal. We collaborate with business clients across all districts of West Bengal through high-touch digital communication, verification workflows, and automated lead solutions.'
     },
     {
       question: 'How do West Bengal businesses partner with Conflux AI remotely?',
@@ -72,10 +72,10 @@ export const WEST_BENGAL_DISTRICTS: LocationItem[] = [
     subdivisions: ['Krishnanagar Sadar', 'Kalyani', 'Ranaghat', 'Tehatta'],
     majorIndustries: ['Handloom & Textiles', 'Education & Biotech', 'Agro-Processing & Dairy', 'Retail & Commercial Trade'],
     keyCommercialHubs: ['Krishnanagar', 'Kalyani', 'Ranaghat', 'Nabadwip', 'Santipur', 'Chakdaha'],
-    metaTitle: 'AI Automation Agency Serving Nadia District | Conflux AI',
-    metaDescription: 'Conflux AI provides remote-first AI automation, WhatsApp lead bots, custom chatbots, and web development for businesses across Nadia district.',
-    h1Title: 'AI Automation & Digital Growth for Businesses in Nadia',
-    summary: 'Serving enterprises in Krishnanagar, Kalyani, Ranaghat, Nabadwip, Santipur, and Chakdaha with autonomous AI systems and speed-to-lead automation.',
+    metaTitle: 'Local Business Visibility & Verification in Nadia District | Conflux AI',
+    metaDescription: 'Conflux AI is a Local Visibility + Trust Platform helping businesses across Nadia district become discoverable, trusted, and contactable across Google and AI search.',
+    h1Title: 'Local Business Visibility & Verification for Nadia',
+    summary: 'Serving enterprises in Krishnanagar, Kalyani, Ranaghat, Nabadwip, Santipur, and Chakdaha with structured entity verification and lead conversion.',
     localBusinessContext: 'Nadia district is a prominent economic corridor in West Bengal, bridging academic research in Kalyani, textile heritage in Santipur/Nabadwip, and trade hubs in Krishnanagar and Ranaghat.',
     automationOpportunities: [
       'Automated Lead Capture for Textile & Wholesale Trade',
@@ -97,11 +97,11 @@ export const WEST_BENGAL_DISTRICTS: LocationItem[] = [
     division: 'Presidency Division',
     majorIndustries: ['IT & Enterprise Software', 'Financial Services', 'Real Estate', 'Healthcare', 'Corporate Consultancies'],
     keyCommercialHubs: ['Salt Lake Sector V', 'New Town Rajarhat', 'Park Street', 'Dalhousie', 'Bhowanipore'],
-    metaTitle: 'AI Automation Agency Based in Kolkata | Conflux AI',
-    metaDescription: 'Conflux AI is a remote-first AI automation agency based in Kolkata, West Bengal. We engineer AI agents, WhatsApp bots, and fast web platforms.',
-    h1Title: 'Enterprise AI Automation & Growth Solutions in Kolkata',
-    summary: 'Architecting custom AI pipelines, CRM workflows, and modern web platforms for Kolkata corporate services, SaaS platforms, and retail brands.',
-    localBusinessContext: 'Kolkata is the primary commercial financial center of Eastern India. Businesses in Sector V, New Town, and South Kolkata leverage our remote-first automation engineering to streamline customer acquisition.'
+    metaTitle: 'Local Business Visibility & Verification in Kolkata | Conflux AI',
+    metaDescription: 'Conflux AI is a Local Visibility + Trust Platform based in Kolkata, West Bengal. We help local businesses become discoverable, trusted, and contactable across Google and AI search.',
+    h1Title: 'Local Business Visibility & Verification in Kolkata',
+    summary: 'Building structured entity graphs, statutory verification dockets, and lead conversion platforms for Kolkata corporate services, clinics, and retail establishments.',
+    localBusinessContext: 'Kolkata is the primary commercial financial center of Eastern India. Businesses in Sector V, New Town, and South Kolkata leverage our platform to establish verified trust and acquire high-intent clients.'
   },
   {
     id: 'dist-north-24-parganas',
@@ -170,7 +170,7 @@ export const WEST_BENGAL_DISTRICTS: LocationItem[] = [
     hqName: 'Chinsurah',
     division: 'Burdwan Division',
     majorIndustries: ['Automotive & Manufacturing', 'Jute & Agriculture', 'Commercial Trade', 'Healthcare'],
-    metaTitle: 'AI Automation Agency Serving Hooghly District | Conflux AI',
+    metaTitle: 'Local Business Visibility & Verification in Hooghly District | Conflux AI',
     metaDescription: 'Conflux AI provides automated lead response, CRM syncing, and modern web applications for businesses across Hooghly district.',
     h1Title: 'AI Automation & Digital Transformation for Hooghly'
   },
@@ -223,7 +223,7 @@ export const WEST_BENGAL_DISTRICTS: LocationItem[] = [
     division: 'Medinipur Division',
     majorIndustries: ['Petrochemicals & Haldia Port Industrial Belt', 'Tourism (Digha)', 'Aquaculture'],
     keyCommercialHubs: ['Haldia', 'Tamluk', 'Contai', 'Digha'],
-    metaTitle: 'AI Automation Agency Serving Purba Medinipur | Conflux AI',
+    metaTitle: 'Local Business Visibility & Verification in Purba Medinipur | Conflux AI',
     metaDescription: 'Remote AI automation pipelines and WhatsApp CRM bots for industrial and tourism enterprises in Haldia & Purba Medinipur.',
     h1Title: 'AI Automation & Port Industrial Solutions in Purba Medinipur'
   },
@@ -258,7 +258,7 @@ export const WEST_BENGAL_DISTRICTS: LocationItem[] = [
     hqName: 'Suri',
     division: 'Burdwan Division',
     majorIndustries: ['Handicrafts & Tourism (Bolpur-Santiniketan)', 'Mining & Stone Crushing', 'Agriculture'],
-    metaTitle: 'AI Automation Agency Serving Birbhum District | Conflux AI',
+    metaTitle: 'Local Business Visibility & Verification in Birbhum District | Conflux AI',
     metaDescription: 'Automate booking, inquiry management, and lead conversion for tourism and commercial businesses in Birbhum.',
     h1Title: 'AI Automation & Digital Growth for Birbhum'
   },
@@ -309,7 +309,7 @@ export const WEST_BENGAL_DISTRICTS: LocationItem[] = [
     hqName: 'Jhargram',
     division: 'Medinipur Division',
     majorIndustries: ['Forestry Products & Agro-Forestry', 'Heritage Tourism'],
-    metaTitle: 'AI Automation Agency Serving Jhargram | Conflux AI',
+    metaTitle: 'Local Business Visibility & Verification in Jhargram | Conflux AI',
     metaDescription: 'Digital solutions, AI chatbots, and lead automation for businesses in Jhargram district.',
     h1Title: 'AI Automation & Growth Solutions for Jhargram'
   },
@@ -344,7 +344,7 @@ export const WEST_BENGAL_DISTRICTS: LocationItem[] = [
     division: 'Malda Division',
     majorIndustries: ['Silk Weaving & Handloom', 'Heritage Tourism', 'Bidi & Agricultural Processing', 'Retail Trade'],
     keyCommercialHubs: ['Baharampur', 'Jangipur', 'Kandi', 'Lalgola'],
-    metaTitle: 'AI Automation Agency Serving Murshidabad | Conflux AI',
+    metaTitle: 'Local Business Visibility & Verification in Murshidabad | Conflux AI',
     metaDescription: 'Custom AI chatbots, WhatsApp business automation, and high-performance web development for Murshidabad enterprises.',
     h1Title: 'AI Automation & Business Systems in Murshidabad'
   },
@@ -378,7 +378,7 @@ export const WEST_BENGAL_DISTRICTS: LocationItem[] = [
     hqName: 'Balurghat',
     division: 'Malda Division',
     majorIndustries: ['Agro-Processing & Rice Milling', 'Border Trade'],
-    metaTitle: 'AI Automation Agency Serving Dakshin Dinajpur | Conflux AI',
+    metaTitle: 'Local Business Visibility & Verification in Dakshin Dinajpur | Conflux AI',
     metaDescription: 'Remote AI engineering, chatbot integration, and web development for businesses in Balurghat.',
     h1Title: 'AI Automation & Business Development in Dakshin Dinajpur'
   },
@@ -413,7 +413,7 @@ export const WEST_BENGAL_DISTRICTS: LocationItem[] = [
     division: 'Jalpaiguri Division',
     majorIndustries: ['Tea Industry & Export', 'Hospitality & Eco-Tourism', 'Siliguri Transit Hub Hub'],
     keyCommercialHubs: ['Siliguri (Part)', 'Darjeeling Town', 'Kurseong'],
-    metaTitle: 'AI Automation Agency Serving Darjeeling District | Conflux AI',
+    metaTitle: 'Local Business Visibility & Verification in Darjeeling District | Conflux AI',
     metaDescription: 'Custom AI lead engines, WhatsApp booking bots, and web platforms for tourism and tea export enterprises in Darjeeling & Siliguri.',
     h1Title: 'AI Automation & Hospitality Solutions for Darjeeling'
   },
@@ -464,7 +464,7 @@ export const WEST_BENGAL_DISTRICTS: LocationItem[] = [
     hqName: 'Alipurduar',
     division: 'Jalpaiguri Division',
     majorIndustries: ['Dooars Tea Gardens', 'Wildlife & Eco-Tourism'],
-    metaTitle: 'AI Automation Agency Serving Alipurduar | Conflux AI',
+    metaTitle: 'Local Business Visibility & Verification in Alipurduar | Conflux AI',
     metaDescription: 'Remote AI automation workflows and WhatsApp booking systems for Alipurduar & Dooars tourism.',
     h1Title: 'AI Automation & Eco-Tourism Solutions for Alipurduar'
   }
@@ -514,7 +514,7 @@ export const NADIA_LOCATIONS: LocationItem[] = [
     faqs: [
       {
         question: 'Does Conflux AI have a physical walk-in office in Krishnanagar?',
-        answer: 'No. Conflux AI is a remote-first AI automation agency based in Kolkata. We partner with Krishnanagar business owners via digital strategy meetings, WhatsApp support channels, and remote cloud infrastructure deployment.'
+        answer: 'No. Conflux AI is a Local Visibility + Trust Platform based in Kolkata. We partner with Krishnanagar business owners via digital strategy meetings, verification workflows, and lead conversion setups.'
       },
       {
         question: 'What AI automation services are most effective for Krishnanagar companies?',
@@ -539,7 +539,7 @@ export const NADIA_LOCATIONS: LocationItem[] = [
     businessTypes: ['Colleges & Universities', 'Hospitals & Diagnostic Centers', 'Manufacturing Facilities', 'Tech Startups'],
     keyCommercialHubs: ['Kalyani Industrial Area Block D', 'Kalyani Central Park Commercial Belt', 'AIIMS Kalyani Corridor'],
     nearbyLocationSlugs: ['chakdaha', 'ranaghat', 'haringhata', 'krishnanagar'],
-    metaTitle: 'AI Automation Agency Serving Kalyani | Conflux AI',
+    metaTitle: 'Local Business Visibility & Verification in Kalyani | Conflux AI',
     metaDescription: 'Custom AI agents, WhatsApp support bots, and web platform development for education, healthcare, and industrial enterprises in Kalyani.',
     h1Title: 'AI Automation & Software Engineering in Kalyani',
     summary: 'Empowering Kalyani educational institutes, hospitals, biotech firms, and industrial setups with AI-driven lead automation and intelligent digital infrastructure.',
@@ -661,7 +661,7 @@ export const NADIA_LOCATIONS: LocationItem[] = [
     majorIndustries: ['Heritage & Religious Tourism', 'Traditional Handloom Weaving', 'Hospitality & Hotels', 'Brass & Metal Craft'],
     keyCommercialHubs: ['Nabadwip Market Corridor', 'Gauranga Bridge Commercial Zone'],
     nearbyLocationSlugs: ['krishnanagar', 'santipur', 'ranaghat'],
-    metaTitle: 'AI Automation Agency Serving Nabadwip | Conflux AI',
+    metaTitle: 'Local Business Visibility & Verification in Nabadwip | Conflux AI',
     metaDescription: 'AI automation, WhatsApp hotel booking bots, and e-commerce web design for handloom weavers and hotels in Nabadwip.',
     h1Title: 'AI Automation & E-Commerce Engineering in Nabadwip',
     summary: 'Digitizing Nabadwip tourism, hotel bookings, and handloom saree trade with automated WhatsApp booking systems and global e-commerce portals.',
@@ -958,7 +958,7 @@ export const OTHER_MAJOR_WB_LOCATIONS: LocationItem[] = [
     priority: 1,
     tier: 2,
     majorIndustries: ['Tea Auction & Export', 'Tourism Transit & Hospitality', 'North East Transport Logistics', 'Retail & Wholesale Trade'],
-    metaTitle: 'AI Automation Agency Serving Siliguri | Conflux AI',
+    metaTitle: 'Local Business Visibility & Verification in Siliguri | Conflux AI',
     metaDescription: 'Remote AI automation, WhatsApp lead bots, and web platform development for hospitality, tea trade, and logistics in Siliguri.',
     h1Title: 'AI Automation & Digital Workflows for Siliguri Enterprises',
     summary: 'Connecting Siliguri hotels, tour operators, tea exporters, and transport agencies with automated lead response and intelligent systems.'
@@ -991,7 +991,7 @@ export const OTHER_MAJOR_WB_LOCATIONS: LocationItem[] = [
     priority: 1,
     tier: 2,
     majorIndustries: ['Heavy Industry', 'Coal & Mining Equipment', 'Commercial Logistics'],
-    metaTitle: 'AI Automation Agency Serving Asansol | Conflux AI',
+    metaTitle: 'Local Business Visibility & Verification in Asansol | Conflux AI',
     metaDescription: 'Remote AI engineering, chatbot integrations, and lead automation for businesses in Asansol.',
     h1Title: 'AI Automation & Digital Solutions in Asansol'
   },

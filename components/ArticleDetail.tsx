@@ -673,9 +673,9 @@ const ArticleDetail: React.FC = () => {
                         <div className="my-10 p-6 rounded-2xl bg-blue-50/60 border border-blue-100 flex items-start gap-4">
                             <ShieldCheck className="text-blue-600 shrink-0 mt-1" size={24} />
                             <div className="text-xs space-y-1">
-                                <h4 className="font-black text-blue-900 uppercase tracking-wider">Remote-First Agency Transparency</h4>
+                                <h4 className="font-black text-blue-900 uppercase tracking-wider">Remote-First Platform Transparency</h4>
                                 <p className="text-blue-800 font-medium leading-relaxed">
-                                    Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal. We partner with business clients across Bagula, Krishnanagar, Ranaghat, Haldia, Siliguri, and all districts of West Bengal remotely through digital communication channels without maintaining physical offices in those localities.
+                                    Conflux AI is a Local Visibility + Trust Platform based in Kolkata, West Bengal. We partner with business clients across Bagula, Krishnanagar, Ranaghat, Haldia, Siliguri, and all districts of West Bengal remotely through digital communication channels without maintaining physical offices in those localities.
                                 </p>
                             </div>
                         </div>

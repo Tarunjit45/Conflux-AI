@@ -18,7 +18,7 @@ const DistrictDirectoryPage: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     if (district) {
-      document.title = district.metaTitle || `AI Automation Agency Serving ${district.name} District | Conflux AI`;
+      document.title = district.metaTitle || `Local Business Visibility & Verification in ${district.name} District | Conflux AI`;
       
       const canonicalUrl = `https://confluxai.in/locations/west-bengal/${district.slug}`;
       let canonicalEl = document.querySelector('link[rel="canonical"]');

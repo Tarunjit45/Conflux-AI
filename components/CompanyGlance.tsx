@@ -31,9 +31,9 @@ const CompanyGlance: React.FC = () => {
               <Target className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Agency Type & Focus</div>
-              <div className="text-white font-bold text-sm mt-0.5">AI Automation & Digital Solutions</div>
-              <div className="text-xs text-slate-400 font-medium">AI Agents, Workflow Pipelines & Growth</div>
+              <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Platform Type & Focus</div>
+              <div className="text-white font-bold text-sm mt-0.5">Local Visibility + Trust Platform</div>
+              <div className="text-xs text-slate-400 font-medium">Discoverable, Trusted & Contactable</div>
             </div>
           </div>
 
@@ -44,7 +44,7 @@ const CompanyGlance: React.FC = () => {
             <div>
               <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Base Location</div>
               <div className="text-white font-bold text-sm mt-0.5">Kolkata, West Bengal, India</div>
-              <div className="text-xs text-slate-400 font-medium">Remote-First Agency</div>
+              <div className="text-xs text-slate-400 font-medium">Local Visibility + Trust Platform</div>
             </div>
           </div>
 

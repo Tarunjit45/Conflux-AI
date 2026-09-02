@@ -140,7 +140,7 @@ const BlogPage: React.FC = () => {
                     
                     <div className="flex items-center gap-3 p-4 rounded-2xl bg-blue-50/50 border border-blue-100 text-blue-900 text-xs font-bold shrink-0">
                         <Globe size={18} className="text-blue-600 shrink-0" />
-                        <span>Remote-First Agency Based in Kolkata</span>
+                        <span>Local Visibility + Trust Platform Based in Kolkata</span>
                     </div>
                 </div>
 

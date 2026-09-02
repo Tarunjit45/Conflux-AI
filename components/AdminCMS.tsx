@@ -199,7 +199,7 @@ const AdminCMS: React.FC = () => {
   const [faqList, setFaqList] = useState<{ question: string; answer: string }[]>([
     {
       question: 'Conflux AI কি বাগুলায় সরাসরি কাজ করে?',
-      answer: 'Conflux AI হলো কোলকাতা কেন্দ্রিক একটি Remote-First AI Automation Agency। আমরা বাগুলা সহ নদীয়া জেলার সমস্ত ব্যবসার সাথে অনলাইন ভিডিও সেশন ও রিমোট প্ল্যাটফর্মের মাধ্যমে কাজ করি।'
+      answer: 'Conflux AI হলো কোলকাতা কেন্দ্রিক একটি Local Visibility + Trust Platform। আমরা বাগুলা সহ নদীয়া জেলার সমস্ত ব্যবসার সাথে অনলাইন ভিডিও সেশন ও রিমোট প্ল্যাটফর্মের মাধ্যমে কাজ করি।'
     }
   ]);
   const [sourceList, setSourceList] = useState<{ title: string; url: string }[]>([
@@ -484,7 +484,7 @@ const AdminCMS: React.FC = () => {
     setFaqList([
       {
         question: 'Conflux AI কি বাগুলায় সরাসরি কাজ করে?',
-        answer: 'Conflux AI হলো কোলকাতা কেন্দ্রিক একটি Remote-First AI Automation Agency। আমরা বাগুলা সহ নদীয়া জেলার সমস্ত ব্যবসার সাথে অনলাইন ভিডিও সেশন ও রিমোট প্ল্যাটফর্মের মাধ্যমে কাজ করি।'
+        answer: 'Conflux AI হলো কোলকাতা কেন্দ্রিক একটি Local Visibility + Trust Platform। আমরা বাগুলা সহ নদীয়া জেলার সমস্ত ব্যবসার সাথে অনলাইন ভিডিও সেশন ও রিমোট প্ল্যাটফর্মের মাধ্যমে কাজ করি।'
       }
     ]);
     setSourceList([{ title: 'Nadia District Official Portal', url: 'https://nadia.gov.in' }]);
@@ -758,7 +758,7 @@ const AdminCMS: React.FC = () => {
                   <MapPin className="text-blue-400" size={18} /> West Bengal Locality Knowledge Grid
                 </h2>
                 <p className="text-xs text-slate-400 leading-relaxed max-w-3xl">
-                  Conflux AI is a remote-first agency based in Kolkata. We build structured local content for business hubs like Bagula, Krishnanagar, Ranaghat, Haldia, Siliguri, and beyond without fake physical office claims.
+                  Conflux AI is a Local Visibility + Trust Platform based in Kolkata. We build structured local content and evidence verification for business hubs like Bagula, Krishnanagar, Ranaghat, Haldia, Siliguri, and beyond without fake physical office claims.
                 </p>
               </div>
 

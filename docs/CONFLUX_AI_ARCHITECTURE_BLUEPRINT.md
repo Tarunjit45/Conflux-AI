@@ -69,10 +69,10 @@ To prevent inconsistent company metadata across components and search engine sch
 ```json
 {
   "name": "Conflux AI",
-  "legalName": "Conflux AI Digital Automation & Growth Agency",
+  "legalName": "Conflux AI",
   "website": "https://confluxai.in",
   "logo": "https://confluxai.in/logo.png",
-  "description": "Conflux AI is a premier AI automation agency and growth engineering network specializing in autonomous web architectures, custom AI chatbots, enterprise workflow automation, SEO/GEO optimization, and digital marketing.",
+  "description": "Conflux AI is a Local Visibility + Trust Platform that helps local businesses become discoverable, trusted, and contactable across Google and AI search.",
   "founders": [
     { "name": "Tarunjit Biswas", "role": "Founder & CTO", "email": "tarunjitbiswas24@gmail.com" },
     { "name": "Shouvik Majumdar", "role": "Co-Founder & Creative Director" }

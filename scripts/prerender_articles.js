@@ -777,8 +777,8 @@ const districts = [
 const stateHubSchema = {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
-  "name": "Remote AI Automation Services in West Bengal | Conflux AI",
-  "description": "Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, serving businesses across West Bengal, India, and globally.",
+  "name": "Local Business Visibility & Verification in West Bengal | Conflux AI",
+  "description": "Conflux AI is a Local Visibility + Trust Platform that helps local businesses become discoverable, trusted, and contactable across Google and AI search.",
   "url": "https://confluxai.in/locations"
 };
 
@@ -789,7 +789,8 @@ const stateHubHtml = `
         <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
         <nav style="font-size: 13px; font-weight: 700;">
           <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
-          <a href="/services" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
+          <a href="/discover" style="margin: 0 10px; color: #475569; text-decoration: none;">Discover</a>
+          <a href="/business" style="margin: 0 10px; color: #475569; text-decoration: none;">For Businesses</a>
           <a href="/locations" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Locations</a>
           <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
           <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
@@ -798,10 +799,10 @@ const stateHubHtml = `
     </header>
     <main style="max-width: 1200px; margin: 0 auto; padding: 40px 20px; font-family: 'Inter', sans-serif;">
       <h1 style="font-size: 38px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 12px;">
-        AI Automation & Digital Solutions for West Bengal Businesses
+        Local Business Visibility & Verification in West Bengal
       </h1>
       <p style="font-size: 16px; color: #64748b; max-width: 800px; line-height: 1.6; margin-bottom: 36px;">
-        Conflux AI delivers custom AI agents, automated workflow pipelines, WhatsApp Business API integrations, and sub-second React platforms for commercial enterprises across all 23 districts of West Bengal.
+        Conflux AI is a Local Visibility + Trust Platform that helps local businesses across all 23 districts of West Bengal become discoverable, trusted, and contactable across Google and AI search.
       </p>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
@@ -814,7 +815,7 @@ const stateHubHtml = `
             <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 12px;">
               Key Hubs: ${escapeHtml(d.hubs)}
             </p>
-            <a href="/locations/${d.slug}" style="font-size: 12px; color: #2563eb; font-weight: 800; text-decoration: none;">View District Strategy &rarr;</a>
+            <a href="/locations/${d.slug}" style="font-size: 12px; color: #2563eb; font-weight: 800; text-decoration: none;">View District Directory &rarr;</a>
           </div>
         `).join('')}
       </div>
@@ -822,15 +823,15 @@ const stateHubHtml = `
   </div>
 `;
 
-writePage('/locations', 'Remote AI Automation Services Across West Bengal | Conflux AI', 'Conflux AI provides remote-first AI automation, WhatsApp lead bots, custom chatbots, and web development for businesses across all districts of West Bengal.', 'https://confluxai.in/locations', [stateHubSchema], stateHubHtml);
-writePage('/locations/west-bengal', 'Remote AI Automation Services in West Bengal | Conflux AI', 'Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, serving businesses across West Bengal, India, and globally.', 'https://confluxai.in/locations/west-bengal', [stateHubSchema], stateHubHtml);
+writePage('/locations', 'Local Business Visibility & Verification Across West Bengal | Conflux AI', 'Conflux AI helps local businesses across all districts of West Bengal become discoverable, trusted, and contactable across Google and AI search.', 'https://confluxai.in/locations', [stateHubSchema], stateHubHtml);
+writePage('/locations/west-bengal', 'Local Business Visibility & Verification in West Bengal | Conflux AI', 'Conflux AI is a Local Visibility + Trust Platform that helps local businesses become discoverable, trusted, and contactable across Google and AI search.', 'https://confluxai.in/locations/west-bengal', [stateHubSchema], stateHubHtml);
 
 // Pre-render all 23 District Pages (/locations/:slug AND /locations/west-bengal/:slug)
 let districtCount = 0;
 
 districts.forEach(d => {
-  const districtTitle = `AI Automation Agency Serving ${d.name} District | Conflux AI`;
-  const districtDesc = `Conflux AI provides remote-first AI automation, WhatsApp lead bots, custom chatbots, and web development for businesses across ${d.name} district.`;
+  const districtTitle = `Local Business Visibility & Verification in ${d.name} District | Conflux AI`;
+  const districtDesc = `Conflux AI helps local businesses in ${d.name} district become discoverable, trusted, and contactable across Google and AI search.`;
 
   // Find related local articles matching this district using structured metadata
   const districtArticles = articles.filter(a => {
@@ -1350,8 +1351,8 @@ const staticPages = [
   },
   {
     path: '/about',
-    title: 'About Us | Conflux AI - Mission & Leadership',
-    desc: 'Learn about Conflux AI, founded by Tarunjit Biswas & Shouvik Majumdar. We are a remote-first AI automation and digital solutions agency based in Kolkata, India.',
+    title: 'About Us | Conflux AI - Local Visibility + Trust Platform',
+    desc: 'Learn about Conflux AI, founded by Tarunjit Biswas & Shouvik Majumdar. Conflux AI is a Local Visibility + Trust Platform that helps local businesses become discoverable, trusted, and contactable across Google and AI search.',
     body: `
     <div id="root">
       <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
@@ -1359,7 +1360,8 @@ const staticPages = [
           <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
           <nav style="font-size: 13px; font-weight: 700;">
             <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
-            <a href="/services" style="margin: 0 10px; color: #475569; text-decoration: none;">Services</a>
+            <a href="/discover" style="margin: 0 10px; color: #475569; text-decoration: none;">Discover</a>
+            <a href="/business" style="margin: 0 10px; color: #475569; text-decoration: none;">For Businesses</a>
             <a href="/locations" style="margin: 0 10px; color: #475569; text-decoration: none;">Locations</a>
             <a href="/blog" style="margin: 0 10px; color: #475569; text-decoration: none;">Blog</a>
             <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
@@ -1369,7 +1371,7 @@ const staticPages = [
       <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
         <h1 style="font-size: 40px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">About Conflux AI</h1>
         <p style="font-size: 18px; color: #475569; line-height: 1.6; margin-bottom: 30px;">
-          Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, India, serving clients across India and globally. Founded by Tarunjit Biswas (CEO & CTO) and Shouvik Majumdar (CFO & CMO).
+          Conflux AI is a Local Visibility + Trust Platform that helps local businesses become discoverable, trusted, and contactable across Google and AI search. Founded by Tarunjit Biswas (CEO & CTO) and Shouvik Majumdar (CFO & CMO) in Kolkata, West Bengal, India.
         </p>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 30px;">
           <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
@@ -1522,7 +1524,7 @@ const staticPages = [
         </div>
         <div style="margin-bottom: 20px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
           <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 8px;">How does Conflux AI work with clients outside Kolkata?</h3>
-          <p style="font-size: 15px; color: #475569; line-height: 1.6; margin: 0;">We operate as a remote-first agency. We conduct comprehensive discovery audits via video calls, build automation workflows in sandbox environments, and deploy cloud infrastructure directly to your business stack with continuous monitoring.</p>
+          <p style="font-size: 15px; color: #475569; line-height: 1.6; margin: 0;">We operate as a remote-first Local Visibility + Trust Platform. We conduct discovery audits via video calls, verify business entities, and deploy lead automation and web infrastructure directly to your business stack with continuous monitoring.</p>
         </div>
         <div style="margin-bottom: 20px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
           <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 8px;">How long does a standard project take?</h3>

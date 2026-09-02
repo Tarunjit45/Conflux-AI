@@ -82,16 +82,16 @@ const routeMeta: Record<string, { title: string; description: string }> = {
     description: 'Conflux AI provides remote-first digital solutions, website development, WhatsApp automation, and AI chatbots for small and medium businesses across West Bengal.'
   },
   '/locations/west-bengal': {
-    title: 'Remote AI Automation Services in West Bengal | Conflux AI',
-    description: 'Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, serving businesses across West Bengal, India, and globally.'
+    title: 'Local Business Visibility & Verification in West Bengal | Conflux AI',
+    description: 'Conflux AI is a Local Visibility + Trust Platform helping businesses across West Bengal become discoverable, trusted, and contactable across Google and AI search.'
   },
   '/': {
-    title: 'Conflux AI | AI Automation & Digital Solutions Agency',
-    description: 'Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, India, serving clients across India and globally.'
+    title: 'Conflux AI | Local Visibility + Trust Platform',
+    description: 'Conflux AI is a Local Visibility + Trust Platform that helps local businesses become discoverable, trusted, and contactable across Google and AI search.'
   },
   '/about': {
-    title: 'About Us | Conflux AI - Mission & Leadership',
-    description: 'Learn about Conflux AI, founded by Tarunjit Biswas & Shouvik Majumdar. We are a remote-first AI automation and digital solutions agency based in Kolkata, India.'
+    title: 'About Us | Conflux AI - Local Visibility + Trust Platform',
+    description: 'Learn about Conflux AI, founded by Tarunjit Biswas & Shouvik Majumdar. Conflux AI is a Local Visibility + Trust Platform that helps local businesses become discoverable, trusted, and contactable across Google and AI search.'
   },
   '/solutions': {
     title: 'Enterprise AI Solutions & Automation Architecture | Conflux AI',
@@ -282,8 +282,8 @@ const ScrollToTop = () => {
     }
 
     const meta = routeMeta[pathname] || {
-      title: 'Conflux AI | AI Automation & Digital Solutions Agency',
-      description: 'Conflux AI is a remote-first AI automation and digital solutions agency based in Kolkata, West Bengal, India, serving clients across India and globally.'
+      title: 'Conflux AI | Local Visibility + Trust Platform',
+      description: 'Conflux AI is a Local Visibility + Trust Platform that helps local businesses become discoverable, trusted, and contactable across Google and AI search.'
     };
 
     // Update document title

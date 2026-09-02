@@ -33,7 +33,7 @@ const AboutUsPage: React.FC = () => {
                             Making Local Businesses <span className="text-blue-600">Discoverable</span> &amp; Trusted.
                         </h1>
                         <p className="text-slate-600 font-normal text-base sm:text-lg leading-relaxed">
-                            Conflux AI is a Local Visibility &amp; Trust Platform based in Kolkata, West Bengal, India. Founded by Tarunjit Biswas and Shouvik Majumdar, Conflux AI makes local businesses discoverable, understandable, trusted, and contactable across Google search, local maps, and AI engines (ChatGPT, Google Gemini, Perplexity) through evidence-based verification and automated lead conversion.
+                            Conflux AI is a Local Visibility + Trust Platform that helps local businesses become discoverable, trusted, and contactable across Google and AI search. Founded by Tarunjit Biswas and Shouvik Majumdar in Kolkata, West Bengal, India.
                         </p>
                     </div>
                     
@@ -49,7 +49,7 @@ const AboutUsPage: React.FC = () => {
                         <Shield size={16} className="text-blue-600" /> Verified Canonical Summary
                     </div>
                     <p className="text-slate-800 text-base md:text-lg font-medium leading-relaxed">
-                        "Conflux AI is a Local Visibility &amp; Trust Platform based in Kolkata, West Bengal, India. Conflux connects local businesses to authoritative registries, Google search, and AI discovery engines to deliver verified trust badges and qualified customer leads."
+                        "Conflux AI is a Local Visibility + Trust Platform that helps local businesses become discoverable, trusted, and contactable across Google and AI search."
                     </p>
                 </div>
 
