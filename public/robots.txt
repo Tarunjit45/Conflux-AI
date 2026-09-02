@@ -8,6 +8,8 @@ Allow: /locations/
 Allow: /services/
 Allow: /blog/
 Disallow: /admin/
+Disallow: /admin/cms
+Disallow: /admin/location-coverage
 Disallow: /admin/*
 Disallow: /auth
 Disallow: /login

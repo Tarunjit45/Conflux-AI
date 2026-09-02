@@ -13,6 +13,7 @@ import { connectService } from '../../lib/connectService';
 import { contributionService } from '../../lib/contributionService';
 import { useAuth } from '../../lib/authContext';
 import { ClaimBusinessModal } from './ClaimBusinessModal';
+import { trackPageView } from '../../lib/analytics';
 import type { ConfluxBusiness } from '../../types/business';
 import type { ReviewRatingContribution } from '../../types/contribution';
 
@@ -239,6 +240,9 @@ export const PublicBusinessProfile: React.FC = () => {
       document.head.appendChild(scriptEl);
     }
     scriptEl.textContent = JSON.stringify(schemaGraph);
+
+    // ── GA4: Dynamic Business Profile Page View ────────────────────────
+    trackPageView(formattedTitle, canonicalUrl, `/business/${business.slug}`);
 
     return () => {
       const el = document.getElementById('conflux-business-jsonld');

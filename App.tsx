@@ -42,6 +42,7 @@ import { AuthModal } from './components/auth/AuthModal';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { UserOnboardingPrompt } from './components/auth/UserOnboardingPrompt';
 import { AuthProvider } from './lib/authContext';
+import { trackPageView } from './lib/analytics';
 
 const routeMeta: Record<string, { title: string; description: string }> = {
   '/verify/methodology': {
@@ -328,6 +329,13 @@ const ScrollToTop = () => {
 
     const twitterDescEl = document.querySelector('meta[property="twitter:description"]');
     if (twitterDescEl) twitterDescEl.setAttribute('content', meta.description);
+
+    // ── Google Analytics 4 (GA4): SPA Page View Tracking ──────────────
+    // Detail routes like /business/:slug and /blog/:slug manage their own async titles & canonical URLs
+    const isDynamicDetailRoute = pathname.startsWith('/business/') || (pathname.startsWith('/blog/') && pathname !== '/blog');
+    if (!isDynamicDetailRoute) {
+      trackPageView(meta.title, canonicalUrl, cleanPath);
+    }
   }, [pathname, hash]);
   
   return null;

@@ -15,6 +15,7 @@ import Breadcrumbs from './Breadcrumbs';
 import { applySeoMetadata } from '../lib/seoMetadata';
 import { getArticleCanonicalUrl } from '../lib/canonicalUrl';
 import { generateArticleSchema, generateBreadcrumbSchema, generateFAQSchema } from '../lib/structuredData';
+import { trackPageView } from '../lib/analytics';
 
 // Dynamic OpenGraph and Meta Tag Setter
 const setOrCreateMeta = (attr: 'name' | 'property', key: string, content: string) => {
@@ -482,6 +483,13 @@ const ArticleDetail: React.FC = () => {
                 publishedTime: foundArticle.publishedAt || foundArticle.updatedAt,
                 type: 'article'
             });
+
+            // ── GA4: Dynamic Article Page View ────────────────────────
+            trackPageView(
+                foundArticle.seoTitle || `${foundArticle.title} | Conflux AI`,
+                fullUrl,
+                `/blog/${foundArticle.slug}`
+            );
 
             // Track page view event in location analytics
             trackLocationEvent(
