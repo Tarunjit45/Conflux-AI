@@ -6,7 +6,7 @@ import {
   Building2, ShieldCheck, ShieldAlert, CheckCircle2, Phone, MessageSquare,
   MapPin, Globe, Calendar, Clock, ExternalLink, ArrowRight, Send, Compass,
   Layers, Check, AlertCircle, FileText, Lock, Sparkles, UserCheck, Star,
-  Edit3, Flag, HelpCircle, X
+  Edit3, Flag, HelpCircle, X, Share2
 } from 'lucide-react';
 import { businessService } from '../../lib/businessService';
 import { connectService } from '../../lib/connectService';
