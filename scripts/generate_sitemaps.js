@@ -105,7 +105,8 @@ districtSlugs.forEach(slug => {
 // Published Town / Sub-Location Hubs
 const publishedSubLocations = [
   { district: 'nadia', city: 'ranaghat', priority: '0.85' },
-  { district: 'nadia', city: 'santipur', priority: '0.85' }
+  { district: 'nadia', city: 'santipur', priority: '0.85' },
+  { district: 'nadia', city: 'birnagar', priority: '0.85' }
 ];
 
 publishedSubLocations.forEach(sub => {
@@ -114,6 +115,20 @@ publishedSubLocations.forEach(sub => {
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>${sub.priority}</priority>
+  </url>`);
+});
+
+// Published Verified Businesses
+const publishedBusinesses = [
+  { url: 'https://confluxai.in/business/india/west-bengal/nadia/birnagar/a2z-supplements', priority: '0.9' }
+];
+
+publishedBusinesses.forEach(biz => {
+  xmlEntries.push(`  <url>
+    <loc>${biz.url}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>${biz.priority}</priority>
   </url>`);
 });
 

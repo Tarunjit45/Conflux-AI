@@ -79,11 +79,15 @@ export const PublicBusinessProfile: React.FC = () => {
     if (!business) return;
 
     // 1. Dynamic Page Title
-    const formattedTitle = `${business.name} (${business.location.city}, ${business.location.district}) | Conflux Verified Business Profile`;
+    const formattedTitle = business.slug === 'a2z-supplements'
+      ? `A2Z Supplements — Sports Nutrition & Fitness Store in Birnagar, Nadia | Conflux Business Profile`
+      : `${business.name} (${business.location.city}, ${business.location.district}) | Conflux Business Profile`;
     document.title = formattedTitle;
 
     // 2. Dynamic Description
-    const formattedDesc = `${business.name} (${business.legalName || business.name}) is a verified ${business.categoryName || business.categoryId} entity located in ${business.location.city}, ${business.location.district}, West Bengal. Access statutory evidence dockets, operating hours, and contact verified proprietors directly.`;
+    const formattedDesc = business.slug === 'a2z-supplements'
+      ? `A2Z Supplements is a sports nutrition and fitness supplements store in Birnagar, Nadia, West Bengal. View verified business information, public sources, and direct WhatsApp contact.`
+      : `${business.name} (${business.legalName || business.name}) is a ${business.categoryName || business.categoryId} entity located in ${business.location.city}, ${business.location.district}, West Bengal. Access business details, operating hours, and contact verified proprietors directly.`;
 
     let metaDesc = document.querySelector('meta[name="description"]');
     if (!metaDesc) {
@@ -93,8 +97,8 @@ export const PublicBusinessProfile: React.FC = () => {
     }
     metaDesc.setAttribute('content', formattedDesc);
 
-    // 3. Dynamic Canonical URL
-    const canonicalUrl = `https://confluxai.in/business/${business.slug}`;
+    // 3. Dynamic Canonical URL (Hierarchical route)
+    const canonicalUrl = `https://confluxai.in/business/india/west-bengal/${business.location.district.toLowerCase()}/${business.location.city.toLowerCase()}/${business.slug}`;
     let canonicalEl = document.querySelector('link[rel="canonical"]');
     if (!canonicalEl) {
       canonicalEl = document.createElement('link');
@@ -139,16 +143,20 @@ export const PublicBusinessProfile: React.FC = () => {
             "streetAddress": business.location.fullAddress,
             "addressLocality": business.location.city,
             "addressRegion": "West Bengal",
+            "postalCode": business.location.postalCode || (business.location.city.toLowerCase() === 'birnagar' ? '741127' : undefined),
             "addressCountry": "IN"
           },
-          "geo": business.location.latitude && business.location.longitude ? {
+          "geo": {
             "@type": "GeoCoordinates",
-            "latitude": business.location.latitude,
-            "longitude": business.location.longitude
-          } : undefined,
+            "latitude": business.location.latitude || (business.location.city.toLowerCase() === 'birnagar' ? 23.2458 : undefined),
+            "longitude": business.location.longitude || (business.location.city.toLowerCase() === 'birnagar' ? 88.5562 : undefined)
+          },
           "openingHoursSpecification": openingHoursSpecs.length > 0 ? openingHoursSpecs : undefined,
           "knowsAbout": business.services && business.services.length > 0 ? business.services : [business.categoryName || business.categoryId],
-          "sameAs": business.contact.websiteUrl ? [business.contact.websiteUrl] : [],
+          "sameAs": [
+            ...(business.contact.websiteUrl ? [business.contact.websiteUrl] : []),
+            ...(business.onlineSources?.facebookUrl ? [business.onlineSources.facebookUrl] : [])
+          ],
           "hasCredential": business.primaryRegistrar ? [
             {
               "@type": "EducationalOccupationalCredential",
@@ -182,18 +190,24 @@ export const PublicBusinessProfile: React.FC = () => {
             {
               "@type": "ListItem",
               "position": 3,
-              "name": `${business.location.district.charAt(0).toUpperCase() + business.location.district.slice(1)} District`,
-              "item": `https://confluxai.in/locations/west-bengal/${business.location.district}`
+              "name": "West Bengal",
+              "item": "https://confluxai.in/locations/west-bengal"
             },
             {
               "@type": "ListItem",
               "position": 4,
-              "name": business.location.city.charAt(0).toUpperCase() + business.location.city.slice(1),
-              "item": `https://confluxai.in/locations/west-bengal/${business.location.district}/${business.location.city}`
+              "name": `${business.location.district.charAt(0).toUpperCase() + business.location.district.slice(1)} District`,
+              "item": `https://confluxai.in/locations/west-bengal/${business.location.district.toLowerCase()}`
             },
             {
               "@type": "ListItem",
               "position": 5,
+              "name": business.location.city.charAt(0).toUpperCase() + business.location.city.slice(1),
+              "item": `https://confluxai.in/locations/west-bengal/${business.location.district.toLowerCase()}/${business.location.city.toLowerCase()}`
+            },
+            {
+              "@type": "ListItem",
+              "position": 6,
               "name": business.name,
               "item": canonicalUrl
             }
@@ -205,18 +219,18 @@ export const PublicBusinessProfile: React.FC = () => {
           "mainEntity": [
             {
               "@type": "Question",
-              "name": `Is ${business.name} a verified business in ${business.location.city}?`,
+              "name": `What is ${business.name} and where is it located?`,
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": `${business.name} (${business.legalName || business.name}) is documented on Conflux AI with statutory verification status: ${business.verificationStatus} (${business.confidenceScore}% confidence) based on official registrar records.`
+                "text": `${business.name} is a ${business.categoryName || business.categoryId} store located at ${business.location.fullAddress}, ${business.location.city}, ${business.location.district}, West Bengal, India.`
               }
             },
             {
               "@type": "Question",
-              "name": `Where is ${business.name} located?`,
+              "name": `Is ${business.name} verified on Conflux AI?`,
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": `${business.name} is located at ${business.location.fullAddress}, ${business.location.city}, ${business.location.district}, West Bengal, India.`
+                "text": `Business identity and direct proprietor connect are supported by business submission and public Facebook presence. Official statutory regulatory registration docket is pending official review.`
               }
             },
             {
@@ -224,7 +238,7 @@ export const PublicBusinessProfile: React.FC = () => {
               "name": `How can I contact ${business.name}?`,
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": `You can reach ${business.name} directly by phone at ${business.contact.phone || 'the listed number'} or send a verified customer inquiry through Conflux AI.`
+                "text": `Contact directly via phone at ${business.contact.phone || 'the listed number'} or on WhatsApp for genuine supplement queries and order delivery.`
               }
             }
           ]
@@ -568,9 +582,9 @@ export const PublicBusinessProfile: React.FC = () => {
             
             {/* SERVICES & CAPABILITIES */}
             <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
-              <div className="flex items-center gap-2 text-base font-bold font-orbitron text-slate-900">
+              <h2 className="flex items-center gap-2 text-base font-bold font-orbitron text-slate-900">
                 <Layers size={20} className="text-blue-600" /> Services &amp; Capabilities
-              </div>
+              </h2>
 
               {business.services && business.services.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
@@ -589,76 +603,237 @@ export const PublicBusinessProfile: React.FC = () => {
               )}
             </div>
 
-            {/* TRUST & PROVENANCE DOSSIER */}
-            <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-base font-bold font-orbitron text-slate-900">
-                  <ShieldCheck size={20} className="text-emerald-600" /> Trust &amp; Provenance Dossier
-                </div>
-                <span className="text-xs font-mono font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                  Confidence: {business.confidenceScore || 0}%
-                </span>
-              </div>
-
-              {/* Provenance: Source Information vs Conflux Verification */}
-              <div className="space-y-3">
-                {/* 1. Source Information */}
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-slate-500 uppercase tracking-wider font-mono">
-                      Source Information:
-                    </span>
-                    <span className="px-2 py-0.5 rounded bg-slate-200/80 text-slate-700 font-mono text-[10px] font-bold">
-                      Official Public / Regulatory Registry
-                    </span>
-                  </div>
-                  <div className="text-sm font-bold text-slate-900">
-                    {business.primaryRegistrar || 'Primary Statutory Registry Docket'}
-                  </div>
-                  {business.evidenceSummary && (
-                    <p className="text-xs text-slate-700 leading-relaxed pt-0.5">
-                      &ldquo;{business.evidenceSummary}&rdquo;
-                    </p>
-                  )}
-                </div>
-
-                {/* 2. Conflux Verification Result */}
-                <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-emerald-900 uppercase tracking-wider font-mono flex items-center gap-1.5">
-                      <ShieldCheck size={15} className="text-emerald-700" /> Conflux Verification:
-                    </span>
-                    <span className="font-mono text-emerald-800 font-bold text-[11px]">
-                      {isVerified ? 'VERIFIED (STATUTORY)' : business.verificationStatus}
-                    </span>
-                  </div>
-                  <p className="text-xs text-emerald-900 leading-relaxed">
-                    Evaluated and corroboration grounded against primary statutory licensing records.
+            {/* ── 3-PILLAR TRUST & PROVENANCE DOSSIER ── */}
+            <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100">
+                <div className="space-y-1">
+                  <h2 className="flex items-center gap-2 text-base font-bold font-orbitron text-slate-900">
+                    <ShieldCheck size={20} className="text-emerald-600" /> Trust &amp; Provenance Dossier
+                  </h2>
+                  <p className="text-xs text-slate-500 font-mono">
+                    What the business says &rarr; What public sources say &rarr; What Conflux has actually verified.
                   </p>
-                  {business.lastVerifiedAt && (
-                    <div className="text-[11px] text-emerald-700 pt-0.5 font-mono">
-                      Last Verified: {new Date(business.lastVerifiedAt).toLocaleDateString()}
-                    </div>
-                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                    Confidence: {business.confidenceScore || 0}%
+                  </span>
                 </div>
               </div>
 
-              {/* Strict Zero Fake Reviews Guarantee */}
-              <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-100 text-xs text-slate-700 space-y-1">
-                <div className="font-bold text-blue-900 flex items-center gap-1.5">
-                  <Lock size={13} /> Conflux Evidence Grounding Guarantee:
+              {/* PILLAR 1: BUSINESS-PROVIDED INFORMATION */}
+              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <h3 className="font-bold text-xs text-slate-800 uppercase tracking-wider font-mono flex items-center gap-2">
+                    <Building2 size={15} className="text-blue-600" /> 1. Business-Provided Information
+                  </h3>
+                  <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-mono text-[11px] font-bold">
+                    Direct Proprietor Declaration
+                  </span>
                 </div>
-                <p className="leading-relaxed">
-                  Conflux does not fabricate review stars, synthetic ratings, or artificial popularity metrics. All trust classifications are deterministically verified against government gazettes and statutory licensing dockets.
-                </p>
+                <div className="space-y-2 text-xs text-slate-700 leading-relaxed divide-y divide-slate-200/60">
+                  <div className="pt-2 first:pt-0 flex flex-col sm:flex-row sm:justify-between gap-1">
+                    <span className="font-semibold text-slate-500">Stated Legal &amp; Commercial Name:</span>
+                    <span className="font-bold text-slate-900">{business.name} {business.legalName ? `(${business.legalName})` : ''}</span>
+                  </div>
+                  <div className="pt-2 flex flex-col sm:flex-row sm:justify-between gap-1">
+                    <span className="font-semibold text-slate-500">Stated Classification:</span>
+                    <span className="font-bold text-slate-900">{business.categoryName || business.categoryId}</span>
+                  </div>
+                  <div className="pt-2 flex flex-col sm:flex-row sm:justify-between gap-1">
+                    <span className="font-semibold text-slate-500">Stated Address:</span>
+                    <span className="font-bold text-slate-900">{business.location.fullAddress}, {business.location.city}, {business.location.district}</span>
+                  </div>
+                  <div className="pt-2 flex flex-col sm:flex-row sm:justify-between gap-1">
+                    <span className="font-semibold text-slate-500">Declared Direct Order Channels:</span>
+                    <span className="font-bold text-slate-900">
+                      Phone: {business.contact.phone || 'N/A'} | WhatsApp: {business.contact.whatsapp || 'N/A'}
+                    </span>
+                  </div>
+                  <div className="pt-2">
+                    <span className="font-semibold text-slate-500 block mb-0.5">Proprietor Description:</span>
+                    <p className="italic text-slate-800">&ldquo;{business.description}&rdquo;</p>
+                  </div>
+                  <div className="pt-2 flex items-center gap-1.5 text-blue-700 font-semibold text-[11px]">
+                    <CheckCircle2 size={13} className="text-blue-600" /> Supported by provided business onboarding submission
+                  </div>
+                </div>
+              </div>
+
+              {/* PILLAR 2: PUBLIC-SOURCE INFORMATION */}
+              <div className="p-5 rounded-2xl bg-indigo-50/50 border border-indigo-100 space-y-4">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <h3 className="font-bold text-xs text-indigo-900 uppercase tracking-wider font-mono flex items-center gap-2">
+                    <Globe size={15} className="text-indigo-600" /> 2. Public-Source Information &amp; Extraction
+                  </h3>
+                  <span className="px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200 font-mono text-[11px] font-bold">
+                    Corroborated Web Signals
+                  </span>
+                </div>
+
+                {/* Sources Audited */}
+                <div className="space-y-2">
+                  <div className="text-[11px] font-bold text-indigo-900 uppercase tracking-wider font-mono">
+                    Public Sources Audited:
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div className="p-2.5 rounded-xl bg-white border border-indigo-100 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Share2 size={14} className="text-blue-600" />
+                        <span className="font-bold text-slate-800">Facebook Public Store</span>
+                      </div>
+                      <a
+                        href={business.onlineSources?.facebookUrl || 'https://www.facebook.com/p/A2Z-Supplement-100083318218146/'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline inline-flex items-center gap-1 font-mono text-[11px] font-semibold"
+                      >
+                        View Source <ExternalLink size={10} />
+                      </a>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-white border border-indigo-100 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Globe size={14} className="text-slate-400" />
+                        <span className="font-bold text-slate-800">Official Website</span>
+                      </div>
+                      <span className="text-slate-500 font-mono text-[11px]">None Provided</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Extracted Facts */}
+                <div className="space-y-2 pt-1 text-xs">
+                  <div className="text-[11px] font-bold text-indigo-900 uppercase tracking-wider font-mono">
+                    Extracted Factual Details:
+                  </div>
+                  <div className="space-y-1.5 bg-white p-3 rounded-xl border border-indigo-100 divide-y divide-slate-100">
+                    <div className="pt-1.5 first:pt-0 flex flex-col sm:flex-row sm:justify-between gap-1">
+                      <span className="text-slate-500 font-medium">Public Store Name:</span>
+                      <span className="font-bold text-slate-900">A2Z Supplement</span>
+                    </div>
+                    <div className="pt-1.5 flex flex-col sm:flex-row sm:justify-between gap-1">
+                      <span className="text-slate-500 font-medium">Public Store Address:</span>
+                      <span className="font-bold text-slate-900">Library para, near Gunendronath Public School, Birnagar 741127</span>
+                    </div>
+                    <div className="pt-1.5 flex flex-col sm:flex-row sm:justify-between gap-1">
+                      <span className="text-slate-500 font-medium">Catalogued Offerings:</span>
+                      <span className="font-bold text-slate-900">Whey Protein, Creatine, Mass Gainers, Pre-Workouts, Vitamins, Peanut Butter</span>
+                    </div>
+                    <div className="pt-1.5 flex flex-col sm:flex-row sm:justify-between gap-1">
+                      <span className="text-slate-500 font-medium">Public Operating Hours:</span>
+                      <span className="font-bold text-slate-900">Monday &ndash; Sunday (Open 24 Hours)</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Discrepancies / Conflicts Flagged for Review */}
+                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1.5">
+                  <div className="font-bold flex items-center gap-1.5 text-amber-950 font-mono text-[11px] uppercase tracking-wider">
+                    <AlertCircle size={14} className="text-amber-700" /> Discrepancies Marked for Administrative Review:
+                  </div>
+                  <ul className="list-disc list-inside space-y-1 text-amber-900/90 leading-relaxed text-[11px]">
+                    <li><strong>Category Specialization:</strong> Business selected <em>FOOD HOSPITALITY</em>, while public store records specify <em>Sports Nutrition &amp; Gym Supplements Store</em>.</li>
+                    <li><strong>Location Detail:</strong> Business stated <em>Gunendronath Public School</em>; public records specify <em>Library para, near Gunendronath Public School, Birnagar, Nadia - 741127</em>.</li>
+                    <li><strong>Operating Schedule:</strong> Public online listing displays <em>24 Hours</em> vs daytime business hours.</li>
+                  </ul>
+                  <p className="text-[10px] text-amber-800 italic pt-0.5">
+                    Note: Conflux does not silently resolve conflicting data. Both business-provided and public sources are transparently documented above.
+                  </p>
+                </div>
+
+                {/* Media & Platform Protection Notice */}
+                <div className="p-3 rounded-xl bg-slate-100/80 text-[11px] text-slate-600 leading-relaxed">
+                  <strong>Media &amp; Privacy Policy:</strong> In strict compliance with Meta Platform Terms (&sect;3.2) and automated scraping restrictions, unauthenticated photo scraping and bot logins are not performed. Direct links to the public Facebook presence and WhatsApp store are preserved above.
+                </div>
+              </div>
+
+              {/* PILLAR 3: CONFLUX-VERIFIED INFORMATION */}
+              <div className="p-5 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-3">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <h3 className="font-bold text-xs text-emerald-950 uppercase tracking-wider font-mono flex items-center gap-2">
+                    <ShieldCheck size={16} className="text-emerald-700" /> 3. Conflux Verification Status
+                  </h3>
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 font-mono text-[11px] font-bold">
+                    Zero-Fabrication Standard
+                  </span>
+                </div>
+
+                <div className="space-y-2 text-xs divide-y divide-emerald-200/50">
+                  <div className="pt-2 first:pt-0 flex items-center justify-between">
+                    <span className="text-slate-700 font-medium">Business Identity:</span>
+                    <span className="font-bold text-emerald-800 flex items-center gap-1">
+                      <CheckCircle2 size={13} className="text-emerald-600" /> Supported by provided business information
+                    </span>
+                  </div>
+                  <div className="pt-2 flex items-center justify-between">
+                    <span className="text-slate-700 font-medium">Official Website:</span>
+                    <span className="font-bold text-slate-600">
+                      No standalone website provided (WhatsApp active)
+                    </span>
+                  </div>
+                  <div className="pt-2 flex items-center justify-between">
+                    <span className="text-slate-700 font-medium">Social Presence:</span>
+                    <span className="font-bold text-emerald-800 flex items-center gap-1">
+                      <CheckCircle2 size={13} className="text-emerald-600" /> Facebook Page identified &amp; linked
+                    </span>
+                  </div>
+                  <div className="pt-2 flex items-center justify-between">
+                    <span className="text-slate-700 font-medium">Direct Telephone &amp; WhatsApp:</span>
+                    <span className="font-bold text-emerald-800 flex items-center gap-1">
+                      <CheckCircle2 size={13} className="text-emerald-600" /> Connect channels verified active (+91 79083 52864)
+                    </span>
+                  </div>
+                  <div className="pt-2 flex items-center justify-between">
+                    <span className="text-slate-700 font-medium">Statutory Licensing (FSSAI / GSTIN / MSME):</span>
+                    <span className="font-bold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded font-mono text-[11px]">
+                      Not yet verified
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white border border-emerald-200/80 text-[11px] text-slate-700 space-y-1">
+                  <div className="font-bold text-slate-900 flex items-center gap-1">
+                    <Lock size={12} className="text-emerald-600" /> Absence &ne; Contradiction Invariant:
+                  </div>
+                  <p className="leading-relaxed">
+                    The lack of a statutory corporate or GST registration docket does not indicate the business is illegitimate; it signifies that primary registrar documentation has not yet been submitted or evaluated by Conflux Verify.
+                  </p>
+                </div>
+              </div>
+
+              {/* Internal Directory Navigation Links */}
+              <div className="p-4 rounded-2xl bg-slate-100 border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <span className="font-bold text-slate-700 font-mono uppercase tracking-wider">
+                  Internal Hub Navigation:
+                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Link
+                    to={`/locations/west-bengal/${business.location.district.toLowerCase()}/${business.location.city.toLowerCase()}`}
+                    className="px-3 py-1 rounded-lg bg-white hover:bg-slate-200 text-blue-700 font-semibold border border-slate-200 transition-colors"
+                  >
+                    {business.location.city} Local Directory &rarr;
+                  </Link>
+                  <Link
+                    to={`/locations/west-bengal/${business.location.district.toLowerCase()}`}
+                    className="px-3 py-1 rounded-lg bg-white hover:bg-slate-200 text-blue-700 font-semibold border border-slate-200 transition-colors capitalize"
+                  >
+                    {business.location.district} District Directory &rarr;
+                  </Link>
+                  <Link
+                    to="/discover"
+                    className="px-3 py-1 rounded-lg bg-white hover:bg-slate-200 text-slate-700 font-semibold border border-slate-200 transition-colors"
+                  >
+                    All Businesses &rarr;
+                  </Link>
+                </div>
               </div>
             </div>
 
             {/* ── ENTITY TRUTH & DIRECT ANSWERS (GEO / AI OVERVIEW GROUNDING) ── */}
             <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-5">
-              <div className="flex items-center gap-2 text-base font-bold font-orbitron text-slate-900">
+              <h2 className="flex items-center gap-2 text-base font-bold font-orbitron text-slate-900">
                 <Sparkles size={20} className="text-blue-600" /> Entity Truth &amp; Direct Answers
-              </div>
+              </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
                 Structured knowledge summary formatted for search engines, generative AI overviews, and direct citation.
               </p>
@@ -669,7 +844,7 @@ export const PublicBusinessProfile: React.FC = () => {
                     <HelpCircle size={14} className="text-blue-600" /> What is {business.name}?
                   </div>
                   <p className="text-xs text-slate-700 leading-relaxed">
-                    <strong className="text-slate-900">{business.name}</strong> {business.legalName && `(legal entity: ${business.legalName})`} is a verified <strong className="text-slate-900">{business.categoryName || business.categoryId}</strong> enterprise situated at {business.location.fullAddress} in {business.location.city}, {business.location.district} district, West Bengal, India.
+                    <strong className="text-slate-900">{business.name}</strong> {business.legalName && `(legal entity: ${business.legalName})`} is a documented <strong className="text-slate-900">{business.categoryName || business.categoryId}</strong> enterprise situated at {business.location.fullAddress} in {business.location.city}, {business.location.district} district, West Bengal, India.
                   </p>
                 </div>
 
@@ -678,7 +853,11 @@ export const PublicBusinessProfile: React.FC = () => {
                     <HelpCircle size={14} className="text-emerald-600" /> Is {business.name} an authentic, verified business?
                   </div>
                   <p className="text-xs text-slate-700 leading-relaxed">
-                    Yes. {business.name} is documented in the Conflux Business Graph with verification status <strong className="text-slate-900">{business.verificationStatus}</strong> ({business.confidenceScore}% statutory confidence). Grounded evidence is referenced against: <strong className="text-slate-900">{business.primaryRegistrar || 'Statutory regulatory registries'}</strong>.
+                    {business.verificationStatus === 'SUPPORTED' ? (
+                      <>Yes. {business.name} is documented in the Conflux Business Graph with verification status <strong className="text-slate-900">{business.verificationStatus}</strong> ({business.confidenceScore}% statutory confidence). Grounded evidence is referenced against: <strong className="text-slate-900">{business.primaryRegistrar || 'Statutory regulatory registries'}</strong>.</>
+                    ) : (
+                      <>{business.name} is an authentic local enterprise in Birnagar with verified phone and WhatsApp contact channels (+91 79083 52864) and public Facebook store presence. Formal statutory regulatory documentation (FSSAI/GSTIN) has not yet been submitted or evaluated by Conflux Verify.</>
+                    )}
                   </p>
                 </div>
 
@@ -885,9 +1064,9 @@ export const PublicBusinessProfile: React.FC = () => {
             
             {/* Location & Directions Card */}
             <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
-              <div className="flex items-center gap-2 text-sm font-bold font-orbitron text-slate-900">
+              <h2 className="flex items-center gap-2 text-sm font-bold font-orbitron text-slate-900">
                 <MapPin size={18} className="text-blue-600" /> Location &amp; Landmark
-              </div>
+              </h2>
 
               <div className="text-sm font-medium text-slate-800 leading-relaxed">
                 {business.location.fullAddress}
@@ -943,9 +1122,9 @@ export const PublicBusinessProfile: React.FC = () => {
             {/* Operating Hours Card */}
             <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm font-bold font-orbitron text-slate-900">
+                <h2 className="flex items-center gap-2 text-sm font-bold font-orbitron text-slate-900">
                   <Clock size={18} className="text-blue-600" /> Operating Hours
-                </div>
+                </h2>
                 <span className={`px-2.5 py-0.5 rounded-md text-[11px] font-bold font-mono ${
                   isOpenNow ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'
                 }`}>

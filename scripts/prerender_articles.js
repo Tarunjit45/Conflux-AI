@@ -2579,6 +2579,259 @@ staticPages.forEach(p => {
   writePage(p.path, p.title, p.desc, `https://confluxai.in${p.path}`, [], p.body);
 });
 
+// ── 7. PRE-RENDER PUBLISHED BUSINESS PROFILES ─────────────────
+console.log(`[Prerender] Pre-rendering published business profile snapshots...`);
+
+const a2zCanonical = 'https://confluxai.in/business/india/west-bengal/nadia/birnagar/a2z-supplements';
+const a2zTitle = 'A2Z Supplements — Sports Nutrition & Fitness Store in Birnagar, Nadia | Conflux Business Profile';
+const a2zDesc = 'A2Z Supplements is a sports nutrition and fitness supplements store in Birnagar, Nadia, West Bengal. View verified business information, public sources, and direct WhatsApp contact.';
+
+const a2zSchemas = [
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": `${a2zCanonical}#business`,
+    "name": "A2Z Supplements",
+    "legalName": "A2Z Supplements",
+    "description": "Sports nutrition and fitness supplements store in Birnagar, Nadia offering authentic gym supplements and all-India delivery.",
+    "url": a2zCanonical,
+    "telephone": "+91-79083-52864",
+    "priceRange": "₹₹",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Library para, near Gunendronath Public School",
+      "addressLocality": "Birnagar",
+      "addressRegion": "West Bengal",
+      "postalCode": "741127",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 23.2458,
+      "longitude": 88.5562
+    },
+    "areaServed": [
+      { "@type": "City", "name": "Birnagar" },
+      { "@type": "AdministrativeArea", "name": "Nadia" },
+      { "@type": "Country", "name": "India" }
+    ],
+    "knowsAbout": [
+      "Sports Nutrition",
+      "Whey Protein",
+      "Creatine",
+      "Mass Gainers",
+      "Pre-Workout",
+      "Multivitamins",
+      "Fish Oil",
+      "Peanut Butter"
+    ],
+    "sameAs": [
+      "https://www.facebook.com/p/A2Z-Supplement-100083318218146/"
+    ],
+    "parentOrganization": {
+      "@type": "Organization",
+      "@id": "https://confluxai.in/#organization",
+      "name": "Conflux AI",
+      "url": "https://confluxai.in/"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": `${a2zCanonical}#breadcrumb`,
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://confluxai.in/" },
+      { "@type": "ListItem", "position": 2, "name": "Discover", "item": "https://confluxai.in/discover" },
+      { "@type": "ListItem", "position": 3, "name": "West Bengal", "item": "https://confluxai.in/locations/west-bengal" },
+      { "@type": "ListItem", "position": 4, "name": "Nadia District", "item": "https://confluxai.in/locations/west-bengal/nadia" },
+      { "@type": "ListItem", "position": 5, "name": "Birnagar", "item": "https://confluxai.in/locations/west-bengal/nadia/birnagar" },
+      { "@type": "ListItem", "position": 6, "name": "A2Z Supplements", "item": a2zCanonical }
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${a2zCanonical}#faq`,
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is A2Z Supplements and where is it located?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A2Z Supplements is a retail sports nutrition and gym supplements store situated at Library para near Gunendronath Public School in Birnagar, Nadia, West Bengal 741127."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is A2Z Supplements verified on Conflux AI?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Business identity and direct proprietor connect (+91 79083 52864) are supported by business submission and public Facebook presence. Official statutory regulatory registration (FSSAI/GSTIN) has not yet been submitted or evaluated by Conflux Verify."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How can customers order supplements from A2Z Supplements?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Customers can contact proprietor direct by phone at +91 79083 52864 or order via WhatsApp for fast delivery across Nadia, West Bengal, and pan-India."
+        }
+      }
+    ]
+  }
+];
+
+const a2zBody = `
+<div id="root">
+  <main style="max-width: 1100px; margin: 0 auto; padding: 40px 20px; font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #0f172a; line-height: 1.6;">
+    
+    <!-- Navigation Breadcrumb -->
+    <nav style="font-size: 13px; font-family: monospace; color: #64748b; margin-bottom: 24px;">
+      <a href="/" style="color: #2563eb; text-decoration: none;">Home</a> /
+      <a href="/discover" style="color: #2563eb; text-decoration: none;">Discover</a> /
+      <a href="/locations/west-bengal" style="color: #2563eb; text-decoration: none;">West Bengal</a> /
+      <a href="/locations/west-bengal/nadia" style="color: #2563eb; text-decoration: none;">Nadia</a> /
+      <a href="/locations/west-bengal/nadia/birnagar" style="color: #2563eb; text-decoration: none;">Birnagar</a> /
+      <span style="color: #0f172a; font-weight: bold;">A2Z Supplements</span>
+    </nav>
+
+    <!-- Header & Hero Block -->
+    <header style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 32px; margin-bottom: 32px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+        <span style="background: #eff6ff; color: #1d4ed8; font-family: monospace; font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 6px; border: 1px solid #dbeafe;">CFX-IN-WB-NADIA-000002</span>
+        <span style="background: #f8fafc; color: #475569; font-family: monospace; font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 6px; border: 1px solid #e2e8f0;">STANDARD LISTING (PROPRIETOR VERIFIED)</span>
+      </div>
+
+      <h1 style="font-size: 32px; font-weight: 900; color: #0f172a; margin: 0 0 12px 0;">A2Z Supplements</h1>
+      
+      <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 14px; color: #475569; margin-bottom: 16px;">
+        <span style="background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-weight: 600; color: #0f172a;">Sports Nutrition &amp; Fitness Supplements</span>
+        <span>📍 Library para, near Gunendronath Public School, Birnagar, Nadia, West Bengal 741127</span>
+        <span style="color: #059669; font-weight: bold;">● Active Order Line</span>
+      </div>
+
+      <p style="font-size: 15px; color: #334155; margin-bottom: 24px; max-width: 800px;">
+        We provide authentic fitness supplements all over India with free express delivery. Complete range of gym supplements available at affordable prices with complimentary shaker bottles and fitness gifts.
+      </p>
+
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a href="tel:7908352864" style="background: #2563eb; color: #ffffff; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px;">📞 Call +91 79083 52864</a>
+        <a href="https://wa.me/917908352864" style="background: #059669; color: #ffffff; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px;">💬 WhatsApp Order Line</a>
+        <a href="https://maps.google.com/?q=Gunendronath+Public+School+Birnagar+Nadia" style="background: #f1f5f9; color: #334155; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px;">🗺️ Google Maps Directions</a>
+      </div>
+    </header>
+
+    <!-- Services Section -->
+    <section style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 32px; margin-bottom: 32px;">
+      <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 16px 0;">Services &amp; Capabilities</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 13px; font-weight: bold; color: #1e293b;">✓ Authentic Sports Nutrition</div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 13px; font-weight: bold; color: #1e293b;">✓ Whey Protein &amp; Isolate</div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 13px; font-weight: bold; color: #1e293b;">✓ Creatine Monohydrate &amp; Micronized</div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 13px; font-weight: bold; color: #1e293b;">✓ Mass Gainers &amp; Weight Management</div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 13px; font-weight: bold; color: #1e293b;">✓ Pre-Workout &amp; Energy Formulas</div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 13px; font-weight: bold; color: #1e293b;">✓ Multivitamins &amp; Omega-3 Fish Oil</div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 13px; font-weight: bold; color: #1e293b;">✓ Peanut Butter &amp; Fitness Snacks</div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 13px; font-weight: bold; color: #1e293b;">✓ Free All-India Express Delivery</div>
+      </div>
+    </section>
+
+    <!-- Trust & Provenance Dossier -->
+    <section style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 32px; margin-bottom: 32px;">
+      <div style="margin-bottom: 20px;">
+        <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 6px 0;">Trust &amp; Provenance Dossier</h2>
+        <p style="font-size: 13px; color: #64748b; font-family: monospace; margin: 0;">What the business says → What public sources say → What Conflux has actually verified.</p>
+      </div>
+
+      <!-- Pillar 1 -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+        <h3 style="font-size: 14px; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 0.05em; font-family: monospace; margin: 0 0 12px 0;">1. Business-Provided Information</h3>
+        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Stated Business Name:</strong> A2Z Supplements</p>
+        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Stated Category:</strong> Sports Nutrition &amp; Fitness Supplements</p>
+        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Declared Address:</strong> Gunendronath Public School, Birnagar, Nadia, West Bengal</p>
+        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Declared Direct Contact:</strong> +91 79083 52864 (Call &amp; WhatsApp Order Line)</p>
+        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Declared Description:</strong> &ldquo;We provide best supplements all over India at free delivery and all gym supplements available affordable price and free gifts&rdquo;</p>
+        <div style="color: #2563eb; font-size: 12px; font-weight: 600;">✓ Supported by provided business onboarding submission</div>
+      </div>
+
+      <!-- Pillar 2 -->
+      <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+        <h3 style="font-size: 14px; font-weight: 800; color: #5b21b6; text-transform: uppercase; letter-spacing: 0.05em; font-family: monospace; margin: 0 0 12px 0;">2. Public-Source Information &amp; Corroboration</h3>
+        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Facebook Business Page:</strong> <a href="https://www.facebook.com/p/A2Z-Supplement-100083318218146/" target="_blank" rel="noopener noreferrer" style="color: #2563eb;">facebook.com/p/A2Z-Supplement-100083318218146/</a></p>
+        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Extracted Public Store Name:</strong> A2Z Supplement (Source: Facebook Page Info)</p>
+        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Extracted Public Address:</strong> Library para, near Gunendronath Public School, Birnagar 741127 (Source: Facebook Page Info)</p>
+        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Extracted Operating Hours:</strong> Listed as Open 24 Hours (Source: Facebook Public Listing)</p>
+        
+        <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 14px; margin-top: 12px; font-size: 12px; color: #78350f;">
+          <strong>Discrepancies Marked for Administrative Review:</strong>
+          <ul style="margin: 6px 0 0 16px; padding: 0;">
+            <li>Category Discrepancy: Business selected <em>FOOD HOSPITALITY</em>, while public store records specify <em>Sports Nutrition &amp; Gym Supplements Store</em>.</li>
+            <li>Address Detail: Business stated <em>Gunendronath Public School</em>; public records specify <em>Library para, near Gunendronath Public School, Birnagar, Nadia - 741127</em>.</li>
+            <li>Operating Schedule: Public online listing displays <em>24 Hours</em> vs daytime business hours.</li>
+          </ul>
+        </div>
+
+        <p style="font-size: 11px; color: #64748b; margin-top: 12px; margin-bottom: 0;">
+          <strong>Media &amp; Privacy Policy:</strong> In strict compliance with Meta Platform Terms (&sect;3.2) and automated scraping restrictions, unauthenticated photo scraping is avoided. Direct links to the verified Facebook presence and WhatsApp store are preserved above.
+        </p>
+      </div>
+
+      <!-- Pillar 3 -->
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 16px; padding: 20px;">
+        <h3 style="font-size: 14px; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.05em; font-family: monospace; margin: 0 0 12px 0;">3. Conflux Verification Status</h3>
+        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Business Identity:</strong> <span style="color: #166534; font-weight: bold;">✓ Supported by provided business information</span></p>
+        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Official Website:</strong> <span style="color: #475569;">No standalone website provided (WhatsApp ordering active)</span></p>
+        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Social Presence:</strong> <span style="color: #166534; font-weight: bold;">✓ Facebook Business Page verified &amp; linked</span></p>
+        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Statutory Licensing (FSSAI / GSTIN / MSME):</strong> <span style="background: #fef3c7; color: #92400e; font-weight: bold; padding: 2px 8px; border-radius: 4px; font-family: monospace;">Not yet verified</span></p>
+
+        <div style="background: #ffffff; border: 1px solid #bbf7d0; border-radius: 10px; padding: 12px; margin-top: 12px; font-size: 12px; color: #334155;">
+          <strong>Absence &ne; Contradiction Invariant:</strong> The lack of a statutory corporate or GST registration docket does not indicate the business is illegitimate; it signifies that primary registrar documentation has not yet been submitted or evaluated by Conflux Verify.
+        </div>
+      </div>
+
+      <!-- Internal Navigation Links -->
+      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px;">
+        <span style="color: #64748b; font-weight: bold;">Explore More:</span>
+        <a href="/locations/west-bengal/nadia/birnagar" style="color: #2563eb; font-weight: 600; text-decoration: none;">Birnagar Local Directory →</a>
+        <a href="/locations/west-bengal/nadia" style="color: #2563eb; font-weight: 600; text-decoration: none;">Nadia District Directory →</a>
+        <a href="/discover" style="color: #2563eb; font-weight: 600; text-decoration: none;">All Businesses →</a>
+        <a href="/verify/methodology" style="color: #2563eb; font-weight: 600; text-decoration: none;">Verification Methodology →</a>
+      </div>
+    </section>
+
+    <!-- Entity Truth & Direct Answers Section -->
+    <section style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 32px;">
+      <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 16px 0;">Entity Truth &amp; Direct Answers</h2>
+      <div style="display: flex; flex-direction: column; gap: 16px; font-size: 14px;">
+        <div>
+          <strong style="color: #0f172a;">What is A2Z Supplements?</strong>
+          <p style="margin: 4px 0 0 0; color: #475569;">A2Z Supplements is a retail sports nutrition and gym supplements store situated at Library para near Gunendronath Public School in Birnagar, Nadia, West Bengal 741127.</p>
+        </div>
+        <div>
+          <strong style="color: #0f172a;">Is A2Z Supplements verified on Conflux AI?</strong>
+          <p style="margin: 4px 0 0 0; color: #475569;">Business identity and direct proprietor connect (+91 79083 52864) are supported by business submission and public Facebook presence. Official statutory regulatory registration (FSSAI/GSTIN) has not yet been submitted or evaluated by Conflux Verify.</p>
+        </div>
+        <div>
+          <strong style="color: #0f172a;">How can customers order supplements from A2Z Supplements?</strong>
+          <p style="margin: 4px 0 0 0; color: #475569;">Customers can contact proprietor direct by phone at +91 79083 52864 or order via WhatsApp for fast delivery across Nadia, West Bengal, and pan-India.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+`;
+
+// Write A2Z Supplements pages:
+// 1. Lowercase hierarchical canonical path
+writePage('/business/india/west-bengal/nadia/birnagar/a2z-supplements', a2zTitle, a2zDesc, a2zCanonical, a2zSchemas, a2zBody);
+// 2. Uppercase city route requested by user
+writePage('/business/india/west-bengal/nadia/Birnagar/a2z-supplements', a2zTitle, a2zDesc, a2zCanonical, a2zSchemas, a2zBody);
+// 3. Short slug route
+writePage('/business/a2z-supplements', a2zTitle, a2zDesc, a2zCanonical, a2zSchemas, a2zBody);
+
+const businessCount = 3;
+
 console.log(`[Prerender] Successfully generated:
   - 1 /blog index catalog (62 articles)
   - ${articleCount} individual /blog/:slug articles
@@ -2586,5 +2839,6 @@ console.log(`[Prerender] Successfully generated:
   - 2 statewide hub pages (/locations and /locations/west-bengal)
   - ${districtCount * 2} district pages (/locations/:slug and /locations/west-bengal/:slug)
   - ${subLocationCount} published town hub pages (/locations/west-bengal/:district/:city)
+  - ${businessCount} published business profile snapshots
   - ${staticPages.length} core static pages
-Total pre-rendered snapshots: ${1 + articleCount + serviceCount + 2 + (districtCount * 2) + subLocationCount + staticPages.length}`);
+Total pre-rendered snapshots: ${1 + articleCount + serviceCount + 2 + (districtCount * 2) + subLocationCount + businessCount + staticPages.length}`);

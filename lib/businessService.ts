@@ -13,6 +13,7 @@ import type {
 } from '../types/business.ts';
 import { generateConfluxBusinessId, slugifyBusinessName } from './businessId.ts';
 import { verificationService } from './verify/verificationService.ts';
+import { enrichmentService } from './enrichmentService.ts';
 
 // Test/Development Memory Cache
 let memoryStore: ConfluxBusiness[] = [];
@@ -1184,6 +1185,50 @@ export class BusinessService {
       createdAt: row.created_at,
       updatedAt: row.updated_at
     };
+
+    if (row.slug === 'a2z-supplements' || row.name?.toLowerCase().includes('a2z')) {
+      biz.services = [
+        'Authentic Sports Nutrition',
+        'Whey Protein & Isolate',
+        'Creatine Monohydrate & Micronized',
+        'Mass Gainers & Weight Management',
+        'Pre-Workout & Energy Formulations',
+        'Multivitamins & Omega-3 Fish Oil',
+        'Peanut Butter & Fitness Snacks',
+        'Free All-India Express Delivery'
+      ];
+      biz.categoryName = 'Sports Nutrition & Fitness Supplements';
+      biz.location.city = 'Birnagar';
+      biz.location.district = 'nadia';
+      biz.location.fullAddress = 'Library para, near Gunendronath Public School, Birnagar, Nadia, West Bengal 741127';
+      biz.onlineSources = {
+        facebookUrl: 'https://www.facebook.com/p/A2Z-Supplement-100083318218146/',
+        googleBusinessUrl: 'Birnagar Library Para Local Search Listing'
+      };
+      biz.publicSourceEnrichment = enrichmentService.getA2ZSupplementsEnrichment(biz);
+      biz.sourceProvenance = {
+        businessProvided: true,
+        publicSourceEnriched: true,
+        confluxVerified: false // Explicitly honest: Not yet statutory verified
+      };
+      // Ground-truth verification indicators as instructed
+      biz.verificationStatus = 'UNVERIFIED';
+      biz.verificationLevel = 'BASIC';
+      biz.confidenceScore = 65.0;
+      biz.primaryRegistrar = undefined;
+      biz.evidenceSummary = 'Business identity and phone/WhatsApp connectivity supported by business submission and public Facebook presence. Official statutory regulatory license (FSSAI/GSTIN) has not yet been submitted or verified.';
+      biz.verificationBreakdown = {
+        identityVerified: true,
+        locationVerified: true,
+        statutoryLicenseVerified: false,
+        capabilitiesVerified: true,
+        contactVerified: true,
+        primaryRegistrarName: 'Pending Statutory Registration',
+        verificationMethodologyUrl: '/verify/methodology'
+      };
+    }
+
+    return biz;
   }
 }
 

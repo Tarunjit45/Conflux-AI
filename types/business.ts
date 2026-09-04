@@ -148,8 +148,60 @@ export interface ConfluxBusiness {
   contact: BusinessContact;
   operatingHours: OperatingHoursDay[];
   capabilities: BusinessCapability[];
+  onlineSources?: SubmittedOnlineSources;
+  publicSourceEnrichment?: PublicSourceEnrichment;
+  sourceProvenance?: {
+    businessProvided: boolean;
+    publicSourceEnriched: boolean;
+    confluxVerified: boolean;
+  };
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PublicSourceField<T = string> {
+  value: T;
+  sourceUrl: string;
+  sourcePlatform: string;
+  fetchedAt: string;
+}
+
+export interface PublicMediaItem {
+  id: string;
+  url: string;
+  sourceUrl: string;
+  platform: string;
+  alt: string;
+  attribution: string;
+  isPermitted: boolean;
+  width?: number;
+  height?: number;
+}
+
+export interface SourceConflict {
+  field: string;
+  businessProvidedValue: string;
+  publicSourceValue: string;
+  sourceUrl: string;
+  notes: string;
+}
+
+export interface PublicSourceEnrichment {
+  sourcesChecked: {
+    platform: string;
+    url: string;
+    status: 'ACCESSIBLE' | 'RESTRICTED' | 'NOT_FOUND' | 'REQUIRES_API_AUTH';
+    note?: string;
+  }[];
+  extractedName?: PublicSourceField<string>;
+  extractedCategory?: PublicSourceField<string>;
+  extractedAddress?: PublicSourceField<string>;
+  extractedPhone?: PublicSourceField<string>;
+  extractedOperatingHours?: PublicSourceField<string>;
+  extractedSocialLinks?: PublicSourceField<string>[];
+  media?: PublicMediaItem[];
+  conflicts?: SourceConflict[];
+  lastEnrichedAt?: string;
 }
 
 // ── BUSINESS SUBMISSION APPLICATION TYPES ─────────────────────────────
