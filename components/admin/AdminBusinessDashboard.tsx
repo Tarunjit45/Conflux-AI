@@ -51,10 +51,12 @@ import {
   Upload,
   Share2,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AdminShell } from "./AdminSidebar";
 import { businessService } from "../../lib/businessService";
+import { enrichmentService } from "../../lib/enrichmentService";
 import {
   connectService,
   type MeasurementReport,
@@ -411,6 +413,94 @@ export const AdminBusinessDashboard: React.FC = () => {
     setSourceLinksList(prev =>
       prev.map(s => (s.id === id ? { ...s, isActive: !s.isActive } : s))
     );
+  };
+
+  const [isEnrichingMedia, setIsEnrichingMedia] = useState(false);
+
+  const handleAutoEnrichMedia = () => {
+    setIsEnrichingMedia(true);
+    try {
+      const currentBiz: ConfluxBusiness = editingBusiness
+        ? {
+            ...editingBusiness,
+            name: formState.name || editingBusiness.name,
+            contact: {
+              ...editingBusiness.contact,
+              phone: formState.phone,
+              whatsapp: formState.whatsapp,
+              email: formState.email,
+              websiteUrl: formState.websiteUrl,
+              bookingUrl: formState.bookingUrl,
+            },
+            location: {
+              ...editingBusiness.location,
+              fullAddress: formState.fullAddress || editingBusiness.location.fullAddress,
+              city: formState.city || editingBusiness.location.city,
+              district: formState.district || editingBusiness.location.district,
+            },
+            media: mediaList,
+            socialLinks: socialLinksList,
+            sourceLinks: sourceLinksList,
+          }
+        : {
+            id: 'new',
+            confluxBusinessId: 'NEW',
+            slug: 'new',
+            name: formState.name || 'New Business',
+            businessType: formState.businessType,
+            categoryId: formState.categoryId,
+            description: formState.description,
+            status: formState.status,
+            claimStatus: 'UNCLAIMED_PUBLIC',
+            verificationStatus: formState.verificationStatus,
+            verificationLevel: 'NONE',
+            confidenceScore: 0,
+            isClaimed: false,
+            isIndexable: true,
+            location: {
+              id: 'new_loc',
+              businessId: 'new',
+              country: 'India',
+              state: 'West Bengal',
+              district: formState.district,
+              city: formState.city,
+              fullAddress: formState.fullAddress || 'Address on file',
+              isPrimary: true,
+            },
+            contact: {
+              id: 'new_cnt',
+              businessId: 'new',
+              phone: formState.phone,
+              whatsapp: formState.whatsapp,
+              email: formState.email,
+              websiteUrl: formState.websiteUrl,
+              bookingUrl: formState.bookingUrl,
+            },
+            operatingHours: [],
+            capabilities: [],
+            media: mediaList,
+            socialLinks: socialLinksList,
+            sourceLinks: sourceLinksList,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+
+      const enriched = enrichmentService.refreshBusinessMedia(currentBiz);
+      setMediaList(enriched.media);
+      if (enriched.socialLinks.length > 0) {
+        setSocialLinksList(enriched.socialLinks);
+      }
+      if (enriched.sourceLinks.length > 0) {
+        setSourceLinksList(enriched.sourceLinks);
+      }
+      showNotification(
+        `Auto-enriched: ${enriched.media.length} media item(s) and ${enriched.sourceLinks.length} public source(s). Click "Save Changes" to apply.`
+      );
+    } catch (err: any) {
+      alert(`Auto-enrichment failed: ${err?.message || err}`);
+    } finally {
+      setIsEnrichingMedia(false);
+    }
   };
 
   const handleSaveBusiness = async (e?: React.FormEvent | React.MouseEvent) => {
@@ -2183,18 +2273,30 @@ export const AdminBusinessDashboard: React.FC = () => {
 
                 {/* ── SECTION: REAL BUSINESS MEDIA (IMAGES & VIDEOS) ── */}
                 <div className="pt-4 border-t border-slate-200 space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
                     <div>
                       <h4 className="text-sm font-bold font-orbitron text-slate-900 flex items-center gap-2">
-                        <Image size={16} className="text-blue-600" /> Real Business Media (Images &amp; Videos)
+                        <Image size={16} className="text-blue-600" /> Real Business Media (Photos &amp; Videos)
                       </h4>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Support 1–2 real storefront/interior photos or authentic videos. Never generate or import fake media.
+                        Authentic proprietor photos or permitted video embeds. No fake or stock media.
                       </p>
                     </div>
-                    <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
-                      {mediaList.length} / 2 Media Items
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleAutoEnrichMedia}
+                        disabled={isEnrichingMedia}
+                        className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold border border-blue-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                        title="Automatically extract and link permitted media from submitted sources"
+                      >
+                        <Sparkles size={13} className={isEnrichingMedia ? "animate-spin text-blue-600" : "text-blue-600"} />
+                        {isEnrichingMedia ? "Enriching..." : "Auto-Enrich Media"}
+                      </button>
+                      <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                        {mediaList.length} / 3 Media Items
+                      </span>
+                    </div>
                   </div>
 
                   {/* Media Items List */}

@@ -9,6 +9,7 @@
     "test:seo": "node scripts/test_seo_guardrails.js",
     "test:phase1": "node --experimental-strip-types scripts/test_phase1_business_graph.js",
     "test:submission": "node --experimental-strip-types scripts/test_business_submission.js",
+    "test:media": "node --experimental-strip-types scripts/test_automated_business_media.js",
     "test:verify": "node --experimental-strip-types scripts/test_verify_boundaries.js",
     "test:hardening": "node --experimental-strip-types scripts/test_phase3_hardening.js",
     "test:reality": "node --experimental-strip-types scripts/run_reality_benchmark.js",

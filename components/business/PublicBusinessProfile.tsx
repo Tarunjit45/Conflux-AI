@@ -6,7 +6,7 @@ import {
   Building2, ShieldCheck, ShieldAlert, CheckCircle2, Phone, MessageSquare,
   MapPin, Globe, Calendar, Clock, ExternalLink, ArrowRight, Send, Compass,
   Layers, Check, AlertCircle, FileText, Lock, Sparkles, UserCheck, Star,
-  Edit3, Flag, HelpCircle, X, Share2, Camera, Image, Video
+  Edit3, Flag, HelpCircle, X, Share2, Camera, Image, Video, Maximize2
 } from 'lucide-react';
 import { businessService } from '../../lib/businessService';
 import { connectService } from '../../lib/connectService';
@@ -14,7 +14,7 @@ import { contributionService } from '../../lib/contributionService';
 import { useAuth } from '../../lib/authContext';
 import { ClaimBusinessModal } from './ClaimBusinessModal';
 import { trackPageView } from '../../lib/analytics';
-import type { ConfluxBusiness } from '../../types/business';
+import type { ConfluxBusiness, BusinessMediaItem } from '../../types/business';
 import type { ReviewRatingContribution } from '../../types/contribution';
 
 export const PublicBusinessProfile: React.FC = () => {
@@ -26,6 +26,7 @@ export const PublicBusinessProfile: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isOpenNow, setIsOpenNow] = useState(false);
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
+  const [previewMediaItem, setPreviewMediaItem] = useState<BusinessMediaItem | null>(null);
 
   // Direct Lead Form State
   const [leadName, setLeadName] = useState('');
@@ -627,12 +628,12 @@ export const PublicBusinessProfile: React.FC = () => {
               )}
             </div>
 
-            {/* ── REAL BUSINESS MEDIA GALLERY (1–2 PHOTOS / VIDEOS) ── */}
+            {/* ── REAL BUSINESS MEDIA GALLERY (1–3 PHOTOS / VIDEOS) ── */}
             <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-5">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="space-y-1">
                   <h2 className="flex items-center gap-2 text-base font-bold font-orbitron text-slate-900">
-                    <Camera size={20} className="text-blue-600" /> Business Media &amp; Visual Assets
+                    <Camera size={20} className="text-blue-600" /> Business Photos &amp; Videos
                   </h2>
                   <p className="text-xs text-slate-500 font-mono">
                     Authentic visual assets supplied by the business or verified by Conflux administrators.
@@ -646,107 +647,171 @@ export const PublicBusinessProfile: React.FC = () => {
               </div>
 
               {activeMedia.length > 0 ? (
-                <div className={`grid grid-cols-1 ${activeMedia.length > 1 ? 'sm:grid-cols-2' : ''} gap-4 pt-1`}>
-                  {activeMedia.slice(0, 2).map((item) => (
-                    <div
-                      key={item.id}
-                      className="rounded-2xl border border-slate-200 bg-slate-50/50 overflow-hidden shadow-sm flex flex-col justify-between"
-                    >
-                      <div className="relative aspect-video bg-slate-900 flex items-center justify-center overflow-hidden">
-                        {item.mediaType === 'IMAGE' ? (
-                          <img
-                            src={item.url}
-                            alt={item.altText || item.caption || `${business.name} business asset`}
-                            loading="lazy"
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center p-4">
-                            {item.url.includes('youtube') || item.url.includes('vimeo') || item.url.includes('embed') ? (
-                              <iframe
-                                src={item.url}
-                                title={item.caption || "Business video"}
-                                className="w-full h-full rounded-xl"
-                                allowFullScreen
-                              />
-                            ) : (
-                              <video
-                                src={item.url}
-                                controls
-                                className="w-full h-full rounded-xl object-cover"
-                              />
-                            )}
-                          </div>
-                        )}
-                        <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                          <span className="px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-mono font-bold uppercase">
-                            {item.mediaType}
-                          </span>
-                          <span className="px-2 py-0.5 rounded-md bg-blue-600/90 backdrop-blur-sm text-white text-[10px] font-mono font-bold">
-                            {item.provenance.replace('_', ' ')}
-                          </span>
-                        </div>
-                      </div>
+                <div
+                  className={`grid grid-cols-1 ${
+                    activeMedia.length === 2 ? 'sm:grid-cols-2' : ''
+                  } ${
+                    activeMedia.length >= 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : ''
+                  } gap-4 pt-1`}
+                >
+                  {activeMedia.slice(0, 3).map((item) => {
+                    const isBusinessProvided = item.provenance === 'BUSINESS_PROVIDED';
+                    const isConfluxVerified = item.provenance === 'CONFLUX_VERIFIED';
+                    const isPublicSource = item.provenance === 'PUBLIC_SOURCE';
 
-                      <div className="p-4 space-y-1.5">
-                        {item.caption && (
-                          <div className="text-xs font-bold text-slate-900">
-                            {item.caption}
+                    const provenanceLabel = isBusinessProvided
+                      ? 'Business Provided'
+                      : isConfluxVerified
+                      ? 'Conflux Verified'
+                      : isPublicSource
+                      ? 'Public Source'
+                      : 'Admin Added';
+
+                    const badgeColor = isBusinessProvided
+                      ? 'bg-emerald-600/90 text-white'
+                      : isConfluxVerified
+                      ? 'bg-purple-600/90 text-white'
+                      : isPublicSource
+                      ? 'bg-sky-600/90 text-white'
+                      : 'bg-slate-700/90 text-white';
+
+                    return (
+                      <div
+                        key={item.id}
+                        className="rounded-2xl border border-slate-200 bg-slate-50/50 overflow-hidden shadow-sm flex flex-col justify-between group hover:border-slate-300 transition-all"
+                      >
+                        <div className="relative aspect-video bg-slate-900 flex items-center justify-center overflow-hidden">
+                          {item.mediaType === 'IMAGE' ? (
+                            <img
+                              src={item.url}
+                              alt={item.altText || item.caption || `${business.name} business photo`}
+                              loading="lazy"
+                              onClick={() => setPreviewMediaItem(item)}
+                              className="w-full h-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center p-2">
+                              {item.url.includes('youtube') || item.url.includes('vimeo') || item.url.includes('embed') ? (
+                                <iframe
+                                  src={item.url}
+                                  title={item.caption || `${business.name} official video`}
+                                  className="w-full h-full rounded-xl"
+                                  allowFullScreen
+                                />
+                              ) : (
+                                <video
+                                  src={item.url}
+                                  controls
+                                  className="w-full h-full rounded-xl object-cover"
+                                />
+                              )}
+                            </div>
+                          )}
+
+                          {/* Provenance & Media Type Badges */}
+                          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 pointer-events-none">
+                            <span className="px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-mono font-bold uppercase">
+                              {item.mediaType === 'IMAGE' ? 'PHOTO' : 'VIDEO'}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded-md backdrop-blur-sm text-[10px] font-mono font-bold ${badgeColor}`}>
+                              {provenanceLabel}
+                            </span>
                           </div>
-                        )}
-                        {item.altText && item.altText !== item.caption && (
-                          <div className="text-[11px] text-slate-600 leading-snug">
-                            {item.altText}
-                          </div>
-                        )}
-                        <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono pt-1 border-t border-slate-100">
-                          <span>
-                            {item.sourceName ? `Source: ${item.sourceName}` : 'Authentic Asset'}
-                          </span>
-                          {item.dateAdded && (
-                            <span>Added: {item.dateAdded}</span>
+
+                          {item.mediaType === 'IMAGE' && (
+                            <button
+                              type="button"
+                              onClick={() => setPreviewMediaItem(item)}
+                              className="absolute bottom-2.5 right-2.5 p-1.5 rounded-lg bg-slate-900/70 hover:bg-slate-900 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                              title="Expand photo"
+                            >
+                              <Maximize2 size={13} />
+                            </button>
                           )}
                         </div>
-                        {item.attribution && (
-                          <div className="text-[10px] text-slate-500 italic">
-                            Attribution: {item.attribution}
+
+                        <div className="p-4 space-y-1.5">
+                          {item.caption && (
+                            <div className="text-xs font-bold text-slate-900 line-clamp-2">
+                              {item.caption}
+                            </div>
+                          )}
+                          {item.altText && item.altText !== item.caption && (
+                            <div className="text-[11px] text-slate-600 line-clamp-2 leading-snug">
+                              {item.altText}
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono pt-1.5 border-t border-slate-100">
+                            <div className="truncate max-w-[180px]">
+                              {item.sourceUrl ? (
+                                <a
+                                  href={item.sourceUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="hover:underline text-blue-600 inline-flex items-center gap-1"
+                                >
+                                  {item.sourceName || 'Source'} <ExternalLink size={10} />
+                                </a>
+                              ) : (
+                                <span>{item.sourceName || 'Authentic Asset'}</span>
+                              )}
+                            </div>
+                            {item.dateAdded && (
+                              <span className="shrink-0">Added: {item.dateAdded}</span>
+                            )}
                           </div>
-                        )}
+                          {item.attribution && (
+                            <div className="text-[10px] text-slate-500 italic">
+                              Attribution: {item.attribution}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
-                <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 shrink-0 flex items-center justify-center mt-0.5">
-                      <Camera size={18} />
+                /* ── HONEST EMPTY STATE (ZERO STOCK / ZERO SYNTHETIC MEDIA) ── */
+                <div className="p-6 sm:p-8 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 shrink-0 flex items-center justify-center mt-0.5 border border-blue-100">
+                      <Camera size={20} />
                     </div>
-                    <div className="space-y-1">
-                      <div className="text-xs font-bold font-mono text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                        <span>Media Status: Awaiting Direct Proprietor Upload or Meta API Authorization</span>
-                      </div>
+                    <div className="space-y-1.5">
+                      <h3 className="text-sm font-bold font-orbitron text-slate-900">
+                        Business media has not been added yet.
+                      </h3>
                       <p className="text-xs text-slate-600 leading-relaxed">
-                        In compliance with Meta Platform Terms (&sect;3.2) and automated scraping restrictions, unauthorized scraping of photos and videos from Facebook/Instagram is prohibited. Conflux strictly forbids synthetic or fake AI-generated business images.
+                        Conflux verifies authentic business photographs and videos directly from proprietors and authorized platform integrations, rather than generating synthetic or unverified stock images.
                       </p>
-                      <p className="text-xs text-slate-600 leading-relaxed pt-1">
-                        Authentic storefront and product photographs can be supplied directly by the business proprietor or uploaded via the Conflux Admin verification console. In the interim, public catalog photos may be viewed directly on the official social channels linked below.
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        Are you the business owner or an authorized administrator? Submit authentic storefront photos or connect official channels to enhance this verified profile.
                       </p>
                     </div>
                   </div>
 
-                  {(business.onlineSources?.facebookUrl || (business.socialLinks && business.socialLinks.some(s => s.platform === 'facebook'))) && (
-                    <div className="pt-2 flex items-center gap-2">
+                  <div className="pt-2 flex flex-wrap items-center gap-3 border-t border-slate-200/60">
+                    {!isClaimed && (
+                      <button
+                        type="button"
+                        onClick={() => setIsClaimModalOpen(true)}
+                        className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <UserCheck size={14} /> Claim Profile &amp; Submit Photos
+                      </button>
+                    )}
+
+                    {(business.onlineSources?.facebookUrl || (business.socialLinks && business.socialLinks.some(s => s.platform === 'facebook'))) && (
                       <a
                         href={business.onlineSources?.facebookUrl || business.socialLinks?.find(s => s.platform === 'facebook')?.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-sm transition-all"
+                        className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200 inline-flex items-center gap-1.5 shadow-sm transition-all"
                       >
-                        <Share2 size={12} /> View Photos on Official Facebook Page <ExternalLink size={10} />
+                        <Share2 size={13} className="text-blue-600" /> View Photos on Official Facebook Page <ExternalLink size={10} />
                       </a>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -1537,6 +1602,47 @@ export const PublicBusinessProfile: React.FC = () => {
           });
         }}
       />
+
+      {/* Full Image Preview Modal */}
+      {previewMediaItem && (
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setPreviewMediaItem(null)}
+        >
+          <div
+            className="bg-white rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl space-y-3 p-4 sm:p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div className="font-bold text-sm text-slate-900 truncate">
+                {previewMediaItem.caption || `${business.name} Business Asset`}
+              </div>
+              <button
+                type="button"
+                onClick={() => setPreviewMediaItem(null)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="rounded-2xl overflow-hidden bg-slate-950 flex items-center justify-center max-h-[70vh]">
+              <img
+                src={previewMediaItem.url}
+                alt={previewMediaItem.altText || previewMediaItem.caption || "Business photo preview"}
+                className="max-h-[70vh] w-auto object-contain"
+              />
+            </div>
+
+            <div className="text-xs text-slate-600 flex items-center justify-between pt-1 font-mono">
+              <span>Provenance: <strong>{previewMediaItem.provenance.replace('_', ' ')}</strong></span>
+              {previewMediaItem.attribution && (
+                <span className="italic text-slate-500">{previewMediaItem.attribution}</span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

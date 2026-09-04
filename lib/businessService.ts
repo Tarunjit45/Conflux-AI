@@ -17,6 +17,7 @@ import { enrichmentService } from './enrichmentService.ts';
 
 // Test/Development Memory Cache
 let memoryStore: ConfluxBusiness[] = [];
+const LOCAL_STORAGE_OVERRIDES_KEY = 'conflux_admin_business_overrides_v1';
 let memoryApplications: BusinessSubmissionApplication[] = [];
 
 let memoryOverrides: Record<string, Partial<ConfluxBusiness>> = {};
@@ -45,6 +46,9 @@ const saveAdminOverride = (id: string, updates: Partial<ConfluxBusiness>) => {
     media: updates.media !== undefined ? updates.media : existing.media,
     socialLinks: updates.socialLinks !== undefined ? updates.socialLinks : existing.socialLinks,
     sourceLinks: updates.sourceLinks !== undefined ? updates.sourceLinks : existing.sourceLinks,
+    publicSourceEnrichment: updates.publicSourceEnrichment !== undefined ? updates.publicSourceEnrichment : existing.publicSourceEnrichment,
+    sourceProvenance: updates.sourceProvenance !== undefined ? updates.sourceProvenance : existing.sourceProvenance,
+    onlineSources: updates.onlineSources !== undefined ? updates.onlineSources : existing.onlineSources,
     updatedAt: new Date().toISOString()
   };
 
@@ -105,6 +109,9 @@ const applyAdminOverride = (biz: ConfluxBusiness): ConfluxBusiness => {
     media: override.media !== undefined ? override.media : (biz.media || []),
     socialLinks: override.socialLinks !== undefined ? override.socialLinks : (biz.socialLinks || []),
     sourceLinks: override.sourceLinks !== undefined ? override.sourceLinks : (biz.sourceLinks || []),
+    publicSourceEnrichment: override.publicSourceEnrichment !== undefined ? override.publicSourceEnrichment : biz.publicSourceEnrichment,
+    sourceProvenance: override.sourceProvenance !== undefined ? override.sourceProvenance : biz.sourceProvenance,
+    onlineSources: override.onlineSources !== undefined ? override.onlineSources : biz.onlineSources,
   };
 };
 
@@ -505,6 +512,17 @@ export class BusinessService {
       updatedAt: new Date().toISOString()
     };
 
+    // Platform-wide automated enrichment upon creation
+    const initialEnriched = enrichmentService.enrichBusinessMedia(newBiz, undefined, {
+      storefrontPhotoUrl: input.storefrontPhotoUrl,
+      logoUrl: input.logoUrl
+    });
+    newBiz.media = initialEnriched.media;
+    newBiz.socialLinks = initialEnriched.socialLinks;
+    newBiz.sourceLinks = initialEnriched.sourceLinks;
+    newBiz.publicSourceEnrichment = initialEnriched.enrichment;
+    newBiz.sourceProvenance = initialEnriched.sourceProvenance;
+
     if (isSupabaseConfigured()) {
       try {
         const { error: bizError } = await supabase.from('businesses').insert([{
@@ -703,6 +721,9 @@ export class BusinessService {
         media: updates.media !== undefined ? updates.media : memoryStore[idx].media,
         socialLinks: updates.socialLinks !== undefined ? updates.socialLinks : memoryStore[idx].socialLinks,
         sourceLinks: updates.sourceLinks !== undefined ? updates.sourceLinks : memoryStore[idx].sourceLinks,
+        publicSourceEnrichment: updates.publicSourceEnrichment !== undefined ? updates.publicSourceEnrichment : memoryStore[idx].publicSourceEnrichment,
+        sourceProvenance: updates.sourceProvenance !== undefined ? updates.sourceProvenance : memoryStore[idx].sourceProvenance,
+        onlineSources: updates.onlineSources !== undefined ? updates.onlineSources : memoryStore[idx].onlineSources,
         updatedAt: new Date().toISOString()
       };
       return applyAdminOverride(memoryStore[idx]);
@@ -743,6 +764,9 @@ export class BusinessService {
         media: updates.media || [],
         socialLinks: updates.socialLinks || [],
         sourceLinks: updates.sourceLinks || [],
+        publicSourceEnrichment: updates.publicSourceEnrichment,
+        sourceProvenance: updates.sourceProvenance,
+        onlineSources: updates.onlineSources,
         operatingHours: [],
         capabilities: [],
         createdAt: new Date().toISOString(),
@@ -759,6 +783,9 @@ export class BusinessService {
       media: updates.media !== undefined ? updates.media : fetched.media,
       socialLinks: updates.socialLinks !== undefined ? updates.socialLinks : fetched.socialLinks,
       sourceLinks: updates.sourceLinks !== undefined ? updates.sourceLinks : fetched.sourceLinks,
+      publicSourceEnrichment: updates.publicSourceEnrichment !== undefined ? updates.publicSourceEnrichment : fetched.publicSourceEnrichment,
+      sourceProvenance: updates.sourceProvenance !== undefined ? updates.sourceProvenance : fetched.sourceProvenance,
+      onlineSources: updates.onlineSources !== undefined ? updates.onlineSources : fetched.onlineSources,
       updatedAt: new Date().toISOString()
     });
     const existingIdx = memoryStore.findIndex(b => b.id === merged.id || b.confluxBusinessId === merged.confluxBusinessId || b.slug === merged.slug);
@@ -1177,6 +1204,12 @@ export class BusinessService {
       ownerPhotoUrl: app.ownerPhotoUrl
     });
 
+    const enriched = enrichmentService.enrichBusinessMedia(created, app.onlineSources, {
+      storefrontPhotoUrl: app.storefrontPhotoUrl,
+      interiorPhotoUrl: app.interiorPhotoUrl,
+      logoUrl: app.logoUrl
+    });
+
     return this.updateBusiness(created.id, {
       status: 'PUBLISHED',
       claimStatus: 'VERIFIED_OWNER',
@@ -1184,7 +1217,13 @@ export class BusinessService {
       verificationLevel: 'BASIC',
       isIndexable: true,
       isClaimed: true,
-      evidenceSummary: 'Standard business listing submitted by authorized proprietor.'
+      evidenceSummary: 'Standard business listing submitted by authorized proprietor.',
+      onlineSources: app.onlineSources,
+      media: enriched.media,
+      socialLinks: enriched.socialLinks,
+      sourceLinks: enriched.sourceLinks,
+      publicSourceEnrichment: enriched.enrichment,
+      sourceProvenance: enriched.sourceProvenance
     });
   }
 
@@ -1234,6 +1273,12 @@ export class BusinessService {
     const registrar = primaryRegistrar || 'Primary Statutory Regulatory Docket';
     const evidence = evidenceSummary || `Statutory registration verified against official dockets for ${app.businessName}.`;
 
+    const enriched = enrichmentService.enrichBusinessMedia(created, app.onlineSources, {
+      storefrontPhotoUrl: app.storefrontPhotoUrl,
+      interiorPhotoUrl: app.interiorPhotoUrl,
+      logoUrl: app.logoUrl
+    });
+
     return this.updateBusiness(created.id, {
       status: 'PUBLISHED',
       claimStatus: 'VERIFIED_OWNER',
@@ -1253,6 +1298,15 @@ export class BusinessService {
         contactVerified: true,
         primaryRegistrarName: registrar,
         verificationMethodologyUrl: '/verify/methodology'
+      },
+      onlineSources: app.onlineSources,
+      media: enriched.media,
+      socialLinks: enriched.socialLinks,
+      sourceLinks: enriched.sourceLinks,
+      publicSourceEnrichment: enriched.enrichment,
+      sourceProvenance: {
+        ...enriched.sourceProvenance,
+        confluxVerified: true
       }
     });
   }
@@ -1435,6 +1489,34 @@ export class BusinessService {
       updatedAt: row.updated_at
     };
 
+    // Platform-Wide Automated Enrichment for ALL businesses:
+    // If media, social links, or source links have not yet been materialized,
+    // automatically enrich from submitted sources, storefront photos, or public endpoints.
+    if (
+      (!biz.media || biz.media.length === 0) &&
+      (biz.storefrontPhotoUrl || biz.onlineSources || biz.contact?.websiteUrl)
+    ) {
+      const autoEnriched = enrichmentService.enrichBusinessMedia(biz, biz.onlineSources, {
+        storefrontPhotoUrl: biz.storefrontPhotoUrl,
+        logoUrl: biz.logoUrl
+      });
+      if (!biz.media || biz.media.length === 0) {
+        biz.media = autoEnriched.media;
+      }
+      if (!biz.socialLinks || biz.socialLinks.length === 0) {
+        biz.socialLinks = autoEnriched.socialLinks;
+      }
+      if (!biz.sourceLinks || biz.sourceLinks.length === 0) {
+        biz.sourceLinks = autoEnriched.sourceLinks;
+      }
+      if (!biz.publicSourceEnrichment) {
+        biz.publicSourceEnrichment = autoEnriched.enrichment;
+      }
+      if (!biz.sourceProvenance) {
+        biz.sourceProvenance = autoEnriched.sourceProvenance;
+      }
+    }
+
     if (row.slug === 'a2z-supplements' || row.name?.toLowerCase().includes('a2z')) {
       if (!row.services || row.services.length === 0) {
         biz.services = [
@@ -1525,6 +1607,22 @@ export class BusinessService {
     }
 
     return biz;
+  }
+
+  /**
+   * Platform-wide: Programmatically auto-enrich business media and public sources
+   */
+  async autoEnrichBusinessMedia(id: string): Promise<ConfluxBusiness> {
+    const biz = await this.getBusinessById(id);
+    if (!biz) throw new Error(`Business ${id} not found.`);
+    const enriched = enrichmentService.refreshBusinessMedia(biz);
+    return this.updateBusiness(biz.id, {
+      media: enriched.media,
+      socialLinks: enriched.socialLinks,
+      sourceLinks: enriched.sourceLinks,
+      publicSourceEnrichment: enriched.enrichment,
+      sourceProvenance: enriched.sourceProvenance
+    });
   }
 }
 
