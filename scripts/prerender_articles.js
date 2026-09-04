@@ -2781,6 +2781,27 @@ const a2zBody = `
       </div>
     </section>
 
+    <!-- Real Business Media & Visual Assets Section -->
+    <section style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 32px; margin-bottom: 32px;">
+      <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 8px 0;">Business Media &amp; Visual Assets</h2>
+      <p style="font-size: 13px; color: #64748b; font-family: monospace; margin: 0 0 20px 0;">Authentic visual assets supplied by the business or verified by Conflux administrators.</p>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px;">
+        <div style="font-size: 12px; font-weight: bold; font-family: monospace; color: #1e293b; text-transform: uppercase; margin-bottom: 8px;">
+          Media Status: Awaiting Direct Proprietor Upload or Meta API Authorization
+        </div>
+        <p style="font-size: 13px; color: #475569; margin: 0 0 10px 0; line-height: 1.6;">
+          In strict compliance with Meta Platform Terms (&sect;3.2) and automated scraping restrictions, unauthorized scraping of photos and videos from Facebook/Instagram is prohibited. Conflux strictly forbids synthetic or fake AI-generated business images.
+        </p>
+        <p style="font-size: 13px; color: #475569; margin: 0 0 16px 0; line-height: 1.6;">
+          Authentic storefront and product photographs can be supplied directly by the business proprietor or uploaded via the Conflux Admin verification console. In the interim, catalog media can be viewed directly on the official Facebook presence.
+        </p>
+        <a href="https://www.facebook.com/p/A2Z-Supplement-100083318218146/" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: #2563eb; color: #ffffff; padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: bold; text-decoration: none;">
+          View Photos on Official Facebook Page →
+        </a>
+      </div>
+    </section>
+
     <!-- Trust & Provenance Dossier -->
     <section style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 32px; margin-bottom: 32px;">
       <div style="margin-bottom: 20px;">

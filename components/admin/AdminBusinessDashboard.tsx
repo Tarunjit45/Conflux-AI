@@ -44,6 +44,12 @@ import {
   Star,
   Flag,
   MessageCircle,
+  Image,
+  Video,
+  ArrowUp,
+  ArrowDown,
+  Upload,
+  Share2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AdminShell } from "./AdminSidebar";
@@ -58,6 +64,12 @@ import type {
   BusinessPublishStatus,
   BusinessSubmissionApplication,
   SubmissionStatus,
+  BusinessMediaItem,
+  BusinessSocialLink,
+  BusinessSourceLink,
+  MediaProvenance,
+  MediaType,
+  MediaStatus,
 } from "../../types/business";
 import type {
   UserContribution,
@@ -118,6 +130,33 @@ export const AdminBusinessDashboard: React.FC = () => {
     evidenceSummary: "",
   });
 
+  // Media, Social, and Source Links State for Edit Modal
+  const [mediaList, setMediaList] = useState<BusinessMediaItem[]>([]);
+  const [socialLinksList, setSocialLinksList] = useState<BusinessSocialLink[]>([]);
+  const [sourceLinksList, setSourceLinksList] = useState<BusinessSourceLink[]>([]);
+
+  // Media Form State
+  const [mediaUrl, setMediaUrl] = useState("");
+  const [mediaType, setMediaType] = useState<MediaType>("IMAGE");
+  const [mediaCaption, setMediaCaption] = useState("");
+  const [mediaAltText, setMediaAltText] = useState("");
+  const [mediaSourceName, setMediaSourceName] = useState("");
+  const [mediaAttribution, setMediaAttribution] = useState("");
+  const [mediaProvenance, setMediaProvenance] = useState<MediaProvenance>("ADMIN_ADDED");
+  const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
+
+  // Social Link Form State
+  const [socialPlatform, setSocialPlatform] = useState<BusinessSocialLink['platform']>("facebook");
+  const [socialUrl, setSocialUrl] = useState("");
+  const [socialLabel, setSocialLabel] = useState("");
+  const [socialProvenance, setSocialProvenance] = useState<MediaProvenance>("ADMIN_ADDED");
+
+  // Source Link Form State
+  const [sourcePlatform, setSourcePlatform] = useState("");
+  const [sourceUrl, setSourceUrl] = useState("");
+  const [sourceNotes, setSourceNotes] = useState("");
+  const [sourceProvenance, setSourceProvenance] = useState<MediaProvenance>("PUBLIC_SOURCE");
+
   const loadData = async () => {
     setIsLoading(true);
     const data = await businessService.getAllBusinesses();
@@ -162,6 +201,15 @@ export const AdminBusinessDashboard: React.FC = () => {
       verificationStatus: "UNVERIFIED",
       evidenceSummary: "",
     });
+    setMediaList([]);
+    setSocialLinksList([]);
+    setSourceLinksList([]);
+    setEditingMediaId(null);
+    setMediaUrl("");
+    setMediaCaption("");
+    setMediaAltText("");
+    setMediaSourceName("");
+    setMediaAttribution("");
     setIsCreateModalOpen(true);
   };
 
@@ -188,6 +236,159 @@ export const AdminBusinessDashboard: React.FC = () => {
       verificationStatus: biz.verificationStatus,
       evidenceSummary: biz.evidenceSummary || "",
     });
+    setMediaList(biz.media ? [...biz.media] : []);
+    setSocialLinksList(biz.socialLinks ? [...biz.socialLinks] : []);
+    setSourceLinksList(biz.sourceLinks ? [...biz.sourceLinks] : []);
+    setEditingMediaId(null);
+    setMediaUrl("");
+    setMediaCaption("");
+    setMediaAltText("");
+    setMediaSourceName("");
+    setMediaAttribution("");
+  };
+
+  const handleAddOrUpdateMedia = () => {
+    if (!mediaUrl.trim()) {
+      alert("Please provide a valid media URL.");
+      return;
+    }
+
+    if (editingMediaId) {
+      setMediaList(prev =>
+        prev.map(item =>
+          item.id === editingMediaId
+            ? {
+                ...item,
+                url: mediaUrl.trim(),
+                mediaType,
+                caption: mediaCaption.trim() || undefined,
+                altText: mediaAltText.trim() || undefined,
+                sourceName: mediaSourceName.trim() || undefined,
+                attribution: mediaAttribution.trim() || undefined,
+                provenance: mediaProvenance,
+              }
+            : item
+        )
+      );
+      setEditingMediaId(null);
+    } else {
+      const newItem: BusinessMediaItem = {
+        id: `med_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+        url: mediaUrl.trim(),
+        mediaType,
+        caption: mediaCaption.trim() || undefined,
+        altText: mediaAltText.trim() || undefined,
+        sourceName: mediaSourceName.trim() || undefined,
+        attribution: mediaAttribution.trim() || undefined,
+        dateAdded: new Date().toISOString().split("T")[0],
+        provenance: mediaProvenance,
+        status: "ACTIVE",
+        sortOrder: mediaList.length + 1,
+      };
+      setMediaList(prev => [...prev, newItem]);
+    }
+
+    setMediaUrl("");
+    setMediaCaption("");
+    setMediaAltText("");
+    setMediaSourceName("");
+    setMediaAttribution("");
+    setMediaProvenance("ADMIN_ADDED");
+  };
+
+  const handleEditMediaItem = (item: BusinessMediaItem) => {
+    setEditingMediaId(item.id);
+    setMediaUrl(item.url);
+    setMediaType(item.mediaType);
+    setMediaCaption(item.caption || "");
+    setMediaAltText(item.altText || "");
+    setMediaSourceName(item.sourceName || "");
+    setMediaAttribution(item.attribution || "");
+    setMediaProvenance(item.provenance);
+  };
+
+  const handleRemoveMedia = (id: string) => {
+    setMediaList(prev => prev.filter(m => m.id !== id));
+    if (editingMediaId === id) {
+      setEditingMediaId(null);
+      setMediaUrl("");
+    }
+  };
+
+  const handleMoveMedia = (index: number, direction: "UP" | "DOWN") => {
+    const targetIndex = direction === "UP" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= mediaList.length) return;
+    const updated = [...mediaList];
+    const temp = updated[index];
+    updated[index] = updated[targetIndex];
+    updated[targetIndex] = temp;
+    updated.forEach((m, idx) => (m.sortOrder = idx + 1));
+    setMediaList(updated);
+  };
+
+  const handleToggleMediaStatus = (id: string) => {
+    setMediaList(prev =>
+      prev.map(m =>
+        m.id === id ? { ...m, status: m.status === "ACTIVE" ? "INACTIVE" : "ACTIVE" } : m
+      )
+    );
+  };
+
+  const handleAddSocialLink = () => {
+    if (!socialUrl.trim()) {
+      alert("Please enter a valid URL.");
+      return;
+    }
+    const newLink: BusinessSocialLink = {
+      id: `soc_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+      platform: socialPlatform,
+      url: socialUrl.trim(),
+      label: socialLabel.trim() || undefined,
+      provenance: socialProvenance,
+      isActive: true,
+    };
+    setSocialLinksList(prev => [...prev, newLink]);
+    setSocialUrl("");
+    setSocialLabel("");
+  };
+
+  const handleRemoveSocialLink = (id: string) => {
+    setSocialLinksList(prev => prev.filter(s => s.id !== id));
+  };
+
+  const handleToggleSocialStatus = (id: string) => {
+    setSocialLinksList(prev =>
+      prev.map(s => (s.id === id ? { ...s, isActive: !s.isActive } : s))
+    );
+  };
+
+  const handleAddSourceLink = () => {
+    if (!sourcePlatform.trim() || !sourceUrl.trim()) {
+      alert("Please provide both platform name and source URL.");
+      return;
+    }
+    const newSource: BusinessSourceLink = {
+      id: `src_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+      platform: sourcePlatform.trim(),
+      url: sourceUrl.trim(),
+      notes: sourceNotes.trim() || undefined,
+      provenance: sourceProvenance,
+      isActive: true,
+    };
+    setSourceLinksList(prev => [...prev, newSource]);
+    setSourcePlatform("");
+    setSourceUrl("");
+    setSourceNotes("");
+  };
+
+  const handleRemoveSourceLink = (id: string) => {
+    setSourceLinksList(prev => prev.filter(s => s.id !== id));
+  };
+
+  const handleToggleSourceStatus = (id: string) => {
+    setSourceLinksList(prev =>
+      prev.map(s => (s.id === id ? { ...s, isActive: !s.isActive } : s))
+    );
   };
 
   const handleSaveBusiness = async (e: React.FormEvent) => {
@@ -236,6 +437,9 @@ export const AdminBusinessDashboard: React.FC = () => {
             websiteUrl: formState.websiteUrl || undefined,
             bookingUrl: formState.bookingUrl || undefined,
           },
+          media: mediaList,
+          socialLinks: socialLinksList,
+          sourceLinks: sourceLinksList,
         });
         showNotification(`Updated "${formState.name}" successfully.`);
       } else {
@@ -258,6 +462,13 @@ export const AdminBusinessDashboard: React.FC = () => {
           websiteUrl: formState.websiteUrl || undefined,
           bookingUrl: formState.bookingUrl || undefined,
         });
+        if (mediaList.length > 0 || socialLinksList.length > 0 || sourceLinksList.length > 0) {
+          await businessService.updateBusiness(created.id, {
+            media: mediaList,
+            socialLinks: socialLinksList,
+            sourceLinks: sourceLinksList,
+          });
+        }
         if (formState.status === "PUBLISHED") {
           await businessService.setPublishStatus(created.id, "PUBLISHED");
         }
@@ -1657,7 +1868,7 @@ export const AdminBusinessDashboard: React.FC = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-2xl max-w-2xl w-full p-5 sm:p-8 my-8 max-h-[90vh] overflow-y-auto space-y-6"
+              className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-2xl max-w-3xl w-full p-5 sm:p-8 my-8 max-h-[90vh] overflow-y-auto space-y-6"
             >
               <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                 <h3 className="text-xl font-bold font-orbitron text-slate-900">
@@ -1907,7 +2118,449 @@ export const AdminBusinessDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+                {/* ── SECTION: REAL BUSINESS MEDIA (IMAGES & VIDEOS) ── */}
+                <div className="pt-4 border-t border-slate-200 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-bold font-orbitron text-slate-900 flex items-center gap-2">
+                        <Image size={16} className="text-blue-600" /> Real Business Media (Images &amp; Videos)
+                      </h4>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Support 1–2 real storefront/interior photos or authentic videos. Never generate or import fake media.
+                      </p>
+                    </div>
+                    <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                      {mediaList.length} / 2 Media Items
+                    </span>
+                  </div>
+
+                  {/* Media Items List */}
+                  {mediaList.length === 0 ? (
+                    <div className="p-4 rounded-xl bg-slate-50 border border-dashed border-slate-300 text-center text-xs text-slate-500 space-y-1">
+                      <p className="font-semibold text-slate-700">No media uploaded yet for this business.</p>
+                      <p className="text-[11px]">Add authentic proprietor-submitted or admin-verified business photos below.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {mediaList.map((item, idx) => (
+                        <div
+                          key={item.id}
+                          className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="w-14 h-14 rounded-lg bg-slate-200 border border-slate-300 overflow-hidden shrink-0 flex items-center justify-center">
+                              {item.mediaType === "IMAGE" ? (
+                                <img
+                                  src={item.url}
+                                  alt={item.altText || item.caption || "Business media preview"}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    (e.target as HTMLElement).style.display = "none";
+                                  }}
+                                />
+                              ) : (
+                                <Video size={20} className="text-purple-600" />
+                              )}
+                            </div>
+                            <div className="space-y-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="font-bold text-slate-900 truncate max-w-xs">
+                                  {item.caption || item.altText || "Untitled Media Item"}
+                                </span>
+                                <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold ${
+                                  item.mediaType === "IMAGE" ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800"
+                                }`}>
+                                  {item.mediaType}
+                                </span>
+                                <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold ${
+                                  item.status === "ACTIVE" ? "bg-emerald-100 text-emerald-800" : "bg-slate-200 text-slate-600"
+                                }`}>
+                                  {item.status}
+                                </span>
+                                <span className="px-2 py-0.5 rounded font-mono text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                  {item.provenance}
+                                </span>
+                              </div>
+                              <div className="text-[11px] text-slate-500 truncate max-w-md">
+                                <a href={item.url} target="_blank" rel="noopener noreferrer" className="hover:underline text-blue-600">
+                                  {item.url}
+                                </a>
+                              </div>
+                              {(item.sourceName || item.attribution) && (
+                                <div className="text-[10px] text-slate-500 font-mono">
+                                  Source: {item.sourceName || "Direct"} | Attribution: {item.attribution || "N/A"}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Media Actions */}
+                          <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-center">
+                            <button
+                              type="button"
+                              disabled={idx === 0}
+                              onClick={() => handleMoveMedia(idx, "UP")}
+                              title="Move Up"
+                              className={`p-1.5 rounded-lg border text-slate-600 ${idx === 0 ? "opacity-30 cursor-not-allowed" : "hover:bg-white cursor-pointer"}`}
+                            >
+                              <ArrowUp size={13} />
+                            </button>
+                            <button
+                              type="button"
+                              disabled={idx === mediaList.length - 1}
+                              onClick={() => handleMoveMedia(idx, "DOWN")}
+                              title="Move Down"
+                              className={`p-1.5 rounded-lg border text-slate-600 ${idx === mediaList.length - 1 ? "opacity-30 cursor-not-allowed" : "hover:bg-white cursor-pointer"}`}
+                            >
+                              <ArrowDown size={13} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleToggleMediaStatus(item.id)}
+                              title={item.status === "ACTIVE" ? "Deactivate" : "Activate"}
+                              className={`px-2 py-1 rounded-lg border font-mono text-[10px] font-bold cursor-pointer ${
+                                item.status === "ACTIVE" ? "bg-amber-50 text-amber-800 border-amber-200" : "bg-emerald-50 text-emerald-800 border-emerald-200"
+                              }`}
+                            >
+                              {item.status === "ACTIVE" ? "Deactivate" : "Activate"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleEditMediaItem(item)}
+                              title="Edit / Replace Media"
+                              className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer"
+                            >
+                              <Edit3 size={13} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveMedia(item.id)}
+                              title="Remove Media"
+                              className="p-1.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 cursor-pointer"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Add / Replace Media Sub-form */}
+                  <div className="p-4 rounded-2xl bg-blue-50/40 border border-blue-100 space-y-3">
+                    <div className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                      <span>{editingMediaId ? "Replace / Edit Media Item" : "Upload / Add Real Business Media"}</span>
+                      {editingMediaId && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingMediaId(null);
+                            setMediaUrl("");
+                            setMediaCaption("");
+                            setMediaAltText("");
+                            setMediaSourceName("");
+                            setMediaAttribution("");
+                          }}
+                          className="text-[11px] text-slate-500 hover:text-slate-800 underline cursor-pointer"
+                        >
+                          Cancel Editing
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="sm:col-span-2 space-y-1">
+                        <label className="text-[11px] font-bold text-slate-700">Media URL *</label>
+                        <input
+                          type="url"
+                          value={mediaUrl}
+                          onChange={(e) => setMediaUrl(e.target.value)}
+                          placeholder="https://example.com/storefront.jpg or video embed URL"
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-slate-700">Media Type</label>
+                        <select
+                          value={mediaType}
+                          onChange={(e) => setMediaType(e.target.value as MediaType)}
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:outline-none"
+                        >
+                          <option value="IMAGE">IMAGE</option>
+                          <option value="VIDEO">VIDEO</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-slate-700">Caption</label>
+                        <input
+                          type="text"
+                          value={mediaCaption}
+                          onChange={(e) => setMediaCaption(e.target.value)}
+                          placeholder="e.g. Physical storefront entrance on Library Para"
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:outline-none"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-slate-700">Alt Text (Accessibility)</label>
+                        <input
+                          type="text"
+                          value={mediaAltText}
+                          onChange={(e) => setMediaAltText(e.target.value)}
+                          placeholder="e.g. Front sign and supplement display shelves"
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-slate-700">Source Name / Platform</label>
+                        <input
+                          type="text"
+                          value={mediaSourceName}
+                          onChange={(e) => setMediaSourceName(e.target.value)}
+                          placeholder="e.g. Direct Proprietor WhatsApp / Verified Listing"
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:outline-none"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-slate-700">Attribution</label>
+                        <input
+                          type="text"
+                          value={mediaAttribution}
+                          onChange={(e) => setMediaAttribution(e.target.value)}
+                          placeholder="e.g. Photo provided by A2Z Supplements"
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:outline-none"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-slate-700">Provenance</label>
+                        <select
+                          value={mediaProvenance}
+                          onChange={(e) => setMediaProvenance(e.target.value as MediaProvenance)}
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:outline-none"
+                        >
+                          <option value="ADMIN_ADDED">ADMIN_ADDED</option>
+                          <option value="BUSINESS_PROVIDED">BUSINESS_PROVIDED</option>
+                          <option value="PUBLIC_SOURCE">PUBLIC_SOURCE</option>
+                          <option value="CONFLUX_VERIFIED">CONFLUX_VERIFIED</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end pt-1">
+                      <button
+                        type="button"
+                        onClick={handleAddOrUpdateMedia}
+                        className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer flex items-center gap-1.5"
+                      >
+                        {editingMediaId ? <Check size={13} /> : <Plus size={13} />}
+                        {editingMediaId ? "Save Media Changes" : "Add Media Item"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── SECTION: SOCIAL & WEBSITE PROFILES ── */}
+                <div className="pt-4 border-t border-slate-200 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-bold font-orbitron text-slate-900 flex items-center gap-2">
+                        <Share2 size={16} className="text-indigo-600" /> Social &amp; Official Profile Links
+                      </h4>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Official business social handles (Facebook, Instagram, LinkedIn, etc.)
+                      </p>
+                    </div>
+                  </div>
+
+                  {socialLinksList.length > 0 && (
+                    <div className="space-y-2">
+                      {socialLinksList.map((soc) => (
+                        <div
+                          key={soc.id}
+                          className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3 text-xs"
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="font-bold uppercase tracking-wider text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">
+                              {soc.platform}
+                            </span>
+                            <a
+                              href={soc.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline truncate max-w-sm font-mono text-[11px]"
+                            >
+                              {soc.label ? `${soc.label} (${soc.url})` : soc.url}
+                            </a>
+                            <span className="text-[10px] font-mono text-slate-500 bg-slate-200 px-1.5 py-0.5 rounded">
+                              {soc.provenance}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => handleToggleSocialStatus(soc.id)}
+                              className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold cursor-pointer ${
+                                soc.isActive ? "bg-emerald-100 text-emerald-800" : "bg-slate-200 text-slate-600"
+                              }`}
+                            >
+                              {soc.isActive ? "Active" : "Inactive"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveSocialLink(soc.id)}
+                              className="p-1 rounded bg-rose-50 text-rose-700 hover:bg-rose-100 cursor-pointer"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Add Social Link Form */}
+                  <div className="p-3.5 rounded-2xl bg-indigo-50/40 border border-indigo-100 grid grid-cols-1 sm:grid-cols-4 gap-2.5 items-end">
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-slate-700">Platform</label>
+                      <select
+                        value={socialPlatform}
+                        onChange={(e) => setSocialPlatform(e.target.value as any)}
+                        className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:outline-none"
+                      >
+                        <option value="facebook">Facebook</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="twitter">Twitter / X</option>
+                        <option value="website">Official Website</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    <div className="sm:col-span-2 space-y-1">
+                      <label className="text-[11px] font-bold text-slate-700">Profile URL</label>
+                      <input
+                        type="url"
+                        value={socialUrl}
+                        onChange={(e) => setSocialUrl(e.target.value)}
+                        placeholder="https://facebook.com/example"
+                        className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <button
+                        type="button"
+                        onClick={handleAddSocialLink}
+                        className="w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs cursor-pointer flex items-center justify-center gap-1"
+                      >
+                        <Plus size={13} /> Add Social Link
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── SECTION: PUBLIC SOURCES & DIRECTORY AUDITS ── */}
+                <div className="pt-4 border-t border-slate-200 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-bold font-orbitron text-slate-900 flex items-center gap-2">
+                        <Globe size={16} className="text-emerald-600" /> Public Source Links &amp; Evidence References
+                      </h4>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        External public directory pages, Google Maps listings, or regulatory records audited for this business.
+                      </p>
+                    </div>
+                  </div>
+
+                  {sourceLinksList.length > 0 && (
+                    <div className="space-y-2">
+                      {sourceLinksList.map((src) => (
+                        <div
+                          key={src.id}
+                          className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3 text-xs"
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="font-bold text-[11px] text-slate-900">
+                              {src.platform}
+                            </span>
+                            <a
+                              href={src.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline truncate max-w-sm font-mono text-[11px]"
+                            >
+                              {src.url}
+                            </a>
+                            {src.notes && (
+                              <span className="text-[10px] text-slate-500 italic truncate max-w-xs">
+                                ({src.notes})
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => handleToggleSourceStatus(src.id)}
+                              className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold cursor-pointer ${
+                                src.isActive ? "bg-emerald-100 text-emerald-800" : "bg-slate-200 text-slate-600"
+                              }`}
+                            >
+                              {src.isActive ? "Active" : "Inactive"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveSourceLink(src.id)}
+                              className="p-1 rounded bg-rose-50 text-rose-700 hover:bg-rose-100 cursor-pointer"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Add Public Source Form */}
+                  <div className="p-3.5 rounded-2xl bg-emerald-50/40 border border-emerald-100 grid grid-cols-1 sm:grid-cols-4 gap-2.5 items-end">
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-slate-700">Platform Name</label>
+                      <input
+                        type="text"
+                        value={sourcePlatform}
+                        onChange={(e) => setSourcePlatform(e.target.value)}
+                        placeholder="e.g. Google Business Profile"
+                        className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:outline-none"
+                      />
+                    </div>
+                    <div className="sm:col-span-2 space-y-1">
+                      <label className="text-[11px] font-bold text-slate-700">Public Source URL</label>
+                      <input
+                        type="url"
+                        value={sourceUrl}
+                        onChange={(e) => setSourceUrl(e.target.value)}
+                        placeholder="https://maps.google.com/..."
+                        className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <button
+                        type="button"
+                        onClick={handleAddSourceLink}
+                        className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs cursor-pointer flex items-center justify-center gap-1"
+                      >
+                        <Plus size={13} /> Add Source Link
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700">
                       Publishing Status

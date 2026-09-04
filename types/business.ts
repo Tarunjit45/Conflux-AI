@@ -150,6 +150,9 @@ export interface ConfluxBusiness {
   capabilities: BusinessCapability[];
   onlineSources?: SubmittedOnlineSources;
   publicSourceEnrichment?: PublicSourceEnrichment;
+  media?: BusinessMediaItem[];
+  socialLinks?: BusinessSocialLink[];
+  sourceLinks?: BusinessSourceLink[];
   sourceProvenance?: {
     businessProvided: boolean;
     publicSourceEnriched: boolean;
@@ -157,6 +160,43 @@ export interface ConfluxBusiness {
   };
   createdAt: string;
   updatedAt: string;
+}
+
+export type MediaProvenance = 'BUSINESS_PROVIDED' | 'PUBLIC_SOURCE' | 'CONFLUX_VERIFIED' | 'ADMIN_ADDED';
+export type MediaType = 'IMAGE' | 'VIDEO';
+export type MediaStatus = 'ACTIVE' | 'INACTIVE';
+
+export interface BusinessMediaItem {
+  id: string;
+  url: string;
+  mediaType: MediaType;
+  sourceUrl?: string;
+  sourceName?: string;
+  attribution?: string;
+  dateAdded: string;
+  provenance: MediaProvenance;
+  status: MediaStatus;
+  caption?: string;
+  altText?: string;
+  sortOrder?: number;
+}
+
+export interface BusinessSocialLink {
+  id: string;
+  platform: 'facebook' | 'instagram' | 'linkedin' | 'youtube' | 'twitter' | 'website' | 'other';
+  url: string;
+  label?: string;
+  provenance: MediaProvenance;
+  isActive: boolean;
+}
+
+export interface BusinessSourceLink {
+  id: string;
+  platform: string;
+  url: string;
+  provenance: MediaProvenance;
+  isActive: boolean;
+  notes?: string;
 }
 
 export interface PublicSourceField<T = string> {

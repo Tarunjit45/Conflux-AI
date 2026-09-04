@@ -41,8 +41,11 @@ const saveAdminOverride = (id: string, updates: Partial<ConfluxBusiness>) => {
       overrides[id] = {
         ...existing,
         ...updates,
-        location: { ...(existing.location || {}), ...(updates.location || {}) },
-        contact: { ...(existing.contact || {}), ...(updates.contact || {}) },
+        location: { ...(existing.location || {}), ...(updates.location || {}) } as any,
+        contact: { ...(existing.contact || {}), ...(updates.contact || {}) } as any,
+        media: updates.media !== undefined ? updates.media : existing.media,
+        socialLinks: updates.socialLinks !== undefined ? updates.socialLinks : existing.socialLinks,
+        sourceLinks: updates.sourceLinks !== undefined ? updates.sourceLinks : existing.sourceLinks,
         updatedAt: new Date().toISOString()
       };
       localStorage.setItem(LOCAL_STORAGE_OVERRIDES_KEY, JSON.stringify(overrides));
@@ -67,7 +70,10 @@ const applyAdminOverride = (biz: ConfluxBusiness): ConfluxBusiness => {
     contact: {
       ...biz.contact,
       ...(override.contact || {})
-    }
+    },
+    media: override.media !== undefined ? override.media : (biz.media || []),
+    socialLinks: override.socialLinks !== undefined ? override.socialLinks : (biz.socialLinks || []),
+    sourceLinks: override.sourceLinks !== undefined ? override.sourceLinks : (biz.sourceLinks || []),
   };
 };
 
@@ -657,6 +663,9 @@ export class BusinessService {
         ...updates,
         location: { ...memoryStore[idx].location, ...(updates.location || {}) },
         contact: { ...memoryStore[idx].contact, ...(updates.contact || {}) },
+        media: updates.media !== undefined ? updates.media : memoryStore[idx].media,
+        socialLinks: updates.socialLinks !== undefined ? updates.socialLinks : memoryStore[idx].socialLinks,
+        sourceLinks: updates.sourceLinks !== undefined ? updates.sourceLinks : memoryStore[idx].sourceLinks,
         updatedAt: new Date().toISOString()
       };
       return applyAdminOverride(memoryStore[idx]);
@@ -694,6 +703,9 @@ export class BusinessService {
           id: generateUuid(),
           businessId: id
         },
+        media: updates.media || [],
+        socialLinks: updates.socialLinks || [],
+        sourceLinks: updates.sourceLinks || [],
         operatingHours: [],
         capabilities: [],
         createdAt: new Date().toISOString(),
@@ -706,7 +718,10 @@ export class BusinessService {
       ...fetched,
       ...updates,
       location: { ...fetched.location, ...(updates.location || {}) },
-      contact: { ...fetched.contact, ...(updates.contact || {}) }
+      contact: { ...fetched.contact, ...(updates.contact || {}) },
+      media: updates.media !== undefined ? updates.media : fetched.media,
+      socialLinks: updates.socialLinks !== undefined ? updates.socialLinks : fetched.socialLinks,
+      sourceLinks: updates.sourceLinks !== undefined ? updates.sourceLinks : fetched.sourceLinks
     });
   }
 
@@ -1301,7 +1316,7 @@ export class BusinessService {
     const loc = Array.isArray(row.location) ? row.location[0] : row.location;
     const caps = Array.isArray(row.capabilities) ? row.capabilities : [];
 
-    return {
+    const biz: ConfluxBusiness = {
       id: row.id,
       confluxBusinessId: row.conflux_business_id,
       slug: row.slug,
@@ -1368,6 +1383,9 @@ export class BusinessService {
         endpointUrl: c.endpoint_url,
         verificationStatus: c.verification_status
       })),
+      media: row.media || [],
+      socialLinks: row.social_links || [],
+      sourceLinks: row.source_links || [],
       createdAt: row.created_at,
       updatedAt: row.updated_at
     };
@@ -1401,6 +1419,41 @@ export class BusinessService {
         facebookUrl: 'https://www.facebook.com/p/A2Z-Supplement-100083318218146/',
         googleBusinessUrl: 'Birnagar Library Para Local Search Listing'
       };
+      if (!biz.socialLinks || biz.socialLinks.length === 0) {
+        biz.socialLinks = [
+          {
+            id: 'soc_a2z_fb',
+            platform: 'facebook',
+            url: 'https://www.facebook.com/p/A2Z-Supplement-100083318218146/',
+            label: 'Official Facebook Store',
+            provenance: 'BUSINESS_PROVIDED',
+            isActive: true
+          }
+        ];
+      }
+      if (!biz.sourceLinks || biz.sourceLinks.length === 0) {
+        biz.sourceLinks = [
+          {
+            id: 'src_a2z_fb',
+            platform: 'Facebook Public Store',
+            url: 'https://www.facebook.com/p/A2Z-Supplement-100083318218146/',
+            provenance: 'PUBLIC_SOURCE',
+            isActive: true,
+            notes: 'Audited public business page in Birnagar'
+          },
+          {
+            id: 'src_a2z_local',
+            platform: 'Birnagar Library Para Local Search Listing',
+            url: 'https://maps.google.com/?q=Gunendronath+Public+School+Birnagar+Nadia',
+            provenance: 'PUBLIC_SOURCE',
+            isActive: true,
+            notes: 'Local geographic presence near Gunendronath Public School'
+          }
+        ];
+      }
+      if (!biz.media) {
+        biz.media = [];
+      }
       biz.publicSourceEnrichment = enrichmentService.getA2ZSupplementsEnrichment(biz);
       biz.sourceProvenance = {
         businessProvided: true,

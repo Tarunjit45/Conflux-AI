@@ -6,7 +6,7 @@ import {
   Building2, ShieldCheck, ShieldAlert, CheckCircle2, Phone, MessageSquare,
   MapPin, Globe, Calendar, Clock, ExternalLink, ArrowRight, Send, Compass,
   Layers, Check, AlertCircle, FileText, Lock, Sparkles, UserCheck, Star,
-  Edit3, Flag, HelpCircle, X, Share2
+  Edit3, Flag, HelpCircle, X, Share2, Camera, Image, Video
 } from 'lucide-react';
 import { businessService } from '../../lib/businessService';
 import { connectService } from '../../lib/connectService';
@@ -426,6 +426,7 @@ export const PublicBusinessProfile: React.FC = () => {
 
   const isVerified = business.verificationStatus === 'SUPPORTED';
   const isClaimed = business.claimStatus === 'VERIFIED_OWNER';
+  const activeMedia = (business.media || []).filter(m => m.status === 'ACTIVE');
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-28 pt-8">
@@ -570,6 +571,29 @@ export const PublicBusinessProfile: React.FC = () => {
                   <Globe size={14} /> Visit Official Website <ExternalLink size={12} />
                 </a>
               )}
+
+              {/* Verified Social Channels */}
+              {business.socialLinks && business.socialLinks.filter(s => s.isActive && s.platform === 'facebook').map(s => (
+                <a
+                  key={s.id}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2.5 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer border border-blue-200"
+                >
+                  <Share2 size={14} className="text-blue-600" /> {s.label || 'Official Facebook Page'} <ExternalLink size={12} />
+                </a>
+              ))}
+              {(!business.socialLinks || business.socialLinks.length === 0) && business.onlineSources?.facebookUrl && (
+                <a
+                  href={business.onlineSources.facebookUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2.5 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer border border-blue-200"
+                >
+                  <Share2 size={14} className="text-blue-600" /> Official Facebook Store <ExternalLink size={12} />
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -600,6 +624,130 @@ export const PublicBusinessProfile: React.FC = () => {
                 </div>
               ) : (
                 <p className="text-xs text-slate-500">General commercial enterprise services.</p>
+              )}
+            </div>
+
+            {/* ── REAL BUSINESS MEDIA GALLERY (1–2 PHOTOS / VIDEOS) ── */}
+            <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-5">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div className="space-y-1">
+                  <h2 className="flex items-center gap-2 text-base font-bold font-orbitron text-slate-900">
+                    <Camera size={20} className="text-blue-600" /> Business Media &amp; Visual Assets
+                  </h2>
+                  <p className="text-xs text-slate-500 font-mono">
+                    Authentic visual assets supplied by the business or verified by Conflux administrators.
+                  </p>
+                </div>
+                {activeMedia.length > 0 && (
+                  <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                    {activeMedia.length} Verified Media Asset{activeMedia.length > 1 ? 's' : ''}
+                  </span>
+                )}
+              </div>
+
+              {activeMedia.length > 0 ? (
+                <div className={`grid grid-cols-1 ${activeMedia.length > 1 ? 'sm:grid-cols-2' : ''} gap-4 pt-1`}>
+                  {activeMedia.slice(0, 2).map((item) => (
+                    <div
+                      key={item.id}
+                      className="rounded-2xl border border-slate-200 bg-slate-50/50 overflow-hidden shadow-sm flex flex-col justify-between"
+                    >
+                      <div className="relative aspect-video bg-slate-900 flex items-center justify-center overflow-hidden">
+                        {item.mediaType === 'IMAGE' ? (
+                          <img
+                            src={item.url}
+                            alt={item.altText || item.caption || `${business.name} business asset`}
+                            loading="lazy"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center p-4">
+                            {item.url.includes('youtube') || item.url.includes('vimeo') || item.url.includes('embed') ? (
+                              <iframe
+                                src={item.url}
+                                title={item.caption || "Business video"}
+                                className="w-full h-full rounded-xl"
+                                allowFullScreen
+                              />
+                            ) : (
+                              <video
+                                src={item.url}
+                                controls
+                                className="w-full h-full rounded-xl object-cover"
+                              />
+                            )}
+                          </div>
+                        )}
+                        <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                          <span className="px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-mono font-bold uppercase">
+                            {item.mediaType}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-md bg-blue-600/90 backdrop-blur-sm text-white text-[10px] font-mono font-bold">
+                            {item.provenance.replace('_', ' ')}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="p-4 space-y-1.5">
+                        {item.caption && (
+                          <div className="text-xs font-bold text-slate-900">
+                            {item.caption}
+                          </div>
+                        )}
+                        {item.altText && item.altText !== item.caption && (
+                          <div className="text-[11px] text-slate-600 leading-snug">
+                            {item.altText}
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono pt-1 border-t border-slate-100">
+                          <span>
+                            {item.sourceName ? `Source: ${item.sourceName}` : 'Authentic Asset'}
+                          </span>
+                          {item.dateAdded && (
+                            <span>Added: {item.dateAdded}</span>
+                          )}
+                        </div>
+                        {item.attribution && (
+                          <div className="text-[10px] text-slate-500 italic">
+                            Attribution: {item.attribution}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 shrink-0 flex items-center justify-center mt-0.5">
+                      <Camera size={18} />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="text-xs font-bold font-mono text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                        <span>Media Status: Awaiting Direct Proprietor Upload or Meta API Authorization</span>
+                      </div>
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        In compliance with Meta Platform Terms (&sect;3.2) and automated scraping restrictions, unauthorized scraping of photos and videos from Facebook/Instagram is prohibited. Conflux strictly forbids synthetic or fake AI-generated business images.
+                      </p>
+                      <p className="text-xs text-slate-600 leading-relaxed pt-1">
+                        Authentic storefront and product photographs can be supplied directly by the business proprietor or uploaded via the Conflux Admin verification console. In the interim, public catalog photos may be viewed directly on the official social channels linked below.
+                      </p>
+                    </div>
+                  </div>
+
+                  {(business.onlineSources?.facebookUrl || (business.socialLinks && business.socialLinks.some(s => s.platform === 'facebook'))) && (
+                    <div className="pt-2 flex items-center gap-2">
+                      <a
+                        href={business.onlineSources?.facebookUrl || business.socialLinks?.find(s => s.platform === 'facebook')?.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-sm transition-all"
+                      >
+                        <Share2 size={12} /> View Photos on Official Facebook Page <ExternalLink size={10} />
+                      </a>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
@@ -677,27 +825,48 @@ export const PublicBusinessProfile: React.FC = () => {
                     Public Sources Audited:
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                    <div className="p-2.5 rounded-xl bg-white border border-indigo-100 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Share2 size={14} className="text-blue-600" />
-                        <span className="font-bold text-slate-800">Facebook Public Store</span>
-                      </div>
-                      <a
-                        href={business.onlineSources?.facebookUrl || 'https://www.facebook.com/p/A2Z-Supplement-100083318218146/'}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline inline-flex items-center gap-1 font-mono text-[11px] font-semibold"
-                      >
-                        View Source <ExternalLink size={10} />
-                      </a>
-                    </div>
-                    <div className="p-2.5 rounded-xl bg-white border border-indigo-100 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Globe size={14} className="text-slate-400" />
-                        <span className="font-bold text-slate-800">Official Website</span>
-                      </div>
-                      <span className="text-slate-500 font-mono text-[11px]">None Provided</span>
-                    </div>
+                    {(business.sourceLinks && business.sourceLinks.length > 0) ? (
+                      business.sourceLinks.filter(s => s.isActive).map(src => (
+                        <div key={src.id} className="p-2.5 rounded-xl bg-white border border-indigo-100 flex items-center justify-between">
+                          <div className="flex items-center gap-2 truncate pr-2">
+                            <Share2 size={14} className="text-blue-600 shrink-0" />
+                            <span className="font-bold text-slate-800 truncate">{src.platform}</span>
+                          </div>
+                          <a
+                            href={src.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline inline-flex items-center gap-1 font-mono text-[11px] font-semibold shrink-0"
+                          >
+                            View Source <ExternalLink size={10} />
+                          </a>
+                        </div>
+                      ))
+                    ) : (
+                      <>
+                        <div className="p-2.5 rounded-xl bg-white border border-indigo-100 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Share2 size={14} className="text-blue-600" />
+                            <span className="font-bold text-slate-800">Facebook Public Store</span>
+                          </div>
+                          <a
+                            href={business.onlineSources?.facebookUrl || 'https://www.facebook.com/p/A2Z-Supplement-100083318218146/'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline inline-flex items-center gap-1 font-mono text-[11px] font-semibold"
+                          >
+                            View Source <ExternalLink size={10} />
+                          </a>
+                        </div>
+                        <div className="p-2.5 rounded-xl bg-white border border-indigo-100 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Globe size={14} className="text-slate-400" />
+                            <span className="font-bold text-slate-800">Official Website</span>
+                          </div>
+                          <span className="text-slate-500 font-mono text-[11px]">None Provided</span>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 
