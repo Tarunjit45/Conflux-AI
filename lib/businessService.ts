@@ -18,9 +18,67 @@ import { enrichmentService } from './enrichmentService.ts';
 // Test/Development Memory Cache
 let memoryStore: ConfluxBusiness[] = [];
 const LOCAL_STORAGE_OVERRIDES_KEY = 'conflux_admin_business_overrides_v1';
+const PERMANENT_MEDIA_STORAGE_KEY = 'conflux_permanent_business_media_v1';
 let memoryApplications: BusinessSubmissionApplication[] = [];
 
 let memoryOverrides: Record<string, Partial<ConfluxBusiness>> = {};
+let memoryPermanentMedia: Record<string, { media: BusinessMediaItem[]; storefrontPhotoUrl?: string }> = {};
+
+export const getPermanentMediaRegistry = (): Record<string, { media: BusinessMediaItem[]; storefrontPhotoUrl?: string }> => {
+  let stored: Record<string, { media: BusinessMediaItem[]; storefrontPhotoUrl?: string }> = {};
+  if (typeof localStorage !== 'undefined') {
+    try {
+      const raw = localStorage.getItem(PERMANENT_MEDIA_STORAGE_KEY);
+      stored = raw ? JSON.parse(raw) : {};
+    } catch {
+      stored = {};
+    }
+  }
+  return { ...stored, ...memoryPermanentMedia };
+};
+
+export const savePermanentBusinessMedia = (
+  identifiers: (string | undefined)[],
+  media: BusinessMediaItem[],
+  storefrontPhotoUrl?: string
+) => {
+  if (!identifiers || identifiers.length === 0) return;
+  const registry = getPermanentMediaRegistry();
+  const cleanIdentifiers = identifiers.filter((id): id is string => Boolean(id && typeof id === 'string' && id.trim().length > 0));
+  if (cleanIdentifiers.length === 0) return;
+
+  const entry = {
+    media: media || [],
+    storefrontPhotoUrl: storefrontPhotoUrl || media?.find(m => m.mediaType === 'IMAGE' && m.status !== 'INACTIVE')?.url
+  };
+
+  for (const key of cleanIdentifiers) {
+    registry[key] = entry;
+    memoryPermanentMedia[key] = entry;
+    registry[key.toLowerCase()] = entry;
+    memoryPermanentMedia[key.toLowerCase()] = entry;
+  }
+
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(PERMANENT_MEDIA_STORAGE_KEY, JSON.stringify(registry));
+    } catch {
+      // Storage quota guard
+    }
+  }
+};
+
+export const getPermanentBusinessMedia = (
+  ...identifiers: (string | undefined)[]
+): { media: BusinessMediaItem[]; storefrontPhotoUrl?: string } | null => {
+  const registry = getPermanentMediaRegistry();
+  for (const id of identifiers) {
+    if (!id) continue;
+    if (registry[id]) return registry[id];
+    if (registry[id.toLowerCase()]) return registry[id.toLowerCase()];
+  }
+  return null;
+};
 
 const getAdminOverrides = (): Record<string, Partial<ConfluxBusiness>> => {
   let stored: Record<string, Partial<ConfluxBusiness>> = {};
@@ -38,9 +96,12 @@ const getAdminOverrides = (): Record<string, Partial<ConfluxBusiness>> => {
 const saveAdminOverride = (id: string, updates: Partial<ConfluxBusiness>) => {
   const overrides = getAdminOverrides();
   const existing = overrides[id] || {};
+  const primaryImage = updates.storefrontPhotoUrl || (updates.media?.find(m => m.mediaType === 'IMAGE' && m.status !== 'INACTIVE')?.url);
+
   const record: Partial<ConfluxBusiness> = {
     ...existing,
     ...updates,
+    storefrontPhotoUrl: primaryImage !== undefined ? primaryImage : (existing as any).storefrontPhotoUrl,
     location: { ...(existing.location || {}), ...(updates.location || {}) } as any,
     contact: { ...(existing.contact || {}), ...(updates.contact || {}) } as any,
     media: updates.media !== undefined ? updates.media : existing.media,
@@ -81,6 +142,22 @@ const saveAdminOverride = (id: string, updates: Partial<ConfluxBusiness>) => {
     }
   }
 
+  // Permanently preserve business media across reloads and sessions
+  const mediaToSave = updates.media !== undefined ? updates.media : existing.media;
+  if (mediaToSave && mediaToSave.length > 0) {
+    savePermanentBusinessMedia(
+      [id, updates.confluxBusinessId, updates.slug, match?.id, match?.confluxBusinessId, match?.slug],
+      mediaToSave,
+      primaryImage
+    );
+  } else if (primaryImage) {
+    savePermanentBusinessMedia(
+      [id, updates.confluxBusinessId, updates.slug, match?.id, match?.confluxBusinessId, match?.slug],
+      [],
+      primaryImage
+    );
+  }
+
   if (typeof localStorage !== 'undefined') {
     try {
       localStorage.setItem(LOCAL_STORAGE_OVERRIDES_KEY, JSON.stringify(overrides));
@@ -92,10 +169,10 @@ const saveAdminOverride = (id: string, updates: Partial<ConfluxBusiness>) => {
 
 const applyAdminOverride = (biz: ConfluxBusiness): ConfluxBusiness => {
   const overrides = getAdminOverrides();
-  const override = overrides[biz.id] || overrides[biz.confluxBusinessId] || overrides[biz.slug];
-  if (!override) return biz;
+  const override = overrides[biz.id] || overrides[biz.confluxBusinessId] || overrides[biz.slug] || overrides[biz.slug?.toLowerCase()];
+  const permMedia = getPermanentBusinessMedia(biz.id, biz.confluxBusinessId, biz.slug);
 
-  return {
+  const base: ConfluxBusiness = override ? {
     ...biz,
     ...override,
     location: {
@@ -106,13 +183,40 @@ const applyAdminOverride = (biz: ConfluxBusiness): ConfluxBusiness => {
       ...biz.contact,
       ...(override.contact || {})
     },
+    storefrontPhotoUrl: override.storefrontPhotoUrl || biz.storefrontPhotoUrl,
     media: override.media !== undefined ? override.media : (biz.media || []),
     socialLinks: override.socialLinks !== undefined ? override.socialLinks : (biz.socialLinks || []),
     sourceLinks: override.sourceLinks !== undefined ? override.sourceLinks : (biz.sourceLinks || []),
     publicSourceEnrichment: override.publicSourceEnrichment !== undefined ? override.publicSourceEnrichment : biz.publicSourceEnrichment,
     sourceProvenance: override.sourceProvenance !== undefined ? override.sourceProvenance : biz.sourceProvenance,
     onlineSources: override.onlineSources !== undefined ? override.onlineSources : biz.onlineSources,
-  };
+  } : biz;
+
+  // Fallback to permanent media registry if media or storefront is missing
+  if ((!base.media || base.media.length === 0) && permMedia?.media && permMedia.media.length > 0) {
+    base.media = permMedia.media;
+  }
+  if (!base.storefrontPhotoUrl && permMedia?.storefrontPhotoUrl) {
+    base.storefrontPhotoUrl = permMedia.storefrontPhotoUrl;
+  }
+  if ((!base.media || base.media.length === 0) && base.storefrontPhotoUrl) {
+    base.media = [{
+      id: `med_${base.id || 'biz'}_storefront`,
+      url: base.storefrontPhotoUrl,
+      mediaType: 'IMAGE',
+      sourceUrl: base.storefrontPhotoUrl,
+      sourceName: 'Business Storefront Asset',
+      attribution: 'Business verified storefront asset',
+      dateAdded: base.updatedAt ? base.updatedAt.split('T')[0] : new Date().toISOString().split('T')[0],
+      provenance: 'BUSINESS_PROVIDED',
+      status: 'ACTIVE',
+      caption: `${base.name} — Storefront & Premises`,
+      altText: `Storefront photo of ${base.name}`,
+      sortOrder: 1
+    }];
+  }
+
+  return base;
 };
 
 const isValidUuid = (str: string): boolean => {
@@ -611,8 +715,20 @@ export class BusinessService {
         if (updates.confidenceScore !== undefined) payload.confidence_score = updates.confidenceScore;
         if (updates.primaryRegistrar) payload.primary_registrar = updates.primaryRegistrar;
         if (updates.evidenceSummary) payload.evidence_summary = updates.evidenceSummary;
-        if (updates.verificationBreakdown) payload.verification_breakdown = updates.verificationBreakdown;
         if (updates.lastVerifiedAt) payload.last_verified_at = updates.lastVerifiedAt;
+
+        const primaryImage = updates.storefrontPhotoUrl || (updates.media?.find(m => m.mediaType === 'IMAGE' && m.status !== 'INACTIVE')?.url);
+        if (primaryImage) {
+          payload.storefront_photo_url = primaryImage;
+        }
+
+        // Pack media, socialLinks, and sourceLinks into verification_breakdown JSONB for permanent database retention
+        payload.verification_breakdown = {
+          ...(updates.verificationBreakdown || {}),
+          ...(updates.media !== undefined ? { media: updates.media } : {}),
+          ...(updates.socialLinks !== undefined ? { socialLinks: updates.socialLinks } : {}),
+          ...(updates.sourceLinks !== undefined ? { sourceLinks: updates.sourceLinks } : {})
+        };
 
         let updateQuery = supabase.from('businesses').update(payload);
         if (isValidUuid(id)) {
@@ -621,6 +737,21 @@ export class BusinessService {
           updateQuery = updateQuery.or(`conflux_business_id.eq.${id},slug.eq.${id}`);
         }
         await updateQuery;
+
+        // Trigger serverless API route to commit via server environment if running in browser
+        if (typeof window !== 'undefined' && typeof fetch === 'function') {
+          fetch('/api/graph/business-update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id,
+              updates: {
+                ...updates,
+                storefrontPhotoUrl: primaryImage
+              }
+            })
+          }).catch(() => {});
+        }
 
         // Synchronize business_locations in Supabase
         if (updates.location && isValidUuid(id)) {
@@ -711,11 +842,14 @@ export class BusinessService {
       }
     }
 
+    const primaryImage = updates.storefrontPhotoUrl || (updates.media?.find(m => m.mediaType === 'IMAGE' && m.status !== 'INACTIVE')?.url);
+
     const idx = memoryStore.findIndex(b => b.id === id || b.confluxBusinessId === id || b.slug === id);
     if (idx !== -1) {
       memoryStore[idx] = {
         ...memoryStore[idx],
         ...updates,
+        storefrontPhotoUrl: primaryImage || memoryStore[idx].storefrontPhotoUrl,
         location: { ...memoryStore[idx].location, ...(updates.location || {}) },
         contact: { ...memoryStore[idx].contact, ...(updates.contact || {}) },
         media: updates.media !== undefined ? updates.media : memoryStore[idx].media,
@@ -747,6 +881,7 @@ export class BusinessService {
         confidenceScore: updates.confidenceScore || 0,
         isClaimed: false,
         isIndexable: true,
+        storefrontPhotoUrl: primaryImage,
         location: updates.location as any || {
           id: generateUuid(),
           businessId: id,
@@ -778,6 +913,7 @@ export class BusinessService {
     const merged: ConfluxBusiness = applyAdminOverride({
       ...fetched,
       ...updates,
+      storefrontPhotoUrl: primaryImage || fetched.storefrontPhotoUrl,
       location: { ...fetched.location, ...(updates.location || {}) },
       contact: { ...fetched.contact, ...(updates.contact || {}) },
       media: updates.media !== undefined ? updates.media : fetched.media,
@@ -1415,6 +1551,33 @@ export class BusinessService {
     const loc = Array.isArray(row.location) ? row.location[0] : row.location;
     const caps = Array.isArray(row.capabilities) ? row.capabilities : [];
 
+    const permMedia = getPermanentBusinessMedia(row.id, row.conflux_business_id, row.slug);
+    let resolvedMedia: BusinessMediaItem[] = [];
+    if (Array.isArray(row.media) && row.media.length > 0) {
+      resolvedMedia = row.media;
+    } else if (Array.isArray(row.verification_breakdown?.media) && row.verification_breakdown.media.length > 0) {
+      resolvedMedia = row.verification_breakdown.media;
+    } else if (permMedia?.media && permMedia.media.length > 0) {
+      resolvedMedia = permMedia.media;
+    } else if (row.storefront_photo_url) {
+      resolvedMedia = [{
+        id: `med_${row.id || 'biz'}_storefront`,
+        url: row.storefront_photo_url,
+        mediaType: 'IMAGE',
+        sourceUrl: row.storefront_photo_url,
+        sourceName: 'Business Storefront Asset',
+        attribution: 'Business verified storefront asset',
+        dateAdded: row.updated_at ? row.updated_at.split('T')[0] : (row.created_at ? row.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
+        provenance: 'BUSINESS_PROVIDED',
+        status: 'ACTIVE',
+        caption: `${row.name} — Storefront & Premises`,
+        altText: `Exterior storefront photo of ${row.name}`,
+        sortOrder: 1
+      }];
+    }
+
+    const effectiveStorefrontUrl = row.storefront_photo_url || permMedia?.storefrontPhotoUrl || (resolvedMedia.find(m => m.mediaType === 'IMAGE' && m.status !== 'INACTIVE')?.url);
+
     const biz: ConfluxBusiness = {
       id: row.id,
       confluxBusinessId: row.conflux_business_id,
@@ -1427,7 +1590,7 @@ export class BusinessService {
       subcategoryIds: row.subcategory_ids || [],
       services: row.services || [],
       landmark: row.landmark,
-      storefrontPhotoUrl: row.storefront_photo_url,
+      storefrontPhotoUrl: effectiveStorefrontUrl,
       description: row.description,
       shortSummary: row.short_summary,
       status: row.status,
@@ -1482,9 +1645,9 @@ export class BusinessService {
         endpointUrl: c.endpoint_url,
         verificationStatus: c.verification_status
       })),
-      media: row.media || [],
-      socialLinks: row.social_links || [],
-      sourceLinks: row.source_links || [],
+      media: resolvedMedia,
+      socialLinks: row.social_links || row.verification_breakdown?.socialLinks || [],
+      sourceLinks: row.source_links || row.verification_breakdown?.sourceLinks || [],
       createdAt: row.created_at,
       updatedAt: row.updated_at
     };
@@ -1580,6 +1743,22 @@ export class BusinessService {
       }
       if (!biz.media) {
         biz.media = [];
+      }
+      if (biz.media.length === 0 && biz.storefrontPhotoUrl) {
+        biz.media = [{
+          id: `med_${biz.id || 'a2z'}_storefront`,
+          url: biz.storefrontPhotoUrl,
+          mediaType: 'IMAGE',
+          sourceUrl: biz.storefrontPhotoUrl,
+          sourceName: 'Business Proprietor Submission',
+          attribution: 'Supplied directly by business proprietor',
+          dateAdded: biz.updatedAt ? biz.updatedAt.split('T')[0] : new Date().toISOString().split('T')[0],
+          provenance: 'BUSINESS_PROVIDED',
+          status: 'ACTIVE',
+          caption: `${biz.name} — Storefront & Premises`,
+          altText: `Exterior storefront photo of ${biz.name}`,
+          sortOrder: 1
+        }];
       }
       biz.publicSourceEnrichment = enrichmentService.getA2ZSupplementsEnrichment(biz);
       biz.sourceProvenance = {

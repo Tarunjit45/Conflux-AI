@@ -251,7 +251,24 @@ export const AdminBusinessDashboard: React.FC = () => {
       verificationStatus: biz.verificationStatus,
       evidenceSummary: biz.evidenceSummary || "",
     });
-    setMediaList(biz.media ? [...biz.media] : []);
+    let initialMedia = biz.media && biz.media.length > 0 ? [...biz.media] : [];
+    if (initialMedia.length === 0 && biz.storefrontPhotoUrl) {
+      initialMedia.push({
+        id: `med_sf_${biz.id || 'biz'}`,
+        url: biz.storefrontPhotoUrl,
+        mediaType: 'IMAGE',
+        sourceUrl: biz.storefrontPhotoUrl,
+        sourceName: 'Business Storefront Asset',
+        attribution: 'Supplied directly by business proprietor',
+        dateAdded: new Date().toISOString().split('T')[0],
+        provenance: 'BUSINESS_PROVIDED',
+        status: 'ACTIVE',
+        caption: `${biz.name} — Storefront & Premises`,
+        altText: `Storefront photo of ${biz.name}`,
+        sortOrder: 1
+      });
+    }
+    setMediaList(initialMedia);
     setSocialLinksList(biz.socialLinks ? [...biz.socialLinks] : []);
     setSourceLinksList(biz.sourceLinks ? [...biz.sourceLinks] : []);
     setEditingMediaId(null);
@@ -551,7 +568,11 @@ export const AdminBusinessDashboard: React.FC = () => {
     setIsSaving(true);
 
     try {
+      const firstImage = mediaList.find((m) => m.mediaType === "IMAGE" && m.status !== "INACTIVE")?.url;
+
       if (editingBusiness) {
+        const storefrontPhotoUrl = firstImage || editingBusiness.storefrontPhotoUrl || undefined;
+
         const updatedBiz = await businessService.updateBusiness(editingBusiness.id, {
           name,
           legalName: formState.legalName?.trim() || undefined,
@@ -565,6 +586,7 @@ export const AdminBusinessDashboard: React.FC = () => {
           status: formState.status,
           verificationStatus: formState.verificationStatus,
           evidenceSummary: formState.evidenceSummary?.trim() || undefined,
+          storefrontPhotoUrl,
           location: {
             ...editingBusiness.location,
             district: formState.district,
@@ -609,9 +631,11 @@ export const AdminBusinessDashboard: React.FC = () => {
           email: formState.email?.trim() || undefined,
           websiteUrl: ensureUrlProtocol(formState.websiteUrl),
           bookingUrl: ensureUrlProtocol(formState.bookingUrl),
+          storefrontPhotoUrl: firstImage,
         });
         if (mediaList.length > 0 || socialLinksList.length > 0 || sourceLinksList.length > 0) {
           await businessService.updateBusiness(created.id, {
+            storefrontPhotoUrl: firstImage,
             media: mediaList,
             socialLinks: socialLinksList,
             sourceLinks: sourceLinksList,

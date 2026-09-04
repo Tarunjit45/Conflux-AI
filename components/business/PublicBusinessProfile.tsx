@@ -427,7 +427,25 @@ export const PublicBusinessProfile: React.FC = () => {
 
   const isVerified = business.verificationStatus === 'SUPPORTED';
   const isClaimed = business.claimStatus === 'VERIFIED_OWNER';
-  const activeMedia = (business.media || []).filter(m => m.status === 'ACTIVE');
+  const explicitMedia = (business.media || []).filter(m => m.status !== 'INACTIVE');
+  const activeMedia: BusinessMediaItem[] = explicitMedia.length > 0
+    ? explicitMedia
+    : (business.storefrontPhotoUrl
+        ? [{
+            id: `med_sf_${business.id || 'biz'}`,
+            url: business.storefrontPhotoUrl,
+            mediaType: 'IMAGE',
+            sourceUrl: business.storefrontPhotoUrl,
+            sourceName: 'Business Proprietor Submission',
+            attribution: 'Supplied directly by business proprietor during onboarding',
+            dateAdded: business.updatedAt ? business.updatedAt.split('T')[0] : new Date().toISOString().split('T')[0],
+            provenance: 'BUSINESS_PROVIDED',
+            status: 'ACTIVE',
+            caption: `${business.name} — Storefront & Premises`,
+            altText: `Exterior storefront and entrance of ${business.name}`,
+            sortOrder: 1
+          }]
+        : []);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-28 pt-8">
