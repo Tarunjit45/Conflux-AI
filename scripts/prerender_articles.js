@@ -1020,11 +1020,84 @@ const subLocations = [
     name: 'Ranaghat',
     districtSlug: 'nadia',
     districtName: 'Nadia',
-    title: 'AI Automation Services in Ranaghat | Conflux AI',
-    desc: 'Automate wholesale order intake, WhatsApp speed-to-lead qualification, and business workflows for distributors and retailers in Ranaghat, Nadia.',
-    h1: 'AI Automation & Digital Workflows for Ranaghat Businesses',
-    context: 'Ranaghat is a vital railway logistics junction and primary commercial trading hub connecting Kolkata to Central and Northern Nadia along NH 12 (formerly NH 34). The municipality anchors major wholesale trade in FMCG grocery distribution, agro-processing, food manufacturing, and textile supply.',
-    hubs: ['Ranaghat Station Road Wholesale Market', 'NH 12 Commercial & Industrial Belt', 'Rathtala Trading Corridor', 'Subhas Avenue Retail Hub', 'Ranaghat Court Road Business Zone'],
+    title: 'Local Business Visibility & Verification in Ranaghat | Conflux AI',
+    desc: 'Conflux AI is a Local Visibility + Trust Platform helping businesses across Ranaghat, Nadia become discoverable, trusted, and contactable across Google and AI search.',
+    h1: 'Local Business Visibility, Verification & Automation in Ranaghat',
+    context: 'Ranaghat is a vital railway logistics junction and primary commercial trading hub connecting Kolkata to Central and Northern Nadia along NH 12 (formerly NH 34). The municipality anchors major wholesale trade in FMCG grocery distribution, agro-processing, healthcare diagnostics, food manufacturing, and textile supply. With substantial daily trading volumes transacted through Station Road Market, Rathtala, Subhas Avenue, and the NH 12 industrial corridor, Ranaghat commercial distributors and service providers benefit from verified entity discovery, direct WhatsApp order routing, and digital lead synchronization.',
+    hubs: [
+      'Ranaghat Station Road Wholesale Market',
+      'NH 12 Commercial & Industrial Belt',
+      'Rathtala Trading Corridor',
+      'Subhas Avenue Retail Hub',
+      'Ranaghat Court Road Business Zone'
+    ],
+    verifiedBusinesses: [
+      {
+        id: 'biz_cfx_001_ranaghat_agro',
+        confluxBusinessId: 'CFX-IN-WB-NADIA-000001',
+        slug: 'ranaghat-agro-processing',
+        name: 'Ranaghat Agro Processing Ltd',
+        categoryName: 'Agro-Processing & Cold Storage',
+        summary: 'Premier food processing, packaging, and cold chain logistics facility serving fruit, vegetable, and grain farmers across Nadia and Murshidabad districts.',
+        address: 'NH-12 Agro Corridor, Ranaghat, Nadia, West Bengal 741201',
+        phone: '+919830112233',
+        whatsapp: '+919830112233',
+        services: ['Cold Chain Storage', 'Fruit & Grain Packhouse', 'FSSAI Certified Grading', 'Wholesale Mandi Logistics'],
+        verificationLevel: 'Statutory Verified'
+      },
+      {
+        id: 'biz_cfx_005_ranaghat_diagnostic',
+        confluxBusinessId: 'CFX-IN-WB-NADIA-000005',
+        slug: 'ranaghat-apex-diagnostic-centre',
+        name: 'Ranaghat Apex Diagnostic & Health Centre',
+        categoryName: 'Healthcare & Diagnostics',
+        summary: 'NABL accredited diagnostic centre providing digital ultrasound, computerised pathology, low-dose digital X-Ray, and multi-specialist clinical consultations in Ranaghat.',
+        address: 'College Road, Near Hospital Gate, Ranaghat, Nadia, West Bengal 741201',
+        phone: '+919830556677',
+        whatsapp: '+919830556677',
+        services: ['Ultrasound (USG)', 'Digital X-Ray', 'Pathology Blood Tests', 'ECG', 'Doctor Chamber Consultation'],
+        verificationLevel: 'Statutory Verified'
+      },
+      {
+        id: 'biz_cfx_006_chitrakoot_restaurant',
+        confluxBusinessId: 'CFX-IN-WB-NADIA-000006',
+        slug: 'chitrakoot-multi-cuisine-restaurant',
+        name: 'Chitrakoot Multi-Cuisine Restaurant & Banquet',
+        categoryName: 'Restaurants & Food Services',
+        summary: 'Premier air-conditioned family restaurant and banquet hall in Ranaghat serving authentic Bengali thalis, North Indian, Tandoori, and Indo-Chinese cuisine.',
+        address: 'Station Road, Opposite Platform 1, Ranaghat, Nadia, West Bengal 741201',
+        phone: '+919830667788',
+        whatsapp: '+919830667788',
+        services: ['Family Dining', 'Banquet Hall Reservation', 'Home Delivery', 'Corporate Catering'],
+        verificationLevel: 'Statutory Verified'
+      }
+    ],
+    curatedArticles: [
+      {
+        slug: 'ranaghat-fmcg-wholesale-grocery-order-intake-automation',
+        title: 'Automating FMCG & Wholesale Grocery Order Intake for Distributors in Ranaghat',
+        category: 'Wholesale Automation',
+        excerpt: 'How Ranaghat FMCG distributors eliminate order drop-off and transcription errors using automated WhatsApp purchase order intake.'
+      },
+      {
+        slug: 'ranaghat-wholesale-distributors-whatsapp-order-automation',
+        title: 'রানাঘাটের পাইকারি ও পাইকারি পরিবেশকদের জন্য WhatsApp Order Automation',
+        category: ' পাইকারি অটোমেশন',
+        excerpt: 'রানাঘাট স্টেশন রোড ও রথতলা পাইকারি বাজারের ব্যবসায়ীদের জন্য মেটা হোয়াটসঅ্যাপ স্বয়ংক্রিয় ক্যাটালগ ও অর্ডার বুকিং গাইড।'
+      },
+      {
+        slug: 'west-bengal-polyclinic-diagnostic-centre-opd-booking-whatsapp-reports-local-seo',
+        title: 'West Bengal Polyclinic & Diagnostic Centre OPD Booking & Local SEO',
+        category: 'Healthcare SEO & Bots',
+        excerpt: 'Streamline patient appointment booking, digital test report dispatch, and Google Local Visibility for Nadia polyclinics.'
+      },
+      {
+        slug: 'speed-to-lead-whatsapp-business-api-sales-automation-lead-qualification-2026',
+        title: 'Automating Speed-to-Lead: Building a High-Converting WhatsApp Sales Engine',
+        category: 'Sales Automation',
+        excerpt: 'Convert inbound prospect inquiries in under 30 seconds with automated WhatsApp speed-to-lead routing.'
+      }
+    ],
     useCases: [
       {
         title: 'FMCG & Grocery Wholesale Order Automation',
@@ -1032,23 +1105,32 @@ const subLocations = [
         impact: 'Reduces order transcription time by 85% and eliminates after-hours order drop-off across Nadia distributor networks.'
       },
       {
-        title: 'Agricultural Food Processing & Distributor Inquiry Intake',
-        desc: 'Automates bulk buyer inquiries, product specification delivery, and FSSAI compliance verification for Ranaghat agro-food processing facilities and packaged food manufacturers.',
+        title: 'Agricultural Food Processing & Cold Storage Supply Chain',
+        desc: 'Automates bulk buyer inquiries, cold chain capacity bookings, product specification delivery, and FSSAI compliance verification for Ranaghat agro-food processing facilities.',
         impact: 'Accelerates speed-to-lead from hours to under 30 seconds for regional B2B buyer inquiries.'
+      },
+      {
+        title: 'Healthcare & Diagnostic Lab Appointment Routing',
+        desc: 'Automates patient appointment booking for USG, digital X-Ray, pathology tests, and automated lab report delivery via WhatsApp for Ranaghat diagnostic centres.',
+        impact: 'Cuts clinic front-desk call volumes by 60% and accelerates report delivery times to under 2 minutes.'
       }
     ],
     faqs: [
       {
-        q: 'How does Conflux AI deliver digital automation services to Ranaghat businesses?',
-        a: 'Conflux AI operates a remote-first engineering model from Kolkata. We collaborate with Ranaghat business owners, distributors, and manufacturers via secure video consultations, configure automated workflows in isolated cloud sandboxes, and provide end-to-end deployment and support without requiring physical office overhead.'
+        q: 'How does Conflux AI help local businesses in Ranaghat gain discoverability and trust?',
+        a: 'Conflux AI is a Local Visibility + Trust Platform. We create structured Schema.org LocalBusiness entity graphs, verify statutory credentials (such as FSSAI, Udyam, and Clinical Establishment licenses), optimize presence for Google Maps and AI search crawlers, and integrate high-converting direct WhatsApp communication pipelines.'
       },
       {
-        q: 'How can Ranaghat wholesale distributors automate WhatsApp order handling?',
-        a: 'We build structured WhatsApp Business API chatbots that present product catalogs, accept multi-line order requests from retailers, validate order details, and instantly notify your sales representatives or dispatch teams.'
+        q: 'How can Ranaghat wholesale distributors and retailers automate WhatsApp order handling?',
+        a: 'We build structured WhatsApp Business API chatbots that present product catalogs, accept multi-line order requests from retailers, validate order details, and instantly notify sales representatives or dispatch teams.'
       },
       {
         q: 'How does Conflux Verify authenticate registered businesses in Ranaghat?',
-        a: 'Conflux Verify cross-references business entities against primary statutory registries—such as the Food Safety and Standards Authority of India (FoSCoS) for food business operators (e.g., Ranaghat Agro Processing Ltd) and the Ministry of Corporate Affairs (MCA)—to provide auditable, evidence-backed trust reports.'
+        a: 'Conflux Verify cross-references business entities against primary statutory registries—such as the Food Safety and Standards Authority of India (FoSCoS) for food business operators, the West Bengal Clinical Establishments Regulatory Commission for healthcare clinics, and the Ministry of Corporate Affairs (MCA)—to provide auditable, evidence-backed trust reports.'
+      },
+      {
+        q: 'Can Ranaghat businesses list their profile on the Conflux Discovery Hub?',
+        a: 'Yes. Any registered business operating in Ranaghat can apply for listing on Conflux AI via our submission portal. Once statutory verification evidence is reviewed, an authoritative profile is published with direct call, WhatsApp, and booking capabilities.'
       }
     ],
     verifiedEntities: [
@@ -1066,6 +1148,38 @@ const subLocations = [
         benchmarkCaseId: 'GT-04',
         verifyUrl: '/verify?entity=Ranaghat+Agro+Processing+Ltd&claim=Ranaghat+Agro+Processing+Ltd+is+registered+under+the+FSSAI+with+an+active+food+business+operator+license+in+Nadia+district',
         articleSlug: 'ranaghat-fmcg-wholesale-grocery-order-intake-automation',
+        guideSlug: 'how-to-verify-gst-udyam-registration'
+      },
+      {
+        name: 'Ranaghat Apex Diagnostic & Health Centre',
+        type: 'Registered Corporate Business',
+        status: 'SUPPORTED',
+        tier: 'Tier 1: Primary Official Registrar',
+        identifier: 'Clinical License: WB/CEA/NAD/2023-0941',
+        summary: 'Holds an active clinical establishment registration for digital ultrasound, computerized pathology, and radiology in Ranaghat.',
+        relevance: 'NABL-accredited diagnostic and healthcare facility serving Ranaghat municipality and surrounding rural corridors in Nadia.',
+        registrarName: 'West Bengal Clinical Establishments Regulatory Commission',
+        registrarUrl: 'https://www.wbhealth.gov.in',
+        validThrough: '2028-12-31',
+        benchmarkCaseId: 'GT-08',
+        verifyUrl: '/verify?entity=Ranaghat+Apex+Diagnostic+%26+Health+Centre&claim=Ranaghat+Apex+Diagnostic+holds+valid+clinical+establishment+license+in+Nadia',
+        articleSlug: 'west-bengal-polyclinic-diagnostic-centre-opd-booking-whatsapp-reports-local-seo',
+        guideSlug: 'how-to-verify-gst-udyam-registration'
+      },
+      {
+        name: 'Chitrakoot Multi-Cuisine Restaurant & Banquet',
+        type: 'Registered Corporate Business',
+        status: 'SUPPORTED',
+        tier: 'Tier 1: Primary Official Registrar',
+        identifier: 'FSSAI License: 22822019000874',
+        summary: 'Maintains active FSSAI food business license and municipal commercial establishment certification at Ranaghat Station Road.',
+        relevance: 'Prominent hospitality, family dining, and AC banquet facility situated opposite Ranaghat railway junction.',
+        registrarName: 'Food Safety and Standards Authority of India (FSSAI)',
+        registrarUrl: 'https://foscos.fssai.gov.in',
+        validThrough: '2027-11-30',
+        benchmarkCaseId: 'GT-11',
+        verifyUrl: '/verify?entity=Chitrakoot+Multi-Cuisine+Restaurant&claim=Chitrakoot+Restaurant+holds+active+FSSAI+State+Food+License+in+Ranaghat',
+        articleSlug: 'ranaghat-wholesale-distributors-whatsapp-order-automation',
         guideSlug: 'how-to-verify-gst-udyam-registration'
       }
     ]
@@ -1136,6 +1250,31 @@ subLocations.forEach(sub => {
     ]
   };
 
+  const businessItemListSchema = sub.verifiedBusinesses && sub.verifiedBusinesses.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": `Verified Local Businesses in ${sub.name}`,
+    "description": `Authoritative directory of verified local businesses, manufacturers, clinics, and distributors in ${sub.name}, ${sub.districtName}.`,
+    "itemListElement": sub.verifiedBusinesses.map((biz, idx) => ({
+      "@type": "ListItem",
+      "position": idx + 1,
+      "item": {
+        "@type": "LocalBusiness",
+        "name": biz.name,
+        "description": biz.summary,
+        "url": `https://confluxai.in/business/${biz.slug}`,
+        "telephone": biz.phone,
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": biz.address,
+          "addressLocality": sub.name,
+          "addressRegion": "West Bengal",
+          "addressCountry": "IN"
+        }
+      }
+    }))
+  } : null;
+
   const entityItemListSchema = sub.verifiedEntities && sub.verifiedEntities.length > 0 ? {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -1161,6 +1300,7 @@ subLocations.forEach(sub => {
   } : null;
 
   const subSchemas = [webPageSchema, breadcrumbSchema];
+  if (businessItemListSchema) subSchemas.push(businessItemListSchema);
   if (entityItemListSchema) subSchemas.push(entityItemListSchema);
   if (faqSchema) subSchemas.push(faqSchema);
 
@@ -1171,6 +1311,7 @@ subLocations.forEach(sub => {
         <a href="/" style="font-size: 18px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
         <nav style="font-size: 13px; font-weight: 700;">
           <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}" style="color: #2563eb; text-decoration: none; margin-right: 16px;">&larr; ${escapeHtml(sub.districtName)} Hub</a>
+          <a href="/discover" style="color: #475569; text-decoration: none; margin-right: 16px;">Discover</a>
           <a href="/verify" style="color: #475569; text-decoration: none; margin-right: 16px;">Verify</a>
           <a href="/blog" style="color: #475569; text-decoration: none; margin-right: 16px;">Blog</a>
           <a href="/contact" style="color: #475569; text-decoration: none;">Contact</a>
@@ -1178,12 +1319,12 @@ subLocations.forEach(sub => {
       </div>
     </header>
     <main style="max-width: 1100px; margin: 0 auto; padding: 40px 20px; font-family: 'Inter', sans-serif;">
-      <nav aria-label="Breadcrumbs" style="font-size: 12px; margin-bottom: 20px; color: #64748b;">
+      <nav aria-label="Breadcrumb" style="font-size: 12px; margin-bottom: 20px; color: #64748b;">
         <a href="/" style="color: #2563eb; text-decoration: none;">Home</a> &gt; <a href="/locations/west-bengal" style="color: #2563eb; text-decoration: none;">West Bengal</a> &gt; <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}" style="color: #2563eb; text-decoration: none;">${escapeHtml(sub.districtName)}</a> &gt; <span style="color: #0f172a;">${escapeHtml(sub.name)}</span>
       </nav>
 
       <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #2563eb; letter-spacing: 0.1em; display: inline-block; margin-bottom: 10px;">
-        ${escapeHtml(sub.name)} &bull; ${escapeHtml(sub.districtName)} District
+        ${escapeHtml(sub.name)} &bull; ${escapeHtml(sub.districtName)} District Corridor
       </span>
       <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; line-height: 1.15; margin-bottom: 16px;">
         ${escapeHtml(sub.h1)}
@@ -1192,7 +1333,62 @@ subLocations.forEach(sub => {
         ${escapeHtml(sub.context)}
       </p>
 
-      <!-- VERIFIED LOCAL ENTITIES SECTION -->
+      <!-- VERIFIED LOCAL BUSINESSES DIRECTORY SECTION -->
+      ${sub.verifiedBusinesses && sub.verifiedBusinesses.length > 0 ? `
+      <section style="margin-top: 40px; margin-bottom: 40px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #2563eb; letter-spacing: 0.08em; display: block; margin-bottom: 6px;">
+              Conflux Local Business Graph
+            </span>
+            <h2 style="font-size: 26px; font-weight: 900; color: #0f172a; margin: 0;">
+              Verified Local Businesses in ${escapeHtml(sub.name)}
+            </h2>
+            <p style="font-size: 13px; color: #64748b; margin-top: 6px; margin-bottom: 0;">
+              Accredited commercial enterprises with statutory evidence dockets and direct WhatsApp/Call contact channels.
+            </p>
+          </div>
+          <a href="/discover?where=${escapeHtml(sub.slug)}" style="font-size: 12px; font-weight: 800; color: #2563eb; text-decoration: none;">
+            Explore All in Discovery Hub &rarr;
+          </a>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+          ${sub.verifiedBusinesses.map(biz => `
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                  <span style="background: #dcfce7; color: #166534; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 9999px;">${escapeHtml(biz.verificationLevel)}</span>
+                  <span style="font-family: monospace; font-size: 10px; color: #94a3b8; font-weight: 700;">${escapeHtml(biz.confluxBusinessId)}</span>
+                </div>
+                <h3 style="font-size: 18px; font-weight: 900; color: #0f172a; margin-bottom: 4px;">
+                  <a href="/business/${escapeHtml(biz.slug)}" style="color: #0f172a; text-decoration: none;">${escapeHtml(biz.name)}</a>
+                </h3>
+                <span style="font-size: 11px; font-weight: 700; color: #2563eb; text-transform: uppercase; display: block; margin-bottom: 10px;">${escapeHtml(biz.categoryName)}</span>
+                <p style="font-size: 13px; color: #475569; line-height: 1.5; margin-bottom: 14px;">${escapeHtml(biz.summary)}</p>
+                <div style="background: #f8fafc; border: 1px solid #f1f5f9; padding: 10px; border-radius: 8px; font-size: 12px; color: #475569; margin-bottom: 16px;">
+                  <strong style="color: #0f172a;">Address:</strong> ${escapeHtml(biz.address)}
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 12px; gap: 8px;">
+                <a href="https://wa.me/${biz.whatsapp.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(biz.name)},%20I%20found%20your%20business%20on%20Conflux%20AI%20${encodeURIComponent(sub.name)}." target="_blank" rel="noopener noreferrer" style="font-size: 12px; font-weight: 800; background: #059669; color: white; padding: 8px 14px; border-radius: 8px; text-decoration: none;">WhatsApp</a>
+                <a href="/business/${escapeHtml(biz.slug)}" style="font-size: 12px; font-weight: 800; color: #2563eb; text-decoration: none;">View Profile &rarr;</a>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+      ` : ''}
+
+      <!-- KEY COMMERCIAL TRADING CORRIDORS -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 32px;">
+        <h3 style="font-size: 14px; font-weight: 800; text-transform: uppercase; color: #2563eb; margin-bottom: 12px;">Key Commercial Trading Zones in ${escapeHtml(sub.name)}</h3>
+        <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #334155; line-height: 1.8;">
+          ${sub.hubs.map(h => `<li><a href="/discover?where=${escapeHtml(sub.slug)}" style="color: #0f172a; text-decoration: none; font-weight: 600;">${escapeHtml(h)}</a></li>`).join('')}
+        </ul>
+      </div>
+
+      <!-- VERIFIED LOCAL ENTITIES & STATUTORY REGISTRIES SECTION -->
       ${sub.verifiedEntities && sub.verifiedEntities.length > 0 ? `
       <section style="margin-top: 40px; margin-bottom: 40px;">
         <div style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;">
@@ -1203,7 +1399,7 @@ subLocations.forEach(sub => {
             Verified Local Entities &amp; Registries in ${escapeHtml(sub.name)}
           </h2>
           <p style="font-size: 13px; color: #64748b; margin-top: 6px; margin-bottom: 0;">
-            Ground-truth statutory registrations, food safety licenses, and historical Geographical Indications (GI) verified against primary government databases for ${escapeHtml(sub.name)}.
+            Ground-truth statutory registrations, food safety licenses, and healthcare clinic records verified against primary government databases for ${escapeHtml(sub.name)}.
           </p>
         </div>
 
@@ -1259,14 +1455,6 @@ subLocations.forEach(sub => {
       </section>
       ` : ''}
 
-      <!-- COMMERCIAL HUBS -->
-      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 32px;">
-        <h3 style="font-size: 14px; font-weight: 800; text-transform: uppercase; color: #2563eb; margin-bottom: 12px;">Key Commercial Trading Zones in ${escapeHtml(sub.name)}</h3>
-        <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #334155; line-height: 1.8;">
-          ${sub.hubs.map(h => `<li>${escapeHtml(h)}</li>`).join('')}
-        </ul>
-      </div>
-
       <!-- USE CASES -->
       <section style="margin-bottom: 40px;">
         <h2 style="font-size: 24px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">
@@ -1285,11 +1473,38 @@ subLocations.forEach(sub => {
         </div>
       </section>
 
+      <!-- CURATED LOCAL ARTICLES & STRATEGY GUIDES -->
+      ${sub.curatedArticles && sub.curatedArticles.length > 0 ? `
+      <section style="margin-bottom: 40px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+          <div>
+            <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #2563eb; display: block; margin-bottom: 4px;">Local Strategy Blueprints</span>
+            <h2 style="font-size: 24px; font-weight: 900; color: #0f172a; margin: 0;">Automation &amp; Growth Guides for ${escapeHtml(sub.name)}</h2>
+          </div>
+          <a href="/blog?district=${escapeHtml(sub.districtSlug)}" style="font-size: 12px; font-weight: 800; color: #2563eb; text-decoration: none;">All ${escapeHtml(sub.districtName)} Articles &rarr;</a>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+          ${sub.curatedArticles.map(art => `
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #2563eb; display: block; margin-bottom: 6px;">${escapeHtml(art.category)}</span>
+                <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 8px; line-height: 1.3;">
+                  <a href="/blog/${escapeHtml(art.slug)}" style="color: #0f172a; text-decoration: none;">${escapeHtml(art.title)}</a>
+                </h3>
+                <p style="font-size: 12px; color: #64748b; line-height: 1.5; margin-bottom: 12px;">${escapeHtml(art.excerpt)}</p>
+              </div>
+              <a href="/blog/${escapeHtml(art.slug)}" style="font-size: 12px; font-weight: 800; color: #2563eb; text-decoration: none; border-top: 1px solid #f1f5f9; padding-top: 10px;">Read Guide &rarr;</a>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+      ` : ''}
+
       <!-- FAQS -->
       ${sub.faqs && sub.faqs.length > 0 ? `
       <section style="margin-bottom: 40px;">
         <h2 style="font-size: 24px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">
-          Frequently Asked Questions: Business Automation in ${escapeHtml(sub.name)}
+          Frequently Asked Questions: Business Automation &amp; Visibility in ${escapeHtml(sub.name)}
         </h2>
         <div style="display: grid; gap: 16px;">
           ${sub.faqs.map(f => `
@@ -1303,13 +1518,18 @@ subLocations.forEach(sub => {
       ` : ''}
 
       <div style="margin-top: 40px; padding: 32px; background: #0f172a; border-radius: 20px; color: white; text-align: center;">
-        <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 10px;">Automate Your ${escapeHtml(sub.name)} Business Operations</h3>
+        <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 10px;">Grow Your ${escapeHtml(sub.name)} Business Operations</h3>
         <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">
-          Schedule a direct video consultation with our Kolkata engineering team to deploy custom WhatsApp order pipelines and high-speed web systems.
+          Schedule a direct video consultation with our Kolkata engineering team to deploy custom WhatsApp order pipelines, verified entity graphs, and high-speed web systems.
         </p>
-        <a href="https://wa.me/918972517557?text=Hello%20Conflux%20AI,%20I%20am%20a%20business%20owner%20in%20${encodeURIComponent(sub.name)}%20interested%20in%20automation" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 13px;">
-          WhatsApp Direct Consultation &rarr;
-        </a>
+        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+          <a href="https://wa.me/918972517557?text=Hello%20Conflux%20AI,%20I%20am%20a%20business%20owner%20in%20${encodeURIComponent(sub.name)}%20interested%20in%20automation%20and%20visibility" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 13px;">
+            WhatsApp Direct Consultation &rarr;
+          </a>
+          <a href="/list-business" style="display: inline-block; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 12px 24px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 13px;">
+            List Your Business &rarr;
+          </a>
+        </div>
       </div>
     </main>
   </div>

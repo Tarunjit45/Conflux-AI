@@ -355,7 +355,8 @@ const fixedStaticRoutes = [
   { path: '/careers', expectedH1: 'Careers & Engineering Opportunities' },
   { path: '/workplace-policy', expectedH1: 'Workplace Policy & Operating Principles' },
   { path: '/authority', expectedH1: 'Technical Authority & Security Standards' },
-  { path: '/semantic-map', expectedH1: 'Generative Engine Optimization & Semantic Map' }
+  { path: '/semantic-map', expectedH1: 'Generative Engine Optimization & Semantic Map' },
+  { path: '/locations/west-bengal/nadia/ranaghat', expectedH1: 'Local Business Visibility, Verification & Automation in Ranaghat' }
 ];
 
 console.log('\n--- Running Fixed Static Routes Inspection ---');

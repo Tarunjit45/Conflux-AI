@@ -787,6 +787,8 @@ export class BusinessService {
    * Retrieve all submitted applications for admin review
    */
   async getAllApplications(): Promise<BusinessSubmissionApplication[]> {
+    let list: BusinessSubmissionApplication[] = [];
+
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase
@@ -795,7 +797,7 @@ export class BusinessService {
           .order('created_at', { ascending: false });
 
         if (!error && data) {
-          return data.map(row => {
+          list = data.map(row => {
             let meta: any = {};
             try {
               if (row.admin_notes && (row.admin_notes.startsWith('{') || row.admin_notes.startsWith('['))) {
@@ -858,7 +860,16 @@ export class BusinessService {
         console.error('[BusinessService.getAllApplications] Database error:', err);
       }
     }
-    return [];
+
+    // Merge in-memory applications that are not already in list
+    const existingIds = new Set(list.map(a => a.id).concat(list.map(a => a.confluxBusinessId)));
+    memoryApplications.forEach(ma => {
+      if (!existingIds.has(ma.id) && !existingIds.has(ma.confluxBusinessId)) {
+        list.push(ma);
+      }
+    });
+
+    return list;
   }
 
   /**

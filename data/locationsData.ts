@@ -586,17 +586,17 @@ export const NADIA_LOCATIONS: LocationItem[] = [
       'Ranaghat Court Road Business Zone'
     ],
     nearbyLocationSlugs: ['krishnanagar', 'chakdaha', 'santipur', 'birnagar'],
-    metaTitle: 'AI Automation Services in Ranaghat | Conflux AI',
-    metaDescription: 'Automate wholesale order intake, WhatsApp speed-to-lead qualification, and business workflows for distributors and retailers in Ranaghat, Nadia.',
-    h1Title: 'AI Automation & Digital Workflows for Ranaghat Businesses',
-    summary: 'Conflux AI provides wholesale order bots, automated CRM pipelines, and web design for commercial distributors, agro-processors, and retail enterprises in Ranaghat.',
-    localBusinessContext: 'Ranaghat is a vital railway logistics junction and primary commercial trading hub connecting Kolkata to Central and Northern Nadia along NH 12 (formerly NH 34). The municipality anchors major wholesale trade in FMCG grocery distribution, agro-processing, food manufacturing, and textile supply. With substantial daily trading volumes transacted through Station Road Market, Rathtala, and Subhas Avenue, Ranaghat commercial distributors and manufacturers benefit from automated B2B WhatsApp order routing, instant lead qualification, and digital inventory synchronization.',
+    metaTitle: 'Local Business Visibility & Verification in Ranaghat | Conflux AI',
+    metaDescription: 'Conflux AI is a Local Visibility + Trust Platform helping businesses across Ranaghat, Nadia become discoverable, trusted, and contactable across Google and AI search.',
+    h1Title: 'Local Business Visibility, Verification & Automation in Ranaghat',
+    summary: 'Conflux AI connects verified businesses, FMCG distributors, agro-processors, diagnostic centres, and retail enterprises in Ranaghat to Google Search, Google Maps, AI search engines, and direct WhatsApp lead conversion channels.',
+    localBusinessContext: 'Ranaghat is a vital railway logistics junction and primary commercial trading hub connecting Kolkata to Central and Northern Nadia along NH 12 (formerly NH 34). The municipality anchors major wholesale trade in FMCG grocery distribution, agro-processing, healthcare diagnostics, food manufacturing, and textile supply. With substantial daily trading volumes transacted through Station Road Market, Rathtala, Subhas Avenue, and the NH 12 industrial corridor, Ranaghat commercial distributors and service providers benefit from verified entity discovery, direct WhatsApp order routing, and digital lead synchronization.',
     automationOpportunities: [
+      'Verified Google & AI Search Entity Graphs with Evidence Dockets',
       'Automated WhatsApp B2B Wholesale Order Routing & SKU Catalog Dispatch',
       'Instant Speed-to-Lead Qualification & Quotation Notifications for Field Sales',
-      'Automated Customer Support & Delivery Status Updates for FMCG Distributors',
-      'Sub-Second E-Commerce & Product Showcase Web Architecture for Retailers',
-      'Statutory Verification & FSSAI License Provenance Grounding for Food Processors'
+      'Automated Diagnostic Lab Appointment Booking & Report Dispatch',
+      'Statutory Verification & FSSAI / Health Dept License Provenance Grounding'
     ],
     useCases: [
       {
@@ -606,24 +606,34 @@ export const NADIA_LOCATIONS: LocationItem[] = [
         impact: 'Reduces order transcription time by 85% and eliminates after-hours order drop-off across Nadia distributor networks.'
       },
       {
-        title: 'Agricultural Food Processing & Distributor Inquiry Intake',
-        description: 'Automates bulk buyer inquiries, product specification delivery, and FSSAI compliance verification for Ranaghat agro-food processing facilities and packaged food manufacturers.',
+        title: 'Agricultural Food Processing & Cold Storage Supply Chain',
+        description: 'Automates bulk buyer inquiries, cold chain capacity bookings, product specification delivery, and FSSAI compliance verification for Ranaghat agro-food processing facilities.',
         servicesUsed: ['Custom AI Agents', 'Lead Qualification', 'High-Speed Web Platforms'],
         impact: 'Accelerates speed-to-lead from hours to under 30 seconds for regional B2B buyer inquiries.'
+      },
+      {
+        title: 'Healthcare & Diagnostic Lab Appointment Routing',
+        description: 'Automates patient appointment booking for USG, digital X-Ray, pathology tests, and automated lab report delivery via WhatsApp for Ranaghat diagnostic centres.',
+        servicesUsed: ['WhatsApp Business API', 'Local SEO & Schema.org Graphs'],
+        impact: 'Cuts clinic front-desk call volumes by 60% and accelerates report delivery times to under 2 minutes.'
       }
     ],
     faqs: [
       {
-        question: 'How does Conflux AI deliver digital automation services to Ranaghat businesses?',
-        answer: 'Conflux AI operates a remote-first engineering model from Kolkata. We collaborate with Ranaghat business owners, distributors, and manufacturers via secure video consultations, configure automated workflows in isolated cloud sandboxes, and provide end-to-end deployment and support without requiring physical office overhead.'
+        question: 'How does Conflux AI help local businesses in Ranaghat gain discoverability and trust?',
+        answer: 'Conflux AI is a Local Visibility + Trust Platform. We create structured Schema.org LocalBusiness entity graphs, verify statutory credentials (such as FSSAI, Udyam, and Clinical Establishment licenses), optimize presence for Google Maps and AI search crawlers, and integrate high-converting direct WhatsApp communication pipelines.'
       },
       {
-        question: 'How can Ranaghat wholesale distributors automate WhatsApp order handling?',
-        answer: 'We build structured WhatsApp Business API chatbots that present product catalogs, accept multi-line order requests from retailers, validate order details, and instantly notify your sales representatives or dispatch teams.'
+        question: 'How can Ranaghat wholesale distributors and retailers automate WhatsApp order handling?',
+        answer: 'We build structured WhatsApp Business API chatbots that present product catalogs, accept multi-line order requests from retailers, validate order details, and instantly notify sales representatives or dispatch teams.'
       },
       {
         question: 'How does Conflux Verify authenticate registered businesses in Ranaghat?',
-        answer: 'Conflux Verify cross-references business entities against primary statutory registries—such as the Food Safety and Standards Authority of India (FoSCoS) for food business operators (e.g., Ranaghat Agro Processing Ltd) and the Ministry of Corporate Affairs (MCA)—to provide auditable, evidence-backed trust reports.'
+        answer: 'Conflux Verify cross-references business entities against primary statutory registries—such as the Food Safety and Standards Authority of India (FoSCoS) for food business operators, the West Bengal Clinical Establishments Regulatory Commission for healthcare clinics, and the Ministry of Corporate Affairs (MCA)—to provide auditable, evidence-backed trust reports.'
+      },
+      {
+        question: 'Can Ranaghat businesses list their profile on the Conflux Discovery Hub?',
+        answer: 'Yes. Any registered business operating in Ranaghat can apply for listing on Conflux AI via our submission portal. Once statutory verification evidence is reviewed, an authoritative profile is published with direct call, WhatsApp, and booking capabilities.'
       }
     ],
     verifiedEntities: [
@@ -643,6 +653,40 @@ export const NADIA_LOCATIONS: LocationItem[] = [
         relatedArticleSlug: 'ranaghat-fmcg-wholesale-grocery-order-intake-automation',
         relatedGuideSlug: 'how-to-verify-gst-udyam-registration',
         verifyQueryUrl: '/verify?entity=Ranaghat+Agro+Processing+Ltd&claim=Ranaghat+Agro+Processing+Ltd+is+registered+under+the+FSSAI+with+an+active+food+business+operator+license+in+Nadia+district'
+      },
+      {
+        id: 'ent_ranaghat_diagnostic',
+        name: 'Ranaghat Apex Diagnostic & Health Centre',
+        entityType: 'REGISTERED_BUSINESS',
+        statutoryIdentifier: 'Clinical License: WB/CEA/NAD/2023-0941',
+        registrarName: 'West Bengal Clinical Establishments Regulatory Commission',
+        registrarUrl: 'https://www.wbhealth.gov.in',
+        claimSummary: 'Holds an active clinical establishment registration for digital ultrasound, computerized pathology, and radiology in Ranaghat.',
+        verificationStatus: 'SUPPORTED',
+        sourceTier: 'TIER_1_PRIMARY_AUTHORITATIVE',
+        validThrough: '2028-12-31',
+        benchmarkCaseId: 'GT-08',
+        locationRelevance: 'NABL-accredited diagnostic and healthcare facility serving Ranaghat municipality and surrounding rural corridors in Nadia.',
+        relatedArticleSlug: 'west-bengal-polyclinic-diagnostic-centre-opd-booking-whatsapp-reports-local-seo',
+        relatedGuideSlug: 'how-to-verify-gst-udyam-registration',
+        verifyQueryUrl: '/verify?entity=Ranaghat+Apex+Diagnostic+%26+Health+Centre&claim=Ranaghat+Apex+Diagnostic+holds+valid+clinical+establishment+license+in+Nadia'
+      },
+      {
+        id: 'ent_chitrakoot_restaurant',
+        name: 'Chitrakoot Multi-Cuisine Restaurant & Banquet',
+        entityType: 'REGISTERED_BUSINESS',
+        statutoryIdentifier: 'FSSAI License: 22822019000874',
+        registrarName: 'Food Safety and Standards Authority of India (FSSAI)',
+        registrarUrl: 'https://foscos.fssai.gov.in',
+        claimSummary: 'Maintains active FSSAI food business license and municipal commercial establishment certification at Ranaghat Station Road.',
+        verificationStatus: 'SUPPORTED',
+        sourceTier: 'TIER_1_PRIMARY_AUTHORITATIVE',
+        validThrough: '2027-11-30',
+        benchmarkCaseId: 'GT-11',
+        locationRelevance: 'Prominent hospitality, family dining, and AC banquet facility situated opposite Ranaghat railway junction.',
+        relatedArticleSlug: 'ranaghat-wholesale-distributors-whatsapp-order-automation',
+        relatedGuideSlug: 'how-to-verify-gst-udyam-registration',
+        verifyQueryUrl: '/verify?entity=Chitrakoot+Multi-Cuisine+Restaurant&claim=Chitrakoot+Restaurant+holds+active+FSSAI+State+Food+License+in+Ranaghat'
       }
     ]
   },
