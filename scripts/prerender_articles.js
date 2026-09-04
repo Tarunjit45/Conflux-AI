@@ -2572,6 +2572,51 @@ const staticPages = [
       </div>
     </div>
     `
+  },
+  {
+    path: '/admin/businesses',
+    title: 'Business Operations | Conflux AI Admin',
+    desc: 'Manage, edit, verify, and publish local businesses on Conflux AI.',
+    body: `
+    <div id="root">
+      <div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 480px; width: 100%; background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+          <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Business Operations Command Center</h1>
+          <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Loading business graph...</p>
+        </div>
+      </div>
+    </div>
+    `
+  },
+  {
+    path: '/admin/location-coverage',
+    title: 'Location Coverage Dashboard | Conflux AI Admin',
+    desc: 'Location coverage and intelligence dashboard for Conflux AI.',
+    body: `
+    <div id="root">
+      <div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 480px; width: 100%; background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+          <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Location Coverage Dashboard</h1>
+          <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Loading location intelligence...</p>
+        </div>
+      </div>
+    </div>
+    `
+  },
+  {
+    path: '/admin/cms',
+    title: 'Content Management CMS | Conflux AI Admin',
+    desc: 'Content management system for Conflux AI articles and hubs.',
+    body: `
+    <div id="root">
+      <div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 480px; width: 100%; background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+          <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Content Management CMS</h1>
+          <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Loading CMS...</p>
+        </div>
+      </div>
+    </div>
+    `
   }
 ];
 
