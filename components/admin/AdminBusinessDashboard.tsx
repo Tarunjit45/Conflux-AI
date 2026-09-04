@@ -46,6 +46,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AdminShell } from "./AdminSidebar";
 import { businessService } from "../../lib/businessService";
 import {
   connectService,
@@ -112,6 +113,9 @@ export const AdminBusinessDashboard: React.FC = () => {
     email: "",
     websiteUrl: "",
     bookingUrl: "",
+    status: "PUBLISHED" as BusinessPublishStatus,
+    verificationStatus: "UNVERIFIED" as ConfluxBusiness["verificationStatus"],
+    evidenceSummary: "",
   });
 
   const loadData = async () => {
@@ -154,6 +158,9 @@ export const AdminBusinessDashboard: React.FC = () => {
       email: "",
       websiteUrl: "",
       bookingUrl: "",
+      status: "PUBLISHED",
+      verificationStatus: "UNVERIFIED",
+      evidenceSummary: "",
     });
     setIsCreateModalOpen(true);
   };
@@ -177,6 +184,9 @@ export const AdminBusinessDashboard: React.FC = () => {
       email: biz.contact.email || "",
       websiteUrl: biz.contact.websiteUrl || "",
       bookingUrl: biz.contact.bookingUrl || "",
+      status: biz.status,
+      verificationStatus: biz.verificationStatus,
+      evidenceSummary: biz.evidenceSummary || "",
     });
   };
 
@@ -194,6 +204,8 @@ export const AdminBusinessDashboard: React.FC = () => {
           .filter(Boolean)
       : undefined;
 
+    const catObj = BUSINESS_CATEGORY_TAXONOMY.find((c) => c.id === formState.categoryId);
+
     try {
       if (editingBusiness) {
         await businessService.updateBusiness(editingBusiness.id, {
@@ -201,10 +213,14 @@ export const AdminBusinessDashboard: React.FC = () => {
           legalName: formState.legalName || undefined,
           businessType: formState.businessType,
           categoryId: formState.categoryId,
+          categoryName: catObj?.name,
           description: formState.description,
           shortSummary: formState.shortSummary || undefined,
           landmark: formState.landmark || undefined,
           services: servicesArray,
+          status: formState.status,
+          verificationStatus: formState.verificationStatus,
+          evidenceSummary: formState.evidenceSummary || undefined,
           location: {
             ...editingBusiness.location,
             district: formState.district,
@@ -228,6 +244,7 @@ export const AdminBusinessDashboard: React.FC = () => {
           legalName: formState.legalName || undefined,
           businessType: formState.businessType,
           categoryId: formState.categoryId,
+          categoryName: catObj?.name,
           description: formState.description,
           shortSummary: formState.shortSummary || undefined,
           district: formState.district,
@@ -241,8 +258,11 @@ export const AdminBusinessDashboard: React.FC = () => {
           websiteUrl: formState.websiteUrl || undefined,
           bookingUrl: formState.bookingUrl || undefined,
         });
+        if (formState.status === "PUBLISHED") {
+          await businessService.setPublishStatus(created.id, "PUBLISHED");
+        }
         showNotification(
-          `Created business ${created.confluxBusinessId} (Status: DRAFT, Unverified).`,
+          `Created business ${created.confluxBusinessId} (Status: ${formState.status}).`,
         );
       }
 
@@ -539,8 +559,9 @@ export const AdminBusinessDashboard: React.FC = () => {
     pendingApps.length + pendingClaims.length + pendingContribs.length;
 
   return (
-    <div className="min-h-screen bg-[#f4f7fb] text-slate-900 pb-20 pt-5 sm:pt-8">
-      <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
+    <AdminShell>
+      <div className="text-slate-900 pb-20 pt-5 sm:pt-8">
+        <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
         {/* Private Admin Header Bar */}
         <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6 p-5 sm:p-7 rounded-2xl bg-slate-950 text-white border border-slate-800 shadow-xl shadow-slate-900/10">
           <div>
@@ -1774,32 +1795,11 @@ export const AdminBusinessDashboard: React.FC = () => {
                     }
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none"
                   >
-                    <option value="healthcare">
-                      Healthcare &amp; Diagnostics
-                    </option>
-                    <option value="food-hospitality">
-                      Restaurants &amp; Food Services
-                    </option>
-                    <option value="fitness-wellness">Gyms &amp; Fitness</option>
-                    <option value="services-repairs">
-                      Repairs &amp; HVAC Services
-                    </option>
-                    <option value="tourism-hospitality">
-                      Hotels &amp; Tourism
-                    </option>
-                    <option value="salons-beauty">
-                      Salons &amp; Personal Care
-                    </option>
-                    <option value="handloom-textiles">
-                      Handloom &amp; Textiles
-                    </option>
-                    <option value="agriculture-farming">
-                      Agro-Processing &amp; Farming
-                    </option>
-                    <option value="manufacturing-industrial">
-                      Manufacturing &amp; Machining
-                    </option>
-                    <option value="it-software">IT, AI &amp; Software</option>
+                    {BUSINESS_CATEGORY_TAXONOMY.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -1907,6 +1907,62 @@ export const AdminBusinessDashboard: React.FC = () => {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700">
+                      Publishing Status
+                    </label>
+                    <select
+                      value={formState.status}
+                      onChange={(e) =>
+                        setFormState({ ...formState, status: e.target.value as BusinessPublishStatus })
+                      }
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none"
+                    >
+                      <option value="PUBLISHED">PUBLISHED (Active on Directory)</option>
+                      <option value="DRAFT">DRAFT (Hidden from Public)</option>
+                      <option value="SUSPENDED">SUSPENDED</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700">
+                      Verification Status
+                    </label>
+                    <select
+                      value={formState.verificationStatus}
+                      onChange={(e) =>
+                        setFormState({
+                          ...formState,
+                          verificationStatus: e.target.value as ConfluxBusiness["verificationStatus"],
+                        })
+                      }
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none"
+                    >
+                      <option value="UNVERIFIED">UNVERIFIED (Not yet verified)</option>
+                      <option value="SUPPORTED">SUPPORTED (Verified Listing)</option>
+                      <option value="PARTIALLY_SUPPORTED">PARTIALLY SUPPORTED</option>
+                      <option value="INSUFFICIENT_EVIDENCE">INSUFFICIENT EVIDENCE</option>
+                      <option value="DISPUTED">DISPUTED</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">
+                    Verification Notes / Evidence Summary
+                  </label>
+                  <input
+                    type="text"
+                    value={formState.evidenceSummary}
+                    onChange={(e) =>
+                      setFormState({ ...formState, evidenceSummary: e.target.value })
+                    }
+                    placeholder="e.g. Identity supported by submission; trade license verified"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  />
+                </div>
+
                 <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
                   <button
                     type="button"
@@ -2010,6 +2066,7 @@ export const AdminBusinessDashboard: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
-    </div>
+      </div>
+    </AdminShell>
   );
 };
