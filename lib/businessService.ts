@@ -19,35 +19,66 @@ import { enrichmentService } from './enrichmentService.ts';
 let memoryStore: ConfluxBusiness[] = [];
 let memoryApplications: BusinessSubmissionApplication[] = [];
 
-const LOCAL_STORAGE_OVERRIDES_KEY = 'conflux_admin_business_overrides';
+let memoryOverrides: Record<string, Partial<ConfluxBusiness>> = {};
 
 const getAdminOverrides = (): Record<string, Partial<ConfluxBusiness>> => {
+  let stored: Record<string, Partial<ConfluxBusiness>> = {};
   if (typeof localStorage !== 'undefined') {
     try {
       const raw = localStorage.getItem(LOCAL_STORAGE_OVERRIDES_KEY);
-      return raw ? JSON.parse(raw) : {};
+      stored = raw ? JSON.parse(raw) : {};
     } catch {
-      return {};
+      stored = {};
     }
   }
-  return {};
+  return { ...stored, ...memoryOverrides };
 };
 
 const saveAdminOverride = (id: string, updates: Partial<ConfluxBusiness>) => {
+  const overrides = getAdminOverrides();
+  const existing = overrides[id] || {};
+  const record: Partial<ConfluxBusiness> = {
+    ...existing,
+    ...updates,
+    location: { ...(existing.location || {}), ...(updates.location || {}) } as any,
+    contact: { ...(existing.contact || {}), ...(updates.contact || {}) } as any,
+    media: updates.media !== undefined ? updates.media : existing.media,
+    socialLinks: updates.socialLinks !== undefined ? updates.socialLinks : existing.socialLinks,
+    sourceLinks: updates.sourceLinks !== undefined ? updates.sourceLinks : existing.sourceLinks,
+    updatedAt: new Date().toISOString()
+  };
+
+  overrides[id] = record;
+  memoryOverrides[id] = record;
+
+  if (updates.confluxBusinessId) {
+    overrides[updates.confluxBusinessId] = record;
+    memoryOverrides[updates.confluxBusinessId] = record;
+  }
+  if (updates.slug) {
+    overrides[updates.slug] = record;
+    memoryOverrides[updates.slug] = record;
+  }
+
+  // Cross-index all sibling identifiers if business exists in memoryStore
+  const match = memoryStore.find(b => b.id === id || b.confluxBusinessId === id || b.slug === id);
+  if (match) {
+    if (match.id) {
+      overrides[match.id] = record;
+      memoryOverrides[match.id] = record;
+    }
+    if (match.confluxBusinessId) {
+      overrides[match.confluxBusinessId] = record;
+      memoryOverrides[match.confluxBusinessId] = record;
+    }
+    if (match.slug) {
+      overrides[match.slug] = record;
+      memoryOverrides[match.slug] = record;
+    }
+  }
+
   if (typeof localStorage !== 'undefined') {
     try {
-      const overrides = getAdminOverrides();
-      const existing = overrides[id] || {};
-      overrides[id] = {
-        ...existing,
-        ...updates,
-        location: { ...(existing.location || {}), ...(updates.location || {}) } as any,
-        contact: { ...(existing.contact || {}), ...(updates.contact || {}) } as any,
-        media: updates.media !== undefined ? updates.media : existing.media,
-        socialLinks: updates.socialLinks !== undefined ? updates.socialLinks : existing.socialLinks,
-        sourceLinks: updates.sourceLinks !== undefined ? updates.sourceLinks : existing.sourceLinks,
-        updatedAt: new Date().toISOString()
-      };
       localStorage.setItem(LOCAL_STORAGE_OVERRIDES_KEY, JSON.stringify(overrides));
     } catch {
       // Storage quota guard
@@ -99,6 +130,12 @@ export class BusinessService {
   clearGraphStore() {
     memoryStore = [];
     memoryApplications = [];
+    memoryOverrides = {};
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.removeItem(LOCAL_STORAGE_OVERRIDES_KEY);
+      } catch {}
+    }
   }
 
   /**
@@ -714,15 +751,23 @@ export class BusinessService {
       memoryStore.unshift(fallback);
       return applyAdminOverride(fallback);
     }
-    return applyAdminOverride({
+    const merged: ConfluxBusiness = applyAdminOverride({
       ...fetched,
       ...updates,
       location: { ...fetched.location, ...(updates.location || {}) },
       contact: { ...fetched.contact, ...(updates.contact || {}) },
       media: updates.media !== undefined ? updates.media : fetched.media,
       socialLinks: updates.socialLinks !== undefined ? updates.socialLinks : fetched.socialLinks,
-      sourceLinks: updates.sourceLinks !== undefined ? updates.sourceLinks : fetched.sourceLinks
+      sourceLinks: updates.sourceLinks !== undefined ? updates.sourceLinks : fetched.sourceLinks,
+      updatedAt: new Date().toISOString()
     });
+    const existingIdx = memoryStore.findIndex(b => b.id === merged.id || b.confluxBusinessId === merged.confluxBusinessId || b.slug === merged.slug);
+    if (existingIdx !== -1) {
+      memoryStore[existingIdx] = merged;
+    } else {
+      memoryStore.unshift(merged);
+    }
+    return merged;
   }
 
   /**

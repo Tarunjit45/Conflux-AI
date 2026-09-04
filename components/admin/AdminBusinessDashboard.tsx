@@ -50,6 +50,7 @@ import {
   ArrowDown,
   Upload,
   Share2,
+  Loader2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AdminShell } from "./AdminSidebar";
@@ -78,6 +79,14 @@ import type {
 import { WEST_BENGAL_DISTRICTS } from "../../data/locationsData";
 import { BUSINESS_CATEGORY_TAXONOMY } from "../../data/taxonomiesData";
 
+const ensureUrlProtocol = (url?: string): string | undefined => {
+  if (!url) return undefined;
+  const trimmed = url.trim();
+  if (!trimmed) return undefined;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+};
+
 export const AdminBusinessDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
     "ENTITIES" | "APPLICATIONS" | "CLAIMS" | "CONTRIBUTIONS" | "MEASUREMENT"
@@ -105,6 +114,8 @@ export const AdminBusinessDashboard: React.FC = () => {
     useState<ConfluxBusiness | null>(null);
   const [verifyClaimStatement, setVerifyClaimStatement] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   // Form State for Create / Edit
@@ -210,6 +221,8 @@ export const AdminBusinessDashboard: React.FC = () => {
     setMediaAltText("");
     setMediaSourceName("");
     setMediaAttribution("");
+    setFormError(null);
+    setIsSaving(false);
     setIsCreateModalOpen(true);
   };
 
@@ -245,10 +258,13 @@ export const AdminBusinessDashboard: React.FC = () => {
     setMediaAltText("");
     setMediaSourceName("");
     setMediaAttribution("");
+    setFormError(null);
+    setIsSaving(false);
   };
 
   const handleAddOrUpdateMedia = () => {
-    if (!mediaUrl.trim()) {
+    const cleanUrl = ensureUrlProtocol(mediaUrl);
+    if (!cleanUrl) {
       alert("Please provide a valid media URL.");
       return;
     }
@@ -259,7 +275,7 @@ export const AdminBusinessDashboard: React.FC = () => {
           item.id === editingMediaId
             ? {
                 ...item,
-                url: mediaUrl.trim(),
+                url: cleanUrl,
                 mediaType,
                 caption: mediaCaption.trim() || undefined,
                 altText: mediaAltText.trim() || undefined,
@@ -272,18 +288,23 @@ export const AdminBusinessDashboard: React.FC = () => {
       );
       setEditingMediaId(null);
     } else {
+      if (mediaList.length >= 2) {
+        alert("Maximum 2 media items are permitted per business profile.");
+        return;
+      }
       const newItem: BusinessMediaItem = {
         id: `med_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-        url: mediaUrl.trim(),
+        businessId: editingBusiness?.id,
+        url: cleanUrl,
         mediaType,
         caption: mediaCaption.trim() || undefined,
         altText: mediaAltText.trim() || undefined,
         sourceName: mediaSourceName.trim() || undefined,
         attribution: mediaAttribution.trim() || undefined,
-        dateAdded: new Date().toISOString().split("T")[0],
         provenance: mediaProvenance,
         status: "ACTIVE",
         sortOrder: mediaList.length + 1,
+        createdAt: new Date().toISOString(),
       };
       setMediaList(prev => [...prev, newItem]);
     }
@@ -293,7 +314,6 @@ export const AdminBusinessDashboard: React.FC = () => {
     setMediaAltText("");
     setMediaSourceName("");
     setMediaAttribution("");
-    setMediaProvenance("ADMIN_ADDED");
   };
 
   const handleEditMediaItem = (item: BusinessMediaItem) => {
@@ -335,14 +355,15 @@ export const AdminBusinessDashboard: React.FC = () => {
   };
 
   const handleAddSocialLink = () => {
-    if (!socialUrl.trim()) {
+    const cleanUrl = ensureUrlProtocol(socialUrl);
+    if (!cleanUrl) {
       alert("Please enter a valid URL.");
       return;
     }
     const newLink: BusinessSocialLink = {
       id: `soc_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
       platform: socialPlatform,
-      url: socialUrl.trim(),
+      url: cleanUrl,
       label: socialLabel.trim() || undefined,
       provenance: socialProvenance,
       isActive: true,
@@ -363,14 +384,15 @@ export const AdminBusinessDashboard: React.FC = () => {
   };
 
   const handleAddSourceLink = () => {
-    if (!sourcePlatform.trim() || !sourceUrl.trim()) {
+    const cleanUrl = ensureUrlProtocol(sourceUrl);
+    if (!sourcePlatform.trim() || !cleanUrl) {
       alert("Please provide both platform name and source URL.");
       return;
     }
     const newSource: BusinessSourceLink = {
       id: `src_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
       platform: sourcePlatform.trim(),
-      url: sourceUrl.trim(),
+      url: cleanUrl,
       notes: sourceNotes.trim() || undefined,
       provenance: sourceProvenance,
       isActive: true,
@@ -391,10 +413,39 @@ export const AdminBusinessDashboard: React.FC = () => {
     );
   };
 
-  const handleSaveBusiness = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formState.name || !formState.description || !formState.fullAddress) {
-      alert("Please fill all required fields (Name, Description, Address).");
+  const handleSaveBusiness = async (e?: React.FormEvent | React.MouseEvent) => {
+    if (e && typeof e.preventDefault === "function") {
+      e.preventDefault();
+    }
+    setFormError(null);
+
+    const name = formState.name.trim();
+    const city = formState.city.trim();
+    const fullAddress = formState.fullAddress.trim();
+    const description = formState.description.trim();
+
+    if (!name) {
+      const msg = "Business Brand Name is required.";
+      setFormError(msg);
+      alert(msg);
+      return;
+    }
+    if (!city) {
+      const msg = "City / Town is required.";
+      setFormError(msg);
+      alert(msg);
+      return;
+    }
+    if (!fullAddress) {
+      const msg = "Full Physical Address is required.";
+      setFormError(msg);
+      alert(msg);
+      return;
+    }
+    if (!description) {
+      const msg = "Business Description is required.";
+      setFormError(msg);
+      alert(msg);
       return;
     }
 
@@ -407,60 +458,67 @@ export const AdminBusinessDashboard: React.FC = () => {
 
     const catObj = BUSINESS_CATEGORY_TAXONOMY.find((c) => c.id === formState.categoryId);
 
+    setIsSaving(true);
+
     try {
       if (editingBusiness) {
-        await businessService.updateBusiness(editingBusiness.id, {
-          name: formState.name,
-          legalName: formState.legalName || undefined,
+        const updatedBiz = await businessService.updateBusiness(editingBusiness.id, {
+          name,
+          legalName: formState.legalName?.trim() || undefined,
           businessType: formState.businessType,
           categoryId: formState.categoryId,
           categoryName: catObj?.name,
-          description: formState.description,
-          shortSummary: formState.shortSummary || undefined,
-          landmark: formState.landmark || undefined,
+          description,
+          shortSummary: formState.shortSummary?.trim() || undefined,
+          landmark: formState.landmark?.trim() || undefined,
           services: servicesArray,
           status: formState.status,
           verificationStatus: formState.verificationStatus,
-          evidenceSummary: formState.evidenceSummary || undefined,
+          evidenceSummary: formState.evidenceSummary?.trim() || undefined,
           location: {
             ...editingBusiness.location,
             district: formState.district,
-            city: formState.city,
-            landmark: formState.landmark || undefined,
-            fullAddress: formState.fullAddress,
+            city,
+            landmark: formState.landmark?.trim() || undefined,
+            fullAddress,
           },
           contact: {
             ...editingBusiness.contact,
-            phone: formState.phone || undefined,
-            whatsapp: formState.whatsapp || undefined,
-            email: formState.email || undefined,
-            websiteUrl: formState.websiteUrl || undefined,
-            bookingUrl: formState.bookingUrl || undefined,
+            phone: formState.phone?.trim() || undefined,
+            whatsapp: formState.whatsapp?.trim() || undefined,
+            email: formState.email?.trim() || undefined,
+            websiteUrl: ensureUrlProtocol(formState.websiteUrl),
+            bookingUrl: ensureUrlProtocol(formState.bookingUrl),
           },
           media: mediaList,
           socialLinks: socialLinksList,
           sourceLinks: sourceLinksList,
         });
-        showNotification(`Updated "${formState.name}" successfully.`);
+
+        // Immediately update state in-memory so UI updates instantly
+        setBusinesses((prev) =>
+          prev.map((b) => (b.id === editingBusiness.id ? { ...b, ...updatedBiz } : b))
+        );
+        showNotification(`Updated "${name}" successfully.`);
       } else {
         const created = await businessService.createBusiness({
-          name: formState.name,
-          legalName: formState.legalName || undefined,
+          name,
+          legalName: formState.legalName?.trim() || undefined,
           businessType: formState.businessType,
           categoryId: formState.categoryId,
           categoryName: catObj?.name,
-          description: formState.description,
-          shortSummary: formState.shortSummary || undefined,
+          description,
+          shortSummary: formState.shortSummary?.trim() || undefined,
           district: formState.district,
-          city: formState.city,
-          landmark: formState.landmark || undefined,
+          city,
+          landmark: formState.landmark?.trim() || undefined,
           services: servicesArray,
-          fullAddress: formState.fullAddress,
-          phone: formState.phone || undefined,
-          whatsapp: formState.whatsapp || undefined,
-          email: formState.email || undefined,
-          websiteUrl: formState.websiteUrl || undefined,
-          bookingUrl: formState.bookingUrl || undefined,
+          fullAddress,
+          phone: formState.phone?.trim() || undefined,
+          whatsapp: formState.whatsapp?.trim() || undefined,
+          email: formState.email?.trim() || undefined,
+          websiteUrl: ensureUrlProtocol(formState.websiteUrl),
+          bookingUrl: ensureUrlProtocol(formState.bookingUrl),
         });
         if (mediaList.length > 0 || socialLinksList.length > 0 || sourceLinksList.length > 0) {
           await businessService.updateBusiness(created.id, {
@@ -472,6 +530,7 @@ export const AdminBusinessDashboard: React.FC = () => {
         if (formState.status === "PUBLISHED") {
           await businessService.setPublishStatus(created.id, "PUBLISHED");
         }
+        setBusinesses((prev) => [created, ...prev]);
         showNotification(
           `Created business ${created.confluxBusinessId} (Status: ${formState.status}).`,
         );
@@ -479,9 +538,13 @@ export const AdminBusinessDashboard: React.FC = () => {
 
       setIsCreateModalOpen(false);
       setEditingBusiness(null);
+      setFormError(null);
       await loadData();
     } catch (err: any) {
-      alert(`Error saving business: ${err.message}`);
+      console.error("Error saving business:", err);
+      alert(`Error saving business: ${err?.message || err}`);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -1887,7 +1950,7 @@ export const AdminBusinessDashboard: React.FC = () => {
                 </button>
               </div>
 
-              <form onSubmit={handleSaveBusiness} className="space-y-4">
+              <form onSubmit={handleSaveBusiness} noValidate className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700">
@@ -2086,7 +2149,7 @@ export const AdminBusinessDashboard: React.FC = () => {
                       Website URL
                     </label>
                     <input
-                      type="url"
+                      type="text"
                       value={formState.websiteUrl}
                       onChange={(e) =>
                         setFormState({
@@ -2104,7 +2167,7 @@ export const AdminBusinessDashboard: React.FC = () => {
                       Booking / Ordering URL
                     </label>
                     <input
-                      type="url"
+                      type="text"
                       value={formState.bookingUrl}
                       onChange={(e) =>
                         setFormState({
@@ -2272,7 +2335,7 @@ export const AdminBusinessDashboard: React.FC = () => {
                       <div className="sm:col-span-2 space-y-1">
                         <label className="text-[11px] font-bold text-slate-700">Media URL *</label>
                         <input
-                          type="url"
+                          type="text"
                           value={mediaUrl}
                           onChange={(e) => setMediaUrl(e.target.value)}
                           placeholder="https://example.com/storefront.jpg or video embed URL"
@@ -2445,7 +2508,7 @@ export const AdminBusinessDashboard: React.FC = () => {
                     <div className="sm:col-span-2 space-y-1">
                       <label className="text-[11px] font-bold text-slate-700">Profile URL</label>
                       <input
-                        type="url"
+                        type="text"
                         value={socialUrl}
                         onChange={(e) => setSocialUrl(e.target.value)}
                         placeholder="https://facebook.com/example"
@@ -2541,7 +2604,7 @@ export const AdminBusinessDashboard: React.FC = () => {
                     <div className="sm:col-span-2 space-y-1">
                       <label className="text-[11px] font-bold text-slate-700">Public Source URL</label>
                       <input
-                        type="url"
+                        type="text"
                         value={sourceUrl}
                         onChange={(e) => setSourceUrl(e.target.value)}
                         placeholder="https://maps.google.com/..."
@@ -2616,22 +2679,34 @@ export const AdminBusinessDashboard: React.FC = () => {
                   />
                 </div>
 
+                {formError && (
+                  <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center gap-2.5 shadow-sm">
+                    <AlertCircle size={16} className="text-rose-600 shrink-0" />
+                    <span>{formError}</span>
+                  </div>
+                )}
+
                 <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
                   <button
                     type="button"
+                    disabled={isSaving}
                     onClick={() => {
                       setIsCreateModalOpen(false);
                       setEditingBusiness(null);
+                      setFormError(null);
                     }}
-                    className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer transition-colors disabled:opacity-50"
                   >
                     Cancel
                   </button>
                   <button
-                    type="submit"
-                    className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 cursor-pointer"
+                    type="button"
+                    onClick={handleSaveBusiness}
+                    disabled={isSaving}
+                    className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-xs font-bold shadow-md shadow-blue-500/20 cursor-pointer transition-all flex items-center gap-2"
                   >
-                    {editingBusiness ? "Save Changes" : "Register Business"}
+                    {isSaving && <Loader2 size={14} className="animate-spin" />}
+                    {isSaving ? "Saving Details..." : editingBusiness ? "Save Changes" : "Register Business"}
                   </button>
                 </div>
               </form>
