@@ -22,7 +22,6 @@ import {
 } from 'lucide-react';
 import { trackLocationEvent } from '../../lib/locationAnalytics';
 import { businessService } from '../../lib/businessService';
-import { TEST_FIXTURE_BUSINESSES } from '../../tests/fixtures/testBusinessFixtures';
 import type { ConfluxBusiness } from '../../types/business';
 import type { ArticleKnowledgeObject } from '../../types/article';
 
@@ -36,7 +35,7 @@ const LocationDetailPage: React.FC = () => {
   const [localBusinesses, setLocalBusinesses] = useState<ConfluxBusiness[]>([]);
   const [isLoadingBusinesses, setIsLoadingBusinesses] = useState(true);
 
-  // Load local verified businesses from Business Graph (with static fixture fallback)
+  // Load local verified businesses from Business Graph
   useEffect(() => {
     let isMounted = true;
     const loadBusinesses = async () => {
@@ -48,35 +47,14 @@ const LocationDetailPage: React.FC = () => {
           city: location.slug
         });
         const matched = results.map(r => r.business);
-        
-        // Merge with fixture data if not already present
-        const fixtureMatches = TEST_FIXTURE_BUSINESSES.filter(
-          b =>
-            b.location.city.toLowerCase() === location.slug.toLowerCase() &&
-            b.location.district.toLowerCase() === (districtSlug || '').toLowerCase() &&
-            b.status === 'PUBLISHED'
-        );
-
-        const existingIds = new Set(matched.map(b => b.id).concat(matched.map(b => b.confluxBusinessId)));
-        fixtureMatches.forEach(fb => {
-          if (!existingIds.has(fb.id) && !existingIds.has(fb.confluxBusinessId)) {
-            matched.push(fb);
-          }
-        });
 
         if (isMounted) {
           setLocalBusinesses(matched);
         }
       } catch (err) {
-        // Fallback to static fixtures
-        const fixtureMatches = TEST_FIXTURE_BUSINESSES.filter(
-          b =>
-            b.location.city.toLowerCase() === (location?.slug || '').toLowerCase() &&
-            b.location.district.toLowerCase() === (districtSlug || '').toLowerCase() &&
-            b.status === 'PUBLISHED'
-        );
+        console.warn('[LocationDetailPage] Error loading local businesses:', err);
         if (isMounted) {
-          setLocalBusinesses(fixtureMatches);
+          setLocalBusinesses([]);
         }
       } finally {
         if (isMounted) {

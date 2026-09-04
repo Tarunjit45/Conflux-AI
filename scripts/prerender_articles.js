@@ -1031,47 +1031,6 @@ const subLocations = [
       'Subhas Avenue Retail Hub',
       'Ranaghat Court Road Business Zone'
     ],
-    verifiedBusinesses: [
-      {
-        id: 'biz_cfx_001_ranaghat_agro',
-        confluxBusinessId: 'CFX-IN-WB-NADIA-000001',
-        slug: 'ranaghat-agro-processing',
-        name: 'Ranaghat Agro Processing Ltd',
-        categoryName: 'Agro-Processing & Cold Storage',
-        summary: 'Premier food processing, packaging, and cold chain logistics facility serving fruit, vegetable, and grain farmers across Nadia and Murshidabad districts.',
-        address: 'NH-12 Agro Corridor, Ranaghat, Nadia, West Bengal 741201',
-        phone: '+919830112233',
-        whatsapp: '+919830112233',
-        services: ['Cold Chain Storage', 'Fruit & Grain Packhouse', 'FSSAI Certified Grading', 'Wholesale Mandi Logistics'],
-        verificationLevel: 'Statutory Verified'
-      },
-      {
-        id: 'biz_cfx_005_ranaghat_diagnostic',
-        confluxBusinessId: 'CFX-IN-WB-NADIA-000005',
-        slug: 'ranaghat-apex-diagnostic-centre',
-        name: 'Ranaghat Apex Diagnostic & Health Centre',
-        categoryName: 'Healthcare & Diagnostics',
-        summary: 'NABL accredited diagnostic centre providing digital ultrasound, computerised pathology, low-dose digital X-Ray, and multi-specialist clinical consultations in Ranaghat.',
-        address: 'College Road, Near Hospital Gate, Ranaghat, Nadia, West Bengal 741201',
-        phone: '+919830556677',
-        whatsapp: '+919830556677',
-        services: ['Ultrasound (USG)', 'Digital X-Ray', 'Pathology Blood Tests', 'ECG', 'Doctor Chamber Consultation'],
-        verificationLevel: 'Statutory Verified'
-      },
-      {
-        id: 'biz_cfx_006_chitrakoot_restaurant',
-        confluxBusinessId: 'CFX-IN-WB-NADIA-000006',
-        slug: 'chitrakoot-multi-cuisine-restaurant',
-        name: 'Chitrakoot Multi-Cuisine Restaurant & Banquet',
-        categoryName: 'Restaurants & Food Services',
-        summary: 'Premier air-conditioned family restaurant and banquet hall in Ranaghat serving authentic Bengali thalis, North Indian, Tandoori, and Indo-Chinese cuisine.',
-        address: 'Station Road, Opposite Platform 1, Ranaghat, Nadia, West Bengal 741201',
-        phone: '+919830667788',
-        whatsapp: '+919830667788',
-        services: ['Family Dining', 'Banquet Hall Reservation', 'Home Delivery', 'Corporate Catering'],
-        verificationLevel: 'Statutory Verified'
-      }
-    ],
     curatedArticles: [
       {
         slug: 'ranaghat-fmcg-wholesale-grocery-order-intake-automation',
@@ -1131,56 +1090,6 @@ const subLocations = [
       {
         q: 'Can Ranaghat businesses list their profile on the Conflux Discovery Hub?',
         a: 'Yes. Any registered business operating in Ranaghat can apply for listing on Conflux AI via our submission portal. Once statutory verification evidence is reviewed, an authoritative profile is published with direct call, WhatsApp, and booking capabilities.'
-      }
-    ],
-    verifiedEntities: [
-      {
-        name: 'Ranaghat Agro Processing Ltd',
-        type: 'Registered Corporate Business',
-        status: 'SUPPORTED',
-        tier: 'Tier 1: Primary Official Registrar',
-        identifier: 'FSSAI License: 12823019000452',
-        summary: 'Holds an active Food Business Operator (FBO) manufacturing and processing license in Nadia district.',
-        relevance: 'Primary agricultural food processing facility in Ranaghat subdivision, supporting commercial food manufacturing across Nadia district.',
-        registrarName: 'Food Safety and Standards Authority of India (FoSCoS)',
-        registrarUrl: 'https://foscos.fssai.gov.in',
-        validThrough: '2028-05-09',
-        benchmarkCaseId: 'GT-04',
-        verifyUrl: '/verify?entity=Ranaghat+Agro+Processing+Ltd&claim=Ranaghat+Agro+Processing+Ltd+is+registered+under+the+FSSAI+with+an+active+food+business+operator+license+in+Nadia+district',
-        articleSlug: 'ranaghat-fmcg-wholesale-grocery-order-intake-automation',
-        guideSlug: 'how-to-verify-gst-udyam-registration'
-      },
-      {
-        name: 'Ranaghat Apex Diagnostic & Health Centre',
-        type: 'Registered Corporate Business',
-        status: 'SUPPORTED',
-        tier: 'Tier 1: Primary Official Registrar',
-        identifier: 'Clinical License: WB/CEA/NAD/2023-0941',
-        summary: 'Holds an active clinical establishment registration for digital ultrasound, computerized pathology, and radiology in Ranaghat.',
-        relevance: 'NABL-accredited diagnostic and healthcare facility serving Ranaghat municipality and surrounding rural corridors in Nadia.',
-        registrarName: 'West Bengal Clinical Establishments Regulatory Commission',
-        registrarUrl: 'https://www.wbhealth.gov.in',
-        validThrough: '2028-12-31',
-        benchmarkCaseId: 'GT-08',
-        verifyUrl: '/verify?entity=Ranaghat+Apex+Diagnostic+%26+Health+Centre&claim=Ranaghat+Apex+Diagnostic+holds+valid+clinical+establishment+license+in+Nadia',
-        articleSlug: 'west-bengal-polyclinic-diagnostic-centre-opd-booking-whatsapp-reports-local-seo',
-        guideSlug: 'how-to-verify-gst-udyam-registration'
-      },
-      {
-        name: 'Chitrakoot Multi-Cuisine Restaurant & Banquet',
-        type: 'Registered Corporate Business',
-        status: 'SUPPORTED',
-        tier: 'Tier 1: Primary Official Registrar',
-        identifier: 'FSSAI License: 22822019000874',
-        summary: 'Maintains active FSSAI food business license and municipal commercial establishment certification at Ranaghat Station Road.',
-        relevance: 'Prominent hospitality, family dining, and AC banquet facility situated opposite Ranaghat railway junction.',
-        registrarName: 'Food Safety and Standards Authority of India (FSSAI)',
-        registrarUrl: 'https://foscos.fssai.gov.in',
-        validThrough: '2027-11-30',
-        benchmarkCaseId: 'GT-11',
-        verifyUrl: '/verify?entity=Chitrakoot+Multi-Cuisine+Restaurant&claim=Chitrakoot+Restaurant+holds+active+FSSAI+State+Food+License+in+Ranaghat',
-        articleSlug: 'ranaghat-wholesale-distributors-whatsapp-order-automation',
-        guideSlug: 'how-to-verify-gst-udyam-registration'
       }
     ]
   },
@@ -1333,8 +1242,7 @@ subLocations.forEach(sub => {
         ${escapeHtml(sub.context)}
       </p>
 
-      <!-- VERIFIED LOCAL BUSINESSES DIRECTORY SECTION -->
-      ${sub.verifiedBusinesses && sub.verifiedBusinesses.length > 0 ? `
+      <!-- LOCAL BUSINESSES DIRECTORY SECTION -->
       <section style="margin-top: 40px; margin-bottom: 40px;">
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 12px;">
           <div>
@@ -1342,17 +1250,18 @@ subLocations.forEach(sub => {
               Conflux Local Business Graph
             </span>
             <h2 style="font-size: 26px; font-weight: 900; color: #0f172a; margin: 0;">
-              Verified Local Businesses in ${escapeHtml(sub.name)}
+              Local Business Directory for ${escapeHtml(sub.name)}
             </h2>
             <p style="font-size: 13px; color: #64748b; margin-top: 6px; margin-bottom: 0;">
-              Accredited commercial enterprises with statutory evidence dockets and direct WhatsApp/Call contact channels.
+              Verified commercial enterprises, wholesale distributors, and service providers operating in ${escapeHtml(sub.name)}.
             </p>
           </div>
           <a href="/discover?where=${escapeHtml(sub.slug)}" style="font-size: 12px; font-weight: 800; color: #2563eb; text-decoration: none;">
-            Explore All in Discovery Hub &rarr;
+            Explore Discovery Hub &rarr;
           </a>
         </div>
 
+        ${sub.verifiedBusinesses && sub.verifiedBusinesses.length > 0 ? `
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
           ${sub.verifiedBusinesses.map(biz => `
             <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
@@ -1377,8 +1286,18 @@ subLocations.forEach(sub => {
             </div>
           `).join('')}
         </div>
+        ` : `
+        <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 16px; padding: 32px 24px; text-align: center;">
+          <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">No Verified Businesses Publicly Listed Yet for ${escapeHtml(sub.name)}</h3>
+          <p style="font-size: 13px; color: #64748b; max-width: 500px; margin: 0 auto 20px auto; line-height: 1.5;">
+            Are you a registered business owner or distributor in ${escapeHtml(sub.name)}? Apply for verification to publish your evidence-backed profile with direct WhatsApp routing.
+          </p>
+          <a href="/list-business" style="display: inline-block; background: #2563eb; color: white; padding: 10px 20px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 12px;">
+            List Your ${escapeHtml(sub.name)} Business &rarr;
+          </a>
+        </div>
+        `}
       </section>
-      ` : ''}
 
       <!-- KEY COMMERCIAL TRADING CORRIDORS -->
       <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 32px;">

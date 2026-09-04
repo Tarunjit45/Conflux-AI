@@ -635,59 +635,6 @@ export const NADIA_LOCATIONS: LocationItem[] = [
         question: 'Can Ranaghat businesses list their profile on the Conflux Discovery Hub?',
         answer: 'Yes. Any registered business operating in Ranaghat can apply for listing on Conflux AI via our submission portal. Once statutory verification evidence is reviewed, an authoritative profile is published with direct call, WhatsApp, and booking capabilities.'
       }
-    ],
-    verifiedEntities: [
-      {
-        id: 'ent_ranaghat_agro',
-        name: 'Ranaghat Agro Processing Ltd',
-        entityType: 'REGISTERED_BUSINESS',
-        statutoryIdentifier: 'FSSAI License: 12823019000452',
-        registrarName: 'Food Safety and Standards Authority of India (FoSCoS)',
-        registrarUrl: 'https://foscos.fssai.gov.in',
-        claimSummary: 'Holds an active Food Business Operator (FBO) manufacturing and processing license in Nadia district.',
-        verificationStatus: 'SUPPORTED',
-        sourceTier: 'TIER_1_PRIMARY_AUTHORITATIVE',
-        validThrough: '2028-05-09',
-        benchmarkCaseId: 'GT-04',
-        locationRelevance: 'Primary agricultural food processing facility in Ranaghat subdivision, supporting commercial food manufacturing across Nadia district.',
-        relatedArticleSlug: 'ranaghat-fmcg-wholesale-grocery-order-intake-automation',
-        relatedGuideSlug: 'how-to-verify-gst-udyam-registration',
-        verifyQueryUrl: '/verify?entity=Ranaghat+Agro+Processing+Ltd&claim=Ranaghat+Agro+Processing+Ltd+is+registered+under+the+FSSAI+with+an+active+food+business+operator+license+in+Nadia+district'
-      },
-      {
-        id: 'ent_ranaghat_diagnostic',
-        name: 'Ranaghat Apex Diagnostic & Health Centre',
-        entityType: 'REGISTERED_BUSINESS',
-        statutoryIdentifier: 'Clinical License: WB/CEA/NAD/2023-0941',
-        registrarName: 'West Bengal Clinical Establishments Regulatory Commission',
-        registrarUrl: 'https://www.wbhealth.gov.in',
-        claimSummary: 'Holds an active clinical establishment registration for digital ultrasound, computerized pathology, and radiology in Ranaghat.',
-        verificationStatus: 'SUPPORTED',
-        sourceTier: 'TIER_1_PRIMARY_AUTHORITATIVE',
-        validThrough: '2028-12-31',
-        benchmarkCaseId: 'GT-08',
-        locationRelevance: 'NABL-accredited diagnostic and healthcare facility serving Ranaghat municipality and surrounding rural corridors in Nadia.',
-        relatedArticleSlug: 'west-bengal-polyclinic-diagnostic-centre-opd-booking-whatsapp-reports-local-seo',
-        relatedGuideSlug: 'how-to-verify-gst-udyam-registration',
-        verifyQueryUrl: '/verify?entity=Ranaghat+Apex+Diagnostic+%26+Health+Centre&claim=Ranaghat+Apex+Diagnostic+holds+valid+clinical+establishment+license+in+Nadia'
-      },
-      {
-        id: 'ent_chitrakoot_restaurant',
-        name: 'Chitrakoot Multi-Cuisine Restaurant & Banquet',
-        entityType: 'REGISTERED_BUSINESS',
-        statutoryIdentifier: 'FSSAI License: 22822019000874',
-        registrarName: 'Food Safety and Standards Authority of India (FSSAI)',
-        registrarUrl: 'https://foscos.fssai.gov.in',
-        claimSummary: 'Maintains active FSSAI food business license and municipal commercial establishment certification at Ranaghat Station Road.',
-        verificationStatus: 'SUPPORTED',
-        sourceTier: 'TIER_1_PRIMARY_AUTHORITATIVE',
-        validThrough: '2027-11-30',
-        benchmarkCaseId: 'GT-11',
-        locationRelevance: 'Prominent hospitality, family dining, and AC banquet facility situated opposite Ranaghat railway junction.',
-        relatedArticleSlug: 'ranaghat-wholesale-distributors-whatsapp-order-automation',
-        relatedGuideSlug: 'how-to-verify-gst-udyam-registration',
-        verifyQueryUrl: '/verify?entity=Chitrakoot+Multi-Cuisine+Restaurant&claim=Chitrakoot+Restaurant+holds+active+FSSAI+State+Food+License+in+Ranaghat'
-      }
     ]
   },
   {
