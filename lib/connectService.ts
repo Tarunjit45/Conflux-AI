@@ -85,12 +85,14 @@ export class ConnectService {
       }
     }
 
-    // Forward to Supabase connect_events if reachable
+    // Forward to Supabase connect_telemetry_events if reachable
     try {
-      await supabase.from('connect_events').insert([{
-        id: event.id,
-        business_id: event.businessId,
-        intent_id: event.intentId,
+      const isUuid = (str?: string) =>
+        str ? /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str) : false;
+
+      await supabase.from('connect_telemetry_events').insert([{
+        business_id: isUuid(event.businessId) ? event.businessId : null,
+        intent_id: event.intentId || null,
         event_type: event.eventType,
         channel: event.channel,
         session_pseudonym: event.sessionPseudonym,
