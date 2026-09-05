@@ -233,15 +233,43 @@ export interface PublicSourceEnrichment {
     status: 'ACCESSIBLE' | 'RESTRICTED' | 'NOT_FOUND' | 'REQUIRES_API_AUTH';
     note?: string;
   }[];
-  extractedName?: PublicSourceField<string>;
-  extractedCategory?: PublicSourceField<string>;
-  extractedAddress?: PublicSourceField<string>;
-  extractedPhone?: PublicSourceField<string>;
-  extractedOperatingHours?: PublicSourceField<string>;
-  extractedSocialLinks?: PublicSourceField<string>[];
+  extractedName?: PublicSourceField<string> | string;
+  extractedCategory?: PublicSourceField<string> | string;
+  extractedAddress?: PublicSourceField<string> | string;
+  extractedPhone?: PublicSourceField<string> | string;
+  extractedOperatingHours?: PublicSourceField<string> | string;
+  extractedHours?: PublicSourceField<string> | string;
+  extractedSocialLinks?: (PublicSourceField<string> | string)[];
   media?: PublicMediaItem[];
   conflicts?: SourceConflict[];
   lastEnrichedAt?: string;
+}
+
+/**
+ * Normalizes and extracts the verified string value from a PublicSourceField or raw string.
+ * Strictly adheres to zero fabrication: returns undefined if absent, empty, or malformed.
+ */
+export function normalizePublicSourceField(
+  field: PublicSourceField<string> | string | unknown
+): string | undefined {
+  if (field === null || field === undefined) {
+    return undefined;
+  }
+  if (typeof field === 'string') {
+    const trimmed = field.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+  }
+  if (Array.isArray(field)) {
+    const firstValid = field.map(normalizePublicSourceField).find((v): v is string => Boolean(v));
+    return firstValid || undefined;
+  }
+  if (typeof field === 'object' && field !== null) {
+    if ('value' in field && typeof (field as any).value === 'string') {
+      const trimmed = (field as any).value.trim();
+      return trimmed.length > 0 ? trimmed : undefined;
+    }
+  }
+  return undefined;
 }
 
 // ── BUSINESS SUBMISSION APPLICATION TYPES ─────────────────────────────

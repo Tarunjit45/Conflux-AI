@@ -6,6 +6,8 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { businessOptimizationEngine, BusinessOptimizationEngine } from '../lib/seo/businessOptimizationEngine.ts';
+import { businessService } from '../lib/businessService.ts';
+import { normalizePublicSourceField } from '../types/business.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -620,6 +622,129 @@ async function runBusinessOptimizationEngineTests() {
       );
     });
   }
+
+  // ── Suite 12: Public Source Enrichment Data Contract & Regression Guardrails ──
+  console.log('\n--- Suite 12: Public Source Enrichment Data Contract & Regression Guardrails ---');
+
+  // 12.1 Reproduction of A2Z Supplements runtime shape
+  const a2zRuntimeBiz = await businessService.getBusinessBySlug('a2z-supplements');
+  assert('A2Z runtime business fetched via businessService', Boolean(a2zRuntimeBiz && a2zRuntimeBiz.slug === 'a2z-supplements'));
+  assert(
+    'A2Z extractedCategory is structured PublicSourceField object at runtime',
+    typeof a2zRuntimeBiz.publicSourceEnrichment?.extractedCategory === 'object' &&
+    'value' in a2zRuntimeBiz.publicSourceEnrichment.extractedCategory
+  );
+
+  let a2zOptimizedWithoutCrash = false;
+  let a2zConflicts = [];
+  try {
+    const optA2ZRuntime = businessOptimizationEngine.optimizeBusiness(a2zRuntimeBiz);
+    a2zOptimizedWithoutCrash = Boolean(optA2ZRuntime && optA2ZRuntime.canonicalUrl);
+    a2zConflicts = optA2ZRuntime.sourceProvenanceConflicts;
+  } catch (err) {
+    console.error('A2Z optimization crashed:', err);
+  }
+  assert('A2Z runtime business optimizes successfully without TypeError', a2zOptimizedWithoutCrash);
+  assert(
+    'A2Z Category conflict has string claimPublic',
+    a2zConflicts.some(c => c.field === 'Category' && typeof c.claimPublic === 'string' && c.claimPublic.length > 0)
+  );
+
+  // 12.2 Valid expected extractedCategory shapes
+  const baseTestBiz = {
+    ...mockRetailStore,
+    categoryName: 'General Retail',
+    publicSourceEnrichment: {
+      sourcesChecked: [{ platform: 'Facebook', url: 'https://facebook.com/test', status: 'ACCESSIBLE' }]
+    }
+  };
+
+  // Shape A: PublicSourceField object
+  const bizWithObjectCategory = {
+    ...baseTestBiz,
+    publicSourceEnrichment: {
+      ...baseTestBiz.publicSourceEnrichment,
+      extractedCategory: {
+        value: 'Gym & Physical Fitness Center',
+        sourceUrl: 'https://facebook.com/test',
+        sourcePlatform: 'Facebook',
+        fetchedAt: new Date().toISOString()
+      }
+    }
+  };
+  const optObj = businessOptimizationEngine.optimizeBusiness(bizWithObjectCategory);
+  assert(
+    'Object-shaped PublicSourceField extractedCategory detects category conflict with string claimPublic',
+    optObj.sourceProvenanceConflicts.some(c => c.field === 'Category' && c.claimPublic === 'Gym & Physical Fitness Center')
+  );
+
+  // Shape B: Raw string
+  const bizWithStringCategory = {
+    ...baseTestBiz,
+    publicSourceEnrichment: {
+      ...baseTestBiz.publicSourceEnrichment,
+      extractedCategory: 'Gym & Physical Fitness Center'
+    }
+  };
+  const optStr = businessOptimizationEngine.optimizeBusiness(bizWithStringCategory);
+  assert(
+    'String-shaped extractedCategory detects category conflict with string claimPublic',
+    optStr.sourceProvenanceConflicts.some(c => c.field === 'Category' && c.claimPublic === 'Gym & Physical Fitness Center')
+  );
+
+  // 12.3 Malformed/unexpected shapes (Defensive zero-crash, zero-fabrication)
+  const malformedTestCases = [
+    { label: 'null extractedCategory', val: null },
+    { label: 'undefined extractedCategory', val: undefined },
+    { label: 'empty string extractedCategory', val: '' },
+    { label: 'numeric extractedCategory', val: 12345 },
+    { label: 'object missing value field', val: { invalidKey: 'unrelated' } },
+    { label: 'empty array extractedCategory', val: [] },
+    { label: 'array of strings extractedCategory', val: ['Gym & Physical Fitness Center'] }
+  ];
+
+  malformedTestCases.forEach(({ label, val }) => {
+    let survived = false;
+    let conflicts = [];
+    try {
+      const testBiz = {
+        ...baseTestBiz,
+        publicSourceEnrichment: {
+          ...baseTestBiz.publicSourceEnrichment,
+          extractedCategory: val
+        }
+      };
+      const opt = businessOptimizationEngine.optimizeBusiness(testBiz);
+      survived = Boolean(opt && opt.canonicalUrl);
+      conflicts = opt.sourceProvenanceConflicts;
+    } catch (err) {
+      console.error(`Crashed on ${label}:`, err);
+    }
+    assert(`Defensive check: ${label} does not crash optimizeBusiness`, survived);
+    if (val === null || val === undefined || val === '' || typeof val === 'number' || (typeof val === 'object' && !Array.isArray(val) && !val?.value)) {
+      assert(
+        `Zero fabrication: ${label} produces zero synthetic category conflicts`,
+        !conflicts.some(c => c.field === 'Category')
+      );
+    }
+  });
+
+  // 12.4 Determinism check
+  const conflictsRun1 = businessOptimizationEngine.detectSourceConflicts(a2zRuntimeBiz);
+  const conflictsRun2 = businessOptimizationEngine.detectSourceConflicts(a2zRuntimeBiz);
+  assert(
+    'detectSourceConflicts is deterministic across multiple invocations',
+    JSON.stringify(conflictsRun1) === JSON.stringify(conflictsRun2)
+  );
+
+  // 12.5 Unit contract tests for normalizePublicSourceField
+  assert('normalizePublicSourceField: handles primitive string', normalizePublicSourceField('  Store  ') === 'Store');
+  assert('normalizePublicSourceField: handles PublicSourceField object', normalizePublicSourceField({ value: ' Nutrition Store ' }) === 'Nutrition Store');
+  assert('normalizePublicSourceField: returns undefined for empty string (zero fabrication)', normalizePublicSourceField('   ') === undefined);
+  assert('normalizePublicSourceField: returns undefined for null', normalizePublicSourceField(null) === undefined);
+  assert('normalizePublicSourceField: returns undefined for undefined', normalizePublicSourceField(undefined) === undefined);
+  assert('normalizePublicSourceField: returns undefined for malformed object', normalizePublicSourceField({ noVal: true }) === undefined);
+  assert('normalizePublicSourceField: returns undefined for number', normalizePublicSourceField(999) === undefined);
 
   // ── FINAL SUMMARY ────────────────────────────────────────────────
   console.log('\n======================================================');

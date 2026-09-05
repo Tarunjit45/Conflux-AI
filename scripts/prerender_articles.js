@@ -2724,8 +2724,8 @@ publishedBusinesses.forEach(biz => {
       <!-- Pillar 2 -->
       <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 16px; padding: 20px; margin-bottom: 20px;">
         <h3 style="font-size: 14px; font-weight: 800; color: #5b21b6; text-transform: uppercase; letter-spacing: 0.05em; font-family: monospace; margin: 0 0 12px 0;">2. Public-Source Information &amp; Corroboration</h3>
-        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Public Store Name:</strong> ${escapeHtml(biz.publicSourceEnrichment?.extractedName || biz.name)}</p>
-        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Public Store Address:</strong> ${escapeHtml(biz.publicSourceEnrichment?.extractedAddress || biz.location.fullAddress)}</p>
+        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Public Store Name:</strong> ${escapeHtml((typeof biz.publicSourceEnrichment?.extractedName === 'object' && biz.publicSourceEnrichment?.extractedName?.value) ? biz.publicSourceEnrichment.extractedName.value : (biz.publicSourceEnrichment?.extractedName || biz.name))}</p>
+        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>Public Store Address:</strong> ${escapeHtml((typeof biz.publicSourceEnrichment?.extractedAddress === 'object' && biz.publicSourceEnrichment?.extractedAddress?.value) ? biz.publicSourceEnrichment.extractedAddress.value : (biz.publicSourceEnrichment?.extractedAddress || biz.location.fullAddress))}</p>
         
         ${opt.sourceProvenanceConflicts.length > 0 ? `
         <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 14px; margin-top: 12px; font-size: 12px; color: #78350f;">

@@ -2,12 +2,13 @@
 // Pure, deterministic, data-driven entity optimization for search and AI retrieval agents.
 // Zero hardcoding of individual business slugs. Strictly factual, zero fabrication.
 
-import type {
-  ConfluxBusiness,
-  BusinessLocation,
-  BusinessType,
-  OperatingHoursDay,
-  BusinessMediaItem,
+import {
+  type ConfluxBusiness,
+  type BusinessLocation,
+  type BusinessType,
+  type OperatingHoursDay,
+  type BusinessMediaItem,
+  normalizePublicSourceField,
 } from '../../types/business.ts';
 
 export interface GeographicHierarchy {
@@ -481,14 +482,19 @@ export class BusinessOptimizationEngine {
           evidenceSource: 'Proprietor Operating Schedule'
         });
       }
-    } else if (biz.publicSourceEnrichment?.extractedHours) {
-      faqs.push({
-        id: `faq_${biz.slug}_hours_public`,
-        question: `What are the operating hours for ${biz.name}?`,
-        answer: `Public listings indicate operating schedule as: ${biz.publicSourceEnrichment.extractedHours}. Please confirm with the proprietor directly for holiday or special timings.`,
-        category: 'HOURS',
-        evidenceSource: 'Public Source Record'
-      });
+    } else {
+      const extractedHours = normalizePublicSourceField(
+        biz.publicSourceEnrichment?.extractedOperatingHours || biz.publicSourceEnrichment?.extractedHours
+      );
+      if (extractedHours) {
+        faqs.push({
+          id: `faq_${biz.slug}_hours_public`,
+          question: `What are the operating hours for ${biz.name}?`,
+          answer: `Public listings indicate operating schedule as: ${extractedHours}. Please confirm with the proprietor directly for holiday or special timings.`,
+          category: 'HOURS',
+          evidenceSource: 'Public Source Record'
+        });
+      }
     }
 
     // Q5: Offerings / Services (if services exist)
@@ -525,42 +531,47 @@ export class BusinessOptimizationEngine {
     const conflicts: SourceConflict[] = [];
 
     // Category conflict check
-    if (biz.publicSourceEnrichment?.extractedCategory) {
+    const extractedCategory = normalizePublicSourceField(biz.publicSourceEnrichment?.extractedCategory);
+    if (extractedCategory) {
       const declared = (biz.categoryName || biz.categoryId || '').toLowerCase();
-      const extracted = biz.publicSourceEnrichment.extractedCategory.toLowerCase();
+      const extracted = extractedCategory.toLowerCase();
       if (!declared.includes(extracted) && !extracted.includes(declared)) {
         conflicts.push({
           field: 'Category',
           claimBusiness: biz.categoryName || biz.categoryId,
-          claimPublic: biz.publicSourceEnrichment.extractedCategory,
-          explanation: `Business registered as "${biz.categoryName || biz.categoryId}", whereas public records classify it as "${biz.publicSourceEnrichment.extractedCategory}".`
+          claimPublic: extractedCategory,
+          explanation: `Business registered as "${biz.categoryName || biz.categoryId}", whereas public records classify it as "${extractedCategory}".`
         });
       }
     }
 
     // Address nuance check
-    if (biz.publicSourceEnrichment?.extractedAddress) {
+    const extractedAddress = normalizePublicSourceField(biz.publicSourceEnrichment?.extractedAddress);
+    if (extractedAddress) {
       const declaredAddr = (biz.location?.fullAddress || '').toLowerCase();
-      const extractedAddr = biz.publicSourceEnrichment.extractedAddress.toLowerCase();
+      const extractedAddr = extractedAddress.toLowerCase();
       if (declaredAddr !== extractedAddr && !declaredAddr.includes(extractedAddr) && !extractedAddr.includes(declaredAddr)) {
         conflicts.push({
           field: 'Address Detail',
           claimBusiness: biz.location?.fullAddress || 'Not specified',
-          claimPublic: biz.publicSourceEnrichment.extractedAddress,
+          claimPublic: extractedAddress,
           explanation: 'Public directory records include additional locality or landmark identifiers compared to the onboarding submission.'
         });
       }
     }
 
     // Hours nuance check
-    if (biz.publicSourceEnrichment?.extractedHours) {
-      const pubHours = biz.publicSourceEnrichment.extractedHours.toLowerCase();
+    const extractedHours = normalizePublicSourceField(
+      biz.publicSourceEnrichment?.extractedOperatingHours || biz.publicSourceEnrichment?.extractedHours
+    );
+    if (extractedHours) {
+      const pubHours = extractedHours.toLowerCase();
       const hasSpecificHours = biz.operatingHours && biz.operatingHours.some(h => !h.isClosed && h.opensAt);
       if (pubHours.includes('24 hour') && hasSpecificHours) {
         conflicts.push({
           field: 'Operating Schedule',
           claimBusiness: 'Daytime Operating Schedule',
-          claimPublic: biz.publicSourceEnrichment.extractedHours,
+          claimPublic: extractedHours,
           explanation: 'Public social profile lists 24 Hours online availability, while physical storefront operates on specific daily schedules.'
         });
       }

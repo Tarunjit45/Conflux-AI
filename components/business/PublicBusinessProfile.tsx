@@ -20,7 +20,7 @@ import { useAuth } from '../../lib/authContext';
 import { ClaimBusinessModal } from './ClaimBusinessModal';
 import { trackPageView } from '../../lib/analytics';
 import { businessOptimizationEngine } from '../../lib/seo/businessOptimizationEngine';
-import type { ConfluxBusiness, BusinessMediaItem } from '../../types/business';
+import { type ConfluxBusiness, type BusinessMediaItem, normalizePublicSourceField } from '../../types/business';
 import type { ReviewRatingContribution } from '../../types/contribution';
 import type { LocalContribution } from '../../types/localKnowledge';
 
@@ -879,13 +879,13 @@ export const PublicBusinessProfile: React.FC = () => {
                     <div className="pt-1.5 first:pt-0 flex flex-col sm:flex-row sm:justify-between gap-1">
                       <span className="text-slate-500 font-medium">Public Store Name:</span>
                       <span className="font-bold text-slate-900">
-                        {business.publicSourceEnrichment?.extractedName || business.name}
+                        {normalizePublicSourceField(business.publicSourceEnrichment?.extractedName) || business.name}
                       </span>
                     </div>
                     <div className="pt-1.5 flex flex-col sm:flex-row sm:justify-between gap-1">
                       <span className="text-slate-500 font-medium">Public Store Address:</span>
                       <span className="font-bold text-slate-900">
-                        {business.publicSourceEnrichment?.extractedAddress || business.location.fullAddress}
+                        {normalizePublicSourceField(business.publicSourceEnrichment?.extractedAddress) || business.location.fullAddress}
                       </span>
                     </div>
                     {business.services && business.services.length > 0 && (
@@ -899,7 +899,7 @@ export const PublicBusinessProfile: React.FC = () => {
                     <div className="pt-1.5 flex flex-col sm:flex-row sm:justify-between gap-1">
                       <span className="text-slate-500 font-medium">Public Operating Hours:</span>
                       <span className="font-bold text-slate-900">
-                        {business.publicSourceEnrichment?.extractedHours || (business.operatingHours && business.operatingHours.length > 0 ? 'Published Business Hours' : 'Schedule on file')}
+                        {normalizePublicSourceField(business.publicSourceEnrichment?.extractedOperatingHours || business.publicSourceEnrichment?.extractedHours) || (business.operatingHours && business.operatingHours.length > 0 ? 'Published Business Hours' : 'Schedule on file')}
                       </span>
                     </div>
                   </div>
