@@ -6,16 +6,22 @@ import {
   Building2, ShieldCheck, ShieldAlert, CheckCircle2, Phone, MessageSquare,
   MapPin, Globe, Calendar, Clock, ExternalLink, ArrowRight, Send, Compass,
   Layers, Check, AlertCircle, FileText, Lock, Sparkles, UserCheck, Star,
-  Edit3, Flag, HelpCircle, X, Share2, Camera, Image, Video, Maximize2
+  Edit3, Flag, HelpCircle, X, Share2, Camera, Image, Video, Maximize2,
+  Radio, Plus
 } from 'lucide-react';
 import { businessService } from '../../lib/businessService';
 import { connectService } from '../../lib/connectService';
 import { contributionService } from '../../lib/contributionService';
+import { localKnowledgeService } from '../../lib/localKnowledgeService';
+import { ContributionCard } from '../contributions/ContributionCard';
+import { CreateContributionModal } from '../contributions/CreateContributionModal';
 import { useAuth } from '../../lib/authContext';
 import { ClaimBusinessModal } from './ClaimBusinessModal';
 import { trackPageView } from '../../lib/analytics';
+import { businessOptimizationEngine } from '../../lib/seo/businessOptimizationEngine';
 import type { ConfluxBusiness, BusinessMediaItem } from '../../types/business';
 import type { ReviewRatingContribution } from '../../types/contribution';
+import type { LocalContribution } from '../../types/localKnowledge';
 
 export const PublicBusinessProfile: React.FC = () => {
   const { district, city, slug } = useParams<{ district: string; city: string; slug: string }>();
@@ -23,6 +29,8 @@ export const PublicBusinessProfile: React.FC = () => {
   const isAuthenticated = Boolean(user);
   const [business, setBusiness] = useState<ConfluxBusiness | null>(null);
   const [reviews, setReviews] = useState<ReviewRatingContribution[]>([]);
+  const [communitySignals, setCommunitySignals] = useState<LocalContribution[]>([]);
+  const [isSignalModalOpen, setIsSignalModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isOpenNow, setIsOpenNow] = useState(false);
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
@@ -60,6 +68,14 @@ export const PublicBusinessProfile: React.FC = () => {
         const approved = await contributionService.getApprovedReviewsForBusiness(found.id);
         setReviews(approved);
 
+        // Fetch linked community signals & local knowledge
+        try {
+          const signals = await localKnowledgeService.getContributions({ businessId: found.id });
+          setCommunitySignals(signals);
+        } catch (err) {
+          console.warn('[PublicBusinessProfile] Error fetching community signals:', err);
+        }
+
         // Log telemetry view event
         connectService.logEvent({
           businessId: found.id,
@@ -75,178 +91,44 @@ export const PublicBusinessProfile: React.FC = () => {
     fetchBusinessAndReviews();
   }, [slug]);
 
-  // ── SEO + GEO DYNAMIC METADATA & SCHEMA.ORG INJECTION ─────────────
+  // ── SEO + GEO DYNAMIC METADATA & SCHEMA.ORG INJECTION (PLATFORM-WIDE) ─────────────
+  const optimized = business ? businessOptimizationEngine.optimizeBusiness(business) : null;
+
   useEffect(() => {
-    if (!business) return;
+    if (!business || !optimized) return;
 
     // 1. Dynamic Page Title
-    const formattedTitle = business.slug === 'a2z-supplements'
-      ? `A2Z Supplements — Sports Nutrition & Fitness Store in Birnagar, Nadia | Conflux Business Profile`
-      : `${business.name} (${business.location.city}, ${business.location.district}) | Conflux Business Profile`;
-    document.title = formattedTitle;
+    document.title = optimized.seoTitle;
 
     // 2. Dynamic Description
-    const formattedDesc = business.slug === 'a2z-supplements'
-      ? `A2Z Supplements is a sports nutrition and fitness supplements store in Birnagar, Nadia, West Bengal. View verified business information, public sources, and direct WhatsApp contact.`
-      : `${business.name} (${business.legalName || business.name}) is a ${business.categoryName || business.categoryId} entity located in ${business.location.city}, ${business.location.district}, West Bengal. Access business details, operating hours, and contact verified proprietors directly.`;
-
     let metaDesc = document.querySelector('meta[name="description"]');
     if (!metaDesc) {
       metaDesc = document.createElement('meta');
       metaDesc.setAttribute('name', 'description');
       document.head.appendChild(metaDesc);
     }
-    metaDesc.setAttribute('content', formattedDesc);
+    metaDesc.setAttribute('content', optimized.metaDescription);
 
     // 3. Dynamic Canonical URL (Hierarchical route)
-    const canonicalUrl = `https://confluxai.in/business/india/west-bengal/${business.location.district.toLowerCase()}/${business.location.city.toLowerCase()}/${business.slug}`;
     let canonicalEl = document.querySelector('link[rel="canonical"]');
     if (!canonicalEl) {
       canonicalEl = document.createElement('link');
       canonicalEl.setAttribute('rel', 'canonical');
       document.head.appendChild(canonicalEl);
     }
-    canonicalEl.setAttribute('href', canonicalUrl);
+    canonicalEl.setAttribute('href', optimized.canonicalUrl);
 
     // 4. OpenGraph & Twitter Dynamic Tags
     const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) ogTitle.setAttribute('content', formattedTitle);
+    if (ogTitle) ogTitle.setAttribute('content', optimized.openGraph.title);
     const ogDesc = document.querySelector('meta[property="og:description"]');
-    if (ogDesc) ogDesc.setAttribute('content', formattedDesc);
+    if (ogDesc) ogDesc.setAttribute('content', optimized.openGraph.description);
     const ogUrl = document.querySelector('meta[property="og:url"]');
-    if (ogUrl) ogUrl.setAttribute('content', canonicalUrl);
+    if (ogUrl) ogUrl.setAttribute('content', optimized.openGraph.url);
+    const ogImage = document.querySelector('meta[property="og:image"]');
+    if (ogImage && optimized.openGraph.image) ogImage.setAttribute('content', optimized.openGraph.image);
 
-    // 5. Rich JSON-LD Schemas (LocalBusiness, BreadcrumbList, FAQPage)
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const openingHoursSpecs = (business.operatingHours || [])
-      .filter(h => !h.isClosed && h.opensAt && h.closesAt)
-      .map(h => ({
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": dayNames[h.dayOfWeek],
-        "opens": h.opensAt,
-        "closes": h.closesAt
-      }));
-
-    const schemaGraph = {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "LocalBusiness",
-          "@id": `${canonicalUrl}#business`,
-          "name": business.name,
-          "legalName": business.legalName || business.name,
-          "description": business.description,
-          "url": canonicalUrl,
-          "telephone": business.contact.phone || undefined,
-          "priceRange": "₹₹",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": business.location.fullAddress,
-            "addressLocality": business.location.city,
-            "addressRegion": "West Bengal",
-            "postalCode": business.location.postalCode || (business.location.city.toLowerCase() === 'birnagar' ? '741127' : undefined),
-            "addressCountry": "IN"
-          },
-          "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": business.location.latitude || (business.location.city.toLowerCase() === 'birnagar' ? 23.2458 : undefined),
-            "longitude": business.location.longitude || (business.location.city.toLowerCase() === 'birnagar' ? 88.5562 : undefined)
-          },
-          "openingHoursSpecification": openingHoursSpecs.length > 0 ? openingHoursSpecs : undefined,
-          "knowsAbout": business.services && business.services.length > 0 ? business.services : [business.categoryName || business.categoryId],
-          "sameAs": [
-            ...(business.contact.websiteUrl ? [business.contact.websiteUrl] : []),
-            ...(business.onlineSources?.facebookUrl ? [business.onlineSources.facebookUrl] : [])
-          ],
-          "hasCredential": business.primaryRegistrar ? [
-            {
-              "@type": "EducationalOccupationalCredential",
-              "name": business.primaryRegistrar,
-              "credentialCategory": "Statutory Business Registration"
-            }
-          ] : undefined,
-          "parentOrganization": {
-            "@type": "Organization",
-            "@id": "https://confluxai.in/#organization",
-            "name": "Conflux AI",
-            "url": "https://confluxai.in/"
-          }
-        },
-        {
-          "@type": "BreadcrumbList",
-          "@id": `${canonicalUrl}#breadcrumb`,
-          "itemListElement": [
-            {
-              "@type": "ListItem",
-              "position": 1,
-              "name": "Home",
-              "item": "https://confluxai.in/"
-            },
-            {
-              "@type": "ListItem",
-              "position": 2,
-              "name": "Discover",
-              "item": "https://confluxai.in/discover"
-            },
-            {
-              "@type": "ListItem",
-              "position": 3,
-              "name": "West Bengal",
-              "item": "https://confluxai.in/locations/west-bengal"
-            },
-            {
-              "@type": "ListItem",
-              "position": 4,
-              "name": `${business.location.district.charAt(0).toUpperCase() + business.location.district.slice(1)} District`,
-              "item": `https://confluxai.in/locations/west-bengal/${business.location.district.toLowerCase()}`
-            },
-            {
-              "@type": "ListItem",
-              "position": 5,
-              "name": business.location.city.charAt(0).toUpperCase() + business.location.city.slice(1),
-              "item": `https://confluxai.in/locations/west-bengal/${business.location.district.toLowerCase()}/${business.location.city.toLowerCase()}`
-            },
-            {
-              "@type": "ListItem",
-              "position": 6,
-              "name": business.name,
-              "item": canonicalUrl
-            }
-          ]
-        },
-        {
-          "@type": "FAQPage",
-          "@id": `${canonicalUrl}#faq`,
-          "mainEntity": [
-            {
-              "@type": "Question",
-              "name": `What is ${business.name} and where is it located?`,
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": `${business.name} is a ${business.categoryName || business.categoryId} store located at ${business.location.fullAddress}, ${business.location.city}, ${business.location.district}, West Bengal, India.`
-              }
-            },
-            {
-              "@type": "Question",
-              "name": `Is ${business.name} verified on Conflux AI?`,
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": `Business identity and direct proprietor connect are supported by business submission and public Facebook presence. Official statutory regulatory registration docket is pending official review.`
-              }
-            },
-            {
-              "@type": "Question",
-              "name": `How can I contact ${business.name}?`,
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": `Contact directly via phone at ${business.contact.phone || 'the listed number'} or on WhatsApp for genuine supplement queries and order delivery.`
-              }
-            }
-          ]
-        }
-      ]
-    };
-
+    // 5. Rich JSON-LD Schemas (LocalBusiness subtype, BreadcrumbList, FAQPage)
     let scriptEl = document.getElementById('conflux-business-jsonld') as HTMLScriptElement | null;
     if (!scriptEl) {
       scriptEl = document.createElement('script');
@@ -254,16 +136,16 @@ export const PublicBusinessProfile: React.FC = () => {
       scriptEl.type = 'application/ld+json';
       document.head.appendChild(scriptEl);
     }
-    scriptEl.textContent = JSON.stringify(schemaGraph);
+    scriptEl.textContent = JSON.stringify(optimized.structuredData);
 
     // ── GA4: Dynamic Business Profile Page View ────────────────────────
-    trackPageView(formattedTitle, canonicalUrl, `/business/${business.slug}`);
+    trackPageView(optimized.seoTitle, optimized.canonicalUrl, `/business/${business.slug}`);
 
     return () => {
       const el = document.getElementById('conflux-business-jsonld');
       if (el) el.remove();
     };
-  }, [business]);
+  }, [business, optimized]);
 
   const handleActionClick = (action: any) => {
     if (!business) return;
@@ -961,41 +843,60 @@ export const PublicBusinessProfile: React.FC = () => {
                   <div className="space-y-1.5 bg-white p-3 rounded-xl border border-indigo-100 divide-y divide-slate-100">
                     <div className="pt-1.5 first:pt-0 flex flex-col sm:flex-row sm:justify-between gap-1">
                       <span className="text-slate-500 font-medium">Public Store Name:</span>
-                      <span className="font-bold text-slate-900">A2Z Supplement</span>
+                      <span className="font-bold text-slate-900">
+                        {business.publicSourceEnrichment?.extractedName || business.name}
+                      </span>
                     </div>
                     <div className="pt-1.5 flex flex-col sm:flex-row sm:justify-between gap-1">
                       <span className="text-slate-500 font-medium">Public Store Address:</span>
-                      <span className="font-bold text-slate-900">Library para, near Gunendronath Public School, Birnagar 741127</span>
+                      <span className="font-bold text-slate-900">
+                        {business.publicSourceEnrichment?.extractedAddress || business.location.fullAddress}
+                      </span>
                     </div>
-                    <div className="pt-1.5 flex flex-col sm:flex-row sm:justify-between gap-1">
-                      <span className="text-slate-500 font-medium">Catalogued Offerings:</span>
-                      <span className="font-bold text-slate-900">Whey Protein, Creatine, Mass Gainers, Pre-Workouts, Vitamins, Peanut Butter</span>
-                    </div>
+                    {business.services && business.services.length > 0 && (
+                      <div className="pt-1.5 flex flex-col sm:flex-row sm:justify-between gap-1">
+                        <span className="text-slate-500 font-medium">Catalogued Offerings:</span>
+                        <span className="font-bold text-slate-900">
+                          {business.services.slice(0, 6).join(', ')}
+                        </span>
+                      </div>
+                    )}
                     <div className="pt-1.5 flex flex-col sm:flex-row sm:justify-between gap-1">
                       <span className="text-slate-500 font-medium">Public Operating Hours:</span>
-                      <span className="font-bold text-slate-900">Monday &ndash; Sunday (Open 24 Hours)</span>
+                      <span className="font-bold text-slate-900">
+                        {business.publicSourceEnrichment?.extractedHours || (business.operatingHours && business.operatingHours.length > 0 ? 'Published Business Hours' : 'Schedule on file')}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 {/* Discrepancies / Conflicts Flagged for Review */}
-                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1.5">
-                  <div className="font-bold flex items-center gap-1.5 text-amber-950 font-mono text-[11px] uppercase tracking-wider">
-                    <AlertCircle size={14} className="text-amber-700" /> Discrepancies Marked for Administrative Review:
+                {optimized && optimized.sourceProvenanceConflicts.length > 0 ? (
+                  <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1.5">
+                    <div className="font-bold flex items-center gap-1.5 text-amber-950 font-mono text-[11px] uppercase tracking-wider">
+                      <AlertCircle size={14} className="text-amber-700" /> Information Differs Across Sources:
+                    </div>
+                    <ul className="list-disc list-inside space-y-1 text-amber-900/90 leading-relaxed text-[11px]">
+                      {optimized.sourceProvenanceConflicts.map((c, i) => (
+                        <li key={i}>
+                          <strong>{c.field}:</strong> {c.explanation}
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="text-[10px] text-amber-800 italic pt-0.5">
+                      Note: Conflux does not silently resolve conflicting data. Both business-provided and public sources are transparently documented above.
+                    </p>
                   </div>
-                  <ul className="list-disc list-inside space-y-1 text-amber-900/90 leading-relaxed text-[11px]">
-                    <li><strong>Category Specialization:</strong> Business selected <em>FOOD HOSPITALITY</em>, while public store records specify <em>Sports Nutrition &amp; Gym Supplements Store</em>.</li>
-                    <li><strong>Location Detail:</strong> Business stated <em>Gunendronath Public School</em>; public records specify <em>Library para, near Gunendronath Public School, Birnagar, Nadia - 741127</em>.</li>
-                    <li><strong>Operating Schedule:</strong> Public online listing displays <em>24 Hours</em> vs daytime business hours.</li>
-                  </ul>
-                  <p className="text-[10px] text-amber-800 italic pt-0.5">
-                    Note: Conflux does not silently resolve conflicting data. Both business-provided and public sources are transparently documented above.
-                  </p>
-                </div>
+                ) : (
+                  <div className="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 text-[11px] text-emerald-900 flex items-center gap-2">
+                    <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
+                    <span>Corroborated: Business submission aligns with verified public digital references.</span>
+                  </div>
+                )}
 
                 {/* Media & Platform Protection Notice */}
                 <div className="p-3 rounded-xl bg-slate-100/80 text-[11px] text-slate-600 leading-relaxed">
-                  <strong>Media &amp; Privacy Policy:</strong> In strict compliance with Meta Platform Terms (&sect;3.2) and automated scraping restrictions, unauthenticated photo scraping and bot logins are not performed. Direct links to the public Facebook presence and WhatsApp store are preserved above.
+                  <strong>Media &amp; Privacy Policy:</strong> In strict compliance with platform terms and automated scraping restrictions, unauthenticated photo scraping and bot logins are not performed. Direct links to authorized public presences and contact lines are preserved above.
                 </div>
               </div>
 
@@ -1020,25 +921,40 @@ export const PublicBusinessProfile: React.FC = () => {
                   <div className="pt-2 flex items-center justify-between">
                     <span className="text-slate-700 font-medium">Official Website:</span>
                     <span className="font-bold text-slate-600">
-                      No standalone website provided (WhatsApp active)
+                      {business.contact.websiteUrl ? (
+                        <a href={business.contact.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                          {business.contact.websiteUrl.replace(/^https?:\/\//, '')}
+                        </a>
+                      ) : (
+                        'No standalone website provided (direct messaging active)'
+                      )}
                     </span>
                   </div>
                   <div className="pt-2 flex items-center justify-between">
                     <span className="text-slate-700 font-medium">Social Presence:</span>
                     <span className="font-bold text-emerald-800 flex items-center gap-1">
-                      <CheckCircle2 size={13} className="text-emerald-600" /> Facebook Page identified &amp; linked
+                      {business.onlineSources?.facebookUrl || business.socialLinks?.length ? (
+                        <CheckCircle2 size={13} className="text-emerald-600" />
+                      ) : null}
+                      {business.onlineSources?.facebookUrl ? 'Facebook Page identified & linked' : 'Active digital channels'}
                     </span>
                   </div>
                   <div className="pt-2 flex items-center justify-between">
                     <span className="text-slate-700 font-medium">Direct Telephone &amp; WhatsApp:</span>
                     <span className="font-bold text-emerald-800 flex items-center gap-1">
-                      <CheckCircle2 size={13} className="text-emerald-600" /> Connect channels verified active (+91 79083 52864)
+                      <CheckCircle2 size={13} className="text-emerald-600" /> Connect channels active ({business.contact.phone || business.contact.whatsapp || 'Verified'})
                     </span>
                   </div>
                   <div className="pt-2 flex items-center justify-between">
                     <span className="text-slate-700 font-medium">Statutory Licensing (FSSAI / GSTIN / MSME):</span>
-                    <span className="font-bold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded font-mono text-[11px]">
-                      Not yet verified
+                    <span className={`font-mono text-[11px] font-bold px-2 py-0.5 rounded ${
+                      business.verificationStatus === 'SUPPORTED' && business.primaryRegistrar
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : 'text-amber-800 bg-amber-100/80'
+                    }`}>
+                      {business.verificationStatus === 'SUPPORTED' && business.primaryRegistrar
+                        ? `Verified (${business.primaryRegistrar})`
+                        : 'Not yet verified'}
                     </span>
                   </div>
                 </div>
@@ -1054,86 +970,63 @@ export const PublicBusinessProfile: React.FC = () => {
               </div>
 
               {/* Internal Directory Navigation Links */}
-              <div className="p-4 rounded-2xl bg-slate-100 border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
-                <span className="font-bold text-slate-700 font-mono uppercase tracking-wider">
-                  Internal Hub Navigation:
-                </span>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Link
-                    to={`/locations/west-bengal/${business.location.district.toLowerCase()}/${business.location.city.toLowerCase()}`}
-                    className="px-3 py-1 rounded-lg bg-white hover:bg-slate-200 text-blue-700 font-semibold border border-slate-200 transition-colors"
-                  >
-                    {business.location.city} Local Directory &rarr;
-                  </Link>
-                  <Link
-                    to={`/locations/west-bengal/${business.location.district.toLowerCase()}`}
-                    className="px-3 py-1 rounded-lg bg-white hover:bg-slate-200 text-blue-700 font-semibold border border-slate-200 transition-colors capitalize"
-                  >
-                    {business.location.district} District Directory &rarr;
-                  </Link>
-                  <Link
-                    to="/discover"
-                    className="px-3 py-1 rounded-lg bg-white hover:bg-slate-200 text-slate-700 font-semibold border border-slate-200 transition-colors"
-                  >
-                    All Businesses &rarr;
-                  </Link>
+              {optimized && optimized.internalLinks.length > 0 && (
+                <div className="p-4 rounded-2xl bg-slate-100 border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <span className="font-bold text-slate-700 font-mono uppercase tracking-wider">
+                    Internal Hub Navigation:
+                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {optimized.internalLinks.map((link, idx) => (
+                      <Link
+                        key={idx}
+                        to={link.url}
+                        className="px-3 py-1 rounded-lg bg-white hover:bg-slate-200 text-blue-700 font-semibold border border-slate-200 transition-colors capitalize"
+                      >
+                        {link.anchorText} &rarr;
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* ── ENTITY TRUTH & DIRECT ANSWERS (GEO / AI OVERVIEW GROUNDING) ── */}
-            <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-5">
-              <h2 className="flex items-center gap-2 text-base font-bold font-orbitron text-slate-900">
-                <Sparkles size={20} className="text-blue-600" /> Entity Truth &amp; Direct Answers
-              </h2>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Structured knowledge summary formatted for search engines, generative AI overviews, and direct citation.
-              </p>
-
-              <div className="divide-y divide-slate-100 space-y-3 pt-1">
-                <div className="pt-3 first:pt-0 space-y-1">
-                  <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                    <HelpCircle size={14} className="text-blue-600" /> What is {business.name}?
-                  </div>
-                  <p className="text-xs text-slate-700 leading-relaxed">
-                    <strong className="text-slate-900">{business.name}</strong> {business.legalName && `(legal entity: ${business.legalName})`} is a documented <strong className="text-slate-900">{business.categoryName || business.categoryId}</strong> enterprise situated at {business.location.fullAddress} in {business.location.city}, {business.location.district} district, West Bengal, India.
-                  </p>
+            {optimized && optimized.faqItems.length > 0 && (
+              <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-5">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <h2 className="flex items-center gap-2 text-base font-bold font-orbitron text-slate-900">
+                    <Sparkles size={20} className="text-blue-600" /> Entity Truth &amp; Direct Answers
+                  </h2>
+                  <span className="text-[11px] font-mono text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100 font-bold">
+                    Search &amp; AI Engine Grounding
+                  </span>
                 </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Factual questions and direct answers derived strictly from authentic business records. Visible text matches JSON-LD FAQPage schema 100%.
+                </p>
 
-                <div className="pt-3 space-y-1">
-                  <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                    <HelpCircle size={14} className="text-emerald-600" /> Is {business.name} an authentic, verified business?
-                  </div>
-                  <p className="text-xs text-slate-700 leading-relaxed">
-                    {business.verificationStatus === 'SUPPORTED' ? (
-                      <>Yes. {business.name} is documented in the Conflux Business Graph with verification status <strong className="text-slate-900">{business.verificationStatus}</strong> ({business.confidenceScore}% statutory confidence). Grounded evidence is referenced against: <strong className="text-slate-900">{business.primaryRegistrar || 'Statutory regulatory registries'}</strong>.</>
-                    ) : (
-                      <>{business.name} is an authentic local enterprise in Birnagar with verified phone and WhatsApp contact channels (+91 79083 52864) and public Facebook store presence. Formal statutory regulatory documentation (FSSAI/GSTIN) has not yet been submitted or evaluated by Conflux Verify.</>
-                    )}
-                  </p>
-                </div>
-
-                <div className="pt-3 space-y-1">
-                  <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                    <HelpCircle size={14} className="text-purple-600" /> What services does {business.name} provide?
-                  </div>
-                  <p className="text-xs text-slate-700 leading-relaxed">
-                    {business.services && business.services.length > 0
-                      ? `Verified service capabilities include: ${business.services.join(', ')}.`
-                      : `Provides primary services in the ${business.categoryName || business.categoryId} sector.`}
-                  </p>
-                </div>
-
-                <div className="pt-3 space-y-1">
-                  <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                    <HelpCircle size={14} className="text-amber-600" /> How can customers contact or visit {business.name}?
-                  </div>
-                  <p className="text-xs text-slate-700 leading-relaxed">
-                    Contact directly via phone at <strong className="text-slate-900">{business.contact.phone || 'the listed number'}</strong>{business.contact.whatsapp ? `, message on official WhatsApp at ${business.contact.whatsapp}` : ''}, or visit in person at {business.location.fullAddress}{business.landmark ? ` (Landmark: ${business.landmark})` : ''}.
-                  </p>
+                <div className="divide-y divide-slate-100 space-y-3 pt-1">
+                  {optimized.faqItems.map((faq) => (
+                    <div key={faq.id} className="pt-3 first:pt-0 space-y-1">
+                      <div className="text-xs font-bold text-slate-900 flex items-center justify-between gap-2">
+                        <span className="flex items-center gap-1.5">
+                          <HelpCircle size={14} className="text-blue-600 shrink-0" />
+                          {faq.question}
+                        </span>
+                        {faq.evidenceSource && (
+                          <span className="text-[10px] font-mono font-medium text-slate-400 shrink-0 hidden sm:inline">
+                            {faq.evidenceSource}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-700 leading-relaxed pl-5">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
+            )}
 
             {/* ── REVIEWS & VERIFIED CONTRIBUTIONS SECTION ─────────── */}
             <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6">
@@ -1213,6 +1106,66 @@ export const PublicBusinessProfile: React.FC = () => {
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+
+            {/* ── COMMUNITY SIGNALS & GROUND-TRUTH INTELLIGENCE ─────────── */}
+            <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="p-1.5 rounded-lg bg-emerald-100 text-emerald-700">
+                      <Radio size={16} className="animate-pulse" />
+                    </span>
+                    <h3 className="text-lg font-bold font-orbitron text-slate-900">
+                      Community Signals &amp; Ground Truth
+                    </h3>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Field updates, photos, recommendations, and confirmations from local residents for {business.name}.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsSignalModalOpen(true)}
+                  className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer shrink-0 self-start sm:self-auto"
+                >
+                  <Plus size={14} /> Add Community Signal
+                </button>
+              </div>
+
+              {communitySignals.length > 0 ? (
+                <div className="space-y-4">
+                  {communitySignals.map((signal) => (
+                    <ContributionCard
+                      key={signal.id}
+                      contribution={signal}
+                      onUpdated={(updated) => {
+                        setCommunitySignals(prev => prev.map(s => s.id === updated.id ? updated : s));
+                      }}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="p-8 rounded-2xl bg-slate-50 border border-slate-200/80 text-center space-y-2">
+                  <Radio size={24} className="mx-auto text-slate-400" />
+                  <div className="text-sm font-bold text-slate-800">
+                    No community field signals logged yet for {business.name}.
+                  </div>
+                  <p className="text-xs text-slate-500 max-w-md mx-auto">
+                    Know about current product availability, changed timings, or have photos of this location? Contribute verified evidence.
+                  </p>
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsSignalModalOpen(true)}
+                      className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1.5"
+                    >
+                      <Plus size={13} /> Share First Signal
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -1606,6 +1559,20 @@ export const PublicBusinessProfile: React.FC = () => {
             )}
           </div>
         </div>
+      )}
+
+      {/* Local Knowledge Community Signal Modal */}
+      {business && (
+        <CreateContributionModal
+          isOpen={isSignalModalOpen}
+          onClose={() => setIsSignalModalOpen(false)}
+          defaultLocality={business.location.city.toLowerCase()}
+          defaultLocalityName={business.location.city}
+          defaultBusinessId={business.id}
+          onCreated={(newContrib) => {
+            setCommunitySignals(prev => [newContrib, ...prev]);
+          }}
+        />
       )}
 
       {/* Claim Business Modal */}

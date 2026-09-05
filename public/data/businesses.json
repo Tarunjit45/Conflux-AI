@@ -1,0 +1,133 @@
+[
+  {
+    "id": "e6a51e32-e20b-4830-b743-f8337cce2f2b",
+    "confluxBusinessId": "CFX-IN-WB-NADIA-000002",
+    "slug": "a2z-supplements",
+    "name": "A2Z Supplements",
+    "legalName": "A2Z Supplements",
+    "businessType": "RETAIL",
+    "categoryId": "sports-nutrition",
+    "categoryName": "Sports Nutrition & Fitness Supplements",
+    "services": [
+      "Authentic Sports Nutrition",
+      "Whey Protein & Isolate",
+      "Creatine Monohydrate & Micronized",
+      "Mass Gainers & Weight Management",
+      "Pre-Workout & Energy Formulations",
+      "Multivitamins & Omega-3 Fish Oil",
+      "Peanut Butter & Fitness Snacks",
+      "Free All-India Express Delivery"
+    ],
+    "description": "We provide authentic fitness supplements all over India with free express delivery. Complete range of gym supplements available at affordable prices with complimentary shaker bottles and fitness gifts.",
+    "shortSummary": "Retail sports nutrition and gym supplements store in Birnagar, Nadia.",
+    "status": "PUBLISHED",
+    "claimStatus": "UNCLAIMED_PUBLIC",
+    "verificationStatus": "PARTIALLY_SUPPORTED",
+    "verificationLevel": "BASIC",
+    "confidenceScore": 65,
+    "evidenceSummary": "Business identity and direct proprietor connect (+91 79083 52864) supported by business submission and public Facebook presence.",
+    "isClaimed": false,
+    "isIndexable": true,
+    "location": {
+      "id": "loc_a2z_01",
+      "businessId": "e6a51e32-e20b-4830-b743-f8337cce2f2b",
+      "country": "India",
+      "state": "West Bengal",
+      "district": "nadia",
+      "city": "birnagar",
+      "locality": "Library para",
+      "landmark": "near Gunendronath Public School",
+      "postalCode": "741127",
+      "fullAddress": "Library para, near Gunendronath Public School, Birnagar, Nadia, West Bengal 741127",
+      "latitude": 23.2458,
+      "longitude": 88.5562,
+      "serviceAreas": [
+        "Birnagar",
+        "Ranaghat",
+        "Santipur",
+        "Nadia District",
+        "West Bengal",
+        "Pan-India"
+      ],
+      "isPrimary": true
+    },
+    "contact": {
+      "id": "con_a2z_01",
+      "businessId": "e6a51e32-e20b-4830-b743-f8337cce2f2b",
+      "phone": "+91 79083 52864",
+      "whatsapp": "+91 79083 52864",
+      "googleMapsUrl": "https://maps.google.com/?q=Gunendronath+Public+School+Birnagar+Nadia"
+    },
+    "operatingHours": [
+      { "dayOfWeek": 0, "opensAt": "09:00", "closesAt": "21:00", "isClosed": false },
+      { "dayOfWeek": 1, "opensAt": "09:00", "closesAt": "21:00", "isClosed": false },
+      { "dayOfWeek": 2, "opensAt": "09:00", "closesAt": "21:00", "isClosed": false },
+      { "dayOfWeek": 3, "opensAt": "09:00", "closesAt": "21:00", "isClosed": false },
+      { "dayOfWeek": 4, "opensAt": "09:00", "closesAt": "21:00", "isClosed": false },
+      { "dayOfWeek": 5, "opensAt": "09:00", "closesAt": "21:00", "isClosed": false },
+      { "dayOfWeek": 6, "opensAt": "09:00", "closesAt": "21:00", "isClosed": false }
+    ],
+    "capabilities": [
+      { "id": "cap_a2z_call", "businessId": "e6a51e32-e20b-4830-b743-f8337cce2f2b", "actionType": "CALL", "isSupported": true, "phoneTarget": "+917908352864", "verificationStatus": "VERIFIED" },
+      { "id": "cap_a2z_wa", "businessId": "e6a51e32-e20b-4830-b743-f8337cce2f2b", "actionType": "WHATSAPP", "isSupported": true, "phoneTarget": "+917908352864", "verificationStatus": "VERIFIED" },
+      { "id": "cap_a2z_dir", "businessId": "e6a51e32-e20b-4830-b743-f8337cce2f2b", "actionType": "DIRECTIONS", "isSupported": true, "endpointUrl": "https://maps.google.com/?q=Gunendronath+Public+School+Birnagar+Nadia", "verificationStatus": "VERIFIED" }
+    ],
+    "onlineSources": {
+      "facebookUrl": "https://www.facebook.com/p/A2Z-Supplement-100083318218146/",
+      "googleBusinessUrl": "Birnagar Library Para Local Search Listing"
+    },
+    "publicSourceEnrichment": {
+      "extractedName": "A2Z Supplement",
+      "extractedAddress": "Library para, near Gunendronath Public School, Birnagar 741127",
+      "extractedCategory": "Sports Nutrition & Gym Supplements Store",
+      "extractedHours": "Open 24 Hours",
+      "sources": [
+        {
+          "platform": "Facebook",
+          "url": "https://www.facebook.com/p/A2Z-Supplement-100083318218146/",
+          "verified": true,
+          "verifiedAt": "2026-09-04T00:00:00.000Z"
+        }
+      ]
+    },
+    "media": [
+      {
+        "id": "med_a2z_storefront",
+        "url": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd",
+        "mediaType": "IMAGE",
+        "sourceUrl": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd",
+        "sourceName": "Business Storefront Asset",
+        "attribution": "Business verified storefront asset",
+        "dateAdded": "2026-09-04",
+        "provenance": "BUSINESS_PROVIDED",
+        "status": "ACTIVE",
+        "caption": "A2Z Supplements — Storefront & Premises",
+        "altText": "Storefront photo of A2Z Supplements in Birnagar, Nadia",
+        "sortOrder": 1
+      }
+    ],
+    "socialLinks": [
+      {
+        "id": "soc_a2z_fb",
+        "platform": "facebook",
+        "url": "https://www.facebook.com/p/A2Z-Supplement-100083318218146/",
+        "label": "Official Facebook Store",
+        "provenance": "BUSINESS_PROVIDED",
+        "isActive": true
+      }
+    ],
+    "sourceLinks": [
+      {
+        "id": "src_a2z_fb",
+        "platform": "Facebook Public Store",
+        "url": "https://www.facebook.com/p/A2Z-Supplement-100083318218146/",
+        "provenance": "PUBLIC_SOURCE",
+        "isActive": true,
+        "notes": "Audited public business page in Birnagar"
+      }
+    ],
+    "storefrontPhotoUrl": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd",
+    "createdAt": "2026-09-04T00:00:00.000Z",
+    "updatedAt": "2026-09-04T00:00:00.000Z"
+  }
+]

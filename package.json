@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build && node scripts/generate_sitemaps.js && node scripts/prerender_articles.js",
     "test:seo": "node scripts/test_seo_guardrails.js",
+    "test:knowledge": "node --experimental-strip-types scripts/test_local_knowledge_network.js",
+    "test:seo-geo": "node --experimental-strip-types scripts/test_business_seo_geo_engine.js",
     "test:phase1": "node --experimental-strip-types scripts/test_phase1_business_graph.js",
     "test:submission": "node --experimental-strip-types scripts/test_business_submission.js",
     "test:media": "node --experimental-strip-types scripts/test_automated_business_media.js",

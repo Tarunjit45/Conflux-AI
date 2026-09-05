@@ -39,6 +39,7 @@ import { VisibilityAuditPage } from './components/business/VisibilityAuditPage';
 import { PublicBusinessProfile } from './components/business/PublicBusinessProfile';
 import { BusinessSubmissionPage } from './components/submission/BusinessSubmissionPage';
 import { AdminBusinessDashboard } from './components/admin/AdminBusinessDashboard';
+import { MyLocalConfluxPage } from './components/user/MyLocalConfluxPage';
 import { AuthModal } from './components/auth/AuthModal';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { UserOnboardingPrompt } from './components/auth/UserOnboardingPrompt';
@@ -46,6 +47,10 @@ import { AuthProvider } from './lib/authContext';
 import { trackPageView } from './lib/analytics';
 
 const routeMeta: Record<string, { title: string; description: string }> = {
+  '/my-local': {
+    title: 'My Local Conflux | Local Intelligence, Reputation & Community Signals | Conflux AI',
+    description: 'Personalized local intelligence dashboard. View your local reputation score, community confirmations, demand requests, and followed businesses in your locality.'
+  },
   '/verify/methodology': {
     title: 'Conflux Verify Methodology & Evidence Standards | Conflux AI',
     description: 'Deterministic evidence evaluation framework for business claims against primary statutory registries, MCA master data, GSTIN, and accredited ISO repositories.'
@@ -388,6 +393,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/discover" element={<DiscoverPage />} />
+          <Route path="/my-local" element={<MyLocalConfluxPage />} />
           <Route path="/business" element={<ForBusinessPage />} />
           <Route path="/business/audit" element={<VisibilityAuditPage />} />
           <Route path="/list-business" element={<BusinessSubmissionPage />} />

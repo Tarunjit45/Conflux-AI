@@ -18,10 +18,24 @@ import {
   Search,
   Compass,
   ArrowUpRight,
-  Store
+  Store,
+  Plus,
+  Users,
+  Award,
+  AlertTriangle,
+  Calendar,
+  ThumbsUp,
+  Flame,
+  Radio,
+  Share2
 } from 'lucide-react';
 import { trackLocationEvent } from '../../lib/locationAnalytics';
 import { businessService } from '../../lib/businessService';
+import { localKnowledgeService } from '../../lib/localKnowledgeService';
+import { CreateContributionModal } from '../contributions/CreateContributionModal';
+import { ContributionCard } from '../contributions/ContributionCard';
+import { RequestBusinessModal } from '../contributions/RequestBusinessModal';
+import type { LocalContribution, LocalUserProfile, LocalMoment, ContributionType } from '../../types/localKnowledge';
 import type { ConfluxBusiness } from '../../types/business';
 import type { ArticleKnowledgeObject } from '../../types/article';
 
@@ -33,7 +47,16 @@ const LocationDetailPage: React.FC = () => {
   const parentDistrict = WEST_BENGAL_DISTRICTS.find(d => d.slug === districtSlug);
 
   const [localBusinesses, setLocalBusinesses] = useState<ConfluxBusiness[]>([]);
+  const [contributions, setContributions] = useState<LocalContribution[]>([]);
+  const [moments, setMoments] = useState<LocalMoment[]>([]);
+  const [localVoices, setLocalVoices] = useState<LocalUserProfile[]>([]);
   const [isLoadingBusinesses, setIsLoadingBusinesses] = useState(true);
+
+  // Local Knowledge UI state
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [localSearchQuery, setLocalSearchQuery] = useState('');
+  const [activeContribTab, setActiveContribTab] = useState<'ALL' | ContributionType>('ALL');
 
   // Load local verified businesses from Business Graph
   useEffect(() => {
@@ -42,17 +65,26 @@ const LocationDetailPage: React.FC = () => {
       if (!location) return;
       setIsLoadingBusinesses(true);
       try {
-        const results = await businessService.searchBusinesses({
-          district: districtSlug,
-          city: location.slug
-        });
-        const matched = results.map(r => r.business);
+        const [bizResults, contribList, momentList, voiceList] = await Promise.all([
+          businessService.searchBusinesses({
+            district: districtSlug,
+            city: location.slug
+          }),
+          localKnowledgeService.getContributions({ locality: location.slug }),
+          localKnowledgeService.getLocalMoments(location.slug),
+          localKnowledgeService.getLocalVoices(location.slug, 6)
+        ]);
+
+        const matched = bizResults.map(r => r.business);
 
         if (isMounted) {
           setLocalBusinesses(matched);
+          setContributions(contribList);
+          setMoments(momentList);
+          setLocalVoices(voiceList);
         }
       } catch (err) {
-        console.warn('[LocationDetailPage] Error loading local businesses:', err);
+        console.warn('[LocationDetailPage] Error loading local businesses or contributions:', err);
         if (isMounted) {
           setLocalBusinesses([]);
         }
@@ -92,6 +124,23 @@ const LocationDetailPage: React.FC = () => {
   const displayedArticles = relevantArticles.length >= 2
     ? relevantArticles
     : [...relevantArticles, ...districtArticles.filter(da => !relevantArticles.some(ra => ra.id === da.id))].slice(0, 4);
+
+  const filteredContributions = contributions.filter(c => {
+    if (activeContribTab !== 'ALL' && c.contributionType !== activeContribTab) {
+      return false;
+    }
+    if (localSearchQuery.trim()) {
+      const q = localSearchQuery.toLowerCase();
+      const matchTitle = c.title.toLowerCase().includes(q);
+      const matchBody = c.content.toLowerCase().includes(q);
+      const matchBiz = c.businessName?.toLowerCase().includes(q);
+      const matchPlace = c.placeName?.toLowerCase().includes(q);
+      const matchAuthor = c.authorName.toLowerCase().includes(q);
+      const matchTags = c.tags.some(t => t.toLowerCase().includes(q));
+      return matchTitle || matchBody || matchBiz || matchPlace || matchAuthor || matchTags;
+    }
+    return true;
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -240,35 +289,142 @@ const LocationDetailPage: React.FC = () => {
           </p>
 
           {/* Quick Locality Navigation Bar */}
-          <div className="flex flex-wrap items-center gap-3 pt-2">
+          <div className="flex flex-wrap items-center gap-2.5 pt-2">
+            <a
+              href="#today-in-locality"
+              className="px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 text-xs font-bold transition-all flex items-center gap-1.5"
+            >
+              <Flame size={14} className="text-purple-600" /> Today in {location.name}
+            </a>
             <a
               href="#verified-businesses"
-              className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-blue-600/10 flex items-center gap-2"
+              className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-md shadow-blue-600/10 flex items-center gap-1.5"
             >
-              <Store size={14} /> Browse Verified Businesses
+              <Store size={14} /> Verified Businesses ({localBusinesses.length})
             </a>
-            <Link
-              to={`/discover?where=${location.slug}`}
-              className="px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2"
+            <a
+              href="#local-voices"
+              className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all flex items-center gap-1.5"
             >
-              <Search size={14} /> Search {location.name} in Discovery Hub
-            </Link>
-            <Link
-              to="/list-business"
-              className="px-5 py-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2"
+              <Users size={14} className="text-slate-600" /> Local Voices
+            </a>
+            <a
+              href="#community-signals"
+              className="px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold transition-all flex items-center gap-1.5"
             >
-              <ShieldCheck size={14} className="text-emerald-600" /> Get Your Business Verified
-            </Link>
+              <Radio size={14} className="text-emerald-600" /> Community Signals ({contributions.length})
+            </a>
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(true)}
+              className="px-4 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ml-auto"
+            >
+              <Plus size={14} /> Share Contribution
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsRequestModalOpen(true)}
+              className="px-4 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+            >
+              Request a Business
+            </button>
           </div>
 
           <div className="mt-8 p-6 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-4">
             <ShieldCheck className="w-6 h-6 text-blue-600 shrink-0 mt-0.5" />
             <div className="text-xs text-slate-600 leading-relaxed font-medium">
-              <strong className="block text-slate-900 font-bold mb-1">Local Visibility &amp; Trust in {location.name}</strong>
-              Conflux AI is a Local Visibility &amp; Trust Platform based in Kolkata, West Bengal. We connect registered businesses in {location.name} to Google Search, Google Maps, AI search engines, and direct WhatsApp customer conversion pipelines with statutory verification evidence.
+              <strong className="block text-slate-900 font-bold mb-1">Local Intelligence &amp; Truth Network in {location.name}</strong>
+              Conflux AI connects people, verified businesses, places, and local updates in {location.name}. Every contribution turns into structured community signals and evidence to help neighbors discover and decide with confidence.
             </div>
           </div>
         </div>
+
+        {/* ── TODAY IN RANAGHAT (ACTIVE LOCAL MOMENTS & NOTICES) ──────── */}
+        {moments.filter(m => m.status === 'ACTIVE').length > 0 && (
+          <section id="today-in-locality" className="mb-16 scroll-mt-28">
+            <div className="p-8 rounded-3xl bg-gradient-to-br from-purple-900 via-indigo-950 to-slate-950 text-white shadow-xl space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
+                <div className="flex items-center gap-2.5">
+                  <span className="p-2 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-400/30">
+                    <Flame size={20} />
+                  </span>
+                  <div>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-purple-300 block">
+                      Live Locality Bulletin
+                    </span>
+                    <h2 className="text-2xl font-bold font-orbitron">
+                      Today in {location.name}
+                    </h2>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-purple-200/80 font-mono">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>Active Local Moments &amp; Public Notices</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                {moments.filter(m => m.status === 'ACTIVE').slice(0, 3).map((moment) => (
+                  <div
+                    key={moment.id}
+                    className="p-5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 flex flex-col justify-between space-y-3"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-400/20 text-purple-200 border border-purple-300/30 uppercase">
+                          {moment.momentType}
+                        </span>
+                        <span className="text-[11px] font-mono text-purple-300">
+                          {moment.startDate}
+                        </span>
+                      </div>
+                      <h3 className="text-base font-bold text-white font-orbitron leading-snug">
+                        {moment.title}
+                      </h3>
+                      <p className="text-xs text-slate-300 leading-relaxed line-clamp-3">
+                        {moment.summary}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-purple-200/80">
+                      <span>📍 {moment.locationName}</span>
+                      <span className="font-bold text-emerald-300">✓ {moment.confirmationsCount} confirmed</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ── LOCAL INTELLIGENCE SEARCH ───────────────────────────────── */}
+        <section id="locality-search" className="mb-16">
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
+            <div className="flex items-center gap-2">
+              <Search size={18} className="text-blue-600" />
+              <h3 className="text-sm font-bold font-orbitron text-slate-900 uppercase tracking-wider">
+                Search {location.name} Local Intelligence
+              </h3>
+            </div>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder={`Search verified shops, doctors, road updates, or moments in ${location.name}...`}
+                value={localSearchQuery}
+                onChange={(e) => setLocalSearchQuery(e.target.value)}
+                className="w-full pl-4 pr-12 py-3 rounded-2xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium bg-slate-50/50"
+              />
+              {localSearchQuery && (
+                <button
+                  onClick={() => setLocalSearchQuery('')}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 text-xs font-bold"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
 
         {/* ── SECTION 1: VERIFIED LOCAL BUSINESSES IN RANAGHAT ───────── */}
         <section id="verified-businesses" className="mb-20 scroll-mt-28">
@@ -439,6 +595,279 @@ const LocationDetailPage: React.FC = () => {
             >
               List Your Business Free &rarr;
             </Link>
+          </div>
+        </section>
+
+        {/* ── LOCAL VOICES & CONTRIBUTORS ────────────────────────────── */}
+        <section id="local-voices" className="mb-20 scroll-mt-28">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
+            <div>
+              <span className="px-3 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-100 text-[10px] font-black tracking-widest uppercase mb-3 inline-flex items-center gap-1.5">
+                <Users size={14} className="text-purple-600" /> Locality Reputable Contributors
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-slate-900 tracking-tight">
+                Local Voices in {location.name}
+              </h2>
+              <p className="text-slate-500 font-medium text-sm mt-2 max-w-2xl">
+                Independent reporters, local residents, subject guides, and verified shop owners contributing ground-truth intelligence, field reviews, and local notices.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(true)}
+              className="inline-flex items-center gap-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 px-4 py-2.5 rounded-xl transition-all shadow-md shadow-purple-600/20 shrink-0 self-start sm:self-auto cursor-pointer"
+            >
+              <Plus size={14} /> Join as Contributor
+            </button>
+          </div>
+
+          {localVoices.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {localVoices.map((voice) => (
+                <div
+                  key={voice.id}
+                  className="p-6 rounded-3xl bg-white border border-slate-200 hover:border-purple-300 hover:shadow-md transition-all flex flex-col justify-between"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center font-black text-base shadow-sm">
+                          {voice.avatarUrl ? (
+                            <img src={voice.avatarUrl} alt={voice.displayName} className="w-full h-full object-cover rounded-2xl" />
+                          ) : (
+                            voice.displayName.charAt(0).toUpperCase()
+                          )}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-slate-900 text-sm">{voice.displayName}</span>
+                            {voice.isVerified && (
+                              <CheckCircle2 size={13} className="text-blue-600" title="Identity Verified" />
+                            )}
+                          </div>
+                          <span className="text-[11px] font-mono text-slate-400">@{voice.handle}</span>
+                        </div>
+                      </div>
+                      <div className="px-2.5 py-1 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 text-center">
+                        <span className="text-[9px] font-mono uppercase tracking-wider block text-purple-500">Rep Score</span>
+                        <span className="text-xs font-black font-mono">{voice.stats.reputationScore}</span>
+                      </div>
+                    </div>
+
+                    {voice.bio && (
+                      <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                        {voice.bio}
+                      </p>
+                    )}
+
+                    {voice.badges && voice.badges.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {voice.badges.map((b) => (
+                          <span
+                            key={b.id}
+                            className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1"
+                            title={b.description}
+                          >
+                            <span>{b.icon || '🎖️'}</span>
+                            <span>{b.name}</span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                    <span className="font-mono">{voice.stats.contributionsCount} contributions</span>
+                    <span className="font-mono text-emerald-600 font-bold">{voice.stats.confirmationsReceived} confirmed</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-8 text-center bg-slate-50 rounded-3xl border border-slate-200">
+              <Users size={32} className="mx-auto text-slate-400 mb-2" />
+              <p className="text-slate-700 text-sm font-bold mb-1">No community contributors recorded yet in {location.name}.</p>
+              <p className="text-slate-500 text-xs max-w-md mx-auto mb-4">
+                Be the first to share an authentic update, recommendation, or business discovery in {location.name} to establish your local reputation.
+              </p>
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(true)}
+                className="px-5 py-2.5 rounded-xl bg-purple-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-purple-700 transition-all cursor-pointer"
+              >
+                Share First Discovery
+              </button>
+            </div>
+          )}
+        </section>
+
+        {/* ── COMMUNITY SIGNALS & CONTRIBUTIONS STREAM ────────────────── */}
+        <section id="community-signals" className="mb-20 scroll-mt-28">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
+            <div>
+              <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-black tracking-widest uppercase mb-3 inline-flex items-center gap-1.5">
+                <Radio size={14} className="text-emerald-600 animate-pulse" /> Live Ground Truth
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-slate-900 tracking-tight">
+                Community Signals in {location.name}
+              </h2>
+              <p className="text-slate-500 font-medium text-sm mt-2 max-w-2xl">
+                Real-time updates, discoveries, price notices, route alerts, and reviews contributed by neighbors and verified by community consensus.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(true)}
+                className="inline-flex items-center gap-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2.5 rounded-xl transition-all shadow-md shadow-blue-600/20 cursor-pointer"
+              >
+                <Plus size={14} /> Add Contribution
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsRequestModalOpen(true)}
+                className="inline-flex items-center gap-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-4 py-2.5 rounded-xl transition-all cursor-pointer"
+              >
+                Can't find a business?
+              </button>
+            </div>
+          </div>
+
+          {/* Contribution Type Filter Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
+            {(['ALL', 'DISCOVER', 'RECOMMEND', 'UPDATE', 'REPORT', 'REVIEW', 'EVENT', 'STORY', 'QUESTION'] as const).map((tab) => {
+              const count = tab === 'ALL'
+                ? contributions.length
+                : contributions.filter(c => c.contributionType === tab).length;
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveContribTab(tab)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
+                    activeContribTab === tab
+                      ? 'bg-slate-900 text-white shadow-sm'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  <span>{tab === 'ALL' ? 'All Signals' : tab}</span>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${
+                    activeContribTab === tab ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Contributions Feed */}
+          {filteredContributions.length > 0 ? (
+            <div className="space-y-6">
+              {filteredContributions.map((contrib) => (
+                <ContributionCard
+                  key={contrib.id}
+                  contribution={contrib}
+                  onUpdated={(updated) => {
+                    setContributions(prev => prev.map(c => c.id === updated.id ? updated : c));
+                  }}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="p-10 text-center bg-slate-50 rounded-3xl border border-slate-200 space-y-3">
+              <Radio size={32} className="mx-auto text-slate-400" />
+              <p className="text-slate-800 font-bold text-sm">
+                No contributions found {activeContribTab !== 'ALL' ? `for "${activeContribTab}"` : ''} in {location.name}
+              </p>
+              <p className="text-slate-500 text-xs max-w-md mx-auto">
+                Got an update on a local business, road work, community event, or hidden gem? Be the first to share evidence with your neighbors.
+              </p>
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(true)}
+                className="mt-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-blue-700 transition-all cursor-pointer inline-flex items-center gap-1.5"
+              >
+                <Plus size={14} /> Submit First Signal
+              </button>
+            </div>
+          )}
+        </section>
+
+        {/* ── HOW CONFLUX KNOWS (TRUST & EVIDENCE DOSSIER) ───────────── */}
+        <section id="how-conflux-knows" className="mb-20 scroll-mt-28">
+          <div className="p-8 md:p-10 rounded-3xl bg-slate-900 text-white border border-slate-800 space-y-6">
+            <div className="flex items-center gap-3">
+              <ShieldCheck className="w-8 h-8 text-emerald-400 shrink-0" />
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold block">
+                  Transparency &amp; Ground Truth Architecture
+                </span>
+                <h2 className="text-2xl md:text-3xl font-bold font-orbitron">
+                  How Conflux AI Knows What Is True in {location.name}
+                </h2>
+              </div>
+            </div>
+
+            <p className="text-sm text-slate-300 leading-relaxed max-w-3xl">
+              Unlike generic directories or social networks where ratings can be purchased or fabricated, Conflux AI maintains a deterministic separation between statutory legal proof and community-confirmed signals.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+              <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                  <CheckCircle2 size={16} />
+                  <span>Statutory Primary Registries</span>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Direct dockets from primary government registrars (MCA corporate master data, FSSAI food licenses, clinical registry numbers). 100% deterministic ground truth that cannot be purchased.
+                </p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                <div className="flex items-center gap-2 text-blue-400 font-bold text-sm">
+                  <Radio size={16} />
+                  <span>Community Corroboration</span>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Real-time updates reported by local residents and shopkeepers. Elevates to Corroborated status only after independent community confirmations and cross-verification.
+                </p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                  <AlertTriangle size={16} />
+                  <span>"We Don't Know Yet" Principle</span>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  When business hours, prices, or claims are disputed or lack evidence, Conflux transparently reports uncertainty rather than presenting AI hallucinations as fact.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── DEMAND SIGNAL BANNER: CAN'T FIND A BUSINESS? ───────────── */}
+        <section className="mb-20">
+          <div className="p-8 rounded-3xl bg-gradient-to-r from-amber-50 via-slate-50 to-blue-50 border border-amber-200/80 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 max-w-2xl">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-2.5 py-0.5 rounded-md">
+                Locality Demand Request
+              </span>
+              <h3 className="text-xl md:text-2xl font-bold font-orbitron text-slate-900">
+                Can't find a business or shop in {location.name}?
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                If a local manufacturer, doctor, sweet shop, gym, or artisan in {location.name} is missing from Conflux, let us know. Submitting a demand request alerts the community and initiates a verification docket.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsRequestModalOpen(true)}
+              className="px-6 py-3.5 rounded-2xl bg-slate-900 hover:bg-black text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md shrink-0 cursor-pointer"
+            >
+              Request Business Listing &rarr;
+            </button>
           </div>
         </section>
 
@@ -808,6 +1237,27 @@ const LocationDetailPage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* ── MODALS ─────────────────────────────────────────────────── */}
+        <CreateContributionModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          defaultLocality={location.slug}
+          defaultLocalityName={location.name}
+          onCreated={(newContrib) => {
+            setContributions(prev => [newContrib, ...prev]);
+          }}
+        />
+
+        <RequestBusinessModal
+          isOpen={isRequestModalOpen}
+          onClose={() => setIsRequestModalOpen(false)}
+          defaultLocality={location.slug}
+          defaultLocalityName={location.name}
+          onRequestSubmitted={() => {
+            // Demand request submitted
+          }}
+        />
       </div>
     </div>
   );

@@ -23,12 +23,12 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
 
   const navItems = [
     { name: 'Discover', path: '/discover', isLink: true, id: 'discover' },
+    { name: 'Ranaghat Hub', path: '/locations/west-bengal/nadia/ranaghat', isLink: true, id: 'ranaghat' },
+    { name: 'My Local', path: '/my-local', isLink: true, id: 'my-local' },
     { name: 'For Businesses', path: '/business', isLink: true, id: 'business' },
-    { name: 'Visibility Audit', path: '/business/audit', isLink: true, id: 'audit' },
     { name: 'Locations', path: '/locations', isLink: true, id: 'locations' },
     { name: 'Verify', path: '/verify', isLink: true, id: 'verify' },
     { name: 'Knowledge', path: '/blog', isLink: true, id: 'blog' },
-    { name: 'Authority', path: '/authority', isLink: true, id: 'authority' },
     { name: 'About', path: '/about', isLink: true, id: 'about' }
   ];
 

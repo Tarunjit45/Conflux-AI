@@ -118,18 +118,32 @@ publishedSubLocations.forEach(sub => {
   </url>`);
 });
 
-// Published Verified Businesses
-const publishedBusinesses = [
-  { url: 'https://confluxai.in/business/india/west-bengal/nadia/birnagar/a2z-supplements', priority: '0.9' }
-];
+// Published Verified Businesses (Platform-wide dynamic integration)
+const businessesPath = path.resolve(rootDir, 'public/data/businesses.json');
+let businesses = [];
+if (fs.existsSync(businessesPath)) {
+  try {
+    businesses = JSON.parse(fs.readFileSync(businessesPath, 'utf8'));
+  } catch (err) {
+    console.warn('[Sitemap Generator] Failed to parse businesses.json:', err);
+  }
+}
 
-publishedBusinesses.forEach(biz => {
+let bizCount = 0;
+businesses.forEach(biz => {
+  if (biz.status !== 'PUBLISHED') return;
+  const district = (biz.location && biz.location.district) ? biz.location.district.toLowerCase() : 'nadia';
+  const city = (biz.location && biz.location.city) ? biz.location.city.toLowerCase() : 'birnagar';
+  const canonicalUrl = `https://confluxai.in/business/india/west-bengal/${district}/${city}/${biz.slug}`;
+  const lastmod = biz.updatedAt ? biz.updatedAt.split('T')[0] : today;
+
   xmlEntries.push(`  <url>
-    <loc>${biz.url}</loc>
-    <lastmod>${today}</lastmod>
+    <loc>${canonicalUrl}</loc>
+    <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>${biz.priority}</priority>
+    <priority>0.9</priority>
   </url>`);
+  bizCount++;
 });
 
 // Articles (Strictly Published and Canonical)

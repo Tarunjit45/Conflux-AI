@@ -7,11 +7,16 @@ import {
   Search, MapPin, Building2, ShieldCheck, Clock, Phone,
   MessageSquare, ArrowRight, Sparkles, AlertCircle, CheckCircle2,
   Compass, ExternalLink, Calendar, X, Filter, RotateCcw, Check,
-  Layers, ChevronRight, HelpCircle, Navigation
+  Layers, ChevronRight, HelpCircle, Navigation, Radio, Plus
 } from 'lucide-react';
 import { businessService } from '../../lib/businessService';
 import { connectService } from '../../lib/connectService';
+import { localKnowledgeService } from '../../lib/localKnowledgeService';
+import { ContributionCard } from '../contributions/ContributionCard';
+import { RequestBusinessModal } from '../contributions/RequestBusinessModal';
+import { CreateContributionModal } from '../contributions/CreateContributionModal';
 import type { BusinessSearchResult, CapabilityActionType } from '../../types/business';
+import type { LocalContribution } from '../../types/localKnowledge';
 import { WEST_BENGAL_DISTRICTS } from '../../data/locationsData';
 
 interface CategoryShortcut {
@@ -38,6 +43,10 @@ const CATEGORY_SHORTCUTS: CategoryShortcut[] = [
 
 export const DiscoverPage: React.FC = () => {
   const [results, setResults] = useState<BusinessSearchResult[]>([]);
+  const [contributions, setContributions] = useState<LocalContribution[]>([]);
+  const [discoveryMode, setDiscoveryMode] = useState<'BUSINESSES' | 'COMMUNITY_SIGNALS'>('BUSINESSES');
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // Search & Filter State — Default is completely clean with no artificial location or intent preset
@@ -84,17 +93,27 @@ export const DiscoverPage: React.FC = () => {
     const activeCatObj = CATEGORY_SHORTCUTS.find(c => c.id === activeCategory);
     const categoryParam = activeCatObj?.categoryFilter;
 
-    const res = await businessService.searchBusinesses({
-      query: parsedWhat || undefined,
-      district: districtParam,
-      city: cityParam,
-      category: categoryParam,
-      verifiedOnly: verifiedOnly ? true : undefined,
-      openNow: openNowOnly ? true : undefined,
-      requiredAction: requiredAction !== 'all' ? requiredAction : undefined
-    });
+    const [res, contribs] = await Promise.all([
+      businessService.searchBusinesses({
+        query: parsedWhat || undefined,
+        district: districtParam,
+        city: cityParam,
+        category: categoryParam,
+        verifiedOnly: verifiedOnly ? true : undefined,
+        openNow: openNowOnly ? true : undefined,
+        requiredAction: requiredAction !== 'all' ? requiredAction : undefined
+      }),
+      localKnowledgeService.getContributions({
+        locality: cityParam || districtParam || undefined,
+        query: parsedWhat || undefined
+      }).catch(err => {
+        console.warn('[DiscoverPage] Error loading contributions:', err);
+        return [] as LocalContribution[];
+      })
+    ]);
 
     setResults(res);
+    setContributions(contribs);
     setIsLoading(false);
 
     // Track search intent telemetry
@@ -377,8 +396,94 @@ export const DiscoverPage: React.FC = () => {
           </div>
         </div>
 
+        {/* ── DISCOVERY VIEW SWITCHER: BUSINESSES VS COMMUNITY SIGNALS ── */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setDiscoveryMode('BUSINESSES')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                discoveryMode === 'BUSINESSES'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              <Building2 size={14} />
+              <span>Verified Businesses ({results.length})</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setDiscoveryMode('COMMUNITY_SIGNALS')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                discoveryMode === 'COMMUNITY_SIGNALS'
+                  ? 'bg-purple-600 text-white shadow-sm'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              <Radio size={14} className={discoveryMode === 'COMMUNITY_SIGNALS' ? 'animate-pulse' : ''} />
+              <span>Community Signals ({contributions.length})</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsRequestModalOpen(true)}
+              className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+            >
+              <HelpCircle size={13} /> Can't find a business?
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(true)}
+              className="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+            >
+              <Plus size={13} /> Share Signal
+            </button>
+          </div>
+        </div>
+
         {/* ── SEARCH RESULTS GRID / STATES ──────────────────────── */}
-        {isLoading ? (
+        {discoveryMode === 'COMMUNITY_SIGNALS' ? (
+          <div>
+            {isLoading ? (
+              <div className="p-12 text-center bg-white rounded-3xl border border-slate-200">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-purple-600 border-r-transparent mb-4"></div>
+                <p className="text-slate-600 text-sm font-medium">Loading community signals &amp; ground truth...</p>
+              </div>
+            ) : contributions.length > 0 ? (
+              <div className="space-y-6">
+                {contributions.map((c) => (
+                  <ContributionCard
+                    key={c.id}
+                    contribution={c}
+                    onUpdated={(updated) => {
+                      setContributions(prev => prev.map(item => item.id === updated.id ? updated : item));
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="p-12 text-center bg-white rounded-3xl border border-slate-200 space-y-3">
+                <Radio size={36} className="mx-auto text-slate-400" />
+                <h3 className="text-lg font-bold font-orbitron text-slate-800">
+                  No community signals recorded yet for this location
+                </h3>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  Be the first to share an authentic update, recommendation, or business discovery.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer inline-flex items-center gap-1.5"
+                >
+                  <Plus size={14} /> Submit First Signal
+                </button>
+              </div>
+            )}
+          </div>
+        ) : isLoading ? (
           /* Loading Skeleton State */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map(n => (
@@ -437,6 +542,13 @@ export const DiscoverPage: React.FC = () => {
                   Clear All Filters
                 </button>
               )}
+              <button
+                type="button"
+                onClick={() => setIsRequestModalOpen(true)}
+                className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-md shadow-amber-600/20 transition-all cursor-pointer"
+              >
+                Can't find a business? Request it &rarr;
+              </button>
               <Link
                 to="/list-business"
                 className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all"
@@ -708,6 +820,22 @@ export const DiscoverPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* ── LOCAL KNOWLEDGE MODALS ───────────────────────────────────── */}
+      <RequestBusinessModal
+        isOpen={isRequestModalOpen}
+        onClose={() => setIsRequestModalOpen(false)}
+        defaultLocality={whereQuery || 'Ranaghat'}
+      />
+
+      <CreateContributionModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        defaultLocality={whereQuery || 'Ranaghat'}
+        onCreated={(newC) => {
+          setContributions(prev => [newC, ...prev]);
+        }}
+      />
     </div>
   );
 };

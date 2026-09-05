@@ -52,16 +52,20 @@ import {
   Share2,
   Loader2,
   Sparkles,
+  Radio,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AdminShell } from "./AdminSidebar";
 import { businessService } from "../../lib/businessService";
 import { enrichmentService } from "../../lib/enrichmentService";
+import { businessOptimizationEngine } from "../../lib/seo/businessOptimizationEngine";
 import {
   connectService,
   type MeasurementReport,
 } from "../../lib/connectService";
 import { contributionService } from "../../lib/contributionService";
+import { localKnowledgeService } from "../../lib/localKnowledgeService";
+import type { LocalContribution, BusinessDemandRequest } from "../../types/localKnowledge";
 import type {
   ConfluxBusiness,
   BusinessPublishStatus,
@@ -107,12 +111,17 @@ export const AdminBusinessDashboard: React.FC = () => {
   const [selectedVerStatus, setSelectedVerStatus] = useState("all");
   const [selectedAppStatus, setSelectedAppStatus] = useState("all");
   const [selectedContribStatus, setSelectedContribStatus] = useState("all");
+  const [contribSubTab, setContribSubTab] = useState<"LOCAL_KNOWLEDGE" | "DEMAND_REQUESTS" | "LEGACY_REVIEWS">("LOCAL_KNOWLEDGE");
+  const [localKnowledgeContribs, setLocalKnowledgeContribs] = useState<LocalContribution[]>([]);
+  const [businessRequests, setBusinessRequests] = useState<BusinessDemandRequest[]>([]);
 
   // Modals state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingBusiness, setEditingBusiness] =
     useState<ConfluxBusiness | null>(null);
   const [verifyingBusiness, setVerifyingBusiness] =
+    useState<ConfluxBusiness | null>(null);
+  const [inspectingSeoBiz, setInspectingSeoBiz] =
     useState<ConfluxBusiness | null>(null);
   const [verifyClaimStatement, setVerifyClaimStatement] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
@@ -172,15 +181,41 @@ export const AdminBusinessDashboard: React.FC = () => {
 
   const loadData = async () => {
     setIsLoading(true);
-    const data = await businessService.getAllBusinesses();
+    const [data, apps, contribs, report, lkContribs, bRequests] = await Promise.all([
+      businessService.getAllBusinesses(),
+      businessService.getAllApplications(),
+      contributionService.getAllContributions(),
+      connectService.getMeasurementReport(),
+      localKnowledgeService.getContributions().catch(() => [] as LocalContribution[]),
+      localKnowledgeService.getBusinessRequests().catch(() => [] as BusinessDemandRequest[])
+    ]);
     setBusinesses(data);
-    const apps = await businessService.getAllApplications();
     setApplications(apps);
-    const contribs = await contributionService.getAllContributions();
     setContributions(contribs);
-    const report = await connectService.getMeasurementReport();
     setMeasurementReport(report);
+    setLocalKnowledgeContribs(lkContribs);
+    setBusinessRequests(bRequests);
     setIsLoading(false);
+  };
+
+  const handleModerateLocalContribution = async (id: string, status: LocalContribution['status']) => {
+    try {
+      await localKnowledgeService.updateContributionStatus(id, status);
+      setLocalKnowledgeContribs(prev => prev.map(c => c.id === id ? { ...c, status } : c));
+      showNotification(`Local contribution updated to ${status}.`);
+    } catch (err: any) {
+      showNotification(err?.message || "Failed to update contribution status.");
+    }
+  };
+
+  const handleUpdateDemandRequestStatus = async (id: string, status: BusinessDemandRequest['status']) => {
+    try {
+      await localKnowledgeService.updateBusinessRequestStatus(id, status);
+      setBusinessRequests(prev => prev.map(r => r.id === id ? { ...r, status } : r));
+      showNotification(`Demand request updated to ${status}.`);
+    } catch (err: any) {
+      showNotification(err?.message || "Failed to update request status.");
+    }
   };
 
   useEffect(() => {
@@ -1285,6 +1320,14 @@ export const AdminBusinessDashboard: React.FC = () => {
                                 </Link>
 
                                 <button
+                                  onClick={() => setInspectingSeoBiz(biz)}
+                                  className="p-2 rounded-xl text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 transition-colors cursor-pointer"
+                                  title="Inspect SEO & GEO Optimization"
+                                >
+                                  <Sparkles size={16} />
+                                </button>
+
+                                <button
                                   onClick={() => handleOpenEdit(biz)}
                                   className="p-2 rounded-xl text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
                                   title="Edit Business"
@@ -1724,160 +1767,410 @@ export const AdminBusinessDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* ── TAB 4: USER CONTRIBUTIONS MODERATION QUEUE ──────────── */}
+        {/* ── TAB 4: USER CONTRIBUTIONS & LOCAL INTELLIGENCE MODERATION ──── */}
         {activeTab === "CONTRIBUTIONS" && (
           <div className="space-y-6">
-            <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            {/* Sub-tab navigation */}
+            <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3">
+              <button
+                type="button"
+                onClick={() => setContribSubTab("LOCAL_KNOWLEDGE")}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                  contribSubTab === "LOCAL_KNOWLEDGE"
+                    ? "bg-purple-600 text-white shadow-sm"
+                    : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+                }`}
+              >
+                <Radio size={14} className={contribSubTab === "LOCAL_KNOWLEDGE" ? "animate-pulse" : ""} />
+                <span>Local Knowledge Signals ({localKnowledgeContribs.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setContribSubTab("DEMAND_REQUESTS")}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                  contribSubTab === "DEMAND_REQUESTS"
+                    ? "bg-amber-600 text-white shadow-sm"
+                    : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+                }`}
+              >
+                <HelpCircle size={14} />
+                <span>Business Demand Requests ({businessRequests.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setContribSubTab("LEGACY_REVIEWS")}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                  contribSubTab === "LEGACY_REVIEWS"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+                }`}
+              >
+                <MessageCircle size={14} />
+                <span>User Reviews &amp; Edits ({contributions.length})</span>
+              </button>
+
+              <button
+                onClick={loadData}
+                className="ml-auto text-xs font-bold text-slate-500 hover:text-blue-600 flex items-center gap-1.5 cursor-pointer px-3 py-2 rounded-xl hover:bg-slate-100"
+              >
+                <RefreshCw size={14} /> Refresh All
+              </button>
+            </div>
+
+            {/* Sub-tab 1: Local Knowledge Signals */}
+            {contribSubTab === "LOCAL_KNOWLEDGE" && (
+              <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
                 <div>
                   <h3 className="text-lg font-bold font-orbitron text-slate-900">
-                    Community Reviews &amp; Knowledge Contributions (
-                    {contributions.length})
+                    Local Ground Truth Signals ({localKnowledgeContribs.length})
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Moderate customer reviews, verify suggested edits, and audit
-                    inaccuracy reports from authenticated users.
+                    Field updates, reviews, price notices, discoveries, and alerts from local community members.
                   </p>
                 </div>
 
-                <div className="flex w-full flex-col sm:flex-row sm:w-auto items-stretch sm:items-center gap-3">
-                  <select
-                    value={selectedContribStatus}
-                    onChange={(e) => setSelectedContribStatus(e.target.value)}
-                    className="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold focus:outline-none"
-                  >
-                    <option value="all">All Moderation Statuses</option>
-                    <option value="PENDING_MODERATION">
-                      Pending Moderation ({pendingContribs.length})
-                    </option>
-                    <option value="APPROVED">Approved</option>
-                    <option value="REJECTED">Rejected</option>
-                  </select>
+                {localKnowledgeContribs.length === 0 ? (
+                  <div className="p-12 text-center text-slate-500 text-xs">
+                    No local knowledge contributions recorded yet.
+                  </div>
+                ) : (
+                  <div className="divide-y divide-slate-100">
+                    {localKnowledgeContribs.map((c) => (
+                      <div key={c.id} className="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="space-y-2 max-w-3xl">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-mono text-xs font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded">
+                              {c.id}
+                            </span>
+                            <span className="font-bold text-slate-900 text-sm">
+                              {c.title}
+                            </span>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold font-mono bg-blue-50 text-blue-800 border border-blue-200">
+                              {c.type}
+                            </span>
+                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-slate-100 text-slate-700">
+                              📍 {c.locality}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold font-mono ${
+                              c.status === 'PUBLISHED'
+                                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                                : c.status === 'FLAGGED'
+                                  ? 'bg-rose-50 text-rose-800 border border-rose-200'
+                                  : 'bg-slate-100 text-slate-600'
+                            }`}>
+                              {c.status}
+                            </span>
+                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-amber-50 text-amber-800">
+                              {c.verificationState.replace(/_/g, ' ')}
+                            </span>
+                          </div>
 
-                  <button
-                    onClick={loadData}
-                    className="self-end text-xs font-bold text-slate-500 hover:text-blue-600 flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <RefreshCw size={14} /> Refresh
-                  </button>
-                </div>
+                          <p className="text-xs text-slate-700 leading-relaxed">
+                            {c.content}
+                          </p>
+
+                          <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 font-mono">
+                            <span>By: <strong>{c.author.displayName}</strong></span>
+                            {c.businessRef && <span>Entity: <strong>{c.businessRef.name}</strong></span>}
+                            <span>✓ {c.confirmationsCount} confirmations</span>
+                            <span>⚠️ {c.disputesCount} disputes</span>
+                            <span>★ {c.averageRating} ({c.ratingsCount} ratings)</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          {c.status !== 'PUBLISHED' && (
+                            <button
+                              type="button"
+                              onClick={() => handleModerateLocalContribution(c.id, 'PUBLISHED')}
+                              className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all cursor-pointer"
+                            >
+                              Publish
+                            </button>
+                          )}
+                          {c.status !== 'FLAGGED' && (
+                            <button
+                              type="button"
+                              onClick={() => handleModerateLocalContribution(c.id, 'FLAGGED')}
+                              className="px-3.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-all cursor-pointer"
+                            >
+                              Flag
+                            </button>
+                          )}
+                          {c.status !== 'ARCHIVED' && (
+                            <button
+                              type="button"
+                              onClick={() => handleModerateLocalContribution(c.id, 'ARCHIVED')}
+                              className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+                            >
+                              Archive
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
+            )}
 
-              {filteredContribs.length === 0 ? (
-                <div className="p-12 text-center text-slate-500 text-xs">
-                  No contributions found matching the selected filter.
+            {/* Sub-tab 2: Business Demand Requests */}
+            {contribSubTab === "DEMAND_REQUESTS" && (
+              <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
+                <div>
+                  <h3 className="text-lg font-bold font-orbitron text-slate-900">
+                    Business Demand Requests ("Can't Find This Business") ({businessRequests.length})
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Unindexed businesses, artisans, doctors, and shops requested by residents for listing and verification.
+                  </p>
                 </div>
-              ) : (
-                <div className="divide-y divide-slate-100">
-                  {filteredContribs.map((c) => (
-                    <div
-                      key={c.id}
-                      className="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4"
-                    >
-                      <div className="space-y-1.5 max-w-2xl">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
-                            {c.id}
-                          </span>
-                          <span className="font-bold text-slate-900 text-sm">
-                            {c.businessName || `Business ID: ${c.businessId}`}
-                          </span>
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono ${
-                              c.contributionType === "REVIEW_RATING"
-                                ? "bg-amber-100 text-amber-900"
-                                : c.contributionType === "SUGGESTED_EDIT"
-                                  ? "bg-blue-100 text-blue-900"
-                                  : "bg-rose-100 text-rose-900"
-                            }`}
-                          >
-                            {c.contributionType.replace(/_/g, " ")}
-                          </span>
-                          <span
-                            className={`px-2 py-0.5 rounded-md text-[10px] font-bold font-mono ${
-                              c.moderationStatus === "APPROVED"
-                                ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                                : c.moderationStatus === "PENDING_MODERATION"
-                                  ? "bg-amber-50 text-amber-900 border border-amber-200 animate-pulse"
-                                  : "bg-slate-100 text-slate-600"
-                            }`}
-                          >
-                            {c.moderationStatus}
-                          </span>
-                        </div>
 
-                        <div className="text-xs text-slate-600">
-                          <span className="font-semibold">Contributor:</span>{" "}
-                          {c.userDisplayName} ({c.userEmail}) •{" "}
-                          <span className="font-mono text-[11px] text-slate-400">
-                            {new Date(c.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-
-                        {c.contributionType === "REVIEW_RATING" && (
-                          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 space-y-1">
-                            <div className="flex items-center gap-1 text-amber-500 font-bold">
-                              ★ {c.rating} / 5 Stars
-                            </div>
-                            <p className="leading-relaxed">
-                              &ldquo;{c.reviewText}&rdquo;
-                            </p>
-                          </div>
-                        )}
-
-                        {c.contributionType === "SUGGESTED_EDIT" && (
-                          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 space-y-1">
-                            <div>
-                              <span className="font-bold text-slate-700">
-                                Field:
-                              </span>{" "}
-                              {c.fieldName} &rarr;{" "}
-                              <span className="font-bold text-blue-700">
-                                {c.suggestedValue}
+                {businessRequests.length === 0 ? (
+                  <div className="p-12 text-center text-slate-500 text-xs">
+                    No business demand requests recorded.
+                  </div>
+                ) : (
+                  <div className="divide-y divide-slate-100">
+                    {businessRequests.map((r) => (
+                      <div key={r.id} className="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="space-y-1.5 max-w-3xl">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-mono text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded">
+                              {r.id}
+                            </span>
+                            <span className="font-bold text-slate-900 text-base">
+                              {r.businessName}
+                            </span>
+                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-slate-100 text-slate-700">
+                              📍 {r.locality}
+                            </span>
+                            {r.category && (
+                              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-blue-50 text-blue-700 border border-blue-200">
+                                {r.category}
                               </span>
-                            </div>
-                            <div className="text-slate-600">
-                              <span className="font-semibold">Rationale:</span>{" "}
-                              {c.rationale}
-                            </div>
+                            )}
+                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold font-mono ${
+                              r.status === 'FULFILLED'
+                                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                                : r.status === 'IN_PROGRESS'
+                                  ? 'bg-blue-50 text-blue-800 border border-blue-200'
+                                  : r.status === 'REJECTED'
+                                    ? 'bg-slate-100 text-slate-600'
+                                    : 'bg-amber-50 text-amber-800 border border-amber-200 animate-pulse'
+                            }`}>
+                              {r.status.replace(/_/g, ' ')}
+                            </span>
                           </div>
-                        )}
 
-                        {c.contributionType === "INACCURACY_REPORT" && (
-                          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-900 space-y-1">
-                            <div>
-                              <span className="font-bold">Issue Type:</span>{" "}
-                              {c.issueType}
+                          {r.addressHint && (
+                            <p className="text-xs text-slate-600">
+                              <strong>Location / Landmark:</strong> {r.addressHint}
+                            </p>
+                          )}
+                          {r.reason && (
+                            <p className="text-xs text-slate-700 italic">
+                              &ldquo;{r.reason}&rdquo;
+                            </p>
+                          )}
+                          {r.sourceUrl && (
+                            <div className="text-xs text-blue-600">
+                              <a href={r.sourceUrl} target="_blank" rel="noopener noreferrer" className="hover:underline inline-flex items-center gap-1">
+                                {r.sourceUrl} <ExternalLink size={12} />
+                              </a>
                             </div>
-                            <div>
-                              <span className="font-semibold">Details:</span>{" "}
-                              {c.details}
+                          )}
+
+                          <div className="text-xs text-slate-400 font-mono pt-1">
+                            Requested by: {r.requestedBy.displayName} ({r.requestedBy.email || 'No email'}) • {new Date(r.createdAt).toLocaleDateString()}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          {r.status !== 'IN_PROGRESS' && r.status !== 'FULFILLED' && (
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateDemandRequestStatus(r.id, 'IN_PROGRESS')}
+                              className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all cursor-pointer"
+                            >
+                              In Progress
+                            </button>
+                          )}
+                          {r.status !== 'FULFILLED' && (
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateDemandRequestStatus(r.id, 'FULFILLED')}
+                              className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all cursor-pointer"
+                            >
+                              Mark Fulfilled
+                            </button>
+                          )}
+                          {r.status !== 'REJECTED' && (
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateDemandRequestStatus(r.id, 'REJECTED')}
+                              className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+                            >
+                              Dismiss
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Sub-tab 3: Legacy User Reviews & Edits */}
+            {contribSubTab === "LEGACY_REVIEWS" && (
+              <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                  <div>
+                    <h3 className="text-lg font-bold font-orbitron text-slate-900">
+                      Community Reviews &amp; Knowledge Contributions (
+                      {contributions.length})
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Moderate customer reviews, verify suggested edits, and audit
+                      inaccuracy reports from authenticated users.
+                    </p>
+                  </div>
+
+                  <div className="flex w-full flex-col sm:flex-row sm:w-auto items-stretch sm:items-center gap-3">
+                    <select
+                      value={selectedContribStatus}
+                      onChange={(e) => setSelectedContribStatus(e.target.value)}
+                      className="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold focus:outline-none"
+                    >
+                      <option value="all">All Moderation Statuses</option>
+                      <option value="PENDING_MODERATION">
+                        Pending Moderation ({pendingContribs.length})
+                      </option>
+                      <option value="APPROVED">Approved</option>
+                      <option value="REJECTED">Rejected</option>
+                    </select>
+                  </div>
+                </div>
+
+                {filteredContribs.length === 0 ? (
+                  <div className="p-12 text-center text-slate-500 text-xs">
+                    No contributions found matching the selected filter.
+                  </div>
+                ) : (
+                  <div className="divide-y divide-slate-100">
+                    {filteredContribs.map((c) => (
+                      <div
+                        key={c.id}
+                        className="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                      >
+                        <div className="space-y-1.5 max-w-2xl">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
+                              {c.id}
+                            </span>
+                            <span className="font-bold text-slate-900 text-sm">
+                              {c.businessName || `Business ID: ${c.businessId}`}
+                            </span>
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono ${
+                                c.contributionType === "REVIEW_RATING"
+                                  ? "bg-amber-100 text-amber-900"
+                                  : c.contributionType === "SUGGESTED_EDIT"
+                                    ? "bg-blue-100 text-blue-900"
+                                    : "bg-rose-100 text-rose-900"
+                              }`}
+                            >
+                              {c.contributionType.replace(/_/g, " ")}
+                            </span>
+                            <span
+                              className={`px-2 py-0.5 rounded-md text-[10px] font-bold font-mono ${
+                                c.moderationStatus === "APPROVED"
+                                  ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                                  : c.moderationStatus === "PENDING_MODERATION"
+                                    ? "bg-amber-50 text-amber-900 border border-amber-200 animate-pulse"
+                                    : "bg-slate-100 text-slate-600"
+                              }`}
+                            >
+                              {c.moderationStatus}
+                            </span>
+                          </div>
+
+                          <div className="text-xs text-slate-600">
+                            <span className="font-semibold">Contributor:</span>{" "}
+                            {c.userDisplayName} ({c.userEmail}) •{" "}
+                            <span className="font-mono text-[11px] text-slate-400">
+                              {new Date(c.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+
+                          {c.contributionType === "REVIEW_RATING" && (
+                            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 space-y-1">
+                              <div className="flex items-center gap-1 text-amber-500 font-bold">
+                                ★ {c.rating} / 5 Stars
+                              </div>
+                              <p className="leading-relaxed">
+                                &ldquo;{c.reviewText}&rdquo;
+                              </p>
                             </div>
+                          )}
+
+                          {c.contributionType === "SUGGESTED_EDIT" && (
+                            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 space-y-1">
+                              <div>
+                                <span className="font-bold text-slate-700">
+                                  Field:
+                                </span>{" "}
+                                {c.fieldName} &rarr;{" "}
+                                <span className="font-bold text-blue-700">
+                                  {c.suggestedValue}
+                                </span>
+                              </div>
+                              <div className="text-slate-600">
+                                <span className="font-semibold">Rationale:</span>{" "}
+                                {c.rationale}
+                              </div>
+                            </div>
+                          )}
+
+                          {c.contributionType === "INACCURACY_REPORT" && (
+                            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-900 space-y-1">
+                              <div>
+                                <span className="font-bold">Issue Type:</span>{" "}
+                                {c.issueType}
+                              </div>
+                              <div>
+                                <span className="font-semibold">Details:</span>{" "}
+                                {c.details}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {c.moderationStatus === "PENDING_MODERATION" && (
+                          <div className="flex items-center gap-2 shrink-0">
+                            <button
+                              onClick={() => handleApproveContribution(c.id)}
+                              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                            >
+                              <ThumbsUp size={14} /> Approve
+                            </button>
+                            <button
+                              onClick={() => handleRejectContribution(c.id)}
+                              className="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                            >
+                              <ThumbsDown size={14} /> Reject
+                            </button>
                           </div>
                         )}
                       </div>
-
-                      {c.moderationStatus === "PENDING_MODERATION" && (
-                        <div className="flex items-center gap-2 shrink-0">
-                          <button
-                            onClick={() => handleApproveContribution(c.id)}
-                            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
-                          >
-                            <ThumbsUp size={14} /> Approve
-                          </button>
-                          <button
-                            onClick={() => handleRejectContribution(c.id)}
-                            className="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
-                          >
-                            <ThumbsDown size={14} /> Reject
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -2919,6 +3212,266 @@ export const AdminBusinessDashboard: React.FC = () => {
             </motion.div>
           </div>
         )}
+        {/* ── SEO / GEO OPTIMIZATION INSPECTION MODAL ──────────── */}
+        {inspectingSeoBiz && (() => {
+          const opt = businessOptimizationEngine.optimizeBusiness(inspectingSeoBiz);
+          const isIndexable = opt.indexability.isIndexable;
+          const score = opt.indexability.indexabilityScore;
+
+          return (
+            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-2xl max-w-4xl w-full p-6 sm:p-8 space-y-6 my-8 max-h-[90vh] overflow-y-auto"
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="p-2 rounded-xl bg-blue-50 text-blue-600">
+                        <Sparkles size={20} />
+                      </span>
+                      <h3 className="text-lg sm:text-xl font-bold font-orbitron text-slate-900">
+                        SEO + GEO Optimization Dossier
+                      </h3>
+                    </div>
+                    <div className="text-xs text-slate-500 font-mono flex items-center gap-2 flex-wrap">
+                      <span className="font-bold text-blue-700">{inspectingSeoBiz.name}</span>
+                      <span>•</span>
+                      <span>ID: {inspectingSeoBiz.confluxBusinessId}</span>
+                      <span>•</span>
+                      <span className="capitalize">{opt.geographicHierarchy.city}, {opt.geographicHierarchy.district}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setInspectingSeoBiz(null)}
+                    className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer transition-colors"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Indexability & Quality Score Banner */}
+                <div className={`p-5 rounded-2xl border ${
+                  isIndexable ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950' : 'bg-amber-50/80 border-amber-200 text-amber-950'
+                } space-y-3`}>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      {isIndexable ? (
+                        <CheckCircle2 size={24} className="text-emerald-600 shrink-0" />
+                      ) : (
+                        <AlertCircle size={24} className="text-amber-600 shrink-0" />
+                      )}
+                      <div>
+                        <div className="font-bold text-sm font-orbitron">
+                          {isIndexable ? 'Search & AI Indexable (Verified Authority)' : 'Quality Guardrail Active (Non-Indexable)'}
+                        </div>
+                        <div className="text-xs opacity-90">
+                          {isIndexable
+                            ? 'Entity data meets all authenticity, location completeness, and direct connect criteria.'
+                            : 'Requires additional verified identity, physical address, or contact completeness before search indexing.'}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 self-start sm:self-auto">
+                      <span className="px-3.5 py-1.5 rounded-xl font-mono font-black text-sm bg-white shadow-sm border border-slate-200">
+                        Score: {score}/100
+                      </span>
+                    </div>
+                  </div>
+
+                  {opt.indexability.reasons.length > 0 && (
+                    <div className="pt-2 border-t border-emerald-200/60 text-xs space-y-1">
+                      <div className="font-bold font-mono text-[11px] uppercase tracking-wider text-emerald-800">
+                        Indexability Drivers:
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-[11px] text-emerald-900">
+                        {opt.indexability.reasons.map((r, i) => (
+                          <div key={i} className="flex items-center gap-1.5">
+                            <Check size={12} className="text-emerald-600 shrink-0" /> {r}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {opt.indexability.issues.length > 0 && (
+                    <div className="pt-2 border-t border-amber-200 text-xs space-y-1">
+                      <div className="font-bold font-mono text-[11px] uppercase tracking-wider text-amber-800">
+                        Quality Issues / Missing Requirements:
+                      </div>
+                      <div className="space-y-1 text-[11px] text-amber-900">
+                        {opt.indexability.issues.map((issue, i) => (
+                          <div key={i} className="flex items-center gap-1.5">
+                            <AlertCircle size={12} className="text-amber-600 shrink-0" /> {issue}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Core Search & GEO Metadata */}
+                <div className="space-y-4">
+                  <h4 className="text-xs font-bold font-orbitron uppercase text-slate-700 tracking-wider flex items-center gap-2">
+                    <Globe size={14} className="text-blue-600" /> Core Search Engine & AI Retrieval Metadata
+                  </h4>
+
+                  <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs">
+                    <div>
+                      <div className="flex justify-between text-slate-500 font-medium mb-1">
+                        <span>Page Title (H1 Entity Target)</span>
+                        <span className="font-mono">{opt.seoTitle.length} chars (Target: 50-70)</span>
+                      </div>
+                      <div className="font-bold text-slate-900 bg-white p-2.5 rounded-xl border border-slate-200">
+                        {opt.seoTitle}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between text-slate-500 font-medium mb-1">
+                        <span>Meta Description (Factual Summary)</span>
+                        <span className="font-mono">{opt.metaDescription.length} chars (Target: 140-160)</span>
+                      </div>
+                      <div className="text-slate-800 bg-white p-2.5 rounded-xl border border-slate-200 leading-relaxed">
+                        {opt.metaDescription}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                      <div>
+                        <span className="text-slate-500 font-medium block mb-1">Canonical URL</span>
+                        <a
+                          href={opt.canonicalUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline font-mono text-[11px] break-all block bg-white p-2 rounded-lg border border-slate-200"
+                        >
+                          {opt.canonicalUrl}
+                        </a>
+                      </div>
+
+                      <div>
+                        <span className="text-slate-500 font-medium block mb-1">Schema.org Subtype</span>
+                        <div className="bg-white p-2 rounded-lg border border-slate-200 font-mono font-bold text-indigo-700">
+                          {opt.schemaSubtype} (LocalBusiness)
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Query & Search Intent Mapping */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold font-orbitron uppercase text-slate-700 tracking-wider flex items-center gap-2">
+                    <Search size={14} className="text-blue-600" /> Grounded Search Intent & AI Query Mapping ({opt.queryIntents.length})
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {opt.queryIntents.map((q, idx) => (
+                      <span
+                        key={idx}
+                        className={`text-xs px-3 py-1.5 rounded-xl font-medium border flex items-center gap-1.5 ${
+                          q.targetAudience === 'AI_AGENT'
+                            ? 'bg-purple-50 text-purple-900 border-purple-200'
+                            : 'bg-slate-50 text-slate-800 border-slate-200'
+                        }`}
+                      >
+                        <span className="font-mono text-[10px] font-bold opacity-60">[{q.intentType}]</span>
+                        &ldquo;{q.query}&rdquo;
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Factual Direct Answers (FAQs) Parity */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold font-orbitron uppercase text-slate-700 tracking-wider flex items-center gap-2">
+                      <HelpCircle size={14} className="text-blue-600" /> Factual FAQs & Direct Answers ({opt.faqItems.length})
+                    </h4>
+                    <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-bold">
+                      100% Schema.org Parity
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {opt.faqItems.map((faq) => (
+                      <div key={faq.id} className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+                        <div className="font-bold text-slate-900 flex items-center justify-between">
+                          <span>{faq.question}</span>
+                          {faq.evidenceSource && (
+                            <span className="text-[10px] font-mono font-medium text-slate-400">
+                              {faq.evidenceSource}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-slate-600 leading-relaxed">{faq.answer}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Geographic Corridor & Internal Links */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold font-orbitron uppercase text-slate-700 tracking-wider flex items-center gap-2">
+                    <MapPin size={14} className="text-blue-600" /> Geographic Hierarchy & Internal Links
+                  </h4>
+                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                    <div className="font-mono text-[11px] text-slate-600">
+                      Hierarchy: India &rarr; West Bengal &rarr; {opt.geographicHierarchy.district} &rarr; {opt.geographicHierarchy.city}
+                      {opt.geographicHierarchy.postalCode ? ` (${opt.geographicHierarchy.postalCode})` : ''}
+                    </div>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {opt.internalLinks.map((link, idx) => (
+                        <span key={idx} className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-semibold text-blue-700">
+                          {link.anchorText}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Source Discrepancies (if any) */}
+                {opt.sourceProvenanceConflicts.length > 0 && (
+                  <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-2">
+                    <div className="font-bold flex items-center gap-1.5 uppercase font-mono text-[11px]">
+                      <AlertCircle size={14} className="text-amber-700" /> Source Discrepancies Recorded:
+                    </div>
+                    <ul className="list-disc list-inside space-y-1 text-[11px]">
+                      {opt.sourceProvenanceConflicts.map((c, i) => (
+                        <li key={i}><strong>{c.field}:</strong> {c.explanation}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Footer Controls */}
+                <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-slate-100 text-xs">
+                  <div className="text-slate-400 font-mono text-[11px]">
+                    Last Engine Optimization: {new Date(opt.lastOptimizedAt).toLocaleString()}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to={`/business/india/west-bengal/${opt.geographicHierarchy.district}/${opt.geographicHierarchy.city}/${inspectingSeoBiz.slug}`}
+                      target="_blank"
+                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold inline-flex items-center gap-1.5 shadow-sm transition-all"
+                    >
+                      <ExternalLink size={14} /> Open Live Profile
+                    </Link>
+                    <button
+                      onClick={() => setInspectingSeoBiz(null)}
+                      className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold cursor-pointer"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          );
+        })()}
       </AnimatePresence>
       </div>
     </AdminShell>
