@@ -46,74 +46,161 @@ interface ContributionTypeOption {
   title: string;
   subtitle: string;
   icon: any;
-  color: string;
-  badgeColor: string;
+  tier: 'POPULAR' | 'GROUND_TRUTH' | 'COMMUNITY';
+  repReward: string;
+  pillText: string;
+  iconBg: string;
+  iconColor: string;
+  borderHover: string;
+  badgeBg: string;
+  badgeText: string;
 }
 
 const CONTRIBUTION_OPTIONS: ContributionTypeOption[] = [
+  // ── TIER 1: POPULAR & HIGH-IMPACT ACTIONS ──────────────────────────
   {
     type: 'DISCOVER',
-    title: 'Something I Discovered',
-    subtitle: 'A newly opened shop, cafe, clinic, or local landmark',
+    title: 'Discover a Place / Hidden Gem',
+    subtitle: 'A newly opened shop, cafe, specialty clinic, or local landmark',
     icon: Compass,
-    color: 'text-blue-600 bg-blue-50 border-blue-200',
-    badgeColor: 'bg-blue-100 text-blue-800'
-  },
-  {
-    type: 'UPDATE',
-    title: 'Local Update / Notice',
-    subtitle: 'Road construction, market hours, public advisories, timings',
-    icon: AlertTriangle,
-    color: 'text-amber-600 bg-amber-50 border-amber-200',
-    badgeColor: 'bg-amber-100 text-amber-800'
+    tier: 'POPULAR',
+    repReward: '+15 Rep',
+    pillText: 'PLACE DISCOVERY',
+    iconBg: 'bg-emerald-50 border border-emerald-200/80',
+    iconColor: 'text-emerald-700',
+    borderHover: 'hover:border-emerald-400 hover:shadow-emerald-500/10',
+    badgeBg: 'bg-emerald-100/80',
+    badgeText: 'text-emerald-800'
   },
   {
     type: 'RECOMMEND',
-    title: 'Recommend a Business',
+    title: 'Recommend a Real Business',
     subtitle: 'Factual praise for a reliable local artisan, trader, or doctor',
     icon: Sparkles,
-    color: 'text-emerald-600 bg-emerald-50 border-emerald-200',
-    badgeColor: 'bg-emerald-100 text-emerald-800'
+    tier: 'POPULAR',
+    repReward: '+10 Rep',
+    pillText: 'MERCHANT SPOTLIGHT',
+    iconBg: 'bg-amber-50 border border-amber-200/80',
+    iconColor: 'text-amber-700',
+    borderHover: 'hover:border-amber-400 hover:shadow-amber-500/10',
+    badgeBg: 'bg-amber-100/80',
+    badgeText: 'text-amber-800'
   },
+  {
+    type: 'UPDATE',
+    title: 'Local Field Update / Notice',
+    subtitle: 'Road construction, market hours, public advisories, timings',
+    icon: AlertTriangle,
+    tier: 'POPULAR',
+    repReward: '+10 Rep',
+    pillText: 'TIMELY INTEL',
+    iconBg: 'bg-sky-50 border border-sky-200/80',
+    iconColor: 'text-sky-700',
+    borderHover: 'hover:border-sky-400 hover:shadow-sky-500/10',
+    badgeBg: 'bg-sky-100/80',
+    badgeText: 'text-sky-800'
+  },
+
+  // ── TIER 2: GROUND TRUTH & FACT CHECKING ────────────────────────────
+  {
+    type: 'REPORT',
+    title: 'Report a Hazard / Civic Issue',
+    subtitle: 'Water logging, blocked passage, power cuts, or civic gaps',
+    icon: AlertTriangle,
+    tier: 'GROUND_TRUTH',
+    repReward: '+10 Rep',
+    pillText: 'CIVIC ALERT',
+    iconBg: 'bg-rose-50 border border-rose-200/80',
+    iconColor: 'text-rose-700',
+    borderHover: 'hover:border-rose-400 hover:shadow-rose-500/10',
+    badgeBg: 'bg-rose-100/80',
+    badgeText: 'text-rose-800'
+  },
+  {
+    type: 'CORRECTION',
+    title: 'Suggest a Factual Correction',
+    subtitle: 'A business has moved, phone changed, or shop permanently closed',
+    icon: HelpCircle,
+    tier: 'GROUND_TRUTH',
+    repReward: '+20 Rep',
+    pillText: 'FACT CHECKER',
+    iconBg: 'bg-teal-50 border border-teal-200/80',
+    iconColor: 'text-teal-700',
+    borderHover: 'hover:border-teal-400 hover:shadow-teal-500/10',
+    badgeBg: 'bg-teal-100/80',
+    badgeText: 'text-teal-800'
+  },
+  {
+    type: 'REVIEW',
+    title: 'Direct Experience Review',
+    subtitle: 'Factual customer visit details, pricing, quality, and service',
+    icon: Store,
+    tier: 'GROUND_TRUTH',
+    repReward: '+5 Rep',
+    pillText: 'GENUINE VISIT',
+    iconBg: 'bg-indigo-50 border border-indigo-200/80',
+    iconColor: 'text-indigo-700',
+    borderHover: 'hover:border-indigo-400 hover:shadow-indigo-500/10',
+    badgeBg: 'bg-indigo-100/80',
+    badgeText: 'text-indigo-800'
+  },
+  {
+    type: 'INFORM',
+    title: 'Local News & Field Report',
+    subtitle: 'Factual neighborhood development or verified local report',
+    icon: Building2,
+    tier: 'GROUND_TRUTH',
+    repReward: '+10 Rep',
+    pillText: 'NEWS SIGNAL',
+    iconBg: 'bg-blue-50 border border-blue-200/80',
+    iconColor: 'text-blue-700',
+    borderHover: 'hover:border-blue-400 hover:shadow-blue-500/10',
+    badgeBg: 'bg-blue-100/80',
+    badgeText: 'text-blue-800'
+  },
+
+  // ── TIER 3: COMMUNITY, CULTURE & QUESTIONS ──────────────────────────
   {
     type: 'EVENT',
     title: 'Local Event or Festival',
     subtitle: 'Durga Puja, cultural festival, exhibition, or tournament',
     icon: Calendar,
-    color: 'text-purple-600 bg-purple-50 border-purple-200',
-    badgeColor: 'bg-purple-100 text-purple-800'
-  },
-  {
-    type: 'REVIEW',
-    title: 'Customer Experience / Review',
-    subtitle: 'Factual customer visit details, pricing, and service quality',
-    icon: Store,
-    color: 'text-indigo-600 bg-indigo-50 border-indigo-200',
-    badgeColor: 'bg-indigo-100 text-indigo-800'
-  },
-  {
-    type: 'REPORT',
-    title: 'Report a Problem',
-    subtitle: 'Water logging, blocked passage, power cuts, or municipal gaps',
-    icon: AlertTriangle,
-    color: 'text-rose-600 bg-rose-50 border-rose-200',
-    badgeColor: 'bg-rose-100 text-rose-800'
-  },
-  {
-    type: 'CORRECTION',
-    title: 'Correction / Outdated Info',
-    subtitle: 'A business has moved, phone changed, or shop closed',
-    icon: HelpCircle,
-    color: 'text-orange-600 bg-orange-50 border-orange-200',
-    badgeColor: 'bg-orange-100 text-orange-800'
+    tier: 'COMMUNITY',
+    repReward: '+10 Rep',
+    pillText: 'CALENDAR',
+    iconBg: 'bg-purple-50 border border-purple-200/80',
+    iconColor: 'text-purple-700',
+    borderHover: 'hover:border-purple-400 hover:shadow-purple-500/10',
+    badgeBg: 'bg-purple-100/80',
+    badgeText: 'text-purple-800'
   },
   {
     type: 'STORY',
-    title: 'Local History or Story',
+    title: 'Local Heritage & Stories',
     subtitle: 'Heritage, folklore, craftsman profiles, community traditions',
     icon: BookOpen,
-    color: 'text-cyan-600 bg-cyan-50 border-cyan-200',
-    badgeColor: 'bg-cyan-100 text-cyan-800'
+    tier: 'COMMUNITY',
+    repReward: '+10 Rep',
+    pillText: 'HERITAGE',
+    iconBg: 'bg-cyan-50 border border-cyan-200/80',
+    iconColor: 'text-cyan-700',
+    borderHover: 'hover:border-cyan-400 hover:shadow-cyan-500/10',
+    badgeBg: 'bg-cyan-100/80',
+    badgeText: 'text-cyan-800'
+  },
+  {
+    type: 'QUESTION',
+    title: 'Ask the Locality',
+    subtitle: 'Ask neighbors for directions, recommendations, or local advice',
+    icon: MessageSquare,
+    tier: 'COMMUNITY',
+    repReward: '+5 Rep',
+    pillText: 'QUESTION',
+    iconBg: 'bg-amber-50 border border-amber-200/80',
+    iconColor: 'text-amber-800',
+    borderHover: 'hover:border-amber-400 hover:shadow-amber-500/10',
+    badgeBg: 'bg-amber-100/80',
+    badgeText: 'text-amber-900'
   }
 ];
 
@@ -244,7 +331,10 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
     }
   };
 
-  const selectedOpt = CONTRIBUTION_OPTIONS.find(o => o.type === selectedType);
+  const popularOptions = CONTRIBUTION_OPTIONS.filter(o => o.tier === 'POPULAR');
+  const groundTruthOptions = CONTRIBUTION_OPTIONS.filter(o => o.tier === 'GROUND_TRUTH');
+  const communityOptions = CONTRIBUTION_OPTIONS.filter(o => o.tier === 'COMMUNITY');
+  const SelectedIcon = selectedOpt?.icon || Compass;
 
   return (
     <div className="fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 md:p-6 overflow-y-auto">
@@ -252,161 +342,333 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.96 }}
-        className="bg-white rounded-3xl shadow-2xl max-w-xl w-full overflow-hidden border border-slate-200 flex flex-col max-h-[92vh]"
+        className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-200 flex flex-col max-h-[92vh]"
       >
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
-          <div className="flex items-center gap-3">
-            {step === 2 && (
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="p-1.5 rounded-xl hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer"
-                title="Back to options"
-              >
-                <ArrowLeft size={18} />
-              </button>
-            )}
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-                <span className="text-[11px] font-bold font-mono uppercase tracking-wider text-blue-700">
-                  Conflux Local Knowledge • {locality}
-                </span>
+        {/* ── MODAL HEADER WITH PROGRESS INDICATOR ─────────────────── */}
+        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/90 flex flex-col gap-2.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {step === 2 && (
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="p-1.5 rounded-xl hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer"
+                  title="Back to categories"
+                >
+                  <ArrowLeft size={18} />
+                </button>
+              )}
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                  <span className="text-[11px] font-bold font-mono uppercase tracking-wider text-blue-700">
+                    Conflux Local Intelligence • {locality}
+                  </span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-bold font-orbitron text-slate-900 tracking-tight">
+                  {step === 1 ? 'What do you want to share?' : selectedOpt?.title}
+                </h2>
               </div>
-              <h2 className="text-lg font-bold font-orbitron text-slate-900">
-                {step === 1 ? 'What do you want to share?' : selectedOpt?.title}
-              </h2>
             </div>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 transition-all cursor-pointer"
+              title="Close modal"
+            >
+              <X size={20} />
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all cursor-pointer"
-          >
-            <X size={20} />
-          </button>
+
+          {/* Progress Bar & Subtitle */}
+          <div className="flex items-center gap-3 pt-1">
+            <div className="flex items-center gap-1.5 flex-1">
+              <div className={`h-1.5 flex-1 rounded-full transition-all ${step === 1 ? 'bg-blue-600' : 'bg-emerald-500'}`} />
+              <div className={`h-1.5 flex-1 rounded-full transition-all ${step === 2 ? 'bg-blue-600' : 'bg-slate-200'}`} />
+            </div>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 shrink-0">
+              {step === 1 ? 'Step 1 of 2: Select Intent' : 'Step 2 of 2: Details & Evidence'}
+            </span>
+          </div>
         </div>
 
-        {/* Modal Body */}
-        <div className="p-6 overflow-y-auto flex-1 font-inter">
+        {/* ── MODAL BODY ────────────────────────────────────────────── */}
+        <div className="p-5 sm:p-6 overflow-y-auto flex-1 font-inter">
           {step === 1 ? (
-            /* STEP 1: Option Cards */
-            <div className="space-y-3">
-              <p className="text-xs text-slate-600 mb-2">
-                Every useful local contribution turns into structured community signals and evidence for {locality}.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {CONTRIBUTION_OPTIONS.map((opt) => {
-                  const Icon = opt.icon;
-                  return (
-                    <button
-                      key={opt.type}
-                      type="button"
-                      onClick={() => handleSelectType(opt.type)}
-                      className="p-4 rounded-2xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all text-left flex flex-col justify-between group cursor-pointer"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className={`p-2.5 rounded-xl ${opt.color} shrink-0`}>
-                          <Icon size={18} />
-                        </div>
-                        <div>
-                          <div className="text-sm font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
-                            {opt.title}
+            /* ───────────────────────────────────────────────────────── */
+            /* STEP 1: STRUCTURED VISUAL HIERARCHY TIERED OPTIONS        */
+            /* ───────────────────────────────────────────────────────── */
+            <div className="space-y-6">
+              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50/50 to-slate-50 border border-blue-100 flex items-start gap-3">
+                <Compass size={16} className="text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-xs text-slate-700 leading-relaxed">
+                  Every contribution turns into <strong className="font-semibold text-slate-900">verifiable local intelligence</strong> for {locality}. Select the closest intent below to launch the structured evidence submission form.
+                </p>
+              </div>
+
+              {/* TIER 1: POPULAR ACTIONS */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-[11px] font-black font-mono tracking-wider text-slate-500 uppercase flex items-center gap-1.5">
+                    <Sparkles size={13} className="text-amber-500" /> Featured &amp; High-Frequency Signals
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">Higher Visibility</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {popularOptions.map((opt) => {
+                    const Icon = opt.icon;
+                    return (
+                      <button
+                        key={opt.type}
+                        type="button"
+                        onClick={() => handleSelectType(opt.type)}
+                        className={`p-4 rounded-2xl border border-slate-200 bg-white hover:shadow-lg transition-all text-left flex flex-col justify-between group cursor-pointer relative overflow-hidden ${opt.borderHover}`}
+                      >
+                        <div className="space-y-2.5">
+                          <div className="flex items-center justify-between">
+                            <div className={`p-2.5 rounded-xl ${opt.iconBg} ${opt.iconColor}`}>
+                              <Icon size={18} />
+                            </div>
+                            <span className={`text-[9px] font-bold font-mono px-2 py-0.5 rounded-full ${opt.badgeBg} ${opt.badgeText}`}>
+                              {opt.repReward}
+                            </span>
                           </div>
-                          <p className="text-[11px] text-slate-500 leading-snug mt-1">
-                            {opt.subtitle}
-                          </p>
+                          <div>
+                            <div className="text-xs font-bold text-slate-900 group-hover:text-blue-700 transition-colors leading-snug">
+                              {opt.title}
+                            </div>
+                            <p className="text-[11px] text-slate-500 leading-relaxed mt-1 line-clamp-2">
+                              {opt.subtitle}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </button>
-                  );
-                })}
+
+                        <div className="pt-3 mt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-slate-400 group-hover:text-blue-600">
+                          <span>{opt.pillText}</span>
+                          <ChevronRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* TIER 2: GROUND TRUTH & FACT CHECKING */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-[11px] font-black font-mono tracking-wider text-slate-500 uppercase flex items-center gap-1.5">
+                    <ShieldCheck size={13} className="text-blue-500" /> Facts &amp; Operational Ground Truth
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">High Utility</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {groundTruthOptions.map((opt) => {
+                    const Icon = opt.icon;
+                    return (
+                      <button
+                        key={opt.type}
+                        type="button"
+                        onClick={() => handleSelectType(opt.type)}
+                        className={`p-3.5 rounded-2xl border border-slate-200 bg-white hover:shadow-md transition-all text-left flex items-start justify-between gap-3 group cursor-pointer ${opt.borderHover}`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={`p-2.5 rounded-xl ${opt.iconBg} ${opt.iconColor} shrink-0`}>
+                            <Icon size={17} />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                                {opt.title}
+                              </span>
+                              <span className={`text-[9px] font-bold font-mono px-1.5 py-0.2 rounded ${opt.badgeBg} ${opt.badgeText}`}>
+                                {opt.repReward}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-slate-500 leading-snug mt-0.5">
+                              {opt.subtitle}
+                            </p>
+                          </div>
+                        </div>
+                        <ChevronRight size={14} className="text-slate-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all shrink-0 mt-2" />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* TIER 3: COMMUNITY, CULTURE & QUESTIONS */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-[11px] font-black font-mono tracking-wider text-slate-500 uppercase flex items-center gap-1.5">
+                    <Calendar size={13} className="text-purple-500" /> Community, Culture &amp; Life
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">Local Archive</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {communityOptions.map((opt) => {
+                    const Icon = opt.icon;
+                    return (
+                      <button
+                        key={opt.type}
+                        type="button"
+                        onClick={() => handleSelectType(opt.type)}
+                        className={`p-3.5 rounded-2xl border border-slate-200 bg-white hover:shadow-md transition-all text-left flex items-start justify-between gap-3 group cursor-pointer ${opt.borderHover}`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={`p-2.5 rounded-xl ${opt.iconBg} ${opt.iconColor} shrink-0`}>
+                            <Icon size={17} />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                                {opt.title}
+                              </span>
+                              <span className={`text-[9px] font-bold font-mono px-1.5 py-0.2 rounded ${opt.badgeBg} ${opt.badgeText}`}>
+                                {opt.repReward}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-slate-500 leading-snug mt-0.5">
+                              {opt.subtitle}
+                            </p>
+                          </div>
+                        </div>
+                        <ChevronRight size={14} className="text-slate-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all shrink-0 mt-2" />
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           ) : (
-            /* STEP 2: Input Form */
-            <form onSubmit={handleSubmit} className="space-y-4">
+            /* ───────────────────────────────────────────────────────── */
+            /* STEP 2: SECTIONAL VISUAL HIERARCHY FOR INPUT DETAILS      */
+            /* ───────────────────────────────────────────────────────── */
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Selected Intent Summary Banner */}
+              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50 via-slate-50 to-emerald-50 border border-blue-200 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-xl ${selectedOpt?.iconBg} ${selectedOpt?.iconColor}`}>
+                    <SelectedIcon size={18} />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-700">
+                      Intent: {selectedOpt?.title}
+                    </span>
+                    <p className="text-xs text-slate-600 font-medium">{selectedOpt?.subtitle}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors shrink-0 cursor-pointer"
+                >
+                  Change
+                </button>
+              </div>
+
               {errorMessage && (
-                <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex items-center gap-2">
+                <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex items-center gap-2">
                   <AlertTriangle size={16} className="shrink-0 text-rose-600" />
                   <span>{errorMessage}</span>
                 </div>
               )}
 
-              {/* Title / Headline */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Headline / Summary *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder={
-                    selectedType === 'DISCOVER' ? 'e.g., New authentic Bengali fish thali restaurant opened' :
-                    selectedType === 'UPDATE' ? 'e.g., Road widening work started near Station Platform 1' :
-                    selectedType === 'EVENT' ? 'e.g., 2026 Nadia Handloom Weavers Expo' :
-                    selectedType === 'CORRECTION' ? 'e.g., Shop moved to opposite Subhas Avenue market' :
-                    'Describe clearly what happened or what you observed...'
-                  }
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                />
-              </div>
+              {/* ── BLOCK 1: THE CORE SIGNAL ──────────────────────── */}
+              <div className="p-4 rounded-2xl bg-white border border-slate-200 space-y-3 shadow-xs">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                    <Compass size={13} className="text-blue-600" /> 1. Signal Headline &amp; Details
+                  </span>
+                  <span className="text-[10px] text-rose-500 font-bold">* Required</span>
+                </div>
 
-              {/* Locality & Category Row */}
-              <div className="grid grid-cols-2 gap-3">
+                {/* Title / Headline */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Locality / Town *
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Headline / Summary
                   </label>
                   <input
                     type="text"
                     required
-                    value={locality}
-                    onChange={(e) => setLocality(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder={
+                      selectedType === 'DISCOVER' ? 'e.g., New authentic Bengali fish thali restaurant opened' :
+                      selectedType === 'UPDATE' ? 'e.g., Road widening work started near Station Platform 1' :
+                      selectedType === 'EVENT' ? 'e.g., 2026 Nadia Handloom Weavers Expo' :
+                      selectedType === 'CORRECTION' ? 'e.g., Shop moved to opposite Subhas Avenue market' :
+                      selectedType === 'REPORT' ? 'e.g., Waterlogging near Ranaghat Bus Stand after rain' :
+                      selectedType === 'RECOMMEND' ? 'e.g., Trusted watch repair technician with 20 years experience' :
+                      'Describe clearly what happened or what you observed...'
+                    }
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium bg-slate-50/40 focus:bg-white transition-all"
                   />
                 </div>
+
+                {/* Locality & Category Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Locality / Town
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={locality}
+                      onChange={(e) => setLocality(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/40 focus:bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Category Tag (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Dining, Transit, Health, Civic"
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/40 focus:bg-white"
+                    />
+                  </div>
+                </div>
+
+                {/* Content Description */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Category (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Food, Traffic, Health"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold text-slate-700">
+                      Factual Observation &amp; Specifics
+                    </label>
+                    <span className="text-[10px] text-slate-400 font-mono">Min. 10 chars</span>
+                  </div>
+                  <textarea
+                    required
+                    rows={3}
+                    placeholder="Provide useful specifics: location landmark, timings, what is verified, or what remains uncertain..."
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs leading-relaxed text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/40 focus:bg-white transition-all"
                   />
                 </div>
               </div>
 
-              {/* Content Description */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Factual Details &amp; Observation *
-                </label>
-                <textarea
-                  required
-                  rows={4}
-                  placeholder="Provide useful specifics: location landmark, timings, what is verified, or what remains uncertain..."
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs leading-relaxed text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Link to Existing Business (Optional) */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center justify-between">
-                  <span>Connect to Business (Optional)</span>
-                  <span className="text-[10px] text-slate-400 font-normal">Creates a 2-way entity signal</span>
-                </label>
+              {/* ── BLOCK 2: CONNECT TO LOCAL ENTITY ─────────────── */}
+              <div className="p-4 rounded-2xl bg-blue-50/40 border border-blue-100 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
+                    <Store size={13} className="text-blue-600" /> 2. Connect to Local Business / Entity
+                  </span>
+                  <span className="text-[10px] font-mono text-blue-600">Optional 2-way Link</span>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-snug">
+                  Attaching this signal to a registered business embeds it directly into the business profile and community evidence ledger.
+                </p>
                 <select
                   value={selectedBusinessId}
                   onChange={(e) => setSelectedBusinessId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-xs"
                 >
                   <option value="">-- No specific business (General local contribution) --</option>
                   {availableBusinesses.map((b) => (
@@ -417,17 +679,23 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
                 </select>
               </div>
 
-              {/* External Media & Links */}
+              {/* ── BLOCK 3: EVIDENCE & MEDIA PROVENANCE ─────────── */}
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                  <Video size={14} className="text-blue-600" />
-                  <span>External Content / Media Link</span>
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                    <Video size={13} className="text-purple-600" /> 3. Supporting Evidence &amp; Media Links
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-mono">Optional</span>
                 </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                      Video Link (YouTube / Vimeo)
+                    </label>
                     <input
                       type="url"
-                      placeholder="YouTube Video / Shorts link"
+                      placeholder="https://youtube.com/watch?v=..."
                       value={videoUrl}
                       onChange={(e) => setVideoUrl(e.target.value)}
                       className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -435,9 +703,12 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
                     <span className="text-[10px] text-slate-400 mt-0.5 block">Embeds privacy-enhanced video</span>
                   </div>
                   <div>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                      Photo / Image Link
+                    </label>
                     <input
                       type="url"
-                      placeholder="Photo / Image URL"
+                      placeholder="https://..."
                       value={imageUrl}
                       onChange={(e) => setImageUrl(e.target.value)}
                       className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -445,60 +716,77 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
                     <span className="text-[10px] text-slate-400 mt-0.5 block">Genuine photo of location</span>
                   </div>
                 </div>
+
                 <div>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                    Public Post / Official Notice Citation URL
+                  </label>
                   <input
                     type="url"
-                    placeholder="Public Post / Notice URL (Facebook, Instagram, News)"
+                    placeholder="https://facebook.com/... or official circular link"
                     value={externalPostUrl}
                     onChange={(e) => setExternalPostUrl(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">Original public source link for citation</span>
                 </div>
               </div>
 
-              {/* Author & Provenance */}
-              <div className="grid grid-cols-2 gap-3 pt-1">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Your Name / Credit *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Your Display Name"
-                    value={authorName}
-                    onChange={(e) => setAuthorName(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+              {/* ── BLOCK 4: ATTRIBUTION & TRUTH PROVENANCE ──────── */}
+              <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                    <ShieldCheck size={13} className="text-emerald-600" /> 4. Contributor Attribution &amp; Source
+                  </span>
+                  <span className="text-[10px] text-emerald-700 font-bold font-mono">Verified Ledger</span>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Source Provenance
-                  </label>
-                  <select
-                    value={provenance}
-                    onChange={(e) => setProvenance(e.target.value as ContributionProvenance)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                  >
-                    <option value="FIRST_HAND_CITIZEN">First-Hand Citizen Observation</option>
-                    <option value="COMMUNITY_OBSERVATION">Community Word of Mouth</option>
-                    <option value="OFFICIAL_NOTICE">Official Authority Notice</option>
-                    <option value="BUSINESS_PROPRIETOR">Business Proprietor</option>
-                    <option value="FIELD_VERIFIED">Field Checked</option>
-                  </select>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Your Name / Display Credit *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Tarunjit / Local Resident"
+                      value={authorName}
+                      onChange={(e) => setAuthorName(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Your Relationship / Provenance
+                    </label>
+                    <select
+                      value={provenance}
+                      onChange={(e) => setProvenance(e.target.value as ContributionProvenance)}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    >
+                      <option value="FIRST_HAND_CITIZEN">First-Hand Citizen Eyewitness</option>
+                      <option value="COMMUNITY_OBSERVATION">Local Resident Word of Mouth</option>
+                      <option value="OFFICIAL_NOTICE">Official Authority Notice</option>
+                      <option value="BUSINESS_PROPRIETOR">Business Proprietor</option>
+                      <option value="FIELD_VERIFIED">Field Checked / On-Site</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-slate-100/80 border border-slate-200/60 text-[11px] text-slate-500 leading-snug">
+                  🛡️ <strong>Truth Invariant:</strong> New citizen submissions begin as <span className="font-mono text-slate-700">UNVERIFIED</span> and reach <span className="font-mono text-emerald-700">COMMUNITY_CORROBORATED</span> through neighbor confirmations. Zero bot ratings or paid placement.
                 </div>
               </div>
 
-              {/* Submit Buttons */}
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+              {/* ── SUBMIT FOOTER ─────────────────────────────────── */}
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer flex items-center gap-1.5"
                 >
-                  Change Category
+                  <ArrowLeft size={14} /> Back
                 </button>
+
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -512,7 +800,7 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
                   ) : (
                     <>
                       <Send size={14} />
-                      <span>Submit Contribution</span>
+                      <span>Publish Local Signal ({selectedOpt?.repReward})</span>
                     </>
                   )}
                 </button>
