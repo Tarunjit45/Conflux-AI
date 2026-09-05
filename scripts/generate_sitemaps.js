@@ -51,6 +51,8 @@ const staticRoutes = [
   { url: 'https://confluxai.in/locations/west-bengal', changefreq: 'daily', priority: '0.9' },
   { url: 'https://confluxai.in/blog', changefreq: 'daily', priority: '0.9' },
   { url: 'https://confluxai.in/discover', changefreq: 'daily', priority: '1.0' },
+  { url: 'https://confluxai.in/my-local', changefreq: 'daily', priority: '0.9' },
+  { url: 'https://confluxai.in/onboarding', changefreq: 'weekly', priority: '0.8' },
   { url: 'https://confluxai.in/business', changefreq: 'daily', priority: '1.0' },
   { url: 'https://confluxai.in/business/audit', changefreq: 'daily', priority: '0.9' },
   { url: 'https://confluxai.in/list-business', changefreq: 'weekly', priority: '0.9' },

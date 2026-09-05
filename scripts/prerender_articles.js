@@ -2530,6 +2530,45 @@ const staticPages = [
     `
   },
   {
+    path: '/my-local',
+    title: 'My Local Conflux | Local Intelligence, Reputation & Community Signals | Conflux AI',
+    desc: 'Personalized local citizen profile. View your Local Trust Score, community standing, confirmed updates, and neighbor contributions.',
+    body: `
+    <div id="root">
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 32px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">My Local Conflux</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6;">Personalized local citizen profile, Local Trust Score, and community-verified contributions.</p>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/onboarding',
+    title: 'Join Conflux AI | Local Citizen Profile & Contributor Onboarding',
+    desc: 'Set up your authentic local identity, connect with your locality, and share verified updates to help neighbors across West Bengal.',
+    body: `
+    <div id="root">
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 32px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">Join Conflux AI as a Local Contributor</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6;">Conversational onboarding for verified local residents and community contributors.</p>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/register',
+    title: 'Join Conflux AI | Local Citizen Profile & Contributor Onboarding',
+    desc: 'Set up your authentic local identity, connect with your locality, and share verified updates to help neighbors across West Bengal.',
+    body: `
+    <div id="root">
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 32px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">Create Your Local Citizen Profile</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6;">Conversational onboarding for verified local residents and community contributors.</p>
+      </main>
+    </div>
+    `
+  },
+  {
     path: '/auth',
     title: 'Account Authentication & Registration | Conflux AI',
     desc: 'Sign in to access your administrative dashboard and moderation console.',
