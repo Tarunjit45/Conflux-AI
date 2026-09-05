@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Building2, ShieldCheck, ShieldAlert, CheckCircle2, Phone, MessageSquare,
   MapPin, Globe, Calendar, Clock, ExternalLink, ArrowRight, Send, Compass,
   Layers, Check, AlertCircle, FileText, Lock, Sparkles, UserCheck, Star,
   Edit3, Flag, HelpCircle, X, Share2, Camera, Image, Video, Maximize2,
-  Radio, Plus
+  Radio, Plus, ChevronDown
 } from 'lucide-react';
 import { businessService } from '../../lib/businessService';
 import { connectService } from '../../lib/connectService';
@@ -35,6 +36,7 @@ export const PublicBusinessProfile: React.FC = () => {
   const [isOpenNow, setIsOpenNow] = useState(false);
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [previewMediaItem, setPreviewMediaItem] = useState<BusinessMediaItem | null>(null);
+  const [isDossierExpanded, setIsDossierExpanded] = useState(false);
 
   // Direct Lead Form State
   const [leadName, setLeadName] = useState('');
@@ -330,7 +332,7 @@ export const PublicBusinessProfile: React.FC = () => {
         : []);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-28 pt-8">
+    <div className="min-h-screen bg-slate-50 text-slate-900 pb-40 md:pb-28 pt-6 sm:pt-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
         {/* Navigation Breadcrumb */}
@@ -353,7 +355,7 @@ export const PublicBusinessProfile: React.FC = () => {
         </nav>
 
         {/* ── TOP HERO CARD ────────────────────────────────────────── */}
-        <div className="p-8 sm:p-10 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6">
+        <div className="p-5 sm:p-8 md:p-10 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6">
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
             <div className="space-y-3 max-w-3xl">
               
@@ -716,23 +718,56 @@ export const PublicBusinessProfile: React.FC = () => {
               )}
             </div>
 
-            {/* ── 3-PILLAR TRUST & PROVENANCE DOSSIER ── */}
-            <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100">
-                <div className="space-y-1">
-                  <h2 className="flex items-center gap-2 text-base font-bold font-orbitron text-slate-900">
-                    <ShieldCheck size={20} className="text-emerald-600" /> Trust &amp; Provenance Dossier
+            {/* ── 3-PILLAR TRUST & PROVENANCE DOSSIER (COLLAPSIBLE) ── */}
+            <div className="p-5 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
+              <button
+                type="button"
+                onClick={() => setIsDossierExpanded(!isDossierExpanded)}
+                className="w-full text-left flex items-start sm:items-center justify-between gap-4 cursor-pointer group"
+                aria-expanded={isDossierExpanded}
+              >
+                <div className="space-y-1.5 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold font-mono">
+                      <ShieldCheck size={14} className="text-emerald-600 shrink-0" />
+                      <span>✓ Information Checked by Conflux</span>
+                    </span>
+                    <span className="text-xs font-mono font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
+                      {business.confidenceScore || 0}% Confidence
+                    </span>
+                  </div>
+
+                  <h2 className="text-base sm:text-lg font-bold font-orbitron text-slate-900 group-hover:text-blue-600 transition-colors flex items-center gap-2">
+                    <span>How Conflux Knows</span>
+                    <span className="text-xs font-mono font-normal text-slate-500">
+                      (Tap to {isDossierExpanded ? 'collapse' : 'view evidence'})
+                    </span>
                   </h2>
-                  <p className="text-xs text-slate-500 font-mono">
-                    What the business says &rarr; What public sources say &rarr; What Conflux has actually verified.
+
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {business.verificationStatus === 'SUPPORTED'
+                      ? 'Statutory entity corroboration, direct proprietor submission, and public digital sources audited.'
+                      : 'Standard listing corroborated against public records and direct proprietor declaration.'}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
-                    Confidence: {business.confidenceScore || 0}%
-                  </span>
+
+                <div className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-2xl bg-slate-100 group-hover:bg-blue-50 text-slate-600 group-hover:text-blue-600 transition-colors shrink-0">
+                  <ChevronDown
+                    size={20}
+                    className={`transition-transform duration-200 ${isDossierExpanded ? 'rotate-180' : ''}`}
+                  />
                 </div>
-              </div>
+              </button>
+
+              <AnimatePresence>
+                {isDossierExpanded && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="space-y-6 pt-4 border-t border-slate-100 overflow-hidden"
+                  >
 
               {/* PILLAR 1: BUSINESS-PROVIDED INFORMATION */}
               <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
@@ -988,6 +1023,9 @@ export const PublicBusinessProfile: React.FC = () => {
                   </div>
                 </div>
               )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* ── ENTITY TRUTH & DIRECT ANSWERS (GEO / AI OVERVIEW GROUNDING) ── */}
@@ -1198,7 +1236,7 @@ export const PublicBusinessProfile: React.FC = () => {
                         value={leadName}
                         onChange={e => setLeadName(e.target.value)}
                         placeholder="John Doe"
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                         required
                       />
                     </div>
@@ -1210,7 +1248,7 @@ export const PublicBusinessProfile: React.FC = () => {
                         value={leadEmail}
                         onChange={e => setLeadEmail(e.target.value)}
                         placeholder="john@example.com"
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                         required
                       />
                     </div>
@@ -1224,7 +1262,7 @@ export const PublicBusinessProfile: React.FC = () => {
                         value={leadPhone}
                         onChange={e => setLeadPhone(e.target.value)}
                         placeholder="+91 98300 XXXXX"
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                       />
                     </div>
 
@@ -1235,7 +1273,7 @@ export const PublicBusinessProfile: React.FC = () => {
                         value={leadService}
                         onChange={e => setLeadService(e.target.value)}
                         placeholder="e.g. Appointment, Booking, Quote"
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                       />
                     </div>
                   </div>
@@ -1247,7 +1285,7 @@ export const PublicBusinessProfile: React.FC = () => {
                       value={leadMessage}
                       onChange={e => setLeadMessage(e.target.value)}
                       placeholder="Specify requirements, timelines, or questions..."
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     />
                   </div>
 
@@ -1432,7 +1470,7 @@ export const PublicBusinessProfile: React.FC = () => {
                     value={contribReviewText}
                     onChange={e => setContribReviewText(e.target.value)}
                     placeholder="Describe your genuine experience with services, facilities, punctuality, or customer service..."
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     required
                   />
                 </div>
@@ -1460,7 +1498,7 @@ export const PublicBusinessProfile: React.FC = () => {
                   <select
                     value={contribEditField}
                     onChange={e => setContribEditField(e.target.value as any)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none"
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-base sm:text-xs font-medium focus:outline-none"
                   >
                     <option value="services">Services / Capabilities</option>
                     <option value="operatingHours">Operating Hours</option>
@@ -1477,7 +1515,7 @@ export const PublicBusinessProfile: React.FC = () => {
                     value={contribEditValue}
                     onChange={e => setContribEditValue(e.target.value)}
                     placeholder="e.g. Added new USG facility or Open until 10 PM"
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none"
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-base sm:text-xs focus:outline-none"
                     required
                   />
                 </div>
@@ -1489,7 +1527,7 @@ export const PublicBusinessProfile: React.FC = () => {
                     value={contribEditRationale}
                     onChange={e => setContribEditRationale(e.target.value)}
                     placeholder="e.g. Visited clinic yesterday and saw updated signboard..."
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none"
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-base sm:text-xs focus:outline-none"
                     required
                   />
                 </div>
@@ -1517,7 +1555,7 @@ export const PublicBusinessProfile: React.FC = () => {
                   <select
                     value={contribReportIssue}
                     onChange={e => setContribReportIssue(e.target.value as any)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none"
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-base sm:text-xs font-medium focus:outline-none"
                   >
                     <option value="OUTDATED_HOURS">Outdated Hours / Schedule</option>
                     <option value="CLOSED_PERMANENTLY">Permanently Closed</option>
@@ -1535,7 +1573,7 @@ export const PublicBusinessProfile: React.FC = () => {
                     value={contribReportDetails}
                     onChange={e => setContribReportDetails(e.target.value)}
                     placeholder="Please explain what is inaccurate so administrators can corroborate and fix..."
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none"
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-base sm:text-xs focus:outline-none"
                     required
                   />
                 </div>
@@ -1628,6 +1666,44 @@ export const PublicBusinessProfile: React.FC = () => {
           </div>
         </div>
       )}
+      {/* ── MOBILE STICKY ACTION BAR (ANCHORED ABOVE BOTTOMNAV) ── */}
+      <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-3 py-2.5 flex items-center justify-between gap-2 md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+        {business.contact.whatsapp && (
+          <a
+            href={`https://wa.me/${business.contact.whatsapp.replace(/[^0-9]/g, '')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => handleActionClick('WHATSAPP_CLICK')}
+            className="min-h-[44px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 active:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all"
+          >
+            <MessageSquare size={16} />
+            <span>WhatsApp</span>
+          </a>
+        )}
+
+        {business.contact.phone && (
+          <a
+            href={`tel:${business.contact.phone}`}
+            onClick={() => handleActionClick('PHONE_CLICK')}
+            className="min-h-[44px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-600 active:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all"
+          >
+            <Phone size={16} />
+            <span>Call</span>
+          </a>
+        )}
+
+        <a
+          href={`https://maps.google.com/?q=${encodeURIComponent(business.location.fullAddress)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => handleActionClick('DIRECTIONS_CLICK')}
+          className="min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-100 active:bg-slate-200 text-slate-800 text-xs font-bold border border-slate-200 flex items-center justify-center gap-1 shrink-0"
+          title="Directions"
+        >
+          <Compass size={16} className="text-blue-600" />
+          <span>Directions</span>
+        </a>
+      </div>
     </div>
   );
 };

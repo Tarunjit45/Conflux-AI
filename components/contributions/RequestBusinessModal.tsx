@@ -165,11 +165,11 @@ export const RequestBusinessModal: React.FC<RequestBusinessModalProps> = ({
                   placeholder="e.g., Ghosh Sweets, Nadia Diagnostic Centre..."
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base sm:text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                     Locality / Town *
@@ -179,7 +179,7 @@ export const RequestBusinessModal: React.FC<RequestBusinessModalProps> = ({
                     required
                     value={locality}
                     onChange={(e) => setLocality(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base sm:text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
@@ -191,7 +191,7 @@ export const RequestBusinessModal: React.FC<RequestBusinessModalProps> = ({
                     placeholder="e.g., Sweet Shop, Clinic, Saree Store"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base sm:text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -205,7 +205,7 @@ export const RequestBusinessModal: React.FC<RequestBusinessModalProps> = ({
                   placeholder="e.g., Near Station Platform 1, opposite Netaji Statue..."
                   value={addressHint}
                   onChange={(e) => setAddressHint(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base sm:text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -218,11 +218,11 @@ export const RequestBusinessModal: React.FC<RequestBusinessModalProps> = ({
                   placeholder="e.g., Google Maps link, Facebook page, or website"
                   value={sourceUrl}
                   onChange={(e) => setSourceUrl(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base sm:text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                     Your Name
@@ -232,7 +232,7 @@ export const RequestBusinessModal: React.FC<RequestBusinessModalProps> = ({
                     placeholder="Your Name"
                     value={submitterName}
                     onChange={(e) => setSubmitterName(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base sm:text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
@@ -244,7 +244,7 @@ export const RequestBusinessModal: React.FC<RequestBusinessModalProps> = ({
                     placeholder="email@example.com"
                     value={submitterEmail}
                     onChange={(e) => setSubmitterEmail(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base sm:text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>

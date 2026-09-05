@@ -337,84 +337,85 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
   const SelectedIcon = selectedOpt?.icon || Compass;
 
   return (
-    <div className="fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 md:p-6 overflow-y-auto">
+    <div className="fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 md:p-8 overflow-y-auto">
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.96 }}
-        className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-200 flex flex-col max-h-[92vh]"
+        className="bg-white rounded-3xl shadow-2xl max-w-3xl w-full overflow-hidden border border-slate-200/90 flex flex-col max-h-[90vh]"
       >
-        {/* ── MODAL HEADER WITH PROGRESS INDICATOR ─────────────────── */}
-        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/90 flex flex-col gap-2.5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+        {/* ── MODAL HEADER WITH GENEROUS PADDING & WHITESPACE ────── */}
+        <div className="px-7 sm:px-8 py-6 border-b border-slate-100 bg-slate-50/80 flex flex-col gap-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
               {step === 2 && (
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="p-1.5 rounded-xl hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer"
+                  className="p-2 rounded-xl hover:bg-slate-200/80 text-slate-600 transition-colors cursor-pointer"
                   title="Back to categories"
                 >
-                  <ArrowLeft size={18} />
+                  <ArrowLeft size={20} />
                 </button>
               )}
-              <div>
+              <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-                  <span className="text-[11px] font-bold font-mono uppercase tracking-wider text-blue-700">
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+                  <span className="text-xs font-bold font-mono uppercase tracking-wider text-blue-700">
                     Conflux Local Intelligence • {locality}
                   </span>
                 </div>
-                <h2 className="text-xl sm:text-2xl font-bold font-orbitron text-slate-900 tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-bold font-orbitron text-slate-900 tracking-tight">
                   {step === 1 ? 'What do you want to share?' : selectedOpt?.title}
                 </h2>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 transition-all cursor-pointer"
+              className="p-2.5 rounded-2xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 transition-all cursor-pointer shrink-0"
               title="Close modal"
             >
-              <X size={20} />
+              <X size={22} />
             </button>
           </div>
 
           {/* Progress Bar & Subtitle */}
-          <div className="flex items-center gap-3 pt-1">
-            <div className="flex items-center gap-1.5 flex-1">
-              <div className={`h-1.5 flex-1 rounded-full transition-all ${step === 1 ? 'bg-blue-600' : 'bg-emerald-500'}`} />
-              <div className={`h-1.5 flex-1 rounded-full transition-all ${step === 2 ? 'bg-blue-600' : 'bg-slate-200'}`} />
+          <div className="flex items-center gap-4 pt-1">
+            <div className="flex items-center gap-2 flex-1">
+              <div className={`h-2 flex-1 rounded-full transition-all ${step === 1 ? 'bg-blue-600' : 'bg-emerald-500'}`} />
+              <div className={`h-2 flex-1 rounded-full transition-all ${step === 2 ? 'bg-blue-600' : 'bg-slate-200'}`} />
             </div>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 shrink-0">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-500 shrink-0">
               {step === 1 ? 'Step 1 of 2: Select Intent' : 'Step 2 of 2: Details & Evidence'}
             </span>
           </div>
         </div>
 
-        {/* ── MODAL BODY ────────────────────────────────────────────── */}
-        <div className="p-5 sm:p-6 overflow-y-auto flex-1 font-inter">
+        {/* ── MODAL BODY WITH AMPLE BREATHING ROOM ───────────────── */}
+        <div className="p-7 sm:p-9 overflow-y-auto flex-1 font-inter">
           {step === 1 ? (
             /* ───────────────────────────────────────────────────────── */
-            /* STEP 1: STRUCTURED VISUAL HIERARCHY TIERED OPTIONS        */
+            /* STEP 1: SPACIOUS TIERED INTENTS & CARDS                   */
             /* ───────────────────────────────────────────────────────── */
-            <div className="space-y-6">
-              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50/50 to-slate-50 border border-blue-100 flex items-start gap-3">
-                <Compass size={16} className="text-blue-600 shrink-0 mt-0.5" />
-                <p className="text-xs text-slate-700 leading-relaxed">
-                  Every contribution turns into <strong className="font-semibold text-slate-900">verifiable local intelligence</strong> for {locality}. Select the closest intent below to launch the structured evidence submission form.
+            <div className="space-y-9">
+              {/* Locality Prompt Banner */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-blue-50/80 via-indigo-50/40 to-slate-50 border border-blue-100 flex items-start gap-4 shadow-xs">
+                <Compass size={20} className="text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                  Every contribution turns into <strong className="font-semibold text-slate-900">verifiable local intelligence</strong> for {locality}. Select an intent below to establish ground truth.
                 </p>
               </div>
 
-              {/* TIER 1: POPULAR ACTIONS */}
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-[11px] font-black font-mono tracking-wider text-slate-500 uppercase flex items-center gap-1.5">
-                    <Sparkles size={13} className="text-amber-500" /> Featured &amp; High-Frequency Signals
+              {/* TIER 1: POPULAR & FEATURED ACTIONS */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                  <span className="text-xs font-black font-mono tracking-wider text-slate-600 uppercase flex items-center gap-2">
+                    <Sparkles size={15} className="text-amber-500" /> Featured &amp; High-Frequency Signals
                   </span>
-                  <span className="text-[10px] font-mono text-slate-400">Higher Visibility</span>
+                  <span className="text-[11px] font-mono text-slate-400">High Visibility</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {popularOptions.map((opt) => {
                     const Icon = opt.icon;
                     return (
@@ -422,30 +423,30 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
                         key={opt.type}
                         type="button"
                         onClick={() => handleSelectType(opt.type)}
-                        className={`p-4 rounded-2xl border border-slate-200 bg-white hover:shadow-lg transition-all text-left flex flex-col justify-between group cursor-pointer relative overflow-hidden ${opt.borderHover}`}
+                        className={`p-5 sm:p-6 rounded-3xl border border-slate-200/90 bg-white hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 text-left flex flex-col justify-between group cursor-pointer relative overflow-hidden ${opt.borderHover}`}
                       >
-                        <div className="space-y-2.5">
+                        <div className="space-y-4">
                           <div className="flex items-center justify-between">
-                            <div className={`p-2.5 rounded-xl ${opt.iconBg} ${opt.iconColor}`}>
-                              <Icon size={18} />
+                            <div className={`p-3 rounded-2xl ${opt.iconBg} ${opt.iconColor}`}>
+                              <Icon size={20} />
                             </div>
-                            <span className={`text-[9px] font-bold font-mono px-2 py-0.5 rounded-full ${opt.badgeBg} ${opt.badgeText}`}>
+                            <span className={`text-[10px] font-bold font-mono px-2.5 py-1 rounded-full ${opt.badgeBg} ${opt.badgeText}`}>
                               {opt.repReward}
                             </span>
                           </div>
                           <div>
-                            <div className="text-xs font-bold text-slate-900 group-hover:text-blue-700 transition-colors leading-snug">
+                            <div className="text-sm font-bold text-slate-900 group-hover:text-blue-700 transition-colors leading-snug">
                               {opt.title}
                             </div>
-                            <p className="text-[11px] text-slate-500 leading-relaxed mt-1 line-clamp-2">
+                            <p className="text-xs text-slate-500 leading-relaxed mt-2 line-clamp-2">
                               {opt.subtitle}
                             </p>
                           </div>
                         </div>
 
-                        <div className="pt-3 mt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-slate-400 group-hover:text-blue-600">
+                        <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-400 group-hover:text-blue-600">
                           <span>{opt.pillText}</span>
-                          <ChevronRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                          <ChevronRight size={15} className="group-hover:translate-x-1.5 transition-transform" />
                         </div>
                       </button>
                     );
@@ -454,15 +455,15 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
               </div>
 
               {/* TIER 2: GROUND TRUTH & FACT CHECKING */}
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-[11px] font-black font-mono tracking-wider text-slate-500 uppercase flex items-center gap-1.5">
-                    <ShieldCheck size={13} className="text-blue-500" /> Facts &amp; Operational Ground Truth
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                  <span className="text-xs font-black font-mono tracking-wider text-slate-600 uppercase flex items-center gap-2">
+                    <ShieldCheck size={15} className="text-blue-500" /> Facts &amp; Operational Ground Truth
                   </span>
-                  <span className="text-[10px] font-mono text-slate-400">High Utility</span>
+                  <span className="text-[11px] font-mono text-slate-400">High Utility</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {groundTruthOptions.map((opt) => {
                     const Icon = opt.icon;
                     return (
@@ -470,27 +471,27 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
                         key={opt.type}
                         type="button"
                         onClick={() => handleSelectType(opt.type)}
-                        className={`p-3.5 rounded-2xl border border-slate-200 bg-white hover:shadow-md transition-all text-left flex items-start justify-between gap-3 group cursor-pointer ${opt.borderHover}`}
+                        className={`p-5 rounded-2xl border border-slate-200/90 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-left flex items-start justify-between gap-4 group cursor-pointer ${opt.borderHover}`}
                       >
-                        <div className="flex items-start gap-3">
-                          <div className={`p-2.5 rounded-xl ${opt.iconBg} ${opt.iconColor} shrink-0`}>
-                            <Icon size={17} />
+                        <div className="flex items-start gap-4">
+                          <div className={`p-3 rounded-2xl ${opt.iconBg} ${opt.iconColor} shrink-0`}>
+                            <Icon size={19} />
                           </div>
-                          <div>
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-sm font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
                                 {opt.title}
                               </span>
-                              <span className={`text-[9px] font-bold font-mono px-1.5 py-0.2 rounded ${opt.badgeBg} ${opt.badgeText}`}>
+                              <span className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-full ${opt.badgeBg} ${opt.badgeText}`}>
                                 {opt.repReward}
                               </span>
                             </div>
-                            <p className="text-[11px] text-slate-500 leading-snug mt-0.5">
+                            <p className="text-xs text-slate-500 leading-relaxed">
                               {opt.subtitle}
                             </p>
                           </div>
                         </div>
-                        <ChevronRight size={14} className="text-slate-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all shrink-0 mt-2" />
+                        <ChevronRight size={16} className="text-slate-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all shrink-0 mt-2" />
                       </button>
                     );
                   })}
@@ -498,15 +499,15 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
               </div>
 
               {/* TIER 3: COMMUNITY, CULTURE & QUESTIONS */}
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-[11px] font-black font-mono tracking-wider text-slate-500 uppercase flex items-center gap-1.5">
-                    <Calendar size={13} className="text-purple-500" /> Community, Culture &amp; Life
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                  <span className="text-xs font-black font-mono tracking-wider text-slate-600 uppercase flex items-center gap-2">
+                    <Calendar size={15} className="text-purple-500" /> Community, Culture &amp; Life
                   </span>
-                  <span className="text-[10px] font-mono text-slate-400">Local Archive</span>
+                  <span className="text-[11px] font-mono text-slate-400">Local Archive</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {communityOptions.map((opt) => {
                     const Icon = opt.icon;
                     return (
@@ -514,27 +515,27 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
                         key={opt.type}
                         type="button"
                         onClick={() => handleSelectType(opt.type)}
-                        className={`p-3.5 rounded-2xl border border-slate-200 bg-white hover:shadow-md transition-all text-left flex items-start justify-between gap-3 group cursor-pointer ${opt.borderHover}`}
+                        className={`p-5 rounded-2xl border border-slate-200/90 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-left flex items-start justify-between gap-4 group cursor-pointer ${opt.borderHover}`}
                       >
-                        <div className="flex items-start gap-3">
-                          <div className={`p-2.5 rounded-xl ${opt.iconBg} ${opt.iconColor} shrink-0`}>
-                            <Icon size={17} />
+                        <div className="flex items-start gap-4">
+                          <div className={`p-3 rounded-2xl ${opt.iconBg} ${opt.iconColor} shrink-0`}>
+                            <Icon size={19} />
                           </div>
-                          <div>
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-sm font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
                                 {opt.title}
                               </span>
-                              <span className={`text-[9px] font-bold font-mono px-1.5 py-0.2 rounded ${opt.badgeBg} ${opt.badgeText}`}>
+                              <span className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-full ${opt.badgeBg} ${opt.badgeText}`}>
                                 {opt.repReward}
                               </span>
                             </div>
-                            <p className="text-[11px] text-slate-500 leading-snug mt-0.5">
+                            <p className="text-xs text-slate-500 leading-relaxed">
                               {opt.subtitle}
                             </p>
                           </div>
                         </div>
-                        <ChevronRight size={14} className="text-slate-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all shrink-0 mt-2" />
+                        <ChevronRight size={16} className="text-slate-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all shrink-0 mt-2" />
                       </button>
                     );
                   })}
@@ -543,50 +544,50 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
             </div>
           ) : (
             /* ───────────────────────────────────────────────────────── */
-            /* STEP 2: SECTIONAL VISUAL HIERARCHY FOR INPUT DETAILS      */
+            /* STEP 2: SPACIOUS FORM DETAILS WITH STRUCTURED BLOCKS      */
             /* ───────────────────────────────────────────────────────── */
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Selected Intent Summary Banner */}
-              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50 via-slate-50 to-emerald-50 border border-blue-200 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-xl ${selectedOpt?.iconBg} ${selectedOpt?.iconColor}`}>
-                    <SelectedIcon size={18} />
+            <form onSubmit={handleSubmit} className="space-y-7">
+              {/* Selected Intent Summary Banner with Ample Padding */}
+              <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-50/80 via-slate-50 to-emerald-50/80 border border-blue-200 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className={`p-2.5 rounded-2xl ${selectedOpt?.iconBg} ${selectedOpt?.iconColor}`}>
+                    <SelectedIcon size={22} />
                   </div>
-                  <div>
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-700">
+                  <div className="space-y-0.5">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-blue-700">
                       Intent: {selectedOpt?.title}
                     </span>
-                    <p className="text-xs text-slate-600 font-medium">{selectedOpt?.subtitle}</p>
+                    <p className="text-xs sm:text-sm text-slate-600 font-medium">{selectedOpt?.subtitle}</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors shrink-0 cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors shrink-0 cursor-pointer shadow-xs"
                 >
                   Change
                 </button>
               </div>
 
               {errorMessage && (
-                <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex items-center gap-2">
-                  <AlertTriangle size={16} className="shrink-0 text-rose-600" />
+                <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex items-center gap-3">
+                  <AlertTriangle size={18} className="shrink-0 text-rose-600" />
                   <span>{errorMessage}</span>
                 </div>
               )}
 
               {/* ── BLOCK 1: THE CORE SIGNAL ──────────────────────── */}
-              <div className="p-4 rounded-2xl bg-white border border-slate-200 space-y-3 shadow-xs">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                    <Compass size={13} className="text-blue-600" /> 1. Signal Headline &amp; Details
+              <div className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200/90 space-y-5 shadow-xs">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                    <Compass size={15} className="text-blue-600" /> 1. Signal Headline &amp; Details
                   </span>
-                  <span className="text-[10px] text-rose-500 font-bold">* Required</span>
+                  <span className="text-xs text-rose-500 font-bold">* Required</span>
                 </div>
 
                 {/* Title / Headline */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
                     Headline / Summary
                   </label>
                   <input
@@ -603,14 +604,14 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
                     }
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium bg-slate-50/40 focus:bg-white transition-all"
+                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-base sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium bg-slate-50/40 focus:bg-white transition-all shadow-xs"
                   />
                 </div>
 
                 {/* Locality & Category Row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
                       Locality / Town
                     </label>
                     <input
@@ -618,11 +619,11 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
                       required
                       value={locality}
                       onChange={(e) => setLocality(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/40 focus:bg-white"
+                      className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 text-base sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/40 focus:bg-white shadow-xs"
                     />
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
                       Category Tag (Optional)
                     </label>
                     <input
@@ -630,45 +631,45 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
                       placeholder="e.g. Dining, Transit, Health, Civic"
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/40 focus:bg-white"
+                      className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 text-base sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/40 focus:bg-white shadow-xs"
                     />
                   </div>
                 </div>
 
                 {/* Content Description */}
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-bold text-slate-700">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
                       Factual Observation &amp; Specifics
                     </label>
-                    <span className="text-[10px] text-slate-400 font-mono">Min. 10 chars</span>
+                    <span className="text-[11px] text-slate-400 font-mono">Min. 10 chars</span>
                   </div>
                   <textarea
                     required
-                    rows={3}
+                    rows={4}
                     placeholder="Provide useful specifics: location landmark, timings, what is verified, or what remains uncertain..."
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs leading-relaxed text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/40 focus:bg-white transition-all"
+                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-base sm:text-sm leading-relaxed text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/40 focus:bg-white transition-all shadow-xs"
                   />
                 </div>
               </div>
 
               {/* ── BLOCK 2: CONNECT TO LOCAL ENTITY ─────────────── */}
-              <div className="p-4 rounded-2xl bg-blue-50/40 border border-blue-100 space-y-2.5">
+              <div className="p-6 sm:p-7 rounded-3xl bg-blue-50/40 border border-blue-100 space-y-3 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
-                    <Store size={13} className="text-blue-600" /> 2. Connect to Local Business / Entity
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-blue-900 flex items-center gap-2">
+                    <Store size={15} className="text-blue-600" /> 2. Connect to Local Business / Entity
                   </span>
-                  <span className="text-[10px] font-mono text-blue-600">Optional 2-way Link</span>
+                  <span className="text-xs font-mono text-blue-600">Optional 2-way Link</span>
                 </div>
-                <p className="text-[11px] text-slate-500 leading-snug">
+                <p className="text-xs text-slate-600 leading-relaxed">
                   Attaching this signal to a registered business embeds it directly into the business profile and community evidence ledger.
                 </p>
                 <select
                   value={selectedBusinessId}
                   onChange={(e) => setSelectedBusinessId(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-xs"
+                  className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-xs mt-1"
                 >
                   <option value="">-- No specific business (General local contribution) --</option>
                   {availableBusinesses.map((b) => (
@@ -680,17 +681,17 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
               </div>
 
               {/* ── BLOCK 3: EVIDENCE & MEDIA PROVENANCE ─────────── */}
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                    <Video size={13} className="text-purple-600" /> 3. Supporting Evidence &amp; Media Links
+              <div className="p-6 sm:p-7 rounded-3xl bg-slate-50/80 border border-slate-200/90 space-y-4 shadow-xs">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                    <Video size={15} className="text-purple-600" /> 3. Supporting Evidence &amp; Media Links
                   </span>
-                  <span className="text-[10px] text-slate-400 font-mono">Optional</span>
+                  <span className="text-xs text-slate-400 font-mono">Optional</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-600">
                       Video Link (YouTube / Vimeo)
                     </label>
                     <input
@@ -698,12 +699,12 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
                       placeholder="https://youtube.com/watch?v=..."
                       value={videoUrl}
                       onChange={(e) => setVideoUrl(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 text-base sm:text-sm bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-xs"
                     />
-                    <span className="text-[10px] text-slate-400 mt-0.5 block">Embeds privacy-enhanced video</span>
+                    <span className="text-[11px] text-slate-400 mt-1 block">Embeds privacy-enhanced video</span>
                   </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-600">
                       Photo / Image Link
                     </label>
                     <input
@@ -711,14 +712,14 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
                       placeholder="https://..."
                       value={imageUrl}
                       onChange={(e) => setImageUrl(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 text-base sm:text-sm bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-xs"
                     />
-                    <span className="text-[10px] text-slate-400 mt-0.5 block">Genuine photo of location</span>
+                    <span className="text-[11px] text-slate-400 mt-1 block">Genuine photo of location</span>
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                <div className="space-y-1.5 pt-1">
+                  <label className="block text-xs font-bold text-slate-600">
                     Public Post / Official Notice Citation URL
                   </label>
                   <input
@@ -726,23 +727,23 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
                     placeholder="https://facebook.com/... or official circular link"
                     value={externalPostUrl}
                     onChange={(e) => setExternalPostUrl(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 text-base sm:text-sm bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-xs"
                   />
                 </div>
               </div>
 
               {/* ── BLOCK 4: ATTRIBUTION & TRUTH PROVENANCE ──────── */}
-              <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                    <ShieldCheck size={13} className="text-emerald-600" /> 4. Contributor Attribution &amp; Source
+              <div className="p-6 sm:p-7 rounded-3xl bg-slate-50/80 border border-slate-200/90 space-y-4 shadow-xs">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                    <ShieldCheck size={15} className="text-emerald-600" /> 4. Contributor Attribution &amp; Source
                   </span>
-                  <span className="text-[10px] text-emerald-700 font-bold font-mono">Verified Ledger</span>
+                  <span className="text-xs text-emerald-700 font-bold font-mono">Verified Ledger</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-700">
                       Your Name / Display Credit *
                     </label>
                     <input
@@ -751,17 +752,17 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
                       placeholder="e.g. Tarunjit / Local Resident"
                       value={authorName}
                       onChange={(e) => setAuthorName(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 text-base sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-xs"
                     />
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-700">
                       Your Relationship / Provenance
                     </label>
                     <select
                       value={provenance}
                       onChange={(e) => setProvenance(e.target.value as ContributionProvenance)}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 text-base sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-xs"
                     >
                       <option value="FIRST_HAND_CITIZEN">First-Hand Citizen Eyewitness</option>
                       <option value="COMMUNITY_OBSERVATION">Local Resident Word of Mouth</option>
@@ -772,34 +773,34 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-slate-100/80 border border-slate-200/60 text-[11px] text-slate-500 leading-snug">
-                  🛡️ <strong>Truth Invariant:</strong> New citizen submissions begin as <span className="font-mono text-slate-700">UNVERIFIED</span> and reach <span className="font-mono text-emerald-700">COMMUNITY_CORROBORATED</span> through neighbor confirmations. Zero bot ratings or paid placement.
+                <div className="p-3.5 rounded-2xl bg-slate-100/90 border border-slate-200/70 text-xs text-slate-600 leading-relaxed mt-2">
+                  🛡️ <strong>Truth Invariant:</strong> New citizen submissions begin as <span className="font-mono text-slate-800 font-semibold">UNVERIFIED</span> and reach <span className="font-mono text-emerald-700 font-semibold">COMMUNITY_CORROBORATED</span> through neighbor confirmations. Zero bot ratings or paid placement.
                 </div>
               </div>
 
-              {/* ── SUBMIT FOOTER ─────────────────────────────────── */}
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
+              {/* ── SUBMIT FOOTER WITH AMPLE BREATHING ROOM ───────── */}
+              <div className="pt-6 mt-2 border-t border-slate-100 flex items-center justify-between gap-4">
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer flex items-center gap-1.5"
+                  className="px-5 py-3 rounded-2xl border border-slate-200 text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer flex items-center gap-2 shadow-xs"
                 >
-                  <ArrowLeft size={14} /> Back
+                  <ArrowLeft size={16} /> Back
                 </button>
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-md shadow-blue-600/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="px-7 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold transition-all shadow-md shadow-blue-600/20 flex items-center gap-2.5 cursor-pointer disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 size={14} className="animate-spin" />
+                      <Loader2 size={16} className="animate-spin" />
                       <span>Recording Signal...</span>
                     </>
                   ) : (
                     <>
-                      <Send size={14} />
+                      <Send size={16} />
                       <span>Publish Local Signal ({selectedOpt?.repReward})</span>
                     </>
                   )}

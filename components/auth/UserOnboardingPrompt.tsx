@@ -18,29 +18,9 @@ export const UserOnboardingPrompt: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Do not show popup if user is logged in or already on auth/admin paths
-    if (user) {
-      setIsVisible(false);
-      return;
-    }
-
-    if (
-      location.pathname.startsWith('/admin') ||
-      location.pathname === '/auth' ||
-      location.pathname === '/login' ||
-      location.pathname === '/register'
-    ) {
-      setIsVisible(false);
-      return;
-    }
-
-    // Check if dismissed in this browser session
-    const isDismissed = sessionStorage.getItem(ONBOARDING_DISMISSED_KEY);
-    if (!isDismissed) {
-      // 1.5 second polite delay on page load
-      const timer = setTimeout(() => setIsVisible(true), 1400);
-      return () => clearTimeout(timer);
-    }
+    // Automatic pop-up disabled for public browsing to ensure a calm, mobile-first experience.
+    // Preserves manual onboarding invocations without interrupting visitors.
+    setIsVisible(false);
   }, [user, location.pathname]);
 
   // Close on Escape key

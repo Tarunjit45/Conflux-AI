@@ -56,6 +56,14 @@ export const DiscoverPage: React.FC = () => {
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [openNowOnly, setOpenNowOnly] = useState(false);
   const [requiredAction, setRequiredAction] = useState<CapabilityActionType | 'all'>('all');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const activeFilterCount =
+    (whereQuery.trim() !== '' ? 1 : 0) +
+    (verifiedOnly ? 1 : 0) +
+    (openNowOnly ? 1 : 0) +
+    (requiredAction !== 'all' ? 1 : 0) +
+    (activeCategory !== 'all' ? 1 : 0);
 
   const executeSearch = async (overrideWhat?: string, overrideWhere?: string) => {
     setIsLoading(true);
@@ -205,61 +213,179 @@ export const DiscoverPage: React.FC = () => {
             Find a business. Check the evidence. Decide with confidence. Discover statutory-verified enterprises, clinics, diagnostic centers, artisans, and services you can connect with directly.
           </motion.p>
 
-          {/* ── TWO-PART SEARCH INPUT BAR ─────────────────────────── */}
+          {/* ── UNIFIED SEARCH INPUT BAR ─────────────────────────── */}
           <motion.form
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3 }}
             onSubmit={handleSearchSubmit}
-            className="max-w-4xl mx-auto mt-8 p-2.5 sm:p-3 rounded-3xl bg-white/95 backdrop-blur-md shadow-2xl border border-white/20 text-slate-900"
+            className="max-w-3xl mx-auto mt-6 p-2 rounded-2xl sm:rounded-3xl bg-white/95 backdrop-blur-md shadow-2xl border border-white/20 text-slate-900"
           >
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
-              {/* Field 1: What */}
-              <div className="md:col-span-6 relative flex items-center px-3 py-2 bg-slate-50 md:bg-transparent rounded-2xl md:rounded-none md:border-r md:border-slate-200">
-                <Search className="text-blue-600 shrink-0 mr-3" size={20} />
-                <div className="w-full text-left">
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">
-                    What are you looking for?
-                  </label>
-                  <input
-                    type="text"
-                    value={whatQuery}
-                    onChange={e => setWhatQuery(e.target.value)}
-                    placeholder="e.g. USG, AC Repair, Tant Saree, Gym, Hotel..."
-                    className="w-full bg-transparent text-sm sm:text-base font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
-                  />
-                </div>
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <div className="relative flex-1 flex items-center px-3 py-2">
+                <Search className="text-blue-600 shrink-0 mr-2.5 sm:mr-3" size={20} />
+                <input
+                  type="text"
+                  value={whatQuery}
+                  onChange={e => setWhatQuery(e.target.value)}
+                  placeholder="Find a doctor, cafe, AC repair, saree shop..."
+                  className="w-full bg-transparent text-base font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
+                />
+                {whatQuery && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setWhatQuery('');
+                      executeSearch('', whereQuery);
+                    }}
+                    className="p-1 rounded-full text-slate-400 hover:text-slate-600 mr-1 cursor-pointer"
+                    title="Clear search"
+                  >
+                    <X size={16} />
+                  </button>
+                )}
               </div>
 
-              {/* Field 2: Where */}
-              <div className="md:col-span-4 relative flex items-center px-3 py-2 bg-slate-50 md:bg-transparent rounded-2xl md:rounded-none">
-                <MapPin className="text-blue-600 shrink-0 mr-3" size={20} />
-                <div className="w-full text-left">
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">
-                    Where?
-                  </label>
-                  <input
-                    type="text"
-                    value={whereQuery}
-                    onChange={e => setWhereQuery(e.target.value)}
-                    placeholder="e.g. Ranaghat, Santipur, Nadia..."
-                    className="w-full bg-transparent text-sm sm:text-base font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
-                  />
-                </div>
-              </div>
+              {/* Filter Drawer Toggle */}
+              <button
+                type="button"
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                className={`min-h-[44px] px-3 sm:px-4 py-2 rounded-xl sm:rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                  isFilterOpen || activeFilterCount > 0
+                    ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
+                title="Filters"
+              >
+                <Filter size={15} />
+                <span className="hidden sm:inline">Filters</span>
+                {activeFilterCount > 0 && (
+                  <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </button>
 
-              {/* Action Button */}
-              <div className="md:col-span-2">
-                <button
-                  type="submit"
-                  className="w-full py-3.5 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm shadow-lg shadow-blue-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <Sparkles size={16} />
-                  <span>Discover</span>
-                </button>
-              </div>
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="min-h-[44px] py-2.5 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
+              >
+                <Sparkles size={16} className="hidden sm:inline" />
+                <span>Search</span>
+              </button>
             </div>
           </motion.form>
+
+          {/* ── COLLAPSIBLE FILTER PANEL ─────────────────────────── */}
+          <AnimatePresence>
+            {isFilterOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, height: 0 }}
+                animate={{ opacity: 1, y: 0, height: 'auto' }}
+                exit={{ opacity: 0, y: -8, height: 0 }}
+                className="max-w-3xl mx-auto mt-3 overflow-hidden text-left"
+              >
+                <div className="p-4 sm:p-5 rounded-2xl bg-white/95 backdrop-blur-md shadow-xl border border-white/20 text-slate-900 space-y-4">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                    <div className="text-xs font-bold font-orbitron text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                      <Filter size={14} className="text-blue-600" />
+                      <span>Search &amp; Quality Filters</span>
+                    </div>
+                    {hasActiveFilters && (
+                      <button
+                        type="button"
+                        onClick={handleResetFilters}
+                        className="text-xs font-bold text-slate-500 hover:text-red-600 inline-flex items-center gap-1 cursor-pointer"
+                      >
+                        <RotateCcw size={12} />
+                        <span>Reset All</span>
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Location Input */}
+                    <div className="space-y-1">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 font-mono">
+                        Location / City / District
+                      </label>
+                      <div className="relative flex items-center">
+                        <MapPin size={16} className="text-blue-600 absolute left-3 pointer-events-none" />
+                        <input
+                          type="text"
+                          value={whereQuery}
+                          onChange={e => setWhereQuery(e.target.value)}
+                          placeholder="e.g. Ranaghat, Santipur, Nadia..."
+                          className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Preferred Channel */}
+                    <div className="space-y-1">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 font-mono">
+                        Direct Contact Channel
+                      </label>
+                      <select
+                        value={requiredAction}
+                        onChange={e => setRequiredAction(e.target.value as any)}
+                        className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base sm:text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500"
+                      >
+                        <option value="all">All Channels</option>
+                        <option value="WHATSAPP">WhatsApp Direct</option>
+                        <option value="CALL">Direct Call</option>
+                        <option value="BOOKING">Online Booking</option>
+                        <option value="DIRECTIONS">Map Directions</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Toggle Pills */}
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setVerifiedOnly(!verifiedOnly)}
+                      className={`min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        verifiedOnly
+                          ? 'bg-emerald-600 text-white shadow-sm'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      <ShieldCheck size={15} className={verifiedOnly ? 'text-white' : 'text-emerald-600'} />
+                      <span>Statutory Verified Only</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setOpenNowOnly(!openNowOnly)}
+                      className={`min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        openNowOnly
+                          ? 'bg-blue-600 text-white shadow-sm'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      <Clock size={15} className={openNowOnly ? 'text-white' : 'text-blue-600'} />
+                      <span>Open Now</span>
+                    </button>
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        executeSearch();
+                        setIsFilterOpen(false);
+                      }}
+                      className="min-h-[44px] px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 cursor-pointer transition-all"
+                    >
+                      Apply Filters
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Quick Category Shortcuts */}
           <div className="flex flex-wrap items-center justify-center gap-2 pt-2 text-xs">
@@ -564,8 +690,8 @@ export const DiscoverPage: React.FC = () => {
             </div>
           </div>
         ) : (
-          /* Populated Results Grid — Decision-Grade Cards (When approved real businesses exist) */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          /* Populated Results Grid — Compact Scannable Cards */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {results.map(({ business: biz, rankingExplanation }) => {
               const isOpenNow = businessService.isBusinessOpenNow(biz.operatingHours);
               const isVerified = biz.verificationStatus === 'SUPPORTED';
@@ -576,173 +702,100 @@ export const DiscoverPage: React.FC = () => {
                   key={biz.id}
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-5 group"
+                  className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group space-y-3.5"
                 >
-                  <div className="space-y-4">
-                    {/* Top Identity & Verification Pill */}
+                  <div className="space-y-2">
+                    {/* Top Identity & Status Row */}
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-mono text-[11px] font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100">
-                        {biz.confluxBusinessId}
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {isVerified ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold font-mono shadow-sm">
+                            <ShieldCheck size={13} className="text-emerald-600 shrink-0" /> VERIFIED
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold font-mono">
+                            {biz.verificationStatus}
+                          </span>
+                        )}
+                        <span className="font-mono text-[10px] text-slate-400">
+                          {biz.confluxBusinessId}
+                        </span>
+                      </div>
+
+                      <span
+                        className={`font-bold font-mono text-[10px] px-2 py-0.5 rounded-md shrink-0 ${
+                          isOpenNow
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-slate-100 text-slate-600'
+                        }`}
+                      >
+                        {isOpenNow ? 'OPEN NOW' : 'CLOSED'}
                       </span>
-                      {isVerified ? (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold font-mono shadow-sm">
-                          <ShieldCheck size={13} className="text-emerald-600" /> STATUTORY VERIFIED
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-bold font-mono">
-                          {biz.verificationStatus}
-                        </span>
-                      )}
                     </div>
 
-                    {/* WHO: Business Name & Category */}
+                    {/* Business Name & Category */}
                     <div>
-                      <h3 className="text-lg sm:text-xl font-bold font-orbitron text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                      <h3 className="text-base sm:text-lg font-bold font-orbitron text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">
                         <Link to={profileUrl}>{biz.name}</Link>
                       </h3>
-                      <div className="text-xs font-bold text-slate-500 mt-1 capitalize flex items-center gap-2">
-                        <span>{biz.categoryName || biz.categoryId}</span>
-                        {biz.legalName && (
-                          <>
-                            <span>•</span>
-                            <span className="text-slate-400 truncate max-w-[140px]">{biz.legalName}</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* WHERE: Location, Landmark & Live Open Status */}
-                    <div className="space-y-1 text-xs text-slate-600">
-                      <div className="flex items-center gap-1.5">
-                        <MapPin size={14} className="text-slate-400 shrink-0" />
-                        <span className="capitalize font-medium text-slate-800">
+                      <div className="text-xs font-semibold text-slate-500 mt-0.5 capitalize flex items-center gap-1.5 flex-wrap">
+                        <span className="text-blue-700 font-bold">{biz.categoryName || biz.categoryId}</span>
+                        <span>•</span>
+                        <span className="flex items-center gap-1 text-slate-600">
+                          <MapPin size={12} className="text-slate-400 shrink-0" />
                           {biz.location.city}, {biz.location.district}
                         </span>
                       </div>
-                      {biz.landmark && (
-                        <div className="text-[11px] text-slate-500 pl-5 font-mono">
-                          Landmark: {biz.landmark}
-                        </div>
-                      )}
-                      <div className="flex items-center gap-1.5 pt-0.5">
-                        <Clock size={14} className="text-slate-400 shrink-0" />
-                        <span
-                          className={`font-bold font-mono text-[10px] px-2 py-0.5 rounded-md ${
-                            isOpenNow
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-slate-100 text-slate-600'
-                          }`}
-                        >
-                          {isOpenNow ? 'OPEN NOW' : 'CLOSED'}
-                        </span>
-                      </div>
                     </div>
 
-                    {/* WHAT THEY DO: Granular Services & Capabilities Badges */}
-                    {biz.services && biz.services.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {biz.services.slice(0, 3).map((svc, idx) => (
-                          <span
-                            key={idx}
-                            className="px-2.5 py-0.5 rounded-lg bg-blue-50/70 text-blue-900 border border-blue-100/60 text-[11px] font-semibold"
-                          >
-                            {svc}
-                          </span>
-                        ))}
-                        {biz.services.length > 3 && (
-                          <span className="text-[10px] font-mono text-slate-400 self-center">
-                            +{biz.services.length - 3} more
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    {/* WHY THEY ARE TRUSTWORTHY: Source Information from Official Registry */}
-                    {biz.primaryRegistrar && (
-                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 space-y-0.5">
-                        <div className="text-[10px] font-bold font-mono text-slate-500 uppercase tracking-wider">
-                          Source Information:
-                        </div>
-                        <div className="text-xs font-bold text-slate-800 line-clamp-1">
-                          {biz.primaryRegistrar}
-                        </div>
-                        {biz.evidenceSummary && (
-                          <p className="text-[11px] text-slate-600 line-clamp-1 leading-relaxed">
-                            {biz.evidenceSummary}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    {/* WHY THEY MATCH: Explainable Ranking Badges */}
-                    {rankingExplanation.reasonCodes.length > 0 && (
-                      <div className="pt-1 border-t border-slate-100 flex flex-wrap gap-1">
-                        {rankingExplanation.reasonCodes.slice(0, 2).map(code => (
-                          <span
-                            key={code}
-                            className="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-blue-50/60 text-blue-700 border border-blue-100"
-                          >
-                            ✓ {code.replace(/_/g, ' ')}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    {/* Services / Evidence snippet */}
+                    {biz.services && biz.services.length > 0 ? (
+                      <p className="text-[11px] text-slate-600 line-clamp-1">
+                        {biz.services.slice(0, 3).join(' • ')}
+                      </p>
+                    ) : biz.evidenceSummary ? (
+                      <p className="text-[11px] text-slate-500 line-clamp-1 italic">
+                        {biz.evidenceSummary}
+                      </p>
+                    ) : null}
                   </div>
 
-                  {/* WHAT TO DO NEXT: Connect Action Buttons */}
-                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5">
-                      {biz.contact.phone && (
-                        <a
-                          href={`tel:${biz.contact.phone}`}
-                          onClick={() => handleActionClick(biz.id, 'PHONE_CLICK')}
-                          className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors cursor-pointer"
-                          title="Call Directly"
-                        >
-                          <Phone size={14} />
-                        </a>
-                      )}
+                  {/* 1-Tap Connect Actions */}
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 flex-1">
                       {biz.contact.whatsapp && (
                         <a
                           href={`https://wa.me/${biz.contact.whatsapp.replace(/[^0-9]/g, '')}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => handleActionClick(biz.id, 'WHATSAPP_CLICK')}
-                          className="p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors cursor-pointer"
+                          className="min-h-[44px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 text-emerald-800 text-xs font-bold border border-emerald-200 transition-colors cursor-pointer"
                           title="WhatsApp Inquiry"
                         >
-                          <MessageSquare size={14} />
+                          <MessageSquare size={15} className="text-emerald-600 shrink-0" />
+                          <span>WhatsApp</span>
                         </a>
                       )}
-                      {biz.contact.bookingUrl && (
+
+                      {biz.contact.phone && (
                         <a
-                          href={biz.contact.bookingUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={() => handleActionClick(biz.id, 'BOOKING_CLICK')}
-                          className="p-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 transition-colors cursor-pointer"
-                          title="Book / Reserve"
+                          href={`tel:${biz.contact.phone}`}
+                          onClick={() => handleActionClick(biz.id, 'PHONE_CLICK')}
+                          className="min-h-[44px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 active:bg-blue-200 text-blue-800 text-xs font-bold border border-blue-200 transition-colors cursor-pointer"
+                          title="Call Directly"
                         >
-                          <Calendar size={14} />
+                          <Phone size={15} className="text-blue-600 shrink-0" />
+                          <span>Call</span>
                         </a>
                       )}
-                      <a
-                        href={`https://maps.google.com/?q=${encodeURIComponent(biz.location.fullAddress)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() => handleActionClick(biz.id, 'DIRECTIONS_CLICK')}
-                        className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
-                        title="Get Directions"
-                      >
-                        <Navigation size={14} />
-                      </a>
                     </div>
 
                     <Link
                       to={profileUrl}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3.5 py-2 rounded-xl transition-all cursor-pointer"
+                      className="min-h-[44px] px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 text-xs font-bold transition-colors inline-flex items-center justify-center gap-1 shrink-0"
+                      title="View Details"
                     >
-                      <span>Full Dossier</span>
+                      <span>Details</span>
                       <ChevronRight size={14} />
                     </Link>
                   </div>

@@ -202,24 +202,24 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
   };
 
   return (
-    <article className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all font-inter space-y-4">
+    <article className="p-6 sm:p-7 md:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md transition-all font-inter space-y-6">
       {/* ── 1. AUTHOR & METADATA BAR ──────────────────────────────── */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 border border-blue-200/60 flex items-center justify-center font-bold text-blue-700 text-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 border border-blue-200/60 flex items-center justify-center font-bold text-blue-700 text-sm shadow-xs">
             {contribution.author.avatarUrl ? (
               <img src={contribution.author.avatarUrl} alt={contribution.author.displayName} className="w-full h-full object-cover rounded-2xl" />
             ) : (
               contribution.author.displayName.charAt(0).toUpperCase()
             )}
           </div>
-          <div>
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="font-bold text-slate-900 text-sm">
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-bold text-slate-900 text-sm sm:text-base">
                 {contribution.author.displayName}
               </span>
               {contribution.author.badge && (
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-100">
+                <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
                   {contribution.author.badge.replace(/_/g, ' ')}
                 </span>
               )}
@@ -233,28 +233,28 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
         </div>
 
         {/* Type Badge & Report */}
-        <div className="flex items-center gap-2">
-          <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase border ${getTypeBadge(contribution.type)}`}>
+        <div className="flex items-center gap-2.5">
+          <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase border ${getTypeBadge(contribution.type)}`}>
             {contribution.type}
           </span>
           {onReportClick && (
             <button
               onClick={() => onReportClick(contribution.id)}
-              className="p-1 text-slate-300 hover:text-slate-600 transition-colors cursor-pointer"
+              className="p-1.5 text-slate-300 hover:text-slate-600 transition-colors cursor-pointer"
               title="Report inaccurate or inappropriate content"
             >
-              <Flag size={13} />
+              <Flag size={14} />
             </button>
           )}
         </div>
       </div>
 
-      {/* ── 2. HEADLINE & BODY ─────────────────────────────────────── */}
-      <div>
-        <h3 className="text-base font-bold text-slate-900 leading-snug mb-2 font-orbitron">
+      {/* ── 2. HEADLINE & BODY WITH GENEROUS BREATHING ROOM ────────── */}
+      <div className="space-y-2.5">
+        <h3 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug font-orbitron tracking-tight">
           {contribution.title}
         </h3>
-        <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-line">
+        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line">
           {contribution.content}
         </p>
       </div>
@@ -288,10 +288,10 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
 
       {/* ── 4. CONNECTED BUSINESS CARD (2-WAY ENTITY CONNECTION) ────── */}
       {contribution.businessRef && (
-        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
-              <Store size={16} />
+        <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+              <Store size={18} />
             </div>
             <div>
               <div className="text-[10px] font-bold font-mono text-slate-500 uppercase tracking-wider">
@@ -299,7 +299,7 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
               </div>
               <Link
                 to={`/business/${contribution.businessRef.slug}`}
-                className="text-xs font-bold text-slate-900 hover:text-blue-600 transition-colors"
+                className="text-xs sm:text-sm font-bold text-slate-900 hover:text-blue-600 transition-colors"
               >
                 {contribution.businessRef.name} &rarr;
               </Link>
@@ -309,7 +309,7 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
           <div className="flex items-center gap-2 shrink-0">
             <Link
               to={`/business/${contribution.businessRef.slug}`}
-              className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-bold transition-all"
+              className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold transition-all shadow-xs"
             >
               View Profile
             </Link>
@@ -322,16 +322,16 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
         <button
           type="button"
           onClick={() => setShowTrustDossier(!showTrustDossier)}
-          className="w-full px-4 py-2.5 flex items-center justify-between text-left text-xs font-bold text-slate-700 hover:bg-slate-100/60 transition-colors cursor-pointer"
+          className="w-full px-5 py-3.5 flex items-center justify-between text-left text-xs font-bold text-slate-700 hover:bg-slate-100/60 transition-colors cursor-pointer"
         >
-          <div className="flex items-center gap-2">
-            <ShieldCheck size={14} className="text-blue-600" />
-            <span className="font-mono uppercase text-[11px]">How Conflux Knows</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-200/70 text-slate-600 font-semibold">
+          <div className="flex items-center gap-2.5">
+            <ShieldCheck size={16} className="text-blue-600" />
+            <span className="font-mono uppercase text-[11px] tracking-wider">How Conflux Knows</span>
+            <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-slate-200/70 text-slate-600 font-semibold font-mono">
               {contribution.verificationState.replace(/_/g, ' ')}
             </span>
           </div>
-          {showTrustDossier ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          {showTrustDossier ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
 
         <AnimatePresence>
@@ -340,39 +340,39 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="px-4 pb-4 text-xs space-y-2 border-t border-slate-200/60 pt-3"
+              className="px-5 pb-5 pt-4 text-xs space-y-3.5 border-t border-slate-200/60"
             >
               <div>
-                <strong className="text-slate-700 font-bold block text-[10px] uppercase font-mono">
+                <strong className="text-slate-700 font-bold block text-[10px] uppercase font-mono tracking-wider">
                   What we know:
                 </strong>
-                <p className="text-slate-600 text-xs mt-0.5">{contribution.trustDossier.whatWeKnow}</p>
+                <p className="text-slate-600 text-xs sm:text-sm mt-1 leading-relaxed">{contribution.trustDossier.whatWeKnow}</p>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <strong className="text-slate-700 font-bold block text-[10px] uppercase font-mono">
+                  <strong className="text-slate-700 font-bold block text-[10px] uppercase font-mono tracking-wider">
                     Source:
                   </strong>
                   <p className="text-slate-600 text-xs mt-0.5">{contribution.trustDossier.source}</p>
                 </div>
                 <div>
-                  <strong className="text-slate-700 font-bold block text-[10px] uppercase font-mono">
+                  <strong className="text-slate-700 font-bold block text-[10px] uppercase font-mono tracking-wider">
                     Last Checked:
                   </strong>
                   <p className="text-slate-600 text-xs mt-0.5">{contribution.trustDossier.lastCheckedDate}</p>
                 </div>
               </div>
               <div>
-                <strong className="text-slate-700 font-bold block text-[10px] uppercase font-mono">
+                <strong className="text-slate-700 font-bold block text-[10px] uppercase font-mono tracking-wider">
                   Community Corroboration:
                 </strong>
-                <p className="text-slate-600 text-xs mt-0.5">{contribution.trustDossier.whatCommunitySays}</p>
+                <p className="text-slate-600 text-xs mt-1 leading-relaxed">{contribution.trustDossier.whatCommunitySays}</p>
               </div>
               <div>
-                <strong className="text-amber-800 font-bold block text-[10px] uppercase font-mono">
+                <strong className="text-amber-800 font-bold block text-[10px] uppercase font-mono tracking-wider">
                   What Remains Uncertain:
                 </strong>
-                <p className="text-slate-600 text-xs mt-0.5">{contribution.trustDossier.whatRemainsUncertain}</p>
+                <p className="text-slate-600 text-xs mt-1 leading-relaxed">{contribution.trustDossier.whatRemainsUncertain}</p>
               </div>
             </motion.div>
           )}
@@ -380,22 +380,22 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
       </div>
 
       {/* ── 6. INTERACTION & ACTION TOOLBAR ────────────────────────── */}
-      <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs">
         {/* Community Confirmation & Dispute */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={handleConfirm}
             disabled={hasConfirmed || isConfirming}
-            className={`px-3 py-1.5 rounded-xl border flex items-center gap-1.5 font-bold transition-all cursor-pointer ${
+            className={`px-3.5 py-2 rounded-xl border flex items-center gap-2 font-bold transition-all cursor-pointer shadow-xs ${
               hasConfirmed
                 ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
                 : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'
             }`}
           >
-            <CheckCircle2 size={13} className={hasConfirmed ? 'text-emerald-600' : 'text-slate-400'} />
+            <CheckCircle2 size={14} className={hasConfirmed ? 'text-emerald-600' : 'text-slate-400'} />
             <span>{hasConfirmed ? 'Confirmed' : 'Confirm True'}</span>
-            <span className="font-mono text-[10px] px-1 rounded bg-slate-100">
+            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-100">
               {contribution.confirmationsCount}
             </span>
           </button>
@@ -403,17 +403,17 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
           <button
             type="button"
             onClick={() => setShowDisputeInput(!showDisputeInput)}
-            className="px-2.5 py-1.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+            className="px-3 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
             title="Dispute or submit correction"
           >
-            <AlertCircle size={13} />
+            <AlertCircle size={14} />
           </button>
         </div>
 
         {/* 1-5 Star Community Rating */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] font-mono font-bold text-slate-400 uppercase">Rate:</span>
-          <div className="flex items-center gap-0.5">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Rate:</span>
+          <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
@@ -423,7 +423,7 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
                 title={`${star} stars`}
               >
                 <Star
-                  size={14}
+                  size={15}
                   className={
                     (userRating !== null ? star <= userRating : (contribution.averageRating >= star))
                       ? 'fill-amber-400 text-amber-400'
@@ -433,29 +433,29 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
               </button>
             ))}
           </div>
-          <span className="font-mono font-bold text-[11px] text-slate-700 ml-1">
+          <span className="font-mono font-bold text-xs text-slate-700 ml-1">
             {contribution.ratingsCount > 0 ? `${contribution.averageRating}★ (${contribution.ratingsCount})` : 'Unrated'}
           </span>
         </div>
 
         {/* Comments & Share */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={toggleComments}
-            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center gap-2 transition-colors cursor-pointer"
           >
-            <MessageSquare size={13} />
+            <MessageSquare size={14} />
             <span>Discuss ({contribution.commentsCount})</span>
           </button>
 
           <button
             type="button"
             onClick={handleShare}
-            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer relative"
+            className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer relative"
             title="Share Contribution"
           >
-            {copiedShare ? <Check size={14} className="text-emerald-600" /> : <Share2 size={14} />}
+            {copiedShare ? <Check size={15} className="text-emerald-600" /> : <Share2 size={15} />}
           </button>
         </div>
       </div>

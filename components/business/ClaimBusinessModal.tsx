@@ -131,7 +131,7 @@ export const ClaimBusinessModal: React.FC<ClaimBusinessModalProps> = ({
                 value={ownerName}
                 onChange={e => setOwnerName(e.target.value)}
                 placeholder="e.g. Tarunjit Biswas"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 required
               />
             </div>
@@ -144,7 +144,7 @@ export const ClaimBusinessModal: React.FC<ClaimBusinessModalProps> = ({
                   value={ownerEmail}
                   onChange={e => setOwnerEmail(e.target.value)}
                   placeholder="owner@company.in"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   required
                 />
               </div>
@@ -156,7 +156,7 @@ export const ClaimBusinessModal: React.FC<ClaimBusinessModalProps> = ({
                   value={ownerPhone}
                   onChange={e => setOwnerPhone(e.target.value)}
                   placeholder="+91 XXXXX XXXXX"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   required
                 />
               </div>
@@ -171,7 +171,7 @@ export const ClaimBusinessModal: React.FC<ClaimBusinessModalProps> = ({
                 value={statutoryProof}
                 onChange={e => setStatutoryProof(e.target.value)}
                 placeholder="State your registration certificate identifier (Trade License #, FSSAI #, GSTIN, or Udyam #)..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 required
               />
               <p className="text-[11px] text-slate-500">

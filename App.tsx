@@ -43,6 +43,7 @@ import { MyLocalConfluxPage } from './components/user/MyLocalConfluxPage';
 import { AuthModal } from './components/auth/AuthModal';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { UserOnboardingPrompt } from './components/auth/UserOnboardingPrompt';
+import { BottomNav } from './components/navigation/BottomNav';
 import { AuthProvider } from './lib/authContext';
 import { trackPageView } from './lib/analytics';
 
@@ -352,6 +353,8 @@ const ScrollToTop = () => {
 };
 
 const App: React.FC = () => {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
@@ -379,7 +382,7 @@ const App: React.FC = () => {
 
   return (
     <AuthProvider>
-      <div className="relative min-h-screen w-full bg-[#f8fafc] selection:bg-blue-600 selection:text-white overflow-x-hidden font-inter">
+      <div className={`relative min-h-screen w-full bg-[#f8fafc] selection:bg-blue-600 selection:text-white overflow-x-hidden font-inter ${isAdminRoute ? '' : 'pb-16 md:pb-0'}`}>
         <ScrollToTop />
         
         {/* Scroll progress bar — blue */}
@@ -447,14 +450,19 @@ const App: React.FC = () => {
 
         <Footer siteLogo={siteLogo} />
 
-        {/* Manual Logo Upload Control */}
-        <BrandingControl onUpload={handleLogoUpload} onReset={handleLogoReset} currentLogo={siteLogo} />
+        {/* Manual Logo Upload Control — Restricted to Admin portal only */}
+        {isAdminRoute && (
+          <BrandingControl onUpload={handleLogoUpload} onReset={handleLogoReset} currentLogo={siteLogo} />
+        )}
 
         {/* First-Time User Onboarding & Role Selection Prompt */}
         <UserOnboardingPrompt />
 
         {/* Integrated Chatbot */}
         <Chatbot />
+
+        {/* Mobile-Only Bottom Navigation */}
+        <BottomNav />
       </div>
     </AuthProvider>
   );

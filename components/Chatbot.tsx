@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Bot, User, ChevronRight } from 'lucide-react';
 
@@ -11,6 +12,8 @@ interface Message {
 }
 
 const Chatbot: React.FC = () => {
+  const location = useLocation();
+  const isProfilePage = location.pathname.startsWith('/business/');
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
@@ -74,42 +77,43 @@ const Chatbot: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[1000] font-inter">
+    <div className={`fixed ${isProfilePage ? 'bottom-32 sm:bottom-32' : 'bottom-20'} right-3 sm:right-4 md:bottom-6 md:right-6 z-[40] font-inter`}>
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            className="mb-4 w-[350px] md:w-[400px] h-[500px] bg-[#020c1b] border border-blue-600/30 rounded-2xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl"
+            className="mb-3 w-[calc(100vw-1.5rem)] sm:w-[360px] md:w-[400px] h-[65vh] max-h-[500px] bg-[#020c1b] border border-blue-600/30 rounded-2xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl"
             style={{ boxShadow: '0 20px 50px rgba(0, 0, 255, 0.15)' }}
           >
             {/* Header */}
             <div className="p-4 border-b border-blue-600/20 bg-blue-600/5 flex justify-between items-center">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-600/20 flex items-center justify-center border border-blue-600/30">
-                  <Bot className="text-blue-600" size={20} />
+                <div className="w-9 h-9 rounded-full bg-blue-600/20 flex items-center justify-center border border-blue-600/30">
+                  <Bot className="text-blue-500" size={18} />
                 </div>
                 <div>
-                  <h3 className="font-inter text-sm font-black text-white tracking-widest uppercase">
+                  <h3 className="font-inter text-xs sm:text-sm font-black text-white tracking-widest uppercase">
                     Conflux <span className="text-blue-500">AI</span>
                   </h3>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
-                    <span className="text-[10px] text-blue-600/70 font-medium">Online & Active</span>
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[10px] text-emerald-400 font-medium">Assistant Active</span>
                   </div>
                 </div>
               </div>
               <button 
                 onClick={() => setIsOpen(false)}
                 className="p-2 hover:bg-white/10 rounded-full transition-colors text-slate-400 hover:text-white"
+                aria-label="Close Assistant"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-blue-600/20 scrollbar-track-transparent">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 scrollbar-thin scrollbar-thumb-blue-600/20 scrollbar-track-transparent text-sm">
               {messages.map((msg) => (
                 <motion.div
                   key={msg.id}
@@ -117,10 +121,10 @@ const Chatbot: React.FC = () => {
                   animate={{ opacity: 1, x: 0 }}
                   className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${
+                  <div className={`max-w-[85%] p-3 rounded-2xl text-xs sm:text-sm ${
                     msg.sender === 'user' 
                       ? 'bg-blue-700 text-white rounded-tr-none shadow-lg shadow-blue-900/20' 
-                      : 'bg-white/5 border border-white/10 text-slate-200 rounded-tl-none'
+                      : 'bg-white/10 border border-white/10 text-slate-200 rounded-tl-none'
                   }`}>
                     {msg.text.split('\n').map((line, i) => (
                       <React.Fragment key={i}>
@@ -135,27 +139,25 @@ const Chatbot: React.FC = () => {
             </div>
 
             {/* Input Area */}
-            <div className="p-4 border-t border-blue-600/20 bg-[#020c1b]">
+            <div className="p-3.5 border-t border-blue-600/20 bg-[#020c1b]">
               <div className="relative flex items-center">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                  placeholder="Type your message..."
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-600/50 transition-all pr-12"
+                  placeholder="Ask a question..."
+                  className="w-full bg-white/10 border border-white/15 rounded-xl px-3.5 py-2.5 text-base text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-all pr-11"
                 />
                 <button
                   onClick={handleSend}
                   disabled={!input.trim()}
-                  className="absolute right-2 p-2 bg-blue-700 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group"
+                  aria-label="Send message"
+                  className="absolute right-1.5 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <Send size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <Send size={15} />
                 </button>
               </div>
-              <p className="mt-2 text-[11px] text-center text-slate-400 uppercase tracking-widest font-inter font-bold opacity-70">
-                Helping You Grow with AI
-              </p>
             </div>
           </motion.div>
         )}
@@ -165,11 +167,12 @@ const Chatbot: React.FC = () => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-[#020c1b] border-2 border-blue-600 shadow-2xl flex items-center justify-center text-blue-600 relative group overflow-hidden"
-        style={{ boxShadow: '0 0 30px rgba(0, 0, 255, 0.3)' }}
+        aria-label="Open Conflux AI Chatbot"
+        className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#020c1b] border-2 border-blue-600 shadow-2xl flex items-center justify-center text-blue-500 relative group overflow-hidden cursor-pointer"
+        style={{ boxShadow: '0 0 24px rgba(0, 0, 255, 0.35)' }}
       >
         <div className="absolute inset-0 bg-blue-600 opacity-0 group-hover:opacity-10 transition-opacity" />
-        {isOpen ? <X size={28} /> : <MessageSquare size={28} />}
+        {isOpen ? <X size={22} /> : <MessageSquare size={22} />}
         
         {!isOpen && (
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-600 rounded-full border-2 border-[#020c1b] animate-bounce" />
