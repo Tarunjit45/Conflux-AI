@@ -18,6 +18,73 @@ export interface LocalIdentityStats {
   verifiedDiscoveriesCount: number;
   helpfulCorrectionsCount: number;
   ratingsGivenCount: number;
+  peopleHelpedCount?: number;
+  helpfulVotesCount?: number;
+  accuracyPercentage?: number;
+  questionsResolvedCount?: number;
+}
+
+export type ContributorStandingTier =
+  | 'NEW_CONTRIBUTOR'
+  | 'LOCAL_HELPER'
+  | 'LOCAL_GUIDE'
+  | 'TRUSTED_LOCAL'
+  | 'LOCALITY_EXPERT';
+
+export interface ContributorStanding {
+  tier: ContributorStandingTier;
+  label: string;
+  color: string;
+  badgeClass: string;
+}
+
+export function getContributorStanding(profile: {
+  reputationScore?: number;
+  locality?: string;
+  stats?: Partial<LocalIdentityStats>;
+}): ContributorStanding {
+  const score = profile.reputationScore ?? 20;
+  const stats = profile.stats || {};
+  const locality = profile.locality || 'Ranaghat';
+
+  if (score >= 90 && (stats.confirmedUpdatesCount || 0) >= 3) {
+    return {
+      tier: 'LOCALITY_EXPERT',
+      label: `${locality} Expert`,
+      color: '#7c3aed',
+      badgeClass: 'bg-purple-100 text-purple-900 border-purple-200'
+    };
+  }
+  if (score >= 75) {
+    return {
+      tier: 'TRUSTED_LOCAL',
+      label: 'Trusted Local',
+      color: '#059669',
+      badgeClass: 'bg-emerald-100 text-emerald-900 border-emerald-200'
+    };
+  }
+  if (score >= 60) {
+    return {
+      tier: 'LOCAL_GUIDE',
+      label: 'Local Guide',
+      color: '#0284c7',
+      badgeClass: 'bg-sky-100 text-sky-900 border-sky-200'
+    };
+  }
+  if (score >= 40) {
+    return {
+      tier: 'LOCAL_HELPER',
+      label: 'Local Helper',
+      color: '#d97706',
+      badgeClass: 'bg-amber-100 text-amber-900 border-amber-200'
+    };
+  }
+  return {
+    tier: 'NEW_CONTRIBUTOR',
+    label: 'New Contributor',
+    color: '#64748b',
+    badgeClass: 'bg-slate-100 text-slate-800 border-slate-200'
+  };
 }
 
 export interface CreatorLink {

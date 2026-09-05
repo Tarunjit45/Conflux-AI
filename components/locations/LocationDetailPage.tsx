@@ -35,6 +35,7 @@ import { localKnowledgeService } from '../../lib/localKnowledgeService';
 import { CreateContributionModal } from '../contributions/CreateContributionModal';
 import { ContributionCard } from '../contributions/ContributionCard';
 import { RequestBusinessModal } from '../contributions/RequestBusinessModal';
+import { getContributorStanding } from '../../types/localKnowledge';
 import type { LocalContribution, LocalUserProfile, LocalMoment, ContributionType } from '../../types/localKnowledge';
 import type { ConfluxBusiness } from '../../types/business';
 import type { ArticleKnowledgeObject } from '../../types/article';
@@ -603,85 +604,105 @@ const LocationDetailPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
             <div>
               <span className="px-3 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-100 text-[10px] font-black tracking-widest uppercase mb-3 inline-flex items-center gap-1.5">
-                <Users size={14} className="text-purple-600" /> Locality Reputable Contributors
+                <Users size={14} className="text-purple-600" /> Trusted Local Contributors
               </span>
               <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-slate-900 tracking-tight">
-                Local Voices in {location.name}
+                Trusted People in {location.name}
               </h2>
               <p className="text-slate-500 font-medium text-sm mt-2 max-w-2xl">
-                Independent reporters, local residents, subject guides, and verified shop owners contributing ground-truth intelligence, field reviews, and local notices.
+                Longtime residents, local guides, and community contributors helping neighbors with verified ground updates.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsCreateModalOpen(true)}
-              className="inline-flex items-center gap-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 px-4 py-2.5 rounded-xl transition-all shadow-md shadow-purple-600/20 shrink-0 self-start sm:self-auto cursor-pointer"
-            >
-              <Plus size={14} /> Join as Contributor
-            </button>
+            <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
+              <Link
+                to="/my-local"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 px-4 py-2.5 rounded-xl transition-all cursor-pointer min-h-[44px]"
+              >
+                <span>Your Local Profile</span>
+                <ArrowRight size={14} />
+              </Link>
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(true)}
+                className="inline-flex items-center gap-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 px-4 py-2.5 rounded-xl transition-all shadow-md shadow-purple-600/20 cursor-pointer min-h-[44px]"
+              >
+                <Plus size={14} /> Join as Contributor
+              </button>
+            </div>
           </div>
 
           {localVoices.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {localVoices.map((voice) => (
-                <div
-                  key={voice.id}
-                  className="p-6 rounded-3xl bg-white border border-slate-200 hover:border-purple-300 hover:shadow-md transition-all flex flex-col justify-between"
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center font-black text-base shadow-sm">
-                          {voice.avatarUrl ? (
-                            <img src={voice.avatarUrl} alt={voice.displayName} className="w-full h-full object-cover rounded-2xl" />
-                          ) : (
-                            voice.displayName.charAt(0).toUpperCase()
-                          )}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-bold text-slate-900 text-sm">{voice.displayName}</span>
-                            {voice.isVerified && (
-                              <CheckCircle2 size={13} className="text-blue-600" title="Identity Verified" />
+              {localVoices.map((voice) => {
+                const standing = getContributorStanding({
+                  reputationScore: voice.reputationScore,
+                  locality: location.name,
+                  stats: voice.stats
+                });
+                return (
+                  <div
+                    key={voice.id}
+                    className="p-6 rounded-3xl bg-white border border-slate-200 hover:border-purple-300 hover:shadow-md transition-all flex flex-col justify-between"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center font-black text-base shadow-sm">
+                            {voice.avatarUrl ? (
+                              <img src={voice.avatarUrl} alt={voice.displayName} className="w-full h-full object-cover rounded-2xl" />
+                            ) : (
+                              voice.displayName.charAt(0).toUpperCase()
                             )}
                           </div>
-                          <span className="text-[11px] font-mono text-slate-400">@{voice.handle}</span>
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-bold text-slate-900 text-sm">{voice.displayName}</span>
+                              {voice.isVerifiedResident && (
+                                <CheckCircle2 size={13} className="text-blue-600" title="Identity Verified" />
+                              )}
+                            </div>
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border mt-0.5 ${standing.badgeClass}`}>
+                              <ShieldCheck size={11} />
+                              <span>{standing.label}</span>
+                            </span>
+                          </div>
+                        </div>
+                        <div className="px-2.5 py-1.5 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 text-center shrink-0">
+                          <span className="text-[8px] font-mono uppercase tracking-wider block text-purple-600 font-bold">Local Trust Score</span>
+                          <span className="text-sm font-black font-mono">{voice.reputationScore}</span>
                         </div>
                       </div>
-                      <div className="px-2.5 py-1 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 text-center">
-                        <span className="text-[9px] font-mono uppercase tracking-wider block text-purple-500">Rep Score</span>
-                        <span className="text-xs font-black font-mono">{voice.stats.reputationScore}</span>
-                      </div>
+
+                      {voice.bio && (
+                        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed italic">
+                          &ldquo;{voice.bio}&rdquo;
+                        </p>
+                      )}
+
+                      {voice.reputationBadges && voice.reputationBadges.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {voice.reputationBadges.map((b) => (
+                            <span
+                              key={b}
+                              className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1"
+                            >
+                              <span>★</span>
+                              <span>{b.replace(/_/g, ' ')}</span>
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
-                    {voice.bio && (
-                      <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                        {voice.bio}
-                      </p>
-                    )}
-
-                    {voice.badges && voice.badges.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {voice.badges.map((b) => (
-                          <span
-                            key={b.id}
-                            className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1"
-                            title={b.description}
-                          >
-                            <span>{b.icon || '🎖️'}</span>
-                            <span>{b.name}</span>
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                      <span className="font-mono">{voice.stats.contributionsCount} contributions</span>
+                      <span className="font-mono text-emerald-600 font-bold">
+                        {voice.stats.peopleHelpedCount ? `${voice.stats.peopleHelpedCount} helped` : `${voice.stats.confirmedUpdatesCount} confirmed`}
+                      </span>
+                    </div>
                   </div>
-
-                  <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                    <span className="font-mono">{voice.stats.contributionsCount} contributions</span>
-                    <span className="font-mono text-emerald-600 font-bold">{voice.stats.confirmationsReceived} confirmed</span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="p-8 text-center bg-slate-50 rounded-3xl border border-slate-200">

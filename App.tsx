@@ -43,6 +43,7 @@ import { MyLocalConfluxPage } from './components/user/MyLocalConfluxPage';
 import { AuthModal } from './components/auth/AuthModal';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { UserOnboardingPrompt } from './components/auth/UserOnboardingPrompt';
+import { UserOnboardingFlow } from './components/auth/UserOnboardingFlow';
 import { BottomNav } from './components/navigation/BottomNav';
 import { AuthProvider } from './lib/authContext';
 import { trackPageView } from './lib/analytics';
@@ -275,6 +276,14 @@ const routeMeta: Record<string, { title: string; description: string }> = {
   '/login': {
     title: 'Sign In | Conflux Platform Auth',
     description: 'Role-based access portal for administrators and verified business owners.'
+  },
+  '/register': {
+    title: 'Join Conflux AI | Local Citizen Profile & Contributor Onboarding',
+    description: 'Set up your authentic local identity, connect with your locality, and share verified updates to help neighbors across West Bengal.'
+  },
+  '/onboarding': {
+    title: 'Join Conflux AI | Local Citizen Profile & Contributor Onboarding',
+    description: 'Set up your authentic local identity, connect with your locality, and share verified updates to help neighbors across West Bengal.'
   }
 };
 
@@ -444,7 +453,8 @@ const App: React.FC = () => {
           <Route path="/admin/location-coverage" element={<LocationCoverageDashboard />} />
           <Route path="/login" element={<AuthModal />} />
           <Route path="/auth" element={<AuthModal />} />
-          <Route path="/register" element={<AuthModal />} />
+          <Route path="/register" element={<UserOnboardingFlow />} />
+          <Route path="/onboarding" element={<UserOnboardingFlow />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
 

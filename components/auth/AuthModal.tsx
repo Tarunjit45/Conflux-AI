@@ -136,13 +136,20 @@ export const AuthModal: React.FC = () => {
         </form>
 
         {/* Quick Helper Links */}
-        <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-500 gap-2">
-          <Link to="/discover" className="hover:text-blue-600 hover:underline">
-            ← Back to Discover Directory
-          </Link>
-          <Link to="/list-business" className="hover:text-emerald-700 hover:underline font-semibold">
-            Public Business Submission →
-          </Link>
+        <div className="pt-3 border-t border-slate-100 flex flex-col gap-2 text-xs text-slate-500">
+          <div className="flex items-center justify-between">
+            <Link to="/discover" className="hover:text-blue-600 hover:underline">
+              ← Back to Discover Directory
+            </Link>
+            <Link to="/list-business" className="hover:text-emerald-700 hover:underline font-semibold">
+              Public Business Submission →
+            </Link>
+          </div>
+          <div className="pt-1 text-center border-t border-slate-50">
+            <Link to="/onboarding" className="text-blue-600 font-bold hover:underline">
+              Not an administrator? Create your Local Citizen Profile &rarr;
+            </Link>
+          </div>
         </div>
 
       </motion.div>

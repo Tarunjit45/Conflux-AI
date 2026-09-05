@@ -26,7 +26,8 @@ import {
   HelpCircle,
   Sparkles,
   Check,
-  Navigation
+  Navigation,
+  Heart
 } from 'lucide-react';
 import { localKnowledgeService } from '../../lib/localKnowledgeService';
 import { useAuth } from '../../lib/authContext';
@@ -63,6 +64,26 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
   const [userRating, setUserRating] = useState<number | null>(null);
   const [isRating, setIsRating] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
+
+  const [hasMarkedHelpful, setHasMarkedHelpful] = useState(false);
+  const [isMarkingHelpful, setIsMarkingHelpful] = useState(false);
+  const [helpfulCount, setHelpfulCount] = useState(0);
+
+  // Handle "This helped me" tap
+  const handleMarkHelpful = async () => {
+    if (hasMarkedHelpful || isMarkingHelpful) return;
+    setIsMarkingHelpful(true);
+    try {
+      const actorId = user?.id || `usr_guest_${Date.now()}`;
+      await localKnowledgeService.markContributionHelpful(contribution.id, actorId);
+      setHasMarkedHelpful(true);
+      setHelpfulCount(prev => prev + 1);
+    } catch {
+      // Safe fallback
+    } finally {
+      setIsMarkingHelpful(false);
+    }
+  };
 
   // Handle Community Confirm
   const handleConfirm = async () => {
@@ -381,13 +402,33 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
 
       {/* ── 6. INTERACTION & ACTION TOOLBAR ────────────────────────── */}
       <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs">
-        {/* Community Confirmation & Dispute */}
-        <div className="flex items-center gap-2.5">
+        {/* Community Confirmation, Helpful & Dispute */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* This Helped Me Button */}
+          <button
+            type="button"
+            onClick={handleMarkHelpful}
+            disabled={hasMarkedHelpful || isMarkingHelpful}
+            className={`min-h-[44px] px-3.5 py-2 rounded-xl border flex items-center gap-1.5 font-bold transition-all cursor-pointer shadow-xs ${
+              hasMarkedHelpful
+                ? 'bg-rose-50 text-rose-700 border-rose-200'
+                : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'
+            }`}
+          >
+            <Heart size={14} className={hasMarkedHelpful ? 'fill-rose-600 text-rose-600' : 'text-slate-400'} />
+            <span>{hasMarkedHelpful ? 'Helped Me' : 'This helped me'}</span>
+            {helpfulCount > 0 && (
+              <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-100">
+                {helpfulCount}
+              </span>
+            )}
+          </button>
+
           <button
             type="button"
             onClick={handleConfirm}
             disabled={hasConfirmed || isConfirming}
-            className={`px-3.5 py-2 rounded-xl border flex items-center gap-2 font-bold transition-all cursor-pointer shadow-xs ${
+            className={`min-h-[44px] px-3.5 py-2 rounded-xl border flex items-center gap-2 font-bold transition-all cursor-pointer shadow-xs ${
               hasConfirmed
                 ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
                 : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'
@@ -403,7 +444,7 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
           <button
             type="button"
             onClick={() => setShowDisputeInput(!showDisputeInput)}
-            className="px-3 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+            className="min-h-[44px] px-3 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
             title="Dispute or submit correction"
           >
             <AlertCircle size={14} />

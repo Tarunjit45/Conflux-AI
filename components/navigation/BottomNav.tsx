@@ -46,7 +46,7 @@ export const BottomNav: React.FC = () => {
 
   const isTabActive = (tab: NavTab) => {
     if (tab.id === 'local') {
-      return pathname.startsWith('/locations');
+      return pathname.startsWith('/locations') || pathname.startsWith('/my-local') || pathname.startsWith('/onboarding') || pathname.startsWith('/register');
     }
     if (tab.id === 'business') {
       return pathname === '/business' || pathname.startsWith('/business/') || pathname === '/list-business';

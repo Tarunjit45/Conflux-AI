@@ -255,7 +255,11 @@ export class LocalKnowledgeService {
         confirmedUpdatesCount: 0,
         verifiedDiscoveriesCount: 0,
         helpfulCorrectionsCount: 0,
-        ratingsGivenCount: 0
+        ratingsGivenCount: 0,
+        peopleHelpedCount: 0,
+        helpfulVotesCount: 0,
+        accuracyPercentage: 100,
+        questionsResolvedCount: 0
       },
       explanation: 'Joined Conflux local knowledge network.',
       joinedDate: new Date().toISOString().split('T')[0]
@@ -287,7 +291,11 @@ export class LocalKnowledgeService {
         confirmedUpdatesCount: 0,
         verifiedDiscoveriesCount: 0,
         helpfulCorrectionsCount: 0,
-        ratingsGivenCount: 0
+        ratingsGivenCount: 0,
+        peopleHelpedCount: 0,
+        helpfulVotesCount: 0,
+        accuracyPercentage: 100,
+        questionsResolvedCount: 0
       },
       explanation: 'Local community contributor.',
       joinedDate: new Date().toISOString().split('T')[0]
@@ -336,12 +344,15 @@ export class LocalKnowledgeService {
     const stats = profile.stats;
     const badges: ReputationBadge[] = ['LOCAL_CONTRIBUTOR'];
 
-    // Scoring formula: Base(20) + (Contributions * 5) + (Confirmations * 10) + (Discoveries * 10) + (Corrections * 10)
+    // Scoring formula: Base(20) + (Contributions * 5) + (Confirmations * 10) + (Discoveries * 10) + (Corrections * 10) + (People Helped * 2)
     let score = 20;
     score += Math.min(30, stats.contributionsCount * 5);
     score += Math.min(30, stats.confirmedUpdatesCount * 10);
     score += Math.min(20, stats.verifiedDiscoveriesCount * 10);
     score += Math.min(20, stats.helpfulCorrectionsCount * 10);
+    if (stats.peopleHelpedCount) {
+      score += Math.min(15, stats.peopleHelpedCount * 2);
+    }
     score = Math.min(100, Math.max(0, score));
 
     if (stats.verifiedDiscoveriesCount >= 2) badges.push('BUSINESS_DISCOVERER');
@@ -357,10 +368,11 @@ export class LocalKnowledgeService {
     const parts: string[] = [];
     if (stats.contributionsCount > 0) parts.push(`${stats.contributionsCount} useful contributions`);
     if (stats.confirmedUpdatesCount > 0) parts.push(`${stats.confirmedUpdatesCount} community-confirmed updates`);
+    if ((stats.peopleHelpedCount || 0) > 0) parts.push(`${stats.peopleHelpedCount} people helped`);
     if (stats.verifiedDiscoveriesCount > 0) parts.push(`${stats.verifiedDiscoveriesCount} verified discoveries`);
     if (stats.helpfulCorrectionsCount > 0) parts.push(`${stats.helpfulCorrectionsCount} helpful corrections`);
 
-    profile.explanation = parts.length > 0 ? parts.join(' • ') : 'New contributor to Ranaghat local knowledge.';
+    profile.explanation = parts.length > 0 ? parts.join(' • ') : `New contributor to ${profile.locality || 'Ranaghat'} local knowledge.`;
     return profile;
   }
 
@@ -834,6 +846,11 @@ export class LocalKnowledgeService {
     const item = this.memoryContributions.find(c => c.id === id);
     if (!item) throw new Error('Contribution not found.');
 
+    // Anti-gaming: Authors cannot confirm their own contribution
+    if (item.author.id === userId) {
+      throw new Error('Self-confirmation is not allowed.');
+    }
+
     item.confirmationsCount += 1;
     item.lastCheckedAt = new Date().toISOString();
 
@@ -870,6 +887,44 @@ export class LocalKnowledgeService {
 
     this.persistLocal();
     return item;
+  }
+
+  /**
+   * "This helped me" human outcome attribution:
+   * Increments peopleHelpedCount and helpfulVotesCount for the author.
+   * Strictly tracks genuine user interactions. Never fabricates counts.
+   */
+  async markContributionHelpful(contributionId: string, userId: string): Promise<{ peopleHelpedCount: number; helpfulVotesCount: number }> {
+    const item = this.memoryContributions.find(c => c.id === contributionId);
+    if (!item) throw new Error('Contribution not found.');
+
+    // Anti-gaming: Authors cannot mark their own contribution as helpful
+    if (item.author.id === userId) {
+      throw new Error('Self-help feedback is not allowed.');
+    }
+
+    const authorProfile = await this.getLocalProfile(item.author.id);
+    if (!authorProfile) {
+      throw new Error('Author profile not found.');
+    }
+
+    authorProfile.stats.peopleHelpedCount = (authorProfile.stats.peopleHelpedCount || 0) + 1;
+    authorProfile.stats.helpfulVotesCount = (authorProfile.stats.helpfulVotesCount || 0) + 1;
+    this.recomputeReputation(authorProfile);
+    this.memoryProfiles.set(authorProfile.id, authorProfile);
+
+    // Telemetry
+    connectService.logEvent({
+      businessId: item.businessRef?.id || 'conflux_locality',
+      eventType: 'CONTRIBUTION_HELPED',
+      channel: 'HUMAN_WEB'
+    });
+
+    this.persistLocal();
+    return {
+      peopleHelpedCount: authorProfile.stats.peopleHelpedCount,
+      helpfulVotesCount: authorProfile.stats.helpfulVotesCount
+    };
   }
 
   /**
