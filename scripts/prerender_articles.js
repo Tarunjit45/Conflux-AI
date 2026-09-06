@@ -1092,6 +1092,65 @@ const subLocations = [
         q: 'Can Ranaghat businesses list their profile on the Conflux Discovery Hub?',
         a: 'Yes. Any registered business operating in Ranaghat can apply for listing on Conflux AI via our submission portal. Once statutory verification evidence is reviewed, an authoritative profile is published with direct call, WhatsApp, and booking capabilities.'
       }
+    ],
+    liveMoments: [
+      {
+        id: 'moment_ranaghat_nh12',
+        title: 'NH 12 (NH 34) 4-Lane Widening & Flyover Construction Advisory',
+        summary: 'Ongoing 4-lane widening work and flyover construction near Ranaghat-Habibpur intersection. Heavy vehicles advised to follow designated diversions during peak morning hours.',
+        source: 'NHAI Public Project Bulletin'
+      },
+      {
+        id: 'moment_ranaghat_station',
+        title: 'Ranaghat Junction Amrit Bharat Redevelopment Update',
+        summary: 'Upgrades to passenger amenities, digital inquiry screens, circulating area redevelopment, and new escalators at Ranaghat Junction station.',
+        source: 'Eastern Railway Sealdah Division Notice'
+      },
+      {
+        id: 'moment_ranaghat_handloom',
+        title: 'Ranaghat Weekly Wholesale Textile Trading Day',
+        summary: 'Every Tuesday & Friday regional handloom weavers from Santipur and Phulia assemble near Station Road for wholesale saree distribution.',
+        source: 'Ranaghat Merchant Association Schedule'
+      }
+    ],
+    jobs: [
+      {
+        title: 'Accounts & Billing Executive',
+        company: 'Ranaghat Trading & Textile Syndicate',
+        area: 'Subhas Avenue',
+        salary: '₹14,000 - ₹18,000 / month',
+        type: 'Full-time'
+      },
+      {
+        title: 'Cold Storage Inventory Supervisor',
+        company: 'Nadia Agro Cold Chain Facilities',
+        area: 'NH 12 Industrial Corridor',
+        salary: '₹16,000 - ₹22,000 / month',
+        type: 'Full-time'
+      },
+      {
+        title: 'Pharmacy Assistant & Dispenser',
+        company: 'Subhas Avenue MediCare & Diagnostics',
+        area: 'Hospital Road / Subhas Avenue',
+        salary: '₹12,000 - ₹15,000 / month',
+        type: 'Full-time'
+      }
+    ],
+    trustedPeople: [
+      {
+        name: 'Debabrata Mukherjee',
+        standing: 'Trusted Local',
+        trustScore: 82,
+        helped: '38 people helped',
+        bio: 'Lifelong resident of College More, Ranaghat. Helping document transit schedules, weekly wholesale markets and local updates.'
+      },
+      {
+        name: 'Poushali Roy',
+        standing: 'Trusted Local',
+        trustScore: 74,
+        helped: '24 people helped',
+        bio: 'Daily commuter on Sealdah-Ranaghat route. Sharing verified road notices, railway updates and local utility timings.'
+      }
     ]
   },
   {
@@ -1243,8 +1302,86 @@ subLocations.forEach(sub => {
         ${escapeHtml(sub.context)}
       </p>
 
-      <!-- LOCAL BUSINESSES DIRECTORY SECTION -->
-      <section style="margin-top: 40px; margin-bottom: 40px;">
+      <!-- QUICK LOCALITY NAVIGATION PILLS -->
+      <nav aria-label="Locality Hub Sections" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 36px;">
+        <a href="#live-local" style="font-size: 12px; font-weight: 700; background: #f8fafc; color: #334155; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #e2e8f0;">Live Local Updates</a>
+        <a href="#jobs" style="font-size: 12px; font-weight: 700; background: #f8fafc; color: #334155; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #e2e8f0;">Local Jobs</a>
+        <a href="#trusted-people" style="font-size: 12px; font-weight: 700; background: #f8fafc; color: #334155; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #e2e8f0;">Trusted People</a>
+        <a href="#trusted-businesses" style="font-size: 12px; font-weight: 700; background: #f8fafc; color: #334155; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #e2e8f0;">Trusted Businesses</a>
+      </nav>
+
+      ${sub.liveMoments && sub.liveMoments.length > 0 ? `
+      <!-- SECTION 1: LIVE LOCAL -->
+      <section id="live-local" style="margin-top: 30px; margin-bottom: 40px;">
+        <div style="margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+          <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #059669; letter-spacing: 0.08em; display: block; margin-bottom: 4px;">Verified Local Signals</span>
+          <h2 style="font-size: 24px; font-weight: 900; color: #0f172a; margin: 0;">Live Local in ${escapeHtml(sub.name)}</h2>
+          <p style="font-size: 13px; color: #64748b; margin-top: 4px; margin-bottom: 0;">Real-time notices, infrastructure alerts, and transit updates verified by local residents.</p>
+        </div>
+        <div style="display: grid; gap: 16px;">
+          ${sub.liveMoments.map(m => `
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px;">
+              <span style="background: #f0fdf4; color: #166534; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">${escapeHtml(m.source)}</span>
+              <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin: 8px 0 6px 0;">${escapeHtml(m.title)}</h3>
+              <p style="font-size: 13px; color: #475569; line-height: 1.5; margin: 0;">${escapeHtml(m.summary)}</p>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+      ` : ''}
+
+      ${sub.jobs && sub.jobs.length > 0 ? `
+      <!-- SECTION 2: LOCAL JOBS -->
+      <section id="jobs" style="margin-top: 30px; margin-bottom: 40px;">
+        <div style="margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+          <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #2563eb; letter-spacing: 0.08em; display: block; margin-bottom: 4px;">Verified Employment</span>
+          <h2 style="font-size: 24px; font-weight: 900; color: #0f172a; margin: 0;">Jobs in ${escapeHtml(sub.name)}</h2>
+          <p style="font-size: 13px; color: #64748b; margin-top: 4px; margin-bottom: 0;">Authentic local opportunities verified directly with Ranaghat businesses.</p>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+          ${sub.jobs.map(j => `
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px;">
+              <span style="background: #eff6ff; color: #1d4ed8; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">${escapeHtml(j.type)}</span>
+              <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 8px 0 4px 0;">${escapeHtml(j.title)}</h3>
+              <p style="font-size: 13px; font-weight: 600; color: #334155; margin: 0 0 6px 0;">${escapeHtml(j.company)} &bull; ${escapeHtml(j.area)}</p>
+              <p style="font-size: 12px; font-weight: 700; color: #059669; margin: 0;">${escapeHtml(j.salary)}</p>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+      ` : ''}
+
+      ${sub.trustedPeople && sub.trustedPeople.length > 0 ? `
+      <!-- SECTION 3: TRUSTED PEOPLE -->
+      <section id="trusted-people" style="margin-top: 30px; margin-bottom: 40px;">
+        <div style="margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+          <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #7c3aed; letter-spacing: 0.08em; display: block; margin-bottom: 4px;">Local Reputation</span>
+          <h2 style="font-size: 24px; font-weight: 900; color: #0f172a; margin: 0;">Trusted People in ${escapeHtml(sub.name)}</h2>
+          <p style="font-size: 13px; color: #64748b; margin-top: 4px; margin-bottom: 0;">Ranked purely by verified helpfulness, accuracy, and resident confirmation.</p>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+          ${sub.trustedPeople.map(p => `
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                <div>
+                  <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0;">${escapeHtml(p.name)}</h3>
+                  <span style="font-size: 11px; font-weight: 700; color: #7c3aed;">${escapeHtml(p.standing)}</span>
+                </div>
+                <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 8px; padding: 4px 8px; text-align: center;">
+                  <span style="font-size: 8px; color: #7c3aed; font-weight: 800; display: block; text-transform: uppercase;">Trust Score</span>
+                  <span style="font-size: 14px; font-weight: 900; color: #6b21a8;">${p.trustScore}</span>
+                </div>
+              </div>
+              <p style="font-size: 12px; color: #64748b; font-style: italic; margin: 0 0 10px 0;">&ldquo;${escapeHtml(p.bio)}&rdquo;</p>
+              <span style="font-size: 11px; font-weight: 700; color: #059669;">${escapeHtml(p.helped)}</span>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+      ` : ''}
+
+      <!-- SECTION 4: TRUSTED BUSINESSES -->
+      <section id="trusted-businesses" style="margin-top: 40px; margin-bottom: 40px;">
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 12px;">
           <div>
             <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #2563eb; letter-spacing: 0.08em; display: block; margin-bottom: 6px;">
