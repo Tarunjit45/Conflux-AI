@@ -28,8 +28,13 @@ import {
   Flame,
   Radio,
   Share2,
-  Briefcase
+  Briefcase,
+  Trash2,
+  Lock,
+  RefreshCw,
+  X
 } from 'lucide-react';
+import { useAuth } from '../../lib/authContext';
 import { trackLocationEvent } from '../../lib/locationAnalytics';
 import { businessService } from '../../lib/businessService';
 import { localKnowledgeService } from '../../lib/localKnowledgeService';
@@ -73,6 +78,70 @@ const LocationDetailPage: React.FC = () => {
   const [jobTypeFilter, setJobTypeFilter] = useState<'ALL' | JobType>('ALL');
   const [localSearchQuery, setLocalSearchQuery] = useState('');
   const [activeContribTab, setActiveContribTab] = useState<'ALL' | ContributionType>('ALL');
+
+  // Admin Moderation State
+  const { user, isAdmin, login, logout } = useAuth();
+  const isSuperAdmin = isAdmin || user?.role === 'ADMIN';
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [adminEmailInput, setAdminEmailInput] = useState('');
+  const [adminPasswordInput, setAdminPasswordInput] = useState('');
+  const [adminAuthError, setAdminAuthError] = useState('');
+  const [isSubmittingAdminAuth, setIsSubmittingAdminAuth] = useState(false);
+  const [isDeletingAll, setIsDeletingAll] = useState(false);
+
+  // Clean out any legacy test posts from localStorage on initial page load
+  useEffect(() => {
+    localKnowledgeService.purgeLocalTestData();
+  }, []);
+
+  const handleAdminLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmittingAdminAuth(true);
+    setAdminAuthError('');
+    try {
+      const res = await login(adminEmailInput.trim(), adminPasswordInput);
+      if (res.success) {
+        setIsAdminModalOpen(false);
+        setAdminPasswordInput('');
+        if (location) {
+          const fresh = await localKnowledgeService.getContributions({ locality: location.slug });
+          setContributions(fresh);
+        }
+      } else {
+        setAdminAuthError(res.error || 'Authentication failed. Please check password.');
+      }
+    } catch (err: any) {
+      setAdminAuthError(err?.message || 'Login error');
+    } finally {
+      setIsSubmittingAdminAuth(false);
+    }
+  };
+
+  const handleAdminDeleteAll = async () => {
+    if (!window.confirm('ADMIN CONFIRMATION:\n\nAre you sure you want to delete ALL community updates for Ranaghat from Supabase and local storage?\n\nThis will reset the page to the honest empty state.')) {
+      return;
+    }
+    setIsDeletingAll(true);
+    try {
+      await localKnowledgeService.deleteAllContributions('ranaghat');
+      localKnowledgeService.purgeLocalTestData();
+      setContributions([]);
+      alert('All Ranaghat community updates have been purged from the database and local cache.');
+    } catch (err: any) {
+      alert(`Error deleting contributions: ${err?.message || err}`);
+    } finally {
+      setIsDeletingAll(false);
+    }
+  };
+
+  const handlePurgeLocalCache = async () => {
+    localKnowledgeService.purgeLocalTestData();
+    if (location) {
+      const fresh = await localKnowledgeService.getContributions({ locality: location.slug });
+      setContributions(fresh);
+    }
+    alert('Local storage cache purged and feed re-synchronized from remote database.');
+  };
 
   const handleShareUpdateClick = () => {
     const profile = communityProfileService.getCommunityProfile();
@@ -198,6 +267,18 @@ const LocationDetailPage: React.FC = () => {
     : [...relevantArticles, ...districtArticles.filter(da => !relevantArticles.some(ra => ra.id === da.id))].slice(0, 4);
 
   const filteredContributions = contributions.filter(c => {
+    // Truth-first rule: Never show unverified posts to public visitors (unless author viewing own draft or logged-in admin)
+    const isAuthor = communityProfileService.getCommunityProfile()?.id === c.author?.id;
+    if (c.verificationState === 'UNVERIFIED' && !isAuthor && !isSuperAdmin) {
+      return false;
+    }
+
+    // Never display test accounts or synthetic author posts
+    const testNames = ['Rahul Debnath', 'Tanmoy Roy', 'Dr. Sukumar Roy', 'Anirban Mukherjee', 'Soumen Roy', 'Admin', 'Demo User', 'Test User'];
+    if (testNames.includes(c.author?.displayName) || c.author?.id?.startsWith('usr_test') || c.author?.id?.startsWith('usr_citizen')) {
+      return false;
+    }
+
     if (activeContribTab !== 'ALL' && c.type !== activeContribTab) {
       return false;
     }
@@ -590,6 +671,16 @@ const LocationDetailPage: React.FC = () => {
                     >
                       <Plus size={14} /> Share an Update
                     </button>
+                    {!isSuperAdmin && (
+                      <button
+                        type="button"
+                        onClick={() => setIsAdminModalOpen(true)}
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer min-h-[44px]"
+                        title="Admin Login & Moderation Controls"
+                      >
+                        <Lock size={13} /> Admin Mode
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => setIsRequestModalOpen(true)}
@@ -599,6 +690,53 @@ const LocationDetailPage: React.FC = () => {
                     </button>
                   </div>
                 </div>
+
+                {/* ── ADMIN MODERATION CONTROL BAR (WHEN ADMIN LOGGED IN) ────── */}
+                {isSuperAdmin && (
+                  <div className="mb-8 p-4.5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white border-2 border-red-500/40 shadow-xl flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white font-bold shadow-md shadow-red-600/30">
+                        <ShieldCheck size={20} />
+                      </div>
+                      <div>
+                        <div className="text-xs font-black font-orbitron tracking-wider flex items-center gap-2 text-red-400 uppercase">
+                          <span>Admin Moderation Active</span>
+                          <span className="bg-red-500/20 text-red-300 text-[10px] px-2 py-0.5 rounded-full border border-red-500/30">SUPER ADMIN</span>
+                        </div>
+                        <div className="text-[12px] text-slate-300 font-medium">
+                          Signed in as: <strong className="text-white">{user?.email || 'Admin'}</strong>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <button
+                        type="button"
+                        onClick={handleAdminDeleteAll}
+                        disabled={isDeletingAll}
+                        className="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-red-600/20 cursor-pointer disabled:opacity-50"
+                        title="Delete all community records from Supabase and local cache"
+                      >
+                        <Trash2 size={14} /> {isDeletingAll ? 'Deleting...' : 'Delete All Ranaghat Posts'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handlePurgeLocalCache}
+                        className="px-3.5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer border border-slate-600"
+                        title="Purge localStorage and reload from Supabase"
+                      >
+                        <RefreshCw size={13} /> Purge Cache &amp; Refresh
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => logout()}
+                        className="px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold transition-all cursor-pointer border border-slate-700"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Ground Truth Standard Notice */}
                 <div className="mb-8 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-600">
@@ -678,6 +816,10 @@ const LocationDetailPage: React.FC = () => {
                           <ContributionCard
                             key={contrib.id}
                             contribution={contrib}
+                            isAdmin={isSuperAdmin}
+                            onDelete={(deletedId) => {
+                              setContributions(prev => prev.filter(c => c.id !== deletedId));
+                            }}
                             onUpdated={(updated) => {
                               setContributions(prev => prev.map(c => c.id === updated.id ? updated : c));
                             }}
@@ -1692,12 +1834,16 @@ const LocationDetailPage: React.FC = () => {
                 </Link>
               </div>
 
-              {contributions.length > 0 ? (
+              {filteredContributions.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {contributions.slice(0, 2).map((contrib) => (
+                  {filteredContributions.slice(0, 2).map((contrib) => (
                     <ContributionCard
                       key={contrib.id}
                       contribution={contrib}
+                      isAdmin={isSuperAdmin}
+                      onDelete={(deletedId) => {
+                        setContributions(prev => prev.filter(c => c.id !== deletedId));
+                      }}
                       onUpdated={(updated) => {
                         setContributions(prev => prev.map(c => c.id === updated.id ? updated : c));
                       }}
@@ -2561,6 +2707,85 @@ const LocationDetailPage: React.FC = () => {
             // Demand request submitted
           }}
         />
+
+        {/* Admin Login Modal */}
+        {isAdminModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+            <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative">
+              <button
+                type="button"
+                onClick={() => setIsAdminModalOpen(false)}
+                className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all cursor-pointer"
+                title="Close"
+              >
+                <X size={18} />
+              </button>
+
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center font-bold shadow-md shadow-red-600/20">
+                  <ShieldCheck size={20} />
+                </div>
+                <div>
+                  <h3 className="font-orbitron font-bold text-lg text-slate-900">
+                    Admin Moderation Access
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Authenticate to manage, delete, or moderate community contributions.
+                  </p>
+                </div>
+              </div>
+
+              {adminAuthError && (
+                <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-xs font-semibold text-red-700">
+                  {adminAuthError}
+                </div>
+              )}
+
+              <form onSubmit={handleAdminLogin} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Admin Email</label>
+                  <input
+                    type="email"
+                    value={adminEmailInput}
+                    onChange={(e) => setAdminEmailInput(e.target.value)}
+                    required
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                    placeholder="admin@confluxai.in"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Password</label>
+                  <input
+                    type="password"
+                    value={adminPasswordInput}
+                    onChange={(e) => setAdminPasswordInput(e.target.value)}
+                    required
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                    placeholder="Enter password"
+                  />
+                </div>
+
+                <div className="pt-2 flex items-center justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsAdminModalOpen(false)}
+                    className="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-all cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmittingAdminAuth}
+                    className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-all shadow-md shadow-red-600/20 cursor-pointer disabled:opacity-50"
+                  >
+                    {isSubmittingAdminAuth ? 'Authenticating...' : 'Sign In as Admin'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -205,7 +205,19 @@ export class LocalKnowledgeService {
     if (typeof localStorage === 'undefined') return;
     try {
       const rawC = localStorage.getItem(LOCAL_STORAGE_CONTRIBUTIONS_KEY);
-      if (rawC) this.memoryContributions = JSON.parse(rawC);
+      if (rawC) {
+        const parsed: LocalContribution[] = JSON.parse(rawC);
+        const testAuthors = ['Rahul Debnath', 'Tanmoy Roy', 'Dr. Sukumar Roy', 'Anirban Mukherjee', 'Soumen Roy', 'Admin', 'Demo User', 'Test User'];
+        this.memoryContributions = parsed.filter(c =>
+          !c.id?.startsWith('cnt_test_') &&
+          !c.author?.id?.startsWith('usr_test') &&
+          !c.author?.id?.startsWith('usr_citizen') &&
+          !c.author?.id?.startsWith('usr_verified') &&
+          !c.author?.id?.startsWith('usr_newbie') &&
+          !c.author?.id?.startsWith('usr_device') &&
+          !testAuthors.includes(c.author?.displayName)
+        );
+      }
 
       const rawS = localStorage.getItem(LOCAL_STORAGE_SIGNALS_KEY);
       if (rawS) this.memorySignals = JSON.parse(rawS);
@@ -1105,33 +1117,22 @@ export class LocalKnowledgeService {
             return item;
           });
 
-          // Synchronize retrieved records into local cache
-          for (const item of list) {
-            const idx = this.memoryContributions.findIndex(c => c.id === item.id);
-            if (idx >= 0) this.memoryContributions[idx] = item;
-            else this.memoryContributions.push(item);
-          }
+          // Preserve active local non-published items (pending moderation / drafts)
+          const localNonPublished = this.memoryContributions.filter(c => c.status === 'PENDING_MODERATION' || c.status === 'FLAGGED');
+
+          // Authoritative sync: remote published records + active local pending/flagged items
+          this.memoryContributions = [
+            ...list,
+            ...localNonPublished.filter(lp => !list.some(item => item.id === lp.id))
+          ];
           this.persistLocal();
 
           if (filters.authorId) {
-            const localPending = this.memoryContributions.filter(c =>
+            const localPending = localNonPublished.filter(c =>
               c.author.id === filters.authorId &&
-              c.status === 'PENDING_MODERATION' &&
               !list.some(item => item.id === c.id)
             );
             list = [...list, ...localPending];
-          }
-
-          // Also include any locally published posts matching criteria
-          const localPublished = this.memoryContributions.filter(c =>
-            c.status === 'PUBLISHED' &&
-            !list.some(item => item.id === c.id) &&
-            (!filters.locality || c.locality.toLowerCase() === filters.locality.toLowerCase().trim()) &&
-            (!filters.businessId || c.businessRef?.id === filters.businessId) &&
-            (!filters.type || c.type === filters.type)
-          );
-          if (localPublished.length > 0) {
-            list = [...list, ...localPublished];
           }
 
           if (filters.query) {
@@ -1815,6 +1816,99 @@ export class LocalKnowledgeService {
     this.memoryContributions = this.memoryContributions.filter(c => c.id !== id);
     this.persistLocal();
     return true;
+  }
+
+  async verifyContribution(id: string): Promise<LocalContribution> {
+    const item = await this.getContributionById(id);
+    if (!item) throw new Error('Contribution not found.');
+
+    const now = new Date().toISOString();
+    const todayStr = now.split('T')[0];
+
+    const updatedDossier = {
+      ...item.trustDossier,
+      whatRemainsUncertain: 'None reported. Verified by Conflux administration.',
+      lastCheckedDate: todayStr
+    };
+
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('community_contributions')
+          .update({
+            verification_state: 'OFFICIALLY_VERIFIED',
+            provenance: 'FIELD_VERIFIED',
+            trust_dossier: updatedDossier,
+            updated_at: now,
+            last_checked_at: now
+          })
+          .eq('id', id)
+          .select()
+          .maybeSingle();
+
+        if (!error && data) {
+          const updated = this.mapSupabaseRowToContribution(data);
+          const idx = this.memoryContributions.findIndex(c => c.id === id);
+          if (idx >= 0) this.memoryContributions[idx] = updated;
+          this.persistLocal();
+          return updated;
+        }
+      } catch (err) {
+        console.warn('[LocalKnowledgeService.verifyContribution] Remote update notice:', err);
+      }
+    }
+
+    item.verificationState = 'OFFICIALLY_VERIFIED';
+    item.provenance = 'FIELD_VERIFIED';
+    item.trustDossier = updatedDossier;
+    item.updatedAt = now;
+    item.lastCheckedAt = now;
+    const idx = this.memoryContributions.findIndex(c => c.id === id);
+    if (idx >= 0) this.memoryContributions[idx] = item;
+    this.persistLocal();
+    return item;
+  }
+
+  async deleteAllContributions(locality?: string): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        let query = supabase.from('community_contributions').delete();
+        if (locality) {
+          query = query.ilike('locality', locality.trim());
+        } else {
+          query = query.neq('id', 'placeholder_keep_none');
+        }
+        const { error } = await query;
+        if (error) {
+          console.error('[LocalKnowledgeService.deleteAllContributions] Error deleting:', error);
+          throw new Error(`Failed to delete contributions: ${error.message}`);
+        }
+      } catch (err: any) {
+        console.error('[LocalKnowledgeService.deleteAllContributions] Exception:', err);
+        throw err;
+      }
+    }
+
+    if (locality) {
+      this.memoryContributions = this.memoryContributions.filter(
+        c => c.locality.toLowerCase() !== locality.toLowerCase().trim()
+      );
+    } else {
+      this.memoryContributions = [];
+    }
+    this.persistLocal();
+    return true;
+  }
+
+  purgeLocalTestData() {
+    this.memoryContributions = [];
+    this.memorySignals = [];
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.removeItem(LOCAL_STORAGE_CONTRIBUTIONS_KEY);
+        localStorage.removeItem(LOCAL_STORAGE_SIGNALS_KEY);
+      } catch (_) {}
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════════

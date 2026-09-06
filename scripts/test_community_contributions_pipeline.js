@@ -172,6 +172,13 @@ async function runCommunityPipelineTests() {
   console.log('\n--- 4. Admin Moderation Transitions ---');
 
   await asyncTest('Admin approval transitions PENDING_MODERATION post to PUBLISHED', async () => {
+    if (isSupabaseConfigured() && process.env.SUPABASE_ADMIN_EMAIL && process.env.SUPABASE_ADMIN_PASSWORD) {
+      await supabase.auth.signInWithPassword({
+        email: process.env.SUPABASE_ADMIN_EMAIL,
+        password: process.env.SUPABASE_ADMIN_PASSWORD
+      });
+    }
+
     const unverifiedContribs = await localKnowledgeService.getContributions({
       locality: 'ranaghat',
       authorId: unverifiedUser.id
@@ -181,6 +188,10 @@ async function runCommunityPipelineTests() {
 
     const approved = await localKnowledgeService.updateContributionStatus(pending.id, 'PUBLISHED');
     assert.strictEqual(approved.status, 'PUBLISHED');
+
+    if (isSupabaseConfigured()) {
+      await supabase.auth.signOut();
+    }
 
     // Device B now retrieves the approved post on public feed
     const deviceBFeedAfter = await localKnowledgeService.getContributions({ locality: 'ranaghat' });
@@ -239,6 +250,7 @@ async function runCommunityPipelineTests() {
         await supabase.from('community_contributions').delete().ilike('author_id', 'usr_test%');
         await supabase.from('community_contributions').delete().ilike('author_id', 'usr_device%');
         await supabase.from('community_contributions').delete().ilike('author_id', 'usr_verified%');
+        await supabase.from('community_contributions').delete().ilike('author_id', 'usr_unverified%');
       }
     } catch (cleanErr) {
       // Cleanup best effort

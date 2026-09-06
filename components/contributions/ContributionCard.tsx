@@ -27,7 +27,8 @@ import {
   Sparkles,
   Check,
   Navigation,
-  Heart
+  Heart,
+  Trash2
 } from 'lucide-react';
 import { localKnowledgeService } from '../../lib/localKnowledgeService';
 import { useAuth } from '../../lib/authContext';
@@ -37,15 +38,54 @@ interface ContributionCardProps {
   contribution: LocalContribution;
   onUpdated?: (updated: LocalContribution) => void;
   onReportClick?: (contributionId: string) => void;
+  onDelete?: (contributionId: string) => void;
+  isAdmin?: boolean;
 }
 
 export const ContributionCard: React.FC<ContributionCardProps> = ({
   contribution: initialContribution,
   onUpdated,
-  onReportClick
+  onReportClick,
+  onDelete,
+  isAdmin = false
 }) => {
   const { user } = useAuth();
   const [contribution, setContribution] = useState<LocalContribution>(initialContribution);
+
+  const effectiveIsAdmin = isAdmin || user?.role === 'ADMIN';
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  const handleAdminVerify = async () => {
+    if (!window.confirm(`Admin: Verify and certify "${contribution.title}" as officially verified?`)) {
+      return;
+    }
+    setIsVerifying(true);
+    try {
+      const updated = await localKnowledgeService.verifyContribution(contribution.id);
+      setContribution(updated);
+      onUpdated?.(updated);
+    } catch (err: any) {
+      alert(`Failed to verify contribution: ${err?.message || err}`);
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleAdminDelete = async () => {
+    if (!window.confirm(`Admin: Delete "${contribution.title}"? This cannot be undone.`)) {
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      await localKnowledgeService.deleteContribution(contribution.id);
+      onDelete?.(contribution.id);
+    } catch (err: any) {
+      alert(`Failed to delete contribution: ${err?.message || err}`);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const [hasConfirmed, setHasConfirmed] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
@@ -253,8 +293,32 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
           </div>
         </div>
 
-        {/* Type Badge & Report */}
-        <div className="flex items-center gap-2.5">
+        {/* Type Badge, Admin Delete & Report */}
+        <div className="flex items-center gap-2">
+          {effectiveIsAdmin && (
+            <>
+              {contribution.verificationState !== 'OFFICIALLY_VERIFIED' && (
+                <button
+                  type="button"
+                  onClick={handleAdminVerify}
+                  disabled={isVerifying}
+                  className="px-2.5 py-1 text-xs font-bold text-emerald-700 hover:text-white bg-emerald-50 hover:bg-emerald-600 border border-emerald-300 hover:border-emerald-600 rounded-lg transition-all flex items-center gap-1 cursor-pointer shadow-sm disabled:opacity-50"
+                  title="Officially verify this contribution (Admin)"
+                >
+                  <ShieldCheck size={12} /> {isVerifying ? 'Verifying...' : 'Verify'}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={handleAdminDelete}
+                disabled={isDeleting}
+                className="px-2.5 py-1 text-xs font-bold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 border border-red-200 hover:border-red-600 rounded-lg transition-all flex items-center gap-1 cursor-pointer shadow-sm disabled:opacity-50"
+                title="Delete this contribution (Admin)"
+              >
+                <Trash2 size={12} /> {isDeleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </>
+          )}
           <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase border ${getTypeBadge(contribution.type)}`}>
             {contribution.type}
           </span>
