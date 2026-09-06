@@ -356,7 +356,12 @@ const fixedStaticRoutes = [
   { path: '/workplace-policy', expectedH1: 'Workplace Policy & Operating Principles' },
   { path: '/authority', expectedH1: 'Technical Authority & Security Standards' },
   { path: '/semantic-map', expectedH1: 'Generative Engine Optimization & Semantic Map' },
-  { path: '/locations/west-bengal/nadia/ranaghat', expectedH1: 'Local Business Visibility, Verification & Automation in Ranaghat' }
+  { path: '/locations/west-bengal/nadia/ranaghat', expectedH1: 'Ranaghat' },
+  { path: '/locations/west-bengal/nadia/ranaghat/live', expectedH1: 'Live Local Ranaghat' },
+  { path: '/locations/west-bengal/nadia/ranaghat/jobs', expectedH1: 'Jobs in Ranaghat' },
+  { path: '/locations/west-bengal/nadia/ranaghat/people', expectedH1: 'Trusted People in Ranaghat' },
+  { path: '/locations/west-bengal/nadia/ranaghat/businesses', expectedH1: 'Verified Businesses in Ranaghat' },
+  { path: '/locations/west-bengal/nadia/ranaghat/ask', expectedH1: 'Ask Ranaghat' }
 ];
 
 console.log('\n--- Running Fixed Static Routes Inspection ---');

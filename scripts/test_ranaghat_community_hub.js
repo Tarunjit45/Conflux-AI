@@ -543,6 +543,106 @@ async function runTests() {
   );
 
   // ───────────────────────────────────────────────────────────────────
+  // TEST GROUP 7: RANAGHAT MULTI-INTENT ARCHITECTURE & TELEMETRY
+  // ───────────────────────────────────────────────────────────────────
+  console.log('\n--- 7. RANAGHAT MULTI-INTENT ARCHITECTURE & TELEMETRY ---');
+
+  // Check LocationDetailPage.tsx telemetry events
+  const locationDetailCode = fs.readFileSync('components/locations/LocationDetailPage.tsx', 'utf8');
+  const expectedTelemetryEvents = [
+    'RANAGHAT_HUB_VIEW',
+    'LIVE_LOCAL_OPEN',
+    'JOBS_OPEN',
+    'TRUSTED_PEOPLE_OPEN',
+    'BUSINESSES_OPEN',
+    'ASK_RANAGHAT_OPEN'
+  ];
+
+  expectedTelemetryEvents.forEach(evt => {
+    assert(
+      `Telemetry event ${evt} is wired in LocationDetailPage`,
+      locationDetailCode.includes(evt),
+      `LocationDetailPage check for ${evt}`
+    );
+  });
+
+  // Check that all 5 child subpages and the main hub have prerendered HTML snapshots
+  const childSubPages = ['live', 'jobs', 'people', 'businesses', 'ask'];
+  const hubHtmlPath = 'dist/locations/west-bengal/nadia/ranaghat/index.html';
+  assert(
+    'Main Ranaghat Hub prerendered HTML exists in dist/',
+    fs.existsSync(hubHtmlPath)
+  );
+
+  if (fs.existsSync(hubHtmlPath)) {
+    const hubHtml = fs.readFileSync(hubHtmlPath, 'utf8');
+    assert(
+      'Main Ranaghat Hub has exact canonical and single H1 "Ranaghat"',
+      hubHtml.includes('<link rel="canonical" href="https://confluxai.in/locations/west-bengal/nadia/ranaghat"') &&
+      (hubHtml.match(/<h1[^>]*>([\s\S]*?)<\/h1>/gi) || []).length === 1 &&
+      /<h1[^>]*>\s*Ranaghat\s*<\/h1>/i.test(hubHtml),
+      'Hub HTML H1 check'
+    );
+    assert(
+      'Main Ranaghat Hub contains 5-Intent Mobile-First Chooser linking to child routes',
+      hubHtml.includes('/locations/west-bengal/nadia/ranaghat/live') &&
+      hubHtml.includes('/locations/west-bengal/nadia/ranaghat/jobs') &&
+      hubHtml.includes('/locations/west-bengal/nadia/ranaghat/people') &&
+      hubHtml.includes('/locations/west-bengal/nadia/ranaghat/businesses') &&
+      hubHtml.includes('/locations/west-bengal/nadia/ranaghat/ask'),
+      'Hub HTML intent chooser links check'
+    );
+    assert(
+      'Section 9 Invariant: Ranaghat hub has zero agency sales / automation consulting pitches',
+      !hubHtml.includes('Schedule a direct video consultation with our Kolkata engineering team') &&
+      hubHtml.includes('Do You Run a Business in Ranaghat?'),
+      'Agency pitch removal check'
+    );
+  }
+
+  childSubPages.forEach(sub => {
+    const subHtmlPath = `dist/locations/west-bengal/nadia/ranaghat/${sub}/index.html`;
+    assert(
+      `Dedicated Child Page /${sub} prerendered HTML exists in dist/`,
+      fs.existsSync(subHtmlPath)
+    );
+    if (fs.existsSync(subHtmlPath)) {
+      const subHtml = fs.readFileSync(subHtmlPath, 'utf8');
+      const expectedCanonical = `https://confluxai.in/locations/west-bengal/nadia/ranaghat/${sub}`;
+      assert(
+        `Child page /${sub} has self-referencing canonical and single H1`,
+        subHtml.includes(`<link rel="canonical" href="${expectedCanonical}"`) &&
+        (subHtml.match(/<h1[^>]*>([\s\S]*?)<\/h1>/gi) || []).length === 1,
+        `Child page /${sub} canonical/H1 check`
+      );
+      assert(
+        `Child page /${sub} contains Cross-Intent navigation linking back to Ranaghat Hub`,
+        subHtml.includes('/locations/west-bengal/nadia/ranaghat') &&
+        subHtml.includes('&larr; Ranaghat Hub'),
+        `Child page /${sub} cross-nav check`
+      );
+    }
+  });
+
+  // Check App.tsx has registered child routes
+  const appCode = fs.readFileSync('App.tsx', 'utf8');
+  assert(
+    'App.tsx has registered subPage routes for district & city',
+    appCode.includes('path="/locations/:districtSlug/:citySlug/:subPage"') &&
+    appCode.includes('path="/locations/west-bengal/:districtSlug/:citySlug/:subPage"'),
+    'App.tsx subPage route registration'
+  );
+
+  // Check sitemap contains all 6 Ranaghat routes
+  const sitemapXml = fs.readFileSync('public/sitemap.xml', 'utf8');
+  assert(
+    'sitemap.xml contains Ranaghat hub and all 5 dedicated sub-intents',
+    sitemapXml.includes('<loc>https://confluxai.in/locations/west-bengal/nadia/ranaghat</loc>') &&
+    childSubPages.every(sub => sitemapXml.includes(`<loc>https://confluxai.in/locations/west-bengal/nadia/ranaghat/${sub}</loc>`)),
+    'sitemap.xml Ranaghat URLs check'
+  );
+
+  // ───────────────────────────────────────────────────────────────────
   // SUMMARY
   // ───────────────────────────────────────────────────────────────────
   console.log('\n======================================================================');

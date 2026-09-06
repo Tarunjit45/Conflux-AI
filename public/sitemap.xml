@@ -595,6 +595,36 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://confluxai.in/locations/west-bengal/nadia/ranaghat/live</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/locations/west-bengal/nadia/ranaghat/jobs</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/locations/west-bengal/nadia/ranaghat/people</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/locations/west-bengal/nadia/ranaghat/businesses</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://confluxai.in/locations/west-bengal/nadia/ranaghat/ask</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
     <loc>https://confluxai.in/business/india/west-bengal/nadia/birnagar/a2z-supplements</loc>
     <lastmod>2026-09-04</lastmod>
     <changefreq>weekly</changefreq>

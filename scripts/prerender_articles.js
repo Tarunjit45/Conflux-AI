@@ -1021,9 +1021,9 @@ const subLocations = [
     name: 'Ranaghat',
     districtSlug: 'nadia',
     districtName: 'Nadia',
-    title: 'Local Business Visibility & Verification in Ranaghat | Conflux AI',
-    desc: 'Conflux AI is a Local Visibility + Trust Platform helping businesses across Ranaghat, Nadia become discoverable, trusted, and contactable across Google and AI search.',
-    h1: 'Local Business Visibility, Verification & Automation in Ranaghat',
+    title: 'Ranaghat Local Community Hub | Live Updates, Jobs & Verified Businesses | Conflux AI',
+    desc: 'Your trusted local guide to Ranaghat, Nadia. Discover live community updates, verified local jobs, trusted residents, and statutory business listings.',
+    h1: 'Ranaghat',
     context: 'Ranaghat is a vital railway logistics junction and primary commercial trading hub connecting Kolkata to Central and Northern Nadia along NH 12 (formerly NH 34). The municipality anchors major wholesale trade in FMCG grocery distribution, agro-processing, healthcare diagnostics, food manufacturing, and textile supply. With substantial daily trading volumes transacted through Station Road Market, Rathtala, Subhas Avenue, and the NH 12 industrial corridor, Ranaghat commercial distributors and service providers benefit from verified entity discovery, direct WhatsApp order routing, and digital lead synchronization.',
     hubs: [
       'Ranaghat Station Road Wholesale Market',
@@ -1181,6 +1181,7 @@ const subLocations = [
 ];
 
 subLocations.forEach(sub => {
+  const isRanaghat = sub.slug === 'ranaghat';
   const fullUrl = `https://confluxai.in/locations/west-bengal/${sub.districtSlug}/${sub.slug}`;
   
   const webPageSchema = {
@@ -1286,6 +1287,47 @@ subLocations.forEach(sub => {
         ${escapeHtml(sub.context)}
       </p>
 
+      ${isRanaghat ? `
+      <!-- 5-INTENT MOBILE-FIRST CHOOSER (SECTIONS 12 & 15) -->
+      <section aria-label="Ranaghat Intent Chooser" style="margin-bottom: 36px;">
+        <h2 style="font-size: 13px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.08em; margin-bottom: 14px;">What do you need in Ranaghat?</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/live" style="display: block; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; padding: 18px; text-decoration: none; min-height: 44px;">
+            <div style="font-size: 22px; margin-bottom: 6px;">📢</div>
+            <div style="font-size: 16px; font-weight: 900; color: #166534; margin-bottom: 4px;">Live Local</div>
+            <p style="font-size: 12px; color: #15803d; margin: 0; line-height: 1.4;">Real-time transit notices, traffic alerts, power updates, and community bulletins.</p>
+          </a>
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/jobs" style="display: block; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 14px; padding: 18px; text-decoration: none; min-height: 44px;">
+            <div style="font-size: 22px; margin-bottom: 6px;">💼</div>
+            <div style="font-size: 16px; font-weight: 900; color: #1d4ed8; margin-bottom: 4px;">Jobs</div>
+            <p style="font-size: 12px; color: #1e40af; margin: 0; line-height: 1.4;">Authentic and verified job openings across retail, wholesale, accounts, and services.</p>
+          </a>
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/people" style="display: block; background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 14px; padding: 18px; text-decoration: none; min-height: 44px;">
+            <div style="font-size: 22px; margin-bottom: 6px;">👥</div>
+            <div style="font-size: 16px; font-weight: 900; color: #6b21a8; margin-bottom: 4px;">Trusted People</div>
+            <p style="font-size: 12px; color: #7e22ce; margin: 0; line-height: 1.4;">Real verified residents and community helpers ranked strictly by verified accuracy.</p>
+          </a>
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/businesses" style="display: block; background: #fefce8; border: 1px solid #fef08a; border-radius: 14px; padding: 18px; text-decoration: none; min-height: 44px;">
+            <div style="font-size: 22px; margin-bottom: 6px;">🏬</div>
+            <div style="font-size: 16px; font-weight: 900; color: #854d0e; margin-bottom: 4px;">Businesses</div>
+            <p style="font-size: 12px; color: #a16207; margin: 0; line-height: 1.4;">Statutory verified commercial enterprises, wholesale distributors, and retail shops.</p>
+          </a>
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/ask" style="display: block; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 14px; padding: 18px; text-decoration: none; min-height: 44px;">
+            <div style="font-size: 22px; margin-bottom: 6px;">💬</div>
+            <div style="font-size: 16px; font-weight: 900; color: #0369a1; margin-bottom: 4px;">Ask Ranaghat</div>
+            <p style="font-size: 12px; color: #0284c7; margin: 0; line-height: 1.4;">Ask any question about Ranaghat and find answers grounded in verified local evidence.</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- LOCALITY SEARCH BAR -->
+      <div style="margin-bottom: 36px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px 20px;">
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <input type="text" placeholder="Search Ranaghat updates, jobs, doctors, places..." style="flex: 1; min-width: 220px; min-height: 44px; padding: 10px 16px; font-size: 16px; border: 1px solid #cbd5e1; border-radius: 10px; font-family: inherit;" />
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/ask" style="background: #2563eb; color: white; min-height: 44px; padding: 10px 20px; border-radius: 10px; font-weight: 700; font-size: 14px; text-decoration: none; display: inline-flex; align-items: center;">Search Ranaghat &rarr;</a>
+        </div>
+      </div>
+      ` : `
       <!-- QUICK LOCALITY NAVIGATION PILLS -->
       <nav aria-label="Locality Hub Sections" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 36px;">
         <a href="#live-local" style="font-size: 12px; font-weight: 700; background: #f8fafc; color: #334155; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #e2e8f0;">Live Local Updates</a>
@@ -1293,6 +1335,7 @@ subLocations.forEach(sub => {
         <a href="#trusted-people" style="font-size: 12px; font-weight: 700; background: #f8fafc; color: #334155; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #e2e8f0;">Trusted People</a>
         <a href="#trusted-businesses" style="font-size: 12px; font-weight: 700; background: #f8fafc; color: #334155; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #e2e8f0;">Trusted Businesses</a>
       </nav>
+      `}
 
       ${sub.liveMoments && sub.liveMoments.length > 0 ? `
       <!-- SECTION 1: LIVE LOCAL -->
@@ -1311,6 +1354,11 @@ subLocations.forEach(sub => {
             </div>
           `).join('')}
         </div>
+        ${isRanaghat ? `
+        <div style="margin-top: 16px;">
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/live" style="font-size: 13px; font-weight: 800; color: #059669; text-decoration: none;">View all Live Local &rarr;</a>
+        </div>
+        ` : ''}
       </section>
       ` : ''}
 
@@ -1332,6 +1380,11 @@ subLocations.forEach(sub => {
             </div>
           `).join('')}
         </div>
+        ${isRanaghat ? `
+        <div style="margin-top: 16px;">
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/jobs" style="font-size: 13px; font-weight: 800; color: #2563eb; text-decoration: none;">View all Jobs &rarr;</a>
+        </div>
+        ` : ''}
       </section>
       ` : ''}
 
@@ -1364,7 +1417,10 @@ subLocations.forEach(sub => {
         ` : `
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 28px; text-align: center;">
           <p style="font-size: 15px; font-weight: 700; color: #1e293b; margin: 0 0 6px 0;">Trusted People is growing.</p>
-          <p style="font-size: 13px; color: #64748b; margin: 0;">Verified local members will appear here as they complete Conflux verification.</p>
+          <p style="font-size: 13px; color: #64748b; margin: 0 ${isRanaghat ? '0 12px 0' : ''};">Verified local members will appear here as they complete Conflux verification.</p>
+          ${isRanaghat ? `
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/people" style="font-size: 13px; font-weight: 800; color: #7c3aed; text-decoration: none;">View all Trusted People &rarr;</a>
+          ` : ''}
         </div>
         `}
       </section>
@@ -1419,12 +1475,27 @@ subLocations.forEach(sub => {
           <p style="font-size: 13px; color: #64748b; max-width: 500px; margin: 0 auto 20px auto; line-height: 1.5;">
             Are you a registered business owner or distributor in ${escapeHtml(sub.name)}? Apply for verification to publish your evidence-backed profile with direct WhatsApp routing.
           </p>
-          <a href="/list-business" style="display: inline-block; background: #2563eb; color: white; padding: 10px 20px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 12px;">
-            List Your ${escapeHtml(sub.name)} Business &rarr;
-          </a>
+          <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+            ${isRanaghat ? `
+            <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/businesses" style="font-size: 12px; font-weight: 800; color: #2563eb; text-decoration: none; padding: 10px 16px;">View all Businesses &rarr;</a>
+            ` : ''}
+            <a href="/list-business" style="display: inline-block; background: #2563eb; color: white; padding: 10px 20px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 12px;">
+              List Your ${escapeHtml(sub.name)} Business &rarr;
+            </a>
+          </div>
         </div>
         `}
       </section>
+
+      ${isRanaghat ? `
+      <!-- SECTION 5: ASK RANAGHAT PREVIEW (SECTION 8) -->
+      <section style="margin-top: 30px; margin-bottom: 40px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 16px; padding: 24px;">
+        <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #0284c7; letter-spacing: 0.08em; display: block; margin-bottom: 4px;">Local Knowledge Grounding</span>
+        <h2 style="font-size: 22px; font-weight: 900; color: #0f172a; margin: 0 0 6px 0;">Ask Something About Ranaghat</h2>
+        <p style="font-size: 13px; color: #475569; margin: 0 0 16px 0; line-height: 1.5;">Find answers grounded in verified local evidence, live transit updates, and community records. Zero fabricated answers.</p>
+        <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/ask" style="display: inline-block; background: #0284c7; color: white; padding: 10px 20px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 13px;">Ask Ranaghat &rarr;</a>
+      </section>
+      ` : ''}
 
       <!-- KEY COMMERCIAL TRADING CORRIDORS -->
       <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 32px;">
@@ -1563,6 +1634,23 @@ subLocations.forEach(sub => {
       </section>
       ` : ''}
 
+      ${isRanaghat ? `
+      <!-- SECTION 9: UTILITY CALLOUT (ZERO SALES/AGENCY PITCH) -->
+      <div style="margin-top: 40px; padding: 32px; background: #0f172a; border-radius: 20px; color: white; text-align: center;">
+        <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 10px;">Do You Run a Business in ${escapeHtml(sub.name)}?</h3>
+        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+          Get your business verified on Conflux AI, rank across Google Maps and AI search engines, and connect directly with local customers via WhatsApp.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+          <a href="/list-business" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 13px;">
+            List Your ${escapeHtml(sub.name)} Business &rarr;
+          </a>
+          <a href="/business" style="display: inline-block; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 12px 24px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 13px;">
+            Explore Business Solutions &rarr;
+          </a>
+        </div>
+      </div>
+      ` : `
       <div style="margin-top: 40px; padding: 32px; background: #0f172a; border-radius: 20px; color: white; text-align: center;">
         <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 10px;">Grow Your ${escapeHtml(sub.name)} Business Operations</h3>
         <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">
@@ -1577,12 +1665,214 @@ subLocations.forEach(sub => {
           </a>
         </div>
       </div>
+      `}
     </main>
   </div>
   `;
 
   writePage(`/locations/west-bengal/${sub.districtSlug}/${sub.slug}`, sub.title, sub.desc, fullUrl, subSchemas, subHtml);
   subLocationCount++;
+
+  // Dedicated Child Pages for Ranaghat (Section 10 & 11)
+  if (isRanaghat) {
+    const ranaghatSubPages = [
+      {
+        slug: 'live',
+        name: 'Live Local',
+        title: 'Live Local Ranaghat | Real-Time Transit, Road Notices & Utility Updates | Conflux AI',
+        desc: 'Real-time community updates for Ranaghat: Sealdah train timings, road notices, power cuts, market haat schedules, and civic signals verified by local residents.',
+        h1: 'Live Local Ranaghat',
+        lead: 'Verified real-time notices, infrastructure alerts, road advisories, and transit updates across Ranaghat, Nadia.',
+        content: `
+          <div style="display: grid; gap: 16px; margin-bottom: 30px;">
+            ${(sub.liveMoments || []).map(m => `
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px;">
+                <span style="background: #f0fdf4; color: #166534; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">${escapeHtml(m.source)}</span>
+                <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin: 8px 0 6px 0;">${escapeHtml(m.title)}</h3>
+                <p style="font-size: 13px; color: #475569; line-height: 1.5; margin: 0;">${escapeHtml(m.summary)}</p>
+              </div>
+            `).join('')}
+          </div>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; text-align: center;">
+            <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Have a Real-Time Update or Civic Notice?</h3>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">Share verified local road, train, or power updates with Ranaghat residents.</p>
+            <a href="/onboarding" style="display: inline-block; background: #059669; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; text-decoration: none;">Submit Live Update &rarr;</a>
+          </div>
+        `
+      },
+      {
+        slug: 'jobs',
+        name: 'Jobs',
+        title: 'Ranaghat Jobs | Verified Local Employment & Hiring in Ranaghat, Nadia | Conflux AI',
+        desc: 'Find authentic, verified job openings and local hiring in Ranaghat, Nadia. Retail, accounting, pharmacy, sales, and logistics jobs verified by Conflux AI.',
+        h1: 'Jobs in Ranaghat',
+        lead: 'Authentic local employment opportunities in Ranaghat, Nadia verified directly with local employers and businesses.',
+        content: `
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 30px;">
+            ${(sub.jobs || []).map(j => `
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px;">
+                <span style="background: #eff6ff; color: #1d4ed8; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">${escapeHtml(j.type)}</span>
+                <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 8px 0 4px 0;">${escapeHtml(j.title)}</h3>
+                <p style="font-size: 13px; font-weight: 600; color: #334155; margin: 0 0 6px 0;">${escapeHtml(j.company)} &bull; ${escapeHtml(j.area)}</p>
+                <p style="font-size: 12px; font-weight: 700; color: #059669; margin: 0;">${escapeHtml(j.salary)}</p>
+              </div>
+            `).join('')}
+          </div>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; text-align: center;">
+            <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Hiring Locally in Ranaghat?</h3>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">Post your opening and reach verified job seekers across Ranaghat.</p>
+            <a href="/locations/west-bengal/nadia/ranaghat/jobs" style="display: inline-block; background: #2563eb; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; text-decoration: none;">Post a Local Job &rarr;</a>
+          </div>
+        `
+      },
+      {
+        slug: 'people',
+        name: 'Trusted People',
+        title: 'Trusted People in Ranaghat | Verified Local Residents & Helpers | Conflux AI',
+        desc: 'Directory of verified residents and active community helpers in Ranaghat, Nadia. Grounded in authentic local contributions and verified evidence.',
+        h1: 'Trusted People in Ranaghat',
+        lead: 'Community contributors and verified residents in Ranaghat, Nadia ranked strictly by verified accuracy and helpfulness.',
+        content: `
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 36px 24px; text-align: center; margin-bottom: 30px;">
+            <h3 style="font-size: 18px; font-weight: 800; color: #1e293b; margin: 0 0 8px 0;">Trusted People is growing.</h3>
+            <p style="font-size: 14px; color: #64748b; margin: 0 0 20px 0; max-width: 540px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+              Verified local members will appear here as they complete Conflux verification. We never fabricate member profiles or seed fake activity.
+            </p>
+            <a href="/onboarding" style="display: inline-block; background: #7c3aed; color: white; padding: 10px 22px; border-radius: 10px; font-weight: 700; font-size: 13px; text-decoration: none;">
+              Join as a Local Contributor &rarr;
+            </a>
+          </div>
+        `
+      },
+      {
+        slug: 'businesses',
+        name: 'Verified Businesses',
+        title: 'Ranaghat Business Directory | Verified Shops, Doctors & Services | Conflux AI',
+        desc: 'Authoritative directory of verified local businesses, healthcare clinics, wholesale distributors, and shops in Ranaghat, Nadia with statutory proof.',
+        h1: 'Verified Businesses in Ranaghat',
+        lead: 'Statutory verified commercial enterprises, wholesale distributors, retail shops, and healthcare clinics in Ranaghat, Nadia.',
+        content: `
+          <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 16px; padding: 36px 24px; text-align: center; margin-bottom: 30px;">
+            <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">No Verified Businesses Publicly Listed Yet for Ranaghat</h3>
+            <p style="font-size: 14px; color: #64748b; max-width: 520px; margin: 0 auto 20px auto; line-height: 1.5;">
+              Are you a registered business owner, distributor, or clinic operator in Ranaghat? Apply for Conflux statutory verification to publish your evidence-backed profile.
+            </p>
+            <a href="/list-business" style="display: inline-block; background: #2563eb; color: white; padding: 10px 22px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 13px;">
+              List Your Ranaghat Business &rarr;
+            </a>
+          </div>
+        `
+      },
+      {
+        slug: 'ask',
+        name: 'Ask Ranaghat',
+        title: 'Ask Ranaghat | Local Knowledge & Verified Community Answers | Conflux AI',
+        desc: 'Ask anything about Ranaghat. Search across live transit notices, verified doctors, market schedules, municipal updates, and community contributions.',
+        h1: 'Ask Ranaghat',
+        lead: 'Ask anything about Ranaghat. Search across live transit updates, train timings, verified clinics, wholesale market days, and community intelligence.',
+        content: `
+          <div style="background: white; border: 2px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+              <input type="text" placeholder="Ask anything about Ranaghat (e.g., train timings, doctors, markets)..." style="flex: 1; min-width: 260px; min-height: 48px; padding: 12px 18px; font-size: 16px; border: 1px solid #cbd5e1; border-radius: 10px; font-family: inherit;" />
+              <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/ask" style="background: #2563eb; color: white; min-height: 48px; padding: 12px 24px; border-radius: 10px; font-weight: 700; font-size: 14px; text-decoration: none; display: inline-flex; align-items: center;">Ask Question</a>
+            </div>
+            <p style="font-size: 12px; color: #94a3b8; margin: 12px 0 0 0;">
+              Answers are grounded strictly in verified local evidence, statutory records, and authentic resident notices. Zero hallucinations.
+            </p>
+          </div>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 30px;">
+            <h3 style="font-size: 14px; font-weight: 800; text-transform: uppercase; color: #64748b; margin: 0 0 12px 0;">Popular Questions</h3>
+            <div style="display: grid; gap: 8px; font-size: 14px; color: #2563eb;">
+              <div>&bull; When is the wholesale textile haat open near Ranaghat station?</div>
+              <div>&bull; Where can I find diagnostic centres with digital X-Ray along Hospital Road?</div>
+              <div>&bull; What are the latest traffic advisories for NH 12 flyover construction?</div>
+              <div>&bull; How can FMCG distributors in Rathtala automate WhatsApp order intake?</div>
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    ranaghatSubPages.forEach(child => {
+      const childUrl = `https://confluxai.in/locations/west-bengal/${sub.districtSlug}/${sub.slug}/${child.slug}`;
+      const childWebPageSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": child.title,
+        "description": child.desc,
+        "url": childUrl,
+        "publisher": { "@type": "Organization", "name": "Conflux AI", "url": "https://confluxai.in/" }
+      };
+      const childBreadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://confluxai.in/" },
+          { "@type": "ListItem", "position": 2, "name": "West Bengal", "item": "https://confluxai.in/locations/west-bengal" },
+          { "@type": "ListItem", "position": 3, "name": `${sub.districtName} District`, "item": `https://confluxai.in/locations/west-bengal/${sub.districtSlug}` },
+          { "@type": "ListItem", "position": 4, "name": sub.name, "item": fullUrl },
+          { "@type": "ListItem", "position": 5, "name": child.name, "item": childUrl }
+        ]
+      };
+
+      const crossIntentNav = `
+        <nav aria-label="Ranaghat Sub-Intent Navigation" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px;">
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}" style="font-size: 12px; font-weight: 700; background: #0f172a; color: white; padding: 8px 16px; border-radius: 9999px; text-decoration: none;">&larr; Ranaghat Hub</a>
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/live" style="font-size: 12px; font-weight: 700; background: ${child.slug === 'live' ? '#2563eb' : '#f8fafc'}; color: ${child.slug === 'live' ? 'white' : '#334155'}; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #e2e8f0;">Live Local</a>
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/jobs" style="font-size: 12px; font-weight: 700; background: ${child.slug === 'jobs' ? '#2563eb' : '#f8fafc'}; color: ${child.slug === 'jobs' ? 'white' : '#334155'}; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #e2e8f0;">Jobs</a>
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/people" style="font-size: 12px; font-weight: 700; background: ${child.slug === 'people' ? '#2563eb' : '#f8fafc'}; color: ${child.slug === 'people' ? 'white' : '#334155'}; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #e2e8f0;">Trusted People</a>
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/businesses" style="font-size: 12px; font-weight: 700; background: ${child.slug === 'businesses' ? '#2563eb' : '#f8fafc'}; color: ${child.slug === 'businesses' ? 'white' : '#334155'}; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #e2e8f0;">Businesses</a>
+          <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/ask" style="font-size: 12px; font-weight: 700; background: ${child.slug === 'ask' ? '#2563eb' : '#f8fafc'}; color: ${child.slug === 'ask' ? 'white' : '#334155'}; padding: 8px 16px; border-radius: 9999px; text-decoration: none; border: 1px solid #e2e8f0;">Ask Ranaghat</a>
+        </nav>
+      `;
+
+      const childHtml = `
+      <div id="root">
+        <header style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+          <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+            <a href="/" style="font-size: 18px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+            <nav style="font-size: 13px; font-weight: 700;">
+              <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}" style="color: #2563eb; text-decoration: none; margin-right: 16px;">&larr; ${escapeHtml(sub.name)} Hub</a>
+              <a href="/discover" style="color: #475569; text-decoration: none; margin-right: 16px;">Discover</a>
+              <a href="/verify" style="color: #475569; text-decoration: none; margin-right: 16px;">Verify</a>
+              <a href="/blog" style="color: #475569; text-decoration: none; margin-right: 16px;">Blog</a>
+              <a href="/contact" style="color: #475569; text-decoration: none;">Contact</a>
+            </nav>
+          </div>
+        </header>
+        <main style="max-width: 1100px; margin: 0 auto; padding: 40px 20px; font-family: 'Inter', sans-serif;">
+          <nav aria-label="Breadcrumb" style="font-size: 12px; margin-bottom: 20px; color: #64748b;">
+            <a href="/" style="color: #2563eb; text-decoration: none;">Home</a> &gt; <a href="/locations/west-bengal" style="color: #2563eb; text-decoration: none;">West Bengal</a> &gt; <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}" style="color: #2563eb; text-decoration: none;">${escapeHtml(sub.districtName)}</a> &gt; <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}" style="color: #2563eb; text-decoration: none;">${escapeHtml(sub.name)}</a> &gt; <span style="color: #0f172a;">${escapeHtml(child.name)}</span>
+          </nav>
+
+          ${crossIntentNav}
+
+          <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #2563eb; letter-spacing: 0.1em; display: inline-block; margin-bottom: 10px;">
+            ${escapeHtml(sub.name)} &bull; ${escapeHtml(sub.districtName)} District Corridor
+          </span>
+          <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; line-height: 1.15; margin-bottom: 16px;">
+            ${escapeHtml(child.h1)}
+          </h1>
+          <p style="font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 30px;">
+            ${escapeHtml(child.lead)}
+          </p>
+
+          ${child.content}
+
+          <div style="margin-top: 40px; padding: 24px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <span style="font-size: 12px; font-weight: 700; color: #64748b; display: block;">Ranaghat Community Hub</span>
+              <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}" style="font-size: 14px; font-weight: 800; color: #2563eb; text-decoration: none;">&larr; Return to Ranaghat Main Overview</a>
+            </div>
+            <a href="/list-business" style="font-size: 12px; font-weight: 800; background: #0f172a; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none;">List a Business in Ranaghat &rarr;</a>
+          </div>
+        </main>
+      </div>
+      `;
+
+      writePage(`/locations/west-bengal/${sub.districtSlug}/${sub.slug}/${child.slug}`, child.title, child.desc, childUrl, [childWebPageSchema, childBreadcrumbSchema], childHtml);
+    });
+  }
 });
 
 // ── 5. PRE-RENDER CORE STATIC PAGES ───────────────────────────

@@ -1475,60 +1475,107 @@ export class LocalKnowledgeService {
     businesses: any[];
     contributions: LocalContribution[];
     moments: LocalMoment[];
+    jobs: LocalJob[];
     places: LocalPlace[];
+    totalResults: number;
+    query: string;
   }> {
     const q = query.toLowerCase().trim();
+    if (!q) {
+      return {
+        businesses: [],
+        contributions: [],
+        moments: [],
+        jobs: [],
+        places: [],
+        totalResults: 0,
+        query
+      };
+    }
+
     const locLower = locality.toLowerCase().trim();
 
-    // 1. Search Businesses
-    const bizResults = await businessService.searchBusinesses({
-      query: q || undefined,
-      city: locLower
-    });
-
-    // 2. Search Contributions
+    // 1. Search Contributions
     const matchingContributions = this.memoryContributions.filter(c => {
       const matchLoc = c.locality.toLowerCase() === locLower;
       if (!matchLoc) return false;
-      if (!q) return true;
       return (
         c.title.toLowerCase().includes(q) ||
         c.content.toLowerCase().includes(q) ||
         c.category.toLowerCase().includes(q) ||
-        c.author.displayName.toLowerCase().includes(q) ||
-        (c.businessRef && c.businessRef.name.toLowerCase().includes(q))
+        (c.author && c.author.displayName && c.author.displayName.toLowerCase().includes(q)) ||
+        (c.businessRef && c.businessRef.name.toLowerCase().includes(q)) ||
+        (c.placeRef && c.placeRef.name.toLowerCase().includes(q)) ||
+        (c.tags && c.tags.some(t => t.toLowerCase().includes(q)))
       );
     });
 
-    // 3. Search Moments
+    // 2. Search Moments
     const matchingMoments = this.memoryMoments.filter(m => {
       const matchLoc = m.locality.toLowerCase() === locLower;
       if (!matchLoc) return false;
-      if (!q) return true;
       return (
         m.title.toLowerCase().includes(q) ||
         m.summary.toLowerCase().includes(q) ||
-        m.tags.some(t => t.toLowerCase().includes(q))
+        (m.tags && m.tags.some(t => t.toLowerCase().includes(q))) ||
+        (m.locationName && m.locationName.toLowerCase().includes(q))
       );
     });
+
+    // 3. Search Jobs
+    const jobs = await this.getJobs({ locality: locLower });
+    const matchingJobs = jobs.filter(j =>
+      j.title.toLowerCase().includes(q) ||
+      j.companyName.toLowerCase().includes(q) ||
+      j.description.toLowerCase().includes(q) ||
+      (j.area && j.area.toLowerCase().includes(q))
+    );
 
     // 4. Search Places
     const matchingPlaces = this.memoryPlaces.filter(p => {
       const matchLoc = p.locality.toLowerCase() === locLower;
       if (!matchLoc) return false;
-      if (!q) return true;
       return (
         p.name.toLowerCase().includes(q) ||
         p.category.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q)
+        p.description.toLowerCase().includes(q) ||
+        (p.address && p.address.toLowerCase().includes(q))
       );
     });
 
+    // 5. Search Businesses
+    let matchingBusinesses: any[] = [];
+    try {
+      const bizResults = await businessService.searchBusinesses({
+        city: locLower,
+        query: q
+      });
+      matchingBusinesses = bizResults.map(r => r.business);
+      if (matchingBusinesses.length === 0) {
+        const allCityBiz = await businessService.searchBusinesses({ city: locLower });
+        matchingBusinesses = allCityBiz
+          .map(r => r.business)
+          .filter(b => 
+            b.name.toLowerCase().includes(q) ||
+            (b.description && b.description.toLowerCase().includes(q)) ||
+            (b.categoryName && b.categoryName.toLowerCase().includes(q)) ||
+            (b.services && b.services.some((s: string) => s.toLowerCase().includes(q)))
+          );
+      }
+    } catch (e) {
+      // safe fallback
+    }
+
+    const totalResults = matchingContributions.length + matchingMoments.length + matchingJobs.length + matchingPlaces.length + matchingBusinesses.length;
+
     return {
-      businesses: bizResults.map(r => r.business),
+      businesses: matchingBusinesses,
       contributions: matchingContributions,
       moments: matchingMoments,
-      places: matchingPlaces
+      jobs: matchingJobs,
+      places: matchingPlaces,
+      totalResults,
+      query
     };
   }
 

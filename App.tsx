@@ -284,6 +284,30 @@ const routeMeta: Record<string, { title: string; description: string }> = {
   '/onboarding': {
     title: 'Join Conflux AI | Local Citizen Profile & Contributor Onboarding',
     description: 'Set up your authentic local identity, connect with your locality, and share verified updates to help neighbors across West Bengal.'
+  },
+  '/locations/west-bengal/nadia/ranaghat': {
+    title: 'Ranaghat Local Community Hub | Live Updates, Jobs & Verified Businesses | Conflux AI',
+    description: 'Your trusted local guide to Ranaghat, Nadia. Discover live community updates, verified local jobs, trusted residents, and statutory business listings.'
+  },
+  '/locations/west-bengal/nadia/ranaghat/live': {
+    title: 'Live Local Ranaghat | Real-Time Transit, Road Notices & Utility Updates | Conflux AI',
+    description: 'Real-time community updates for Ranaghat: Sealdah train timings, road notices, power cuts, market haat schedules, and civic signals verified by local residents.'
+  },
+  '/locations/west-bengal/nadia/ranaghat/jobs': {
+    title: 'Ranaghat Jobs | Verified Local Employment & Hiring in Ranaghat, Nadia | Conflux AI',
+    description: 'Find authentic, verified job openings and local hiring in Ranaghat, Nadia. Retail, accounting, pharmacy, sales, and logistics jobs verified by Conflux AI.'
+  },
+  '/locations/west-bengal/nadia/ranaghat/people': {
+    title: 'Trusted People in Ranaghat | Verified Local Residents & Helpers | Conflux AI',
+    description: 'Directory of verified residents and active community helpers in Ranaghat, Nadia. Grounded in authentic local contributions and verified evidence.'
+  },
+  '/locations/west-bengal/nadia/ranaghat/businesses': {
+    title: 'Ranaghat Business Directory | Verified Shops, Doctors & Services | Conflux AI',
+    description: 'Authoritative directory of verified local businesses, healthcare clinics, wholesale distributors, and shops in Ranaghat, Nadia with statutory proof.'
+  },
+  '/locations/west-bengal/nadia/ranaghat/ask': {
+    title: 'Ask Ranaghat | Local Knowledge & Verified Community Answers | Conflux AI',
+    description: 'Ask anything about Ranaghat. Search across live transit notices, verified doctors, market schedules, municipal updates, and community contributions.'
   }
 };
 
@@ -434,9 +458,11 @@ const App: React.FC = () => {
           <Route path="/locations" element={<LocationHubPage />} />
           <Route path="/locations/:districtSlug" element={<DistrictDirectoryPage />} />
           <Route path="/locations/:districtSlug/:citySlug" element={<LocationDetailPage />} />
+          <Route path="/locations/:districtSlug/:citySlug/:subPage" element={<LocationDetailPage />} />
           <Route path="/locations/west-bengal" element={<LocationHubPage />} />
           <Route path="/locations/west-bengal/:districtSlug" element={<DistrictDirectoryPage />} />
           <Route path="/locations/west-bengal/:districtSlug/:citySlug" element={<LocationDetailPage />} />
+          <Route path="/locations/west-bengal/:districtSlug/:citySlug/:subPage" element={<LocationDetailPage />} />
           <Route path="/locations/west-bengal/:citySlug/:industrySlug" element={<IndustryLocationPage />} />
           <Route path="/thank-you" element={<ThankYouPage />} />
           <Route path="/verify" element={<VerifyPortal />} />

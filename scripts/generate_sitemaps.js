@@ -120,6 +120,17 @@ publishedSubLocations.forEach(sub => {
   </url>`);
 });
 
+// Ranaghat Sub-Intent Dedicated Pages (/live, /jobs, /people, /businesses, /ask)
+const ranaghatIntents = ['live', 'jobs', 'people', 'businesses', 'ask'];
+ranaghatIntents.forEach(intent => {
+  xmlEntries.push(`  <url>
+    <loc>https://confluxai.in/locations/west-bengal/nadia/ranaghat/${intent}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+  </url>`);
+});
+
 // Published Verified Businesses (Platform-wide dynamic integration)
 const businessesPath = path.resolve(rootDir, 'public/data/businesses.json');
 let businesses = [];
