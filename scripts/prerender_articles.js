@@ -1093,26 +1093,7 @@ const subLocations = [
         a: 'Yes. Any registered business operating in Ranaghat can apply for listing on Conflux AI via our submission portal. Once statutory verification evidence is reviewed, an authoritative profile is published with direct call, WhatsApp, and booking capabilities.'
       }
     ],
-    liveMoments: [
-      {
-        id: 'moment_ranaghat_nh12',
-        title: 'NH 12 (NH 34) 4-Lane Widening & Flyover Construction Advisory',
-        summary: 'Ongoing 4-lane widening work and flyover construction near Ranaghat-Habibpur intersection. Heavy vehicles advised to follow designated diversions during peak morning hours.',
-        source: 'NHAI Public Project Bulletin'
-      },
-      {
-        id: 'moment_ranaghat_station',
-        title: 'Ranaghat Junction Amrit Bharat Redevelopment Update',
-        summary: 'Upgrades to passenger amenities, digital inquiry screens, circulating area redevelopment, and new escalators at Ranaghat Junction station.',
-        source: 'Eastern Railway Sealdah Division Notice'
-      },
-      {
-        id: 'moment_ranaghat_handloom',
-        title: 'Ranaghat Weekly Wholesale Textile Trading Day',
-        summary: 'Every Tuesday & Friday regional handloom weavers from Santipur and Phulia assemble near Station Road for wholesale saree distribution.',
-        source: 'Ranaghat Merchant Association Schedule'
-      }
-    ],
+    liveMoments: [],
     jobs: [
       {
         title: 'Accounts & Billing Executive',
@@ -1684,19 +1665,16 @@ subLocations.forEach(sub => {
         h1: 'Live Local Ranaghat',
         lead: 'Verified real-time notices, infrastructure alerts, road advisories, and transit updates across Ranaghat, Nadia.',
         content: `
-          <div style="display: grid; gap: 16px; margin-bottom: 30px;">
-            ${(sub.liveMoments || []).map(m => `
-              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px;">
-                <span style="background: #f0fdf4; color: #166534; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">${escapeHtml(m.source)}</span>
-                <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin: 8px 0 6px 0;">${escapeHtml(m.title)}</h3>
-                <p style="font-size: 13px; color: #475569; line-height: 1.5; margin: 0;">${escapeHtml(m.summary)}</p>
-              </div>
-            `).join('')}
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 48px 24px; text-align: center; max-width: 600px; margin: 0 auto 30px auto;">
+            <div style="font-size: 36px; margin-bottom: 12px;">📻</div>
+            <h2 style="font-size: 22px; font-weight: 900; color: #0f172a; margin: 0 0 8px 0;">Nothing new from Ranaghat yet.</h2>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin: 0 0 20px 0;">Be the first to share something useful with your local community.</p>
+            <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/live" style="display: inline-block; background: #9333ea; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 800; font-size: 14px; text-decoration: none;">Share an Update &rarr;</a>
           </div>
           <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; text-align: center;">
             <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Have a Real-Time Update or Civic Notice?</h3>
-            <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">Share verified local road, train, or power updates with Ranaghat residents.</p>
-            <a href="/onboarding" style="display: inline-block; background: #059669; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; text-decoration: none;">Submit Live Update &rarr;</a>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">Know something useful about Ranaghat? Share it with your local community.</p>
+            <a href="/locations/west-bengal/${escapeHtml(sub.districtSlug)}/${escapeHtml(sub.slug)}/live" style="display: inline-block; background: #059669; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; text-decoration: none;">Submit Live Update &rarr;</a>
           </div>
         `
       },

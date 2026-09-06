@@ -10,6 +10,7 @@
 // 8. Unified Local Intelligence Search
 
 import { LocalKnowledgeService } from '../lib/localKnowledgeService.ts';
+import { supabase, isSupabaseConfigured } from '../lib/supabase.ts';
 
 console.log('======================================================================');
 console.log('  CONFLUX AI — LOCAL KNOWLEDGE NETWORK TEST SUITE                     ');
@@ -387,6 +388,22 @@ async function runTests() {
     searchStation.moments.some(m => m.locationName.includes('Station')),
     `Places: ${searchStation.places.length}, Moments: ${searchStation.moments.length}`
   );
+
+  // Cleanup test contributions in remote Supabase
+  if (isSupabaseConfigured()) {
+    try {
+      const { data: authData } = await supabase.auth.signInWithPassword({
+        email: 'super.admin.ranaghat@confluxai.in',
+        password: 'ConfluxAdmin#2026!Super'
+      });
+      if (authData?.session) {
+        await supabase.from('community_contributions').delete().ilike('author_id', 'usr_test%');
+        await supabase.from('community_contributions').delete().ilike('author_id', 'usr_citizen%');
+      }
+    } catch (cleanErr) {
+      // Cleanup best effort
+    }
+  }
 
   // ───────────────────────────────────────────────────────────────────
   // SUMMARY

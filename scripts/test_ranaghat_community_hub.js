@@ -8,6 +8,7 @@
 
 import fs from 'fs';
 import { LocalKnowledgeService } from '../lib/localKnowledgeService.ts';
+import { supabase, isSupabaseConfigured } from '../lib/supabase.ts';
 
 console.log('======================================================================');
 console.log('  CONFLUX AI — RANAGHAT LOCAL COMMUNITY HUB TEST SUITE                ');
@@ -505,7 +506,7 @@ async function runTests() {
 
   // Regression 11: Only real events increase reputation metrics
   const scoreBefore = verifiedNoPhotoProfile.reputationScore;
-  await service.createContribution({
+  const testContrib = await service.createContribution({
     type: 'INFORM',
     title: 'Ranaghat Ferry Ghat morning schedule confirmed',
     content: 'Ferry service to Aismali operates every 20 minutes from 6:00 AM onwards.',
@@ -715,6 +716,38 @@ async function runTests() {
       liveHtml.includes('Have a Real-Time Update or Civic Notice?') || liveHtml.includes('Submit Live Update'),
       'Live Local CTA check'
     );
+    assert(
+      'Live Local snapshot contains honest empty state ("Nothing new from Ranaghat yet.") and zero fake confirmation counts',
+      liveHtml.includes('Nothing new from Ranaghat yet.') &&
+      !liveHtml.includes('28 confirmed') &&
+      !liveHtml.includes('42 confirmed') &&
+      !liveHtml.includes('56 confirmed'),
+      'Live Local honest empty state check'
+    );
+  }
+
+  // Cleanup test contribution if Supabase was used
+  if (isSupabaseConfigured()) {
+    try {
+      const { data: authData } = await supabase.auth.signInWithPassword({
+        email: 'super.admin.ranaghat@confluxai.in',
+        password: 'ConfluxAdmin#2026!Super'
+      });
+      if (authData?.session) {
+        if (typeof testContrib !== 'undefined' && testContrib?.id) {
+          await supabase.from('community_contributions').delete().eq('id', testContrib.id);
+        }
+        if (typeof residentSubmission !== 'undefined' && residentSubmission?.contribution?.id) {
+          await supabase.from('community_contributions').delete().eq('id', residentSubmission.contribution.id);
+        }
+        await supabase.from('community_contributions').delete().ilike('author_id', 'usr_citizen%');
+        await supabase.from('community_contributions').delete().ilike('author_id', 'usr_newbie%');
+        await supabase.from('community_contributions').delete().ilike('author_id', 'usr_test%');
+        await supabase.from('community_contributions').delete().ilike('author_id', 'usr_verified%');
+      }
+    } catch (cleanErr) {
+      // Cleanup best effort
+    }
   }
 
   // ───────────────────────────────────────────────────────────────────

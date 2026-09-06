@@ -40,6 +40,9 @@ import { RequestBusinessModal } from '../contributions/RequestBusinessModal';
 import { RanaghatVisitorPrompt } from './RanaghatVisitorPrompt';
 import { CreateJobModal } from './CreateJobModal';
 import { UserOnboardingFlow } from '../auth/UserOnboardingFlow';
+import { CommunityOnboardingModal } from '../onboarding/CommunityOnboardingModal';
+import { CommunityPostComposerModal } from '../community/CommunityPostComposerModal';
+import { communityProfileService } from '../../lib/communityProfileService';
 import { getContributorStanding } from '../../types/localKnowledge';
 import type { LocalContribution, LocalUserProfile, LocalMoment, ContributionType, LocalJob, JobType } from '../../types/localKnowledge';
 import type { ConfluxBusiness } from '../../types/business';
@@ -62,6 +65,7 @@ const LocationDetailPage: React.FC = () => {
 
   // Local Knowledge UI state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isComposerModalOpen, setIsComposerModalOpen] = useState(false);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [isJobModalOpen, setIsJobModalOpen] = useState(false);
   const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
@@ -69,6 +73,15 @@ const LocationDetailPage: React.FC = () => {
   const [jobTypeFilter, setJobTypeFilter] = useState<'ALL' | JobType>('ALL');
   const [localSearchQuery, setLocalSearchQuery] = useState('');
   const [activeContribTab, setActiveContribTab] = useState<'ALL' | ContributionType>('ALL');
+
+  const handleShareUpdateClick = () => {
+    const profile = communityProfileService.getCommunityProfile();
+    if (!profile || profile.status !== 'PROFILE_COMPLETE') {
+      setIsOnboardingModalOpen(true);
+    } else {
+      setIsComposerModalOpen(true);
+    }
+  };
 
   // Ask Ranaghat State
   const [askQuery, setAskQuery] = useState('');
@@ -127,7 +140,7 @@ const LocationDetailPage: React.FC = () => {
             district: districtSlug,
             city: location.slug
           }),
-          localKnowledgeService.getContributions({ locality: location.slug }),
+          localKnowledgeService.getContributions({ locality: location.slug, authorId: communityProfileService.getCommunityProfile()?.id }),
           localKnowledgeService.getLocalMoments(location.slug),
           localKnowledgeService.getLocalVoices(location.slug, 8),
           localKnowledgeService.getJobs({ locality: location.slug })
@@ -553,8 +566,11 @@ const LocationDetailPage: React.FC = () => {
                   <h1 className="font-orbitron text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.1] mb-3">
                     Live Local Ranaghat
                   </h1>
-                  <p className="text-base md:text-lg text-slate-600 leading-relaxed font-medium">
-                    Real-time Sealdah train notices, NH 12 road advisories, power cut updates, and civic signals confirmed by Ranaghat residents.
+                  <p className="text-base md:text-lg text-slate-600 leading-relaxed font-medium mb-2">
+                    Real updates from people who live, work, and participate in Ranaghat.
+                  </p>
+                  <p className="text-xs md:text-sm text-slate-500 font-medium">
+                    Know something useful about Ranaghat? Share it with your local community.
                   </p>
                 </div>
 
@@ -562,15 +578,17 @@ const LocationDetailPage: React.FC = () => {
 
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
                   <div className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider">
-                    Showing {filteredContributions.length} ground truth signals
+                    {filteredContributions.length > 0
+                      ? `Showing ${filteredContributions.length} ground truth ${filteredContributions.length === 1 ? 'signal' : 'signals'}`
+                      : 'Live Local Stream'}
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => setIsCreateModalOpen(true)}
+                      onClick={handleShareUpdateClick}
                       className="inline-flex items-center gap-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 px-4 py-2.5 rounded-xl transition-all shadow-md shadow-purple-600/20 cursor-pointer min-h-[44px]"
                     >
-                      <Plus size={14} /> Share Local Update
+                      <Plus size={14} /> Share an Update
                     </button>
                     <button
                       type="button"
@@ -592,109 +610,99 @@ const LocationDetailPage: React.FC = () => {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setIsOnboardingModalOpen(true)}
+                    onClick={handleShareUpdateClick}
                     className="text-blue-600 hover:text-blue-800 font-bold shrink-0 hover:underline cursor-pointer min-h-[44px] inline-flex items-center"
                   >
                     Get Verified as Resident &rarr;
                   </button>
                 </div>
 
-                {/* Active Local Moments */}
-                {moments.filter(m => m.status === 'ACTIVE').length > 0 && (
-                  <div className="mb-10">
-                    <h2 className="text-sm font-bold font-orbitron uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
-                      <Flame size={16} className="text-purple-600" /> Active Verified Moments
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                      {moments.filter(m => m.status === 'ACTIVE').map((moment) => (
-                        <div
-                          key={moment.id}
-                          className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-purple-950 text-white shadow-md border border-slate-800 flex flex-col justify-between space-y-3"
-                        >
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-400/20 text-purple-200 border border-purple-300/30 uppercase">
-                                {moment.momentType}
-                              </span>
-                              <span className="text-[11px] font-mono text-purple-300">
-                                {moment.startDate}
-                              </span>
-                            </div>
-                            <h3 className="text-base font-bold text-white font-orbitron leading-snug">
-                              {moment.title}
-                            </h3>
-                            <p className="text-xs text-slate-300 leading-relaxed line-clamp-3">
-                              {moment.summary}
-                            </p>
-                          </div>
-                          <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-purple-200/80">
-                            <span>📍 {moment.locationName}</span>
-                            <span className="font-bold text-emerald-300">✓ {moment.confirmationsCount} confirmed</span>
-                          </div>
-                        </div>
-                      ))}
+                {/* Contributions Stream or Honest Empty State */}
+                {contributions.length === 0 ? (
+                  <div className="p-10 sm:p-14 text-center bg-white rounded-3xl border border-slate-200 shadow-sm max-w-xl mx-auto space-y-4 my-8">
+                    <div className="w-16 h-16 mx-auto rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 shadow-sm">
+                      <Radio size={32} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <h2 className="text-2xl font-black text-slate-900 font-orbitron tracking-tight">
+                        Nothing new from Ranaghat yet.
+                      </h2>
+                      <p className="text-slate-600 text-sm md:text-base max-w-md mx-auto leading-relaxed">
+                        Be the first to share something useful with your local community.
+                      </p>
+                    </div>
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={handleShareUpdateClick}
+                        className="inline-flex items-center gap-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-xl transition-all shadow-md shadow-purple-600/20 cursor-pointer min-h-[44px]"
+                      >
+                        <Plus size={16} /> Share an Update
+                      </button>
                     </div>
                   </div>
-                )}
-
-                {/* Signal Filter Tabs */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
-                  {(['ALL', 'DISCOVER', 'RECOMMEND', 'UPDATE', 'REPORT', 'REVIEW', 'EVENT', 'STORY', 'QUESTION'] as const).map((tab) => {
-                    const count = tab === 'ALL'
-                      ? contributions.length
-                      : contributions.filter(c => c.type === tab).length;
-                    return (
-                      <button
-                        key={tab}
-                        type="button"
-                        onClick={() => setActiveContribTab(tab)}
-                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 min-h-[38px] ${
-                          activeContribTab === tab
-                            ? 'bg-slate-900 text-white shadow-sm'
-                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                        }`}
-                      >
-                        <span>{tab === 'ALL' ? 'All Signals' : tab}</span>
-                        <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${
-                          activeContribTab === tab ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
-                        }`}>
-                          {count}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Contributions Feed */}
-                {filteredContributions.length > 0 ? (
-                  <div className="space-y-6">
-                    {filteredContributions.map((contrib) => (
-                      <ContributionCard
-                        key={contrib.id}
-                        contribution={contrib}
-                        onUpdated={(updated) => {
-                          setContributions(prev => prev.map(c => c.id === updated.id ? updated : c));
-                        }}
-                      />
-                    ))}
-                  </div>
                 ) : (
-                  <div className="p-10 text-center bg-slate-50 rounded-3xl border border-slate-200 space-y-3">
-                    <Radio size={32} className="mx-auto text-slate-400" />
-                    <p className="text-slate-800 font-bold text-sm">
-                      No contributions found {activeContribTab !== 'ALL' ? `for "${activeContribTab}"` : ''} in Ranaghat
-                    </p>
-                    <p className="text-slate-500 text-xs max-w-md mx-auto">
-                      Got an update on a local business, road work, community event, or hidden gem? Be the first to share evidence with your neighbors.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setIsCreateModalOpen(true)}
-                      className="mt-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-blue-700 transition-all cursor-pointer inline-flex items-center gap-1.5 min-h-[44px]"
-                    >
-                      <Plus size={14} /> Submit First Signal
-                    </button>
-                  </div>
+                  <>
+                    {/* Signal Filter Tabs */}
+                    <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
+                      {(['ALL', 'DISCOVER', 'RECOMMEND', 'UPDATE', 'REPORT', 'REVIEW', 'EVENT', 'STORY', 'QUESTION'] as const).map((tab) => {
+                        const count = tab === 'ALL'
+                          ? contributions.length
+                          : contributions.filter(c => c.type === tab).length;
+                        return (
+                          <button
+                            key={tab}
+                            type="button"
+                            onClick={() => setActiveContribTab(tab)}
+                            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 min-h-[38px] ${
+                              activeContribTab === tab
+                                ? 'bg-slate-900 text-white shadow-sm'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            }`}
+                          >
+                            <span>{tab === 'ALL' ? 'All Signals' : tab}</span>
+                            <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${
+                              activeContribTab === tab ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
+                            }`}>
+                              {count}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Contributions Feed */}
+                    {filteredContributions.length > 0 ? (
+                      <div className="space-y-6">
+                        {filteredContributions.map((contrib) => (
+                          <ContributionCard
+                            key={contrib.id}
+                            contribution={contrib}
+                            onUpdated={(updated) => {
+                              setContributions(prev => prev.map(c => c.id === updated.id ? updated : c));
+                            }}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-10 text-center bg-slate-50 rounded-3xl border border-slate-200 space-y-3">
+                        <Radio size={32} className="mx-auto text-slate-400" />
+                        <p className="text-slate-800 font-bold text-sm">
+                          No contributions found {activeContribTab !== 'ALL' ? `for "${activeContribTab}"` : ''} in Ranaghat
+                        </p>
+                        <p className="text-slate-500 text-xs max-w-md mx-auto">
+                          Got an update on a local business, road work, community event, or hidden gem? Be the first to share evidence with your neighbors.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={handleShareUpdateClick}
+                          className="mt-2 px-5 py-2.5 rounded-xl bg-purple-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-purple-700 transition-all cursor-pointer inline-flex items-center gap-1.5 min-h-[44px]"
+                        >
+                          <Plus size={14} /> Share an Update
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             )}
@@ -1509,7 +1517,7 @@ const LocationDetailPage: React.FC = () => {
                         <Radio size={20} className="animate-pulse" />
                       </span>
                       <span className="text-[11px] font-mono font-bold text-purple-700 bg-purple-100 px-2.5 py-1 rounded-full">
-                        {moments.filter(m => m.status === 'ACTIVE').length + contributions.length} Signals
+                        {contributions.length} Signals
                       </span>
                     </div>
                     <h3 className="text-lg font-bold font-orbitron text-slate-900 group-hover:text-purple-700 transition-colors">
@@ -1680,42 +1688,24 @@ const LocationDetailPage: React.FC = () => {
                   to={`/locations/west-bengal/${districtSlug}/${location.slug}/live`}
                   className="text-xs font-bold text-purple-700 hover:text-purple-900 flex items-center gap-1 uppercase tracking-wider"
                 >
-                  View all Live Local ({moments.filter(m => m.status === 'ACTIVE').length + contributions.length}) &rarr;
+                  View all Live Local ({contributions.length}) &rarr;
                 </Link>
               </div>
 
-              {moments.filter(m => m.status === 'ACTIVE').length > 0 ? (
+              {contributions.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {moments.filter(m => m.status === 'ACTIVE').slice(0, 2).map((moment) => (
-                    <div
-                      key={moment.id}
-                      className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-purple-950 text-white shadow-md border border-slate-800 flex flex-col justify-between space-y-3"
-                    >
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-400/20 text-purple-200 border border-purple-300/30 uppercase">
-                            {moment.momentType}
-                          </span>
-                          <span className="text-[11px] font-mono text-purple-300">
-                            {moment.startDate}
-                          </span>
-                        </div>
-                        <h3 className="text-base font-bold text-white font-orbitron leading-snug">
-                          {moment.title}
-                        </h3>
-                        <p className="text-xs text-slate-300 leading-relaxed line-clamp-2">
-                          {moment.summary}
-                        </p>
-                      </div>
-                      <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-purple-200/80">
-                        <span>📍 {moment.locationName}</span>
-                        <span className="font-bold text-emerald-300">✓ {moment.confirmationsCount} confirmed</span>
-                      </div>
-                    </div>
+                  {contributions.slice(0, 2).map((contrib) => (
+                    <ContributionCard
+                      key={contrib.id}
+                      contribution={contrib}
+                      onUpdated={(updated) => {
+                        setContributions(prev => prev.map(c => c.id === updated.id ? updated : c));
+                      }}
+                    />
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-slate-500 italic">No active transit notices at this moment.</p>
+                <p className="text-xs text-slate-500 italic">No community updates from Ranaghat yet.</p>
               )}
             </section>
 
@@ -2183,7 +2173,7 @@ const LocationDetailPage: React.FC = () => {
                   href="#live-local"
                   className="px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 text-xs font-bold transition-all flex items-center gap-1.5 min-h-[44px]"
                 >
-                  <Radio size={14} className="text-purple-600 animate-pulse" /> Live Local ({moments.filter(m => m.status === 'ACTIVE').length + contributions.length})
+                  <Radio size={14} className="text-purple-600 animate-pulse" /> Live Local ({contributions.length})
                 </a>
                 <a
                   href="#jobs"
@@ -2532,20 +2522,26 @@ const LocationDetailPage: React.FC = () => {
         />
 
         {isOnboardingModalOpen && (
-          <div className="fixed inset-0 z-[250] flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-sm overflow-y-auto">
-            <div className="relative w-full max-w-md my-8">
-              <UserOnboardingFlow
-                isModal={true}
-                initialLocality={location.name}
-                onClose={() => setIsOnboardingModalOpen(false)}
-                onComplete={() => {
-                  setIsOnboardingModalOpen(false);
-                  localKnowledgeService.getLocalVoices(location.slug, 8).then(setLocalVoices);
-                }}
-              />
-            </div>
-          </div>
+          <CommunityOnboardingModal
+            isOpen={isOnboardingModalOpen}
+            initialLocality={location.name}
+            onClose={() => setIsOnboardingModalOpen(false)}
+            onComplete={(completedProfile) => {
+              setIsOnboardingModalOpen(false);
+              setIsComposerModalOpen(true);
+              localKnowledgeService.getLocalVoices(location.slug, 8).then(setLocalVoices);
+            }}
+          />
         )}
+
+        <CommunityPostComposerModal
+          isOpen={isComposerModalOpen}
+          onClose={() => setIsComposerModalOpen(false)}
+          locality={location.slug}
+          onCreated={(newContrib) => {
+            setContributions(prev => [newContrib, ...prev]);
+          }}
+        />
 
         <CreateContributionModal
           isOpen={isCreateModalOpen}

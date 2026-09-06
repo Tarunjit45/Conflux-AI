@@ -107,57 +107,8 @@ const SEED_PLACES: LocalPlace[] = [
   }
 ];
 
-// ── AUTHENTIC LOCAL MOMENTS FOR RANAGHAT ───────────────────────────
-const SEED_MOMENTS: LocalMoment[] = [
-  {
-    id: 'moment_ranaghat_nh12_expansion',
-    title: 'NH 12 Ranaghat Bypass & Flyover Construction',
-    summary: 'Ongoing road widening and flyover connectivity along the NH 12 corridor near Ranaghat-Habibpur junction, impacting daytime transit times.',
-    locality: 'ranaghat',
-    momentType: 'INFRASTRUCTURE',
-    status: 'ACTIVE',
-    startDate: '2026-08-01',
-    locationName: 'NH 12 Crossing & Habibpur Junction',
-    relatedPlaceNames: ['Rathtala Market & Junction', 'Ranaghat Junction Railway Station'],
-    contributionsCount: 14,
-    confirmationsCount: 28,
-    verifiedSource: 'National Highways Authority of India (NHAI) Public Project Bulletin',
-    tags: ['NH 12', 'Traffic Advisory', 'Infrastructure', 'Road Work'],
-    createdAt: '2026-08-15T09:00:00Z'
-  },
-  {
-    id: 'moment_ranaghat_station_modernization',
-    title: 'Ranaghat Junction Amrit Bharat Redevelopment',
-    summary: 'Upgrades to passenger amenities, digital inquiry screens, circulating area redevelopment, and new escalators at Ranaghat Junction.',
-    locality: 'ranaghat',
-    momentType: 'PUBLIC_NOTICE',
-    status: 'ACTIVE',
-    startDate: '2026-07-15',
-    locationName: 'Ranaghat Junction Platform 1 & 2',
-    relatedPlaceNames: ['Ranaghat Junction Railway Station'],
-    contributionsCount: 9,
-    confirmationsCount: 42,
-    verifiedSource: 'Eastern Railway Sealdah Division Infrastructure Notice',
-    tags: ['Indian Railways', 'Transit', 'Station Road', 'Amrit Bharat'],
-    createdAt: '2026-08-10T10:00:00Z'
-  },
-  {
-    id: 'moment_ranaghat_handloom_bazar',
-    title: 'Ranaghat Weekly Wholesale Textile Trading Day',
-    summary: 'Every Tuesday & Friday regional handloom weavers from Santipur and Phulia assemble near Station Road for wholesale saree distribution.',
-    locality: 'ranaghat',
-    momentType: 'COMMERCIAL',
-    status: 'ACTIVE',
-    startDate: '2026-01-01',
-    locationName: 'Station Road Market Hub',
-    relatedPlaceNames: ['Ranaghat Station Road Wholesale Market', 'Subhas Avenue Commercial Market'],
-    contributionsCount: 18,
-    confirmationsCount: 56,
-    verifiedSource: 'Ranaghat Merchant Association Schedule',
-    tags: ['Handloom', 'Wholesale', 'Tant Saree', 'Commerce'],
-    createdAt: '2026-08-01T08:00:00Z'
-  }
-];
+// ── AUTHENTIC LOCAL MOMENTS (Zero hardcoded or fake moments) ──────
+const SEED_MOMENTS: LocalMoment[] = [];
 
 // ── AUTHENTIC LOCAL JOBS FOR RANAGHAT ──────────────────────────────
 const SEED_JOBS: LocalJob[] = [

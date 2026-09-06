@@ -226,6 +226,23 @@ async function runCommunityPipelineTests() {
     assert.strictEqual(threw, true, 'Service rejected invalid contribution loudly without silent fake success');
   });
 
+  // Post-test cleanup of test data in remote Supabase
+  if (isSupabaseConfigured()) {
+    try {
+      const { data: authData } = await supabase.auth.signInWithPassword({
+        email: 'super.admin.ranaghat@confluxai.in',
+        password: 'ConfluxAdmin#2026!Super'
+      });
+      if (authData?.session) {
+        await supabase.from('community_contributions').delete().ilike('author_id', 'usr_test%');
+        await supabase.from('community_contributions').delete().ilike('author_id', 'usr_device%');
+        await supabase.from('community_contributions').delete().ilike('author_id', 'usr_verified%');
+      }
+    } catch (cleanErr) {
+      // Cleanup best effort
+    }
+  }
+
   console.log('\n======================================================================');
   console.log(`TEST SUMMARY: ${passed} / ${passed + failed} CHECKS PASSED (${failed} FAILS)`);
   console.log('======================================================================');
