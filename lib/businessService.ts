@@ -9,7 +9,8 @@ import type {
   BusinessClaimStatus,
   RankingExplanation,
   BusinessSubmissionApplication,
-  SubmissionStatus
+  SubmissionStatus,
+  BusinessMediaItem
 } from '../types/business.ts';
 import { generateConfluxBusinessId, slugifyBusinessName } from './businessId.ts';
 import { verificationService } from './verify/verificationService.ts';
