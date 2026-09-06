@@ -7,6 +7,8 @@
 // 5. Zero Fabrication Invariants & Anti-Gaming Controls
 
 import fs from 'fs';
+import { loadEnv } from './load_env.js';
+loadEnv();
 import { LocalKnowledgeService } from '../lib/localKnowledgeService.ts';
 import { supabase, isSupabaseConfigured } from '../lib/supabase.ts';
 
@@ -727,11 +729,11 @@ async function runTests() {
   }
 
   // Cleanup test contribution if Supabase was used
-  if (isSupabaseConfigured()) {
+  if (isSupabaseConfigured() && process.env.SUPABASE_ADMIN_EMAIL && process.env.SUPABASE_ADMIN_PASSWORD) {
     try {
       const { data: authData } = await supabase.auth.signInWithPassword({
-        email: 'super.admin.ranaghat@confluxai.in',
-        password: 'ConfluxAdmin#2026!Super'
+        email: process.env.SUPABASE_ADMIN_EMAIL,
+        password: process.env.SUPABASE_ADMIN_PASSWORD
       });
       if (authData?.session) {
         if (typeof testContrib !== 'undefined' && testContrib?.id) {

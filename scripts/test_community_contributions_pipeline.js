@@ -2,6 +2,8 @@
 // Verifies: Shared backend persistence, moderation gating, RLS policies, independent device retrieval, zero fake success states
 
 import assert from 'node:assert';
+import { loadEnv } from './load_env.js';
+loadEnv();
 import { localKnowledgeService } from '../lib/localKnowledgeService.ts';
 import { isSupabaseConfigured, supabase } from '../lib/supabase.ts';
 
@@ -227,11 +229,11 @@ async function runCommunityPipelineTests() {
   });
 
   // Post-test cleanup of test data in remote Supabase
-  if (isSupabaseConfigured()) {
+  if (isSupabaseConfigured() && process.env.SUPABASE_ADMIN_EMAIL && process.env.SUPABASE_ADMIN_PASSWORD) {
     try {
       const { data: authData } = await supabase.auth.signInWithPassword({
-        email: 'super.admin.ranaghat@confluxai.in',
-        password: 'ConfluxAdmin#2026!Super'
+        email: process.env.SUPABASE_ADMIN_EMAIL,
+        password: process.env.SUPABASE_ADMIN_PASSWORD
       });
       if (authData?.session) {
         await supabase.from('community_contributions').delete().ilike('author_id', 'usr_test%');
