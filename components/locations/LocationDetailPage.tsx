@@ -200,6 +200,10 @@ const LocationDetailPage: React.FC = () => {
   });
 
   const filteredVoices = localVoices.filter(voice => {
+    // Invariant: Only verified residents with active verification status appear in Trusted People
+    if (!voice.isVerifiedResident || voice.verificationStatus !== 'VERIFIED') {
+      return false;
+    }
     if (localSearchQuery.trim()) {
       const q = localSearchQuery.toLowerCase();
       return (
@@ -861,9 +865,9 @@ const LocationDetailPage: React.FC = () => {
           ) : (
             <div className="p-8 text-center bg-slate-50 rounded-3xl border border-slate-200">
               <Users size={32} className="mx-auto text-slate-400 mb-2" />
-              <p className="text-slate-700 text-sm font-bold mb-1">No community contributors recorded yet in {location.name}.</p>
+              <p className="text-slate-800 text-base font-bold mb-1">Trusted People is growing.</p>
               <p className="text-slate-500 text-xs max-w-md mx-auto mb-4">
-                Be the first to share an authentic update, recommendation, or business discovery in {location.name} to establish your local reputation.
+                Verified local members will appear here as they complete Conflux verification.
               </p>
               <button
                 type="button"

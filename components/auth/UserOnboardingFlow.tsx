@@ -10,6 +10,7 @@ import { localKnowledgeService } from '../../lib/localKnowledgeService';
 import { connectService } from '../../lib/connectService';
 import { useAuth } from '../../lib/authContext';
 import { useNavigate } from 'react-router-dom';
+import { ProfileMedia } from '../../types/localKnowledge';
 
 const POPULAR_LOCALITIES = [
   'Ranaghat',
@@ -26,13 +27,6 @@ const TOPIC_OPTIONS = [
   'Transit & Train Routes',
   'Healthcare & Pharmacies',
   'Festivals & Community Events'
-];
-
-const PRESET_AVATARS = [
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=150&auto=format&fit=crop&q=80'
 ];
 
 interface UserOnboardingFlowProps {
@@ -125,13 +119,26 @@ export const UserOnboardingFlow: React.FC<UserOnboardingFlowProps> = ({
         });
       }
 
+      const hasPhoto = Boolean(selectedAvatar && selectedAvatar.trim().length > 0);
+      const profileMedia: ProfileMedia = hasPhoto ? {
+        url: selectedAvatar.trim(),
+        sourceUrl: selectedAvatar.trim(),
+        provenance: 'USER_URL',
+        status: 'PENDING_REVIEW',
+        updatedAt: new Date().toISOString()
+      } : {
+        provenance: 'NONE',
+        status: 'MISSING'
+      };
+
       // Upsert profile in local knowledge service
       const savedProfile = await localKnowledgeService.upsertLocalProfile({
         id: userId,
         displayName: finalDisplayName,
         locality: finalLocality,
         bio: finalBio,
-        avatarUrl: selectedAvatar || undefined
+        avatarUrl: hasPhoto ? selectedAvatar.trim() : undefined,
+        profileMedia
       });
 
       // Submit verification proposal if contact is provided
@@ -141,7 +148,7 @@ export const UserOnboardingFlow: React.FC<UserOnboardingFlowProps> = ({
           displayName: finalDisplayName,
           locality: finalLocality,
           bio: finalBio,
-          avatarUrl: selectedAvatar || undefined,
+          avatarUrl: hasPhoto ? selectedAvatar.trim() : undefined,
           contactMethod: 'WHATSAPP',
           contactValue: contactValue.trim(),
           notes: 'Submitted during conversational citizen onboarding.'
@@ -425,34 +432,41 @@ export const UserOnboardingFlow: React.FC<UserOnboardingFlowProps> = ({
                 </p>
               </div>
 
-              {/* Avatar Selector */}
+              {/* Profile Photo (Optional) */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-700 block">
-                  Choose a profile avatar (optional)
-                </label>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="onboarding-avatar" className="text-xs font-bold text-slate-700 block">
+                    Profile Photo URL (Optional)
+                  </label>
+                  <span className="text-[10px] font-mono text-slate-400">
+                    {selectedAvatar ? 'Media Supplied • Review Pending' : 'No photo • Initials displayed'}
+                  </span>
+                </div>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-sm shrink-0 overflow-hidden">
                     {selectedAvatar ? (
-                      <img src={selectedAvatar} alt={displayName} className="w-full h-full object-cover" />
+                      <img
+                        src={selectedAvatar}
+                        alt={displayName}
+                        className="w-full h-full object-cover"
+                        onError={() => setSelectedAvatar('')}
+                      />
                     ) : (
                       displayName.charAt(0).toUpperCase() || 'U'
                     )}
                   </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {PRESET_AVATARS.map((av, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => setSelectedAvatar(selectedAvatar === av ? '' : av)}
-                        className={`w-9 h-9 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
-                          selectedAvatar === av ? 'border-blue-600 scale-105' : 'border-transparent opacity-70 hover:opacity-100'
-                        }`}
-                      >
-                        <img src={av} alt="Preset avatar" className="w-full h-full object-cover" />
-                      </button>
-                    ))}
-                  </div>
+                  <input
+                    id="onboarding-avatar"
+                    type="url"
+                    value={selectedAvatar}
+                    onChange={(e) => setSelectedAvatar(e.target.value)}
+                    placeholder="e.g. https://... or leave blank"
+                    className="flex-1 min-h-[44px] px-4 py-2.5 rounded-2xl border border-slate-300 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 font-medium"
+                  />
                 </div>
+                <p className="text-[11px] text-slate-400 leading-tight">
+                  Provide a link to your public profile photo. If left blank, your profile displays your clean initials. Conflux never fabricates profile photos.
+                </p>
               </div>
 
               {/* Bio / Motivation */}

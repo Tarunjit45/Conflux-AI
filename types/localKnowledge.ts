@@ -147,11 +147,26 @@ export interface LocalJob {
   verifiedBy?: string;
 }
 
+export type ProfileMediaStatus = 'VERIFIED' | 'PENDING_REVIEW' | 'FLAGGED' | 'MISSING';
+
+export type ProfileMediaProvenance = 'USER_UPLOAD' | 'USER_URL' | 'ADMIN_VERIFIED' | 'NONE';
+
+export interface ProfileMedia {
+  url?: string;
+  sourceUrl?: string;
+  provenance: ProfileMediaProvenance;
+  status: ProfileMediaStatus;
+  updatedAt?: string;
+  verifiedAt?: string;
+  verifiedBy?: string;
+}
+
 export interface LocalUserProfile {
   id: string;
   displayName: string;
   email?: string;
   avatarUrl?: string;
+  profileMedia?: ProfileMedia;
   locality: string; // e.g. 'Ranaghat', 'Birnagar', 'Nadia'
   bio?: string;
   creatorLinks?: CreatorLink[];

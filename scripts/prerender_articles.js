@@ -1135,22 +1135,6 @@ const subLocations = [
         salary: '₹12,000 - ₹15,000 / month',
         type: 'Full-time'
       }
-    ],
-    trustedPeople: [
-      {
-        name: 'Debabrata Mukherjee',
-        standing: 'Trusted Local',
-        trustScore: 82,
-        helped: '38 people helped',
-        bio: 'Lifelong resident of College More, Ranaghat. Helping document transit schedules, weekly wholesale markets and local updates.'
-      },
-      {
-        name: 'Poushali Roy',
-        standing: 'Trusted Local',
-        trustScore: 74,
-        helped: '24 people helped',
-        bio: 'Daily commuter on Sealdah-Ranaghat route. Sharing verified road notices, railway updates and local utility timings.'
-      }
     ]
   },
   {
@@ -1351,7 +1335,6 @@ subLocations.forEach(sub => {
       </section>
       ` : ''}
 
-      ${sub.trustedPeople && sub.trustedPeople.length > 0 ? `
       <!-- SECTION 3: TRUSTED PEOPLE -->
       <section id="trusted-people" style="margin-top: 30px; margin-bottom: 40px;">
         <div style="margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
@@ -1359,6 +1342,7 @@ subLocations.forEach(sub => {
           <h2 style="font-size: 24px; font-weight: 900; color: #0f172a; margin: 0;">Trusted People in ${escapeHtml(sub.name)}</h2>
           <p style="font-size: 13px; color: #64748b; margin-top: 4px; margin-bottom: 0;">Ranked purely by verified helpfulness, accuracy, and resident confirmation.</p>
         </div>
+        ${sub.trustedPeople && sub.trustedPeople.length > 0 ? `
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
           ${sub.trustedPeople.map(p => `
             <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px;">
@@ -1377,8 +1361,13 @@ subLocations.forEach(sub => {
             </div>
           `).join('')}
         </div>
+        ` : `
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 28px; text-align: center;">
+          <p style="font-size: 15px; font-weight: 700; color: #1e293b; margin: 0 0 6px 0;">Trusted People is growing.</p>
+          <p style="font-size: 13px; color: #64748b; margin: 0;">Verified local members will appear here as they complete Conflux verification.</p>
+        </div>
+        `}
       </section>
-      ` : ''}
 
       <!-- SECTION 4: TRUSTED BUSINESSES -->
       <section id="trusted-businesses" style="margin-top: 40px; margin-bottom: 40px;">

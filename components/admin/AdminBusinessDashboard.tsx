@@ -74,7 +74,9 @@ import type {
   UserVerificationRequest,
   VerificationProposalStatus,
   LocalUserProfile,
-  LocalMoment
+  LocalMoment,
+  ProfileMediaStatus,
+  ProfileMediaProvenance
 } from "../../types/localKnowledge";
 import type {
   ConfluxBusiness,
@@ -130,6 +132,7 @@ export const AdminBusinessDashboard: React.FC = () => {
   const [verificationRequests, setVerificationRequests] = useState<UserVerificationRequest[]>([]);
   const [ranaghatJobs, setRanaghatJobs] = useState<LocalJob[]>([]);
   const [ranaghatVoices, setRanaghatVoices] = useState<LocalUserProfile[]>([]);
+  const [allLocalProfiles, setAllLocalProfiles] = useState<LocalUserProfile[]>([]);
   const [ranaghatMoments, setRanaghatMoments] = useState<LocalMoment[]>([]);
   const [citizenFilterStatus, setCitizenFilterStatus] = useState<"ALL" | VerificationProposalStatus>("ALL");
   const [jobFilterStatus, setJobFilterStatus] = useState<"ALL" | JobStatus>("ALL");
@@ -201,7 +204,7 @@ export const AdminBusinessDashboard: React.FC = () => {
 
   const loadData = async () => {
     setIsLoading(true);
-    const [data, apps, contribs, report, lkContribs, bRequests, vRequests, allJobs, rVoices, rMoments] = await Promise.all([
+    const [data, apps, contribs, report, lkContribs, bRequests, vRequests, allJobs, rVoices, rMoments, allProfiles] = await Promise.all([
       businessService.getAllBusinesses(),
       businessService.getAllApplications(),
       contributionService.getAllContributions(),
@@ -211,7 +214,8 @@ export const AdminBusinessDashboard: React.FC = () => {
       localKnowledgeService.getVerificationRequests().catch(() => [] as UserVerificationRequest[]),
       localKnowledgeService.getJobs({ includeExpired: true }).catch(() => [] as LocalJob[]),
       localKnowledgeService.getLocalVoices('ranaghat', 100).catch(() => [] as LocalUserProfile[]),
-      localKnowledgeService.getLocalMoments('ranaghat').catch(() => [] as LocalMoment[])
+      localKnowledgeService.getLocalMoments('ranaghat').catch(() => [] as LocalMoment[]),
+      localKnowledgeService.getAllLocalProfiles().catch(() => [] as LocalUserProfile[])
     ]);
     setBusinesses(data);
     setApplications(apps);
@@ -223,6 +227,7 @@ export const AdminBusinessDashboard: React.FC = () => {
     setRanaghatJobs(allJobs.filter(j => j.locality === 'ranaghat'));
     setRanaghatVoices(rVoices);
     setRanaghatMoments(rMoments);
+    setAllLocalProfiles(allProfiles);
     setIsLoading(false);
   };
 
@@ -239,12 +244,64 @@ export const AdminBusinessDashboard: React.FC = () => {
         "Conflux Operations"
       );
       setVerificationRequests(prev => prev.map(r => r.id === updated.id ? updated : r));
-      const refreshedVoices = await localKnowledgeService.getLocalVoices('ranaghat', 100);
+      const [refreshedVoices, refreshedProfiles] = await Promise.all([
+        localKnowledgeService.getLocalVoices('ranaghat', 100),
+        localKnowledgeService.getAllLocalProfiles()
+      ]);
       setRanaghatVoices(refreshedVoices);
+      setAllLocalProfiles(refreshedProfiles);
       showNotification(`Citizen verification proposal marked as ${status}.`);
       setAdminReviewNotes("");
     } catch (err: any) {
       showNotification(err?.message || "Failed to update citizen verification status.");
+    }
+  };
+
+  const handleApprovePhoto = async (profileId: string) => {
+    try {
+      const updated = await localKnowledgeService.updateProfileMediaStatus(profileId, 'VERIFIED', 'Admin photo approved', 'Admin');
+      setAllLocalProfiles(prev => prev.map(p => p.id === updated.id ? updated : p));
+      const refreshedVoices = await localKnowledgeService.getLocalVoices('ranaghat', 100);
+      setRanaghatVoices(refreshedVoices);
+      showNotification(`Profile media approved for ${updated.displayName}`);
+    } catch (err: any) {
+      showNotification(err?.message || "Failed to approve profile media.");
+    }
+  };
+
+  const handleRemovePhoto = async (profileId: string) => {
+    try {
+      const updated = await localKnowledgeService.updateProfileMediaStatus(profileId, 'FLAGGED', 'Admin removed inappropriate media', 'Admin');
+      setAllLocalProfiles(prev => prev.map(p => p.id === updated.id ? updated : p));
+      const refreshedVoices = await localKnowledgeService.getLocalVoices('ranaghat', 100);
+      setRanaghatVoices(refreshedVoices);
+      showNotification(`Photo removed and flagged for ${updated.displayName}`);
+    } catch (err: any) {
+      showNotification(err?.message || "Failed to remove photo.");
+    }
+  };
+
+  const handleRevokeResident = async (profileId: string) => {
+    try {
+      const updated = await localKnowledgeService.revokeResidentVerification(profileId, 'Revoked by Admin', 'Admin');
+      setAllLocalProfiles(prev => prev.map(p => p.id === updated.id ? updated : p));
+      const refreshedVoices = await localKnowledgeService.getLocalVoices('ranaghat', 100);
+      setRanaghatVoices(refreshedVoices);
+      showNotification(`Resident verification revoked for ${updated.displayName}`);
+    } catch (err: any) {
+      showNotification(err?.message || "Failed to revoke verification.");
+    }
+  };
+
+  const handleToggleVerifyResident = async (profileId: string, verify: boolean) => {
+    try {
+      const updated = await localKnowledgeService.correctProfileInfo(profileId, { isVerifiedResident: verify });
+      setAllLocalProfiles(prev => prev.map(p => p.id === updated.id ? updated : p));
+      const refreshedVoices = await localKnowledgeService.getLocalVoices('ranaghat', 100);
+      setRanaghatVoices(refreshedVoices);
+      showNotification(`Resident status updated for ${updated.displayName}`);
+    } catch (err: any) {
+      showNotification(err?.message || "Failed to update resident status.");
     }
   };
 
@@ -2710,6 +2767,119 @@ export const AdminBusinessDashboard: React.FC = () => {
                       ))}
                   </div>
                 )}
+
+                {/* Contributor Profiles & Media Provenance Moderation */}
+                <div className="pt-6 border-t border-slate-200 space-y-4">
+                  <div>
+                    <h3 className="text-lg font-bold font-orbitron text-slate-900">
+                      Local Contributor Profiles &amp; Media Provenance ({allLocalProfiles.length})
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Truth-first community profiles. Conflux never fabricates contributors. Review media provenance, approve/remove photos, and moderate verification status.
+                    </p>
+                  </div>
+
+                  {allLocalProfiles.length === 0 ? (
+                    <div className="p-8 text-center text-slate-400 text-xs font-medium bg-slate-50 rounded-2xl border border-slate-100">
+                      No registered contributor profiles found.
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {allLocalProfiles.map(p => {
+                        const mediaProv = p.profileMedia?.provenance || 'NONE';
+                        const mediaStatus = p.profileMedia?.status || (p.avatarUrl ? 'VERIFIED' : 'MISSING');
+                        return (
+                          <div
+                            key={p.id}
+                            className="p-4 rounded-2xl border border-slate-200 bg-white hover:border-indigo-200 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                          >
+                            <div className="flex items-start gap-3.5">
+                              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center font-black text-base shadow-sm shrink-0 overflow-hidden">
+                                {p.avatarUrl ? (
+                                  <img
+                                    src={p.avatarUrl}
+                                    alt={p.displayName}
+                                    className="w-full h-full object-cover rounded-2xl"
+                                    onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                                  />
+                                ) : (
+                                  p.displayName.charAt(0).toUpperCase()
+                                )}
+                              </div>
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="font-bold text-slate-900 text-sm">{p.displayName}</span>
+                                  <span className="text-[11px] text-slate-400 font-mono">@{p.handle}</span>
+                                  {p.isVerifiedResident ? (
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 flex items-center gap-1">
+                                      <CheckCircle2 size={11} /> Verified Resident
+                                    </span>
+                                  ) : (
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">
+                                      Unverified Contributor
+                                    </span>
+                                  )}
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold font-mono bg-purple-50 text-purple-700 border border-purple-200">
+                                    Trust Score: {p.reputationScore}
+                                  </span>
+                                </div>
+                                {p.bio && <p className="text-xs text-slate-600 italic line-clamp-1">&ldquo;{p.bio}&rdquo;</p>}
+                                <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-500 font-mono">
+                                  <span>Locality: <strong>{p.locality || 'General'}</strong></span>
+                                  <span>•</span>
+                                  <span>Contributions: <strong>{p.stats.contributionsCount}</strong></span>
+                                  <span>•</span>
+                                  <span>Helped: <strong>{p.stats.peopleHelpedCount || 0}</strong></span>
+                                  <span>•</span>
+                                  <span>Media: <strong className={mediaStatus === 'VERIFIED' ? 'text-emerald-700' : mediaStatus === 'PENDING_REVIEW' ? 'text-amber-700' : 'text-slate-500'}>{mediaProv} ({mediaStatus})</strong></span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex flex-wrap items-center gap-2 shrink-0">
+                              {mediaStatus === 'PENDING_REVIEW' && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleApprovePhoto(p.id)}
+                                  className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors cursor-pointer min-h-[36px]"
+                                >
+                                  Approve Photo
+                                </button>
+                              )}
+                              {(p.avatarUrl || mediaStatus === 'VERIFIED') && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemovePhoto(p.id)}
+                                  className="px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold transition-colors cursor-pointer min-h-[36px]"
+                                >
+                                  Remove Photo
+                                </button>
+                              )}
+                              {p.isVerifiedResident ? (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRevokeResident(p.id)}
+                                  className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-amber-50 text-slate-600 hover:text-amber-800 text-xs font-bold transition-colors cursor-pointer min-h-[36px]"
+                                >
+                                  Revoke Verification
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => handleToggleVerifyResident(p.id, true)}
+                                  className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold transition-colors cursor-pointer min-h-[36px]"
+                                >
+                                  Verify Resident
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 

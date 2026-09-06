@@ -6,6 +6,7 @@
 // 4. Live Local Stream Publishing Gate (Verified Resident & Reputation Tiers)
 // 5. Zero Fabrication Invariants & Anti-Gaming Controls
 
+import fs from 'fs';
 import { LocalKnowledgeService } from '../lib/localKnowledgeService.ts';
 
 console.log('======================================================================');
@@ -50,8 +51,8 @@ async function runTests() {
 
   const seedVoices = await service.getLocalVoices('Ranaghat');
   assert(
-    'Seed voices include verified Ranaghat local contributors',
-    seedVoices.length > 0 && seedVoices.some(v => v.isVerifiedResident === true),
+    'Cold start truth: zero fabricated voices exist before real resident verification',
+    seedVoices.length === 0,
     `Voices count: ${seedVoices.length}`
   );
 
@@ -379,6 +380,166 @@ async function runTests() {
     'Invalid verification proposal inputs trigger strict validation error',
     validationErrorCaught === true,
     `Validation error caught: ${validationErrorCaught}`
+  );
+
+  // ───────────────────────────────────────────────────────────────────
+  // TEST GROUP 6: 12 REGRESSION INVARIANTS (SECTION 13: REAL PROFILES & MEDIA)
+  // ───────────────────────────────────────────────────────────────────
+  console.log('\n--- 6. 12 REGRESSION INVARIANTS (SECTION 13: TRUTH-FIRST PROFILES & REAL MEDIA) ---');
+
+  // Regression 1: Fabricated profiles are NOT present anywhere in system
+  const allProfiles = await service.getAllLocalProfiles();
+  const hasDebabrata = allProfiles.some(p => p.displayName.includes('Debabrata'));
+  const hasPoushali = allProfiles.some(p => p.displayName.includes('Poushali'));
+  assert(
+    'Regression 1: Fabricated profiles (Debabrata, Poushali) are NOT present anywhere in system',
+    !hasDebabrata && !hasPoushali,
+    `hasDebabrata: ${hasDebabrata}, hasPoushali: ${hasPoushali}`
+  );
+
+  // Regression 2: Unverified users cannot appear in Trusted People
+  const freshUnverifiedUser = await service.upsertLocalProfile({
+    id: 'usr_unverified_test_01',
+    displayName: 'Tanmay Ghosh',
+    locality: 'Ranaghat',
+    bio: 'Local commuter'
+  });
+  const trustedVoicesAfterUnverified = await service.getLocalVoices('ranaghat');
+  const isUnverifiedInTrusted = trustedVoicesAfterUnverified.some(v => v.id === freshUnverifiedUser.id);
+  assert(
+    'Regression 2: Unverified users cannot appear in Trusted People',
+    isUnverifiedInTrusted === false,
+    `Unverified in trusted: ${isUnverifiedInTrusted}`
+  );
+
+  // Regression 3: New users start with 0 contributions
+  assert(
+    'Regression 3: New users start with strictly 0 contributions',
+    freshUnverifiedUser.stats.contributionsCount === 0,
+    `contributionsCount: ${freshUnverifiedUser.stats.contributionsCount}`
+  );
+
+  // Regression 4: New users start with 0 people helped
+  assert(
+    'Regression 4: New users start with strictly 0 people helped',
+    (freshUnverifiedUser.stats.peopleHelpedCount || 0) === 0,
+    `peopleHelpedCount: ${freshUnverifiedUser.stats.peopleHelpedCount}`
+  );
+
+  // Regression 5: New users start with base trust score 20 (no fabricated 82/74)
+  assert(
+    'Regression 5: New users start with base trust score 20 (no fabricated 82 or 74)',
+    freshUnverifiedUser.reputationScore === 20,
+    `reputationScore: ${freshUnverifiedUser.reputationScore}`
+  );
+
+  // Regression 6: Profile photo cannot silently fall back to generated avatar
+  const profileWithNoPhoto = await service.upsertLocalProfile({
+    id: 'usr_no_photo_01',
+    displayName: 'Soumen Roy',
+    locality: 'Ranaghat'
+  });
+  assert(
+    'Regression 6: Profile without photo does not silently fall back to generated/stock avatar',
+    profileWithNoPhoto.avatarUrl === undefined,
+    `avatarUrl: ${profileWithNoPhoto.avatarUrl}`
+  );
+
+  // Regression 7: Missing profile media produces explicit missing/pending state
+  assert(
+    'Regression 7: Missing profile media produces explicit status MISSING and provenance NONE',
+    profileWithNoPhoto.profileMedia !== undefined &&
+    profileWithNoPhoto.profileMedia.status === 'MISSING' &&
+    profileWithNoPhoto.profileMedia.provenance === 'NONE',
+    `profileMedia: ${JSON.stringify(profileWithNoPhoto.profileMedia)}`
+  );
+
+  // Regression 8: Media retains source/provenance (USER_URL, USER_UPLOAD, ADMIN_VERIFIED, NONE)
+  const profileWithUrlPhoto = await service.upsertLocalProfile({
+    id: 'usr_url_photo_01',
+    displayName: 'Rina Das',
+    locality: 'Ranaghat',
+    avatarUrl: 'https://images.example.com/rina-real-portrait.jpg',
+    profileMedia: {
+      url: 'https://images.example.com/rina-real-portrait.jpg',
+      sourceUrl: 'https://images.example.com/rina-real-portrait.jpg',
+      provenance: 'USER_URL',
+      status: 'PENDING_REVIEW'
+    }
+  });
+  assert(
+    'Regression 8: User-submitted media correctly records provenance USER_URL and status PENDING_REVIEW',
+    profileWithUrlPhoto.profileMedia !== undefined &&
+    profileWithUrlPhoto.profileMedia.provenance === 'USER_URL' &&
+    profileWithUrlPhoto.profileMedia.status === 'PENDING_REVIEW',
+    `profileMedia: ${JSON.stringify(profileWithUrlPhoto.profileMedia)}`
+  );
+
+  // Regression 9: Verification status is independent of photo availability
+  const reqNoPhoto = await service.createVerificationRequest({
+    userId: profileWithNoPhoto.id,
+    displayName: profileWithNoPhoto.displayName,
+    locality: 'Ranaghat',
+    contactMethod: 'PHONE',
+    contactValue: '+91 98320 99887'
+  });
+  await service.updateVerificationRequestStatus(reqNoPhoto.id, 'VERIFIED', 'Verified resident via utility document', 'Admin Verification');
+  const verifiedNoPhotoProfile = await service.getLocalProfile(profileWithNoPhoto.id);
+  assert(
+    'Regression 9: Verification status is independent of photo availability (resident verified without photo)',
+    verifiedNoPhotoProfile.isVerifiedResident === true &&
+    verifiedNoPhotoProfile.verificationStatus === 'VERIFIED' &&
+    verifiedNoPhotoProfile.avatarUrl === undefined &&
+    verifiedNoPhotoProfile.profileMedia?.status === 'MISSING',
+    `Verified without photo: ${JSON.stringify(verifiedNoPhotoProfile)}`
+  );
+
+  // Regression 10: Only actually verified residents receive the verified-resident state
+  assert(
+    'Regression 10: Verified resident state strictly requires isVerifiedResident === true && verificationStatus === "VERIFIED"',
+    verifiedNoPhotoProfile.isVerifiedResident === true &&
+    verifiedNoPhotoProfile.verificationStatus === 'VERIFIED' &&
+    freshUnverifiedUser.isVerifiedResident !== true,
+    `verifiedNoPhoto: isVerifiedResident=${verifiedNoPhotoProfile.isVerifiedResident}, fresh: isVerifiedResident=${freshUnverifiedUser.isVerifiedResident}`
+  );
+
+  // Regression 11: Only real events increase reputation metrics
+  const scoreBefore = verifiedNoPhotoProfile.reputationScore;
+  await service.createContribution({
+    type: 'ROAD_NOTICE',
+    title: 'Ranaghat Ferry Ghat morning schedule confirmed',
+    content: 'Ferry service to Aismali operates every 20 minutes from 6:00 AM onwards.',
+    locality: 'Ranaghat',
+    author: {
+      id: verifiedNoPhotoProfile.id,
+      displayName: verifiedNoPhotoProfile.displayName
+    }
+  });
+  const updatedProfileAfterContrib = await service.getLocalProfile(verifiedNoPhotoProfile.id);
+  assert(
+    'Regression 11: Only real events increase reputation metrics (creating contribution increased contributionsCount and score)',
+    updatedProfileAfterContrib.stats.contributionsCount === 1 &&
+    updatedProfileAfterContrib.reputationScore > scoreBefore,
+    `Before: ${scoreBefore}, After: ${updatedProfileAfterContrib.reputationScore}, count: ${updatedProfileAfterContrib.stats.contributionsCount}`
+  );
+
+  // Regression 12: Trusted People renders correctly when there are zero verified members
+  const emptyLocalityVoices = await service.getLocalVoices('NonExistentLocality_XYZ');
+  assert(
+    'Regression 12: Trusted People query returns strictly empty array [] when zero verified residents exist',
+    Array.isArray(emptyLocalityVoices) && emptyLocalityVoices.length === 0,
+    `emptyLocalityVoices: ${JSON.stringify(emptyLocalityVoices)}`
+  );
+
+  // Regression 12b: Static prerender and page parity check
+  const prerenderCode = fs.readFileSync('scripts/prerender_articles.js', 'utf8');
+  assert(
+    'Regression 12b: prerender_articles.js contains truthful empty state and zero fabricated profiles',
+    prerenderCode.includes('Trusted People is growing.') &&
+    prerenderCode.includes('Verified local members will appear here as they complete Conflux verification.') &&
+    !prerenderCode.includes('Debabrata Mukherjee') &&
+    !prerenderCode.includes('Poushali Roy'),
+    'Prerender script check'
   );
 
   // ───────────────────────────────────────────────────────────────────

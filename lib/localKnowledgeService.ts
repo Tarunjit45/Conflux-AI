@@ -232,60 +232,10 @@ const SEED_JOBS: LocalJob[] = [
   }
 ];
 
-// ── AUTHENTIC RESIDENT CONTRIBUTORS FOR RANAGHAT ──────────────────
-const SEED_PROFILES: LocalUserProfile[] = [
-  {
-    id: 'user_ranaghat_contributor_1',
-    displayName: 'Debabrata Mukherjee',
-    locality: 'Ranaghat',
-    reputationBadges: ['LOCAL_CONTRIBUTOR', 'TRUSTED_CONTRIBUTOR', 'COMMUNITY_HELPER'],
-    reputationScore: 82,
-    isVerifiedResident: true,
-    verificationStatus: 'VERIFIED',
-    stats: {
-      contributionsCount: 14,
-      confirmedUpdatesCount: 22,
-      verifiedDiscoveriesCount: 4,
-      helpfulCorrectionsCount: 3,
-      ratingsGivenCount: 10,
-      peopleHelpedCount: 38,
-      helpfulVotesCount: 45,
-      accuracyPercentage: 98,
-      questionsResolvedCount: 8
-    },
-    bio: 'Lifelong resident of College More, Ranaghat. Helping document transit schedules, weekly wholesale markets and local updates.',
-    explanation: '14 useful contributions • 22 community-confirmed updates • 38 people helped',
-    joinedDate: '2026-03-15'
-  },
-  {
-    id: 'user_ranaghat_contributor_2',
-    displayName: 'Poushali Roy',
-    locality: 'Ranaghat',
-    reputationBadges: ['LOCAL_CONTRIBUTOR', 'LOCAL_EXPLORER', 'TRUSTED_CONTRIBUTOR'],
-    reputationScore: 74,
-    isVerifiedResident: true,
-    verificationStatus: 'VERIFIED',
-    stats: {
-      contributionsCount: 8,
-      confirmedUpdatesCount: 15,
-      verifiedDiscoveriesCount: 2,
-      helpfulCorrectionsCount: 1,
-      ratingsGivenCount: 5,
-      peopleHelpedCount: 24,
-      helpfulVotesCount: 30,
-      accuracyPercentage: 96,
-      questionsResolvedCount: 4
-    },
-    bio: 'Daily commuter on Sealdah-Ranaghat route. Sharing verified road notices, railway updates and local utility timings.',
-    explanation: '8 useful contributions • 15 community-confirmed updates • 24 people helped',
-    joinedDate: '2026-05-10'
-  }
-];
-
 export class LocalKnowledgeService {
   private memoryContributions: LocalContribution[] = [];
   private memorySignals: LocalSignal[] = [];
-  private memoryProfiles: Map<string, LocalUserProfile> = new Map(SEED_PROFILES.map(p => [p.id, { ...p }]));
+  private memoryProfiles: Map<string, LocalUserProfile> = new Map();
   private memoryRequests: BusinessDemandRequest[] = [];
   private memoryFollows: UserFollow[] = [];
   private memoryComments: ContributionComment[] = [];
@@ -364,7 +314,6 @@ export class LocalKnowledgeService {
     this.memoryContributions = [];
     this.memorySignals = [];
     this.memoryProfiles.clear();
-    SEED_PROFILES.forEach(p => this.memoryProfiles.set(p.id, { ...p }));
     this.memoryRequests = [];
     this.memoryFollows = [];
     this.memoryComments = [];
@@ -422,6 +371,7 @@ export class LocalKnowledgeService {
     displayName: string;
     email?: string;
     avatarUrl?: string;
+    profileMedia?: ProfileMedia;
     locality: string;
     bio?: string;
     creatorLinks?: LocalUserProfile['creatorLinks'];
@@ -447,11 +397,36 @@ export class LocalKnowledgeService {
       joinedDate: new Date().toISOString().split('T')[0]
     };
 
+    // Calculate real profile media with explicit provenance & status (never a generated avatar)
+    let media: ProfileMedia = params.profileMedia || current.profileMedia || {
+      provenance: 'NONE',
+      status: 'MISSING'
+    };
+
+    if (params.avatarUrl !== undefined) {
+      const cleanUrl = params.avatarUrl.trim();
+      if (cleanUrl.length > 0) {
+        media = {
+          url: cleanUrl,
+          sourceUrl: cleanUrl,
+          provenance: cleanUrl.startsWith('data:') ? 'USER_UPLOAD' : 'USER_URL',
+          status: 'PENDING_REVIEW',
+          updatedAt: new Date().toISOString()
+        };
+      } else {
+        media = {
+          provenance: 'NONE',
+          status: 'MISSING'
+        };
+      }
+    }
+
     const updated: LocalUserProfile = {
       ...current,
       displayName: params.displayName.trim() || current.displayName,
       email: params.email || current.email,
-      avatarUrl: params.avatarUrl || current.avatarUrl,
+      avatarUrl: media.status !== 'MISSING' && media.status !== 'FLAGGED' ? (media.url || current.avatarUrl) : undefined,
+      profileMedia: media,
       locality: params.locality.trim() || current.locality,
       bio: params.bio !== undefined ? params.bio.trim() : current.bio,
       creatorLinks: params.creatorLinks || current.creatorLinks
@@ -523,7 +498,9 @@ export class LocalKnowledgeService {
   }
 
   /**
-   * Get Local Voices for a specific locality (ranked by usefulness & accuracy, NOT followers)
+   * Get Local Voices for a specific locality.
+   * STRICT INVARIANT: Must ONLY return real, database-backed, actually verified residents.
+   * Never synthesize fake or mock profiles. If there are 0 verified residents, returns [].
    */
   async getLocalVoices(locality: string, limit: number = 10): Promise<LocalUserProfile[]> {
     const locLower = locality.toLowerCase().trim();
@@ -531,46 +508,30 @@ export class LocalKnowledgeService {
 
     const filtered = all.filter(p => {
       const pLoc = (p.locality || '').toLowerCase().trim();
-      return pLoc.includes(locLower) || locLower.includes(pLoc);
+      const locMatch = pLoc.includes(locLower) || locLower.includes(pLoc);
+      const isVerified = p.isVerifiedResident === true && p.verificationStatus === 'VERIFIED';
+      return locMatch && isVerified;
     });
 
-    // If cold start has 0 registered profiles for locality, synthesize minimal local contributors
-    // based on existing contributions if any
-    if (filtered.length === 0) {
-      const contributionsInLoc = this.memoryContributions.filter(c => c.locality.toLowerCase() === locLower);
-      const authors = new Map<string, LocalUserProfile>();
-
-      for (const c of contributionsInLoc) {
-        if (!authors.has(c.author.id)) {
-          authors.set(c.author.id, {
-            id: c.author.id,
-            displayName: c.author.displayName,
-            locality: c.author.locality || locality,
-            avatarUrl: c.author.avatarUrl,
-            reputationBadges: [c.author.badge || 'LOCAL_CONTRIBUTOR'],
-            reputationScore: 65,
-            stats: {
-              contributionsCount: 1,
-              confirmedUpdatesCount: c.confirmationsCount,
-              verifiedDiscoveriesCount: c.type === 'DISCOVER' ? 1 : 0,
-              helpfulCorrectionsCount: c.type === 'CORRECTION' ? 1 : 0,
-              ratingsGivenCount: 0
-            },
-            explanation: `Active local contributor in ${c.author.locality || locality}.`,
-            joinedDate: c.createdAt.split('T')[0]
-          });
-        }
-      }
-      filtered.push(...Array.from(authors.values()));
-    }
-
-    // Rank strictly by reputation score & contributions count
+    // Rank strictly by earned reputation score & real contributions count
     filtered.sort((a, b) => {
       if (b.reputationScore !== a.reputationScore) return b.reputationScore - a.reputationScore;
       return b.stats.contributionsCount - a.stats.contributionsCount;
     });
 
     return filtered.slice(0, limit);
+  }
+
+  /**
+   * Admin / Internal: Get all registered contributor profiles in a locality (regardless of verification)
+   */
+  async getAllLocalProfiles(locality?: string): Promise<LocalUserProfile[]> {
+    let list = Array.from(this.memoryProfiles.values());
+    if (locality) {
+      const locLower = locality.toLowerCase().trim();
+      list = list.filter(p => (p.locality || '').toLowerCase().includes(locLower) || locLower.includes((p.locality || '').toLowerCase()));
+    }
+    return list;
   }
 
   // ═══════════════════════════════════════════════════════════════════
@@ -1837,6 +1798,105 @@ export class LocalKnowledgeService {
     });
 
     return item;
+  }
+
+  /**
+   * Admin: Update profile media status (approve photo, flag inappropriate media)
+   */
+  async updateProfileMediaStatus(
+    userId: string,
+    status: ProfileMediaStatus,
+    adminNotes?: string,
+    reviewedBy?: string
+  ): Promise<LocalUserProfile> {
+    const profile = await this.getLocalProfile(userId);
+    if (!profile) throw new Error('User profile not found.');
+
+    if (!profile.profileMedia) {
+      profile.profileMedia = {
+        provenance: 'NONE',
+        status
+      };
+    } else {
+      profile.profileMedia.status = status;
+      profile.profileMedia.verifiedBy = reviewedBy || 'Admin';
+      profile.profileMedia.verifiedAt = new Date().toISOString();
+    }
+
+    if (status === 'MISSING' || status === 'FLAGGED') {
+      profile.avatarUrl = undefined;
+      if (profile.profileMedia) {
+        profile.profileMedia.url = undefined;
+      }
+    }
+
+    this.memoryProfiles.set(profile.id, profile);
+    this.persistLocal();
+
+    connectService.logEvent({
+      businessId: 'conflux_identity',
+      eventType: `PROFILE_MEDIA_${status}`,
+      channel: 'HUMAN_WEB'
+    });
+
+    return profile;
+  }
+
+  /**
+   * Admin: Correct profile information
+   */
+  async correctProfileInfo(
+    userId: string,
+    updates: {
+      displayName?: string;
+      locality?: string;
+      bio?: string;
+      isVerifiedResident?: boolean;
+    }
+  ): Promise<LocalUserProfile> {
+    const profile = await this.getLocalProfile(userId);
+    if (!profile) throw new Error('User profile not found.');
+
+    if (updates.displayName) profile.displayName = updates.displayName.trim();
+    if (updates.locality) profile.locality = updates.locality.trim();
+    if (updates.bio !== undefined) profile.bio = updates.bio.trim();
+    if (updates.isVerifiedResident !== undefined) {
+      profile.isVerifiedResident = updates.isVerifiedResident;
+      profile.verificationStatus = updates.isVerifiedResident ? 'VERIFIED' : 'UNVERIFIED';
+    }
+
+    this.recomputeReputation(profile);
+    this.memoryProfiles.set(profile.id, profile);
+    this.persistLocal();
+
+    return profile;
+  }
+
+  /**
+   * Admin: Revoke resident verification
+   */
+  async revokeResidentVerification(
+    userId: string,
+    reason?: string,
+    reviewedBy?: string
+  ): Promise<LocalUserProfile> {
+    const profile = await this.getLocalProfile(userId);
+    if (!profile) throw new Error('User profile not found.');
+
+    profile.isVerifiedResident = false;
+    profile.verificationStatus = 'REJECTED';
+    if (reason) profile.verificationNotes = reason;
+    this.recomputeReputation(profile);
+    this.memoryProfiles.set(profile.id, profile);
+    this.persistLocal();
+
+    connectService.logEvent({
+      businessId: 'conflux_identity',
+      eventType: 'VERIFICATION_REVOKED',
+      channel: 'HUMAN_WEB'
+    });
+
+    return profile;
   }
 }
 
