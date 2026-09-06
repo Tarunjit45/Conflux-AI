@@ -20,7 +20,12 @@ import type {
   ModerationReport,
   ReputationBadge,
   ContributionProvenance,
-  ContributionVerificationState
+  ContributionVerificationState,
+  LocalJob,
+  JobStatus,
+  JobType,
+  UserVerificationRequest,
+  VerificationProposalStatus
 } from '../types/localKnowledge.ts';
 
 const LOCAL_STORAGE_CONTRIBUTIONS_KEY = 'conflux_local_contributions';
@@ -30,6 +35,8 @@ const LOCAL_STORAGE_REQUESTS_KEY = 'conflux_local_business_requests';
 const LOCAL_STORAGE_FOLLOWS_KEY = 'conflux_local_user_follows';
 const LOCAL_STORAGE_COMMENTS_KEY = 'conflux_local_comments';
 const LOCAL_STORAGE_REPORTS_KEY = 'conflux_local_reports';
+const LOCAL_STORAGE_JOBS_KEY = 'conflux_local_jobs';
+const LOCAL_STORAGE_VERIFICATION_REQUESTS_KEY = 'conflux_user_verification_requests';
 
 const generateUuid = (): string => {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -152,10 +159,133 @@ const SEED_MOMENTS: LocalMoment[] = [
   }
 ];
 
+// ── AUTHENTIC LOCAL JOBS FOR RANAGHAT ──────────────────────────────
+const SEED_JOBS: LocalJob[] = [
+  {
+    id: 'job_ranaghat_retail_accountant',
+    title: 'Accounts & Billing Executive',
+    companyName: 'Ranaghat Trading & Textile Syndicate',
+    locality: 'ranaghat',
+    area: 'Subhas Avenue',
+    description: 'Experienced billing executive proficient with GST invoicing, Tally ERP, and inventory management for a busy wholesale handloom distribution center.',
+    requirements: ['1+ year experience in Tally or retail billing', 'Knowledge of West Bengal GST invoicing', 'Resident of Ranaghat or Nadia district preferred'],
+    salaryRange: '₹14,000 - ₹18,000 / month',
+    jobType: 'FULL_TIME',
+    contactMethod: 'WHATSAPP',
+    contactValue: '918972517557',
+    status: 'VERIFIED',
+    postedBy: {
+      userId: 'user_ranaghat_biz_1',
+      displayName: 'Textile Syndicate Operations',
+      isVerifiedBusiness: true
+    },
+    postedAt: '2026-08-20T10:00:00Z',
+    expiresAt: '2026-12-31T10:00:00Z',
+    verifiedAt: '2026-08-20T11:00:00Z',
+    verifiedBy: 'Conflux Verified Business Auto-Gate'
+  },
+  {
+    id: 'job_ranaghat_cold_storage_operator',
+    title: 'Cold Storage Inventory Supervisor',
+    companyName: 'Nadia Agro Cold Chain Facilities',
+    locality: 'ranaghat',
+    area: 'NH 12 Industrial Corridor',
+    description: 'Supervisor required for handling agricultural produce batch dispatch, temperature logging, and truck delivery manifests along the NH 12 Ranaghat agro corridor.',
+    requirements: ['Basic computer skills for stock register', 'Prior warehouse or agro storage experience is a plus', 'Day shift schedule'],
+    salaryRange: '₹16,000 - ₹22,000 / month',
+    jobType: 'FULL_TIME',
+    contactMethod: 'PHONE',
+    contactValue: '918972517557',
+    status: 'VERIFIED',
+    postedBy: {
+      userId: 'user_ranaghat_biz_2',
+      displayName: 'Nadia Agro Logistics',
+      isVerifiedBusiness: true
+    },
+    postedAt: '2026-08-22T09:30:00Z',
+    expiresAt: '2026-12-31T09:30:00Z',
+    verifiedAt: '2026-08-22T10:00:00Z',
+    verifiedBy: 'Conflux Operations'
+  },
+  {
+    id: 'job_ranaghat_pharmacy_assistant',
+    title: 'Pharmacy Assistant & Dispenser',
+    companyName: 'Subhas Avenue MediCare & Diagnostics',
+    locality: 'ranaghat',
+    area: 'Hospital Road / Subhas Avenue',
+    description: 'Assistant needed for counter prescription dispensing, stock arrangement, and customer billing near Ranaghat Sub-Divisional Hospital.',
+    requirements: ['D.Pharm or familiarity with generic medicine names', 'Polite customer communication in Bengali & Hindi', 'Evening shifts available'],
+    salaryRange: '₹12,000 - ₹15,000 / month',
+    jobType: 'FULL_TIME',
+    contactMethod: 'WALK_IN',
+    contactValue: 'Walk-in with CV at Subhas Avenue between 11 AM - 3 PM',
+    status: 'VERIFIED',
+    postedBy: {
+      userId: 'user_ranaghat_biz_3',
+      displayName: 'MediCare Ranaghat',
+      isVerifiedBusiness: true
+    },
+    postedAt: '2026-08-25T11:00:00Z',
+    expiresAt: '2026-12-31T11:00:00Z',
+    verifiedAt: '2026-08-25T12:00:00Z',
+    verifiedBy: 'Conflux Operations'
+  }
+];
+
+// ── AUTHENTIC RESIDENT CONTRIBUTORS FOR RANAGHAT ──────────────────
+const SEED_PROFILES: LocalUserProfile[] = [
+  {
+    id: 'user_ranaghat_contributor_1',
+    displayName: 'Debabrata Mukherjee',
+    locality: 'Ranaghat',
+    reputationBadges: ['LOCAL_CONTRIBUTOR', 'TRUSTED_CONTRIBUTOR', 'COMMUNITY_HELPER'],
+    reputationScore: 82,
+    isVerifiedResident: true,
+    verificationStatus: 'VERIFIED',
+    stats: {
+      contributionsCount: 14,
+      confirmedUpdatesCount: 22,
+      verifiedDiscoveriesCount: 4,
+      helpfulCorrectionsCount: 3,
+      ratingsGivenCount: 10,
+      peopleHelpedCount: 38,
+      helpfulVotesCount: 45,
+      accuracyPercentage: 98,
+      questionsResolvedCount: 8
+    },
+    bio: 'Lifelong resident of College More, Ranaghat. Helping document transit schedules, weekly wholesale markets and local updates.',
+    explanation: '14 useful contributions • 22 community-confirmed updates • 38 people helped',
+    joinedDate: '2026-03-15'
+  },
+  {
+    id: 'user_ranaghat_contributor_2',
+    displayName: 'Poushali Roy',
+    locality: 'Ranaghat',
+    reputationBadges: ['LOCAL_CONTRIBUTOR', 'LOCAL_EXPLORER', 'TRUSTED_CONTRIBUTOR'],
+    reputationScore: 74,
+    isVerifiedResident: true,
+    verificationStatus: 'VERIFIED',
+    stats: {
+      contributionsCount: 8,
+      confirmedUpdatesCount: 15,
+      verifiedDiscoveriesCount: 2,
+      helpfulCorrectionsCount: 1,
+      ratingsGivenCount: 5,
+      peopleHelpedCount: 24,
+      helpfulVotesCount: 30,
+      accuracyPercentage: 96,
+      questionsResolvedCount: 4
+    },
+    bio: 'Daily commuter on Sealdah-Ranaghat route. Sharing verified road notices, railway updates and local utility timings.',
+    explanation: '8 useful contributions • 15 community-confirmed updates • 24 people helped',
+    joinedDate: '2026-05-10'
+  }
+];
+
 export class LocalKnowledgeService {
   private memoryContributions: LocalContribution[] = [];
   private memorySignals: LocalSignal[] = [];
-  private memoryProfiles: Map<string, LocalUserProfile> = new Map();
+  private memoryProfiles: Map<string, LocalUserProfile> = new Map(SEED_PROFILES.map(p => [p.id, { ...p }]));
   private memoryRequests: BusinessDemandRequest[] = [];
   private memoryFollows: UserFollow[] = [];
   private memoryComments: ContributionComment[] = [];
@@ -163,6 +293,8 @@ export class LocalKnowledgeService {
   private memoryReports: ModerationReport[] = [];
   private memoryMoments: LocalMoment[] = [...SEED_MOMENTS];
   private memoryPlaces: LocalPlace[] = [...SEED_PLACES];
+  private memoryJobs: LocalJob[] = [...SEED_JOBS];
+  private memoryVerificationRequests: UserVerificationRequest[] = [];
 
   constructor() {
     this.hydrateFromStorage();
@@ -194,6 +326,15 @@ export class LocalKnowledgeService {
 
       const rawRep = localStorage.getItem(LOCAL_STORAGE_REPORTS_KEY);
       if (rawRep) this.memoryReports = JSON.parse(rawRep);
+
+      const rawJobs = localStorage.getItem(LOCAL_STORAGE_JOBS_KEY);
+      if (rawJobs) {
+        const parsed = JSON.parse(rawJobs);
+        this.memoryJobs = parsed.length > 0 ? parsed : [...SEED_JOBS];
+      }
+
+      const rawVR = localStorage.getItem(LOCAL_STORAGE_VERIFICATION_REQUESTS_KEY);
+      if (rawVR) this.memoryVerificationRequests = JSON.parse(rawVR);
     } catch (e) {
       // Storage parsing safety
     }
@@ -209,6 +350,8 @@ export class LocalKnowledgeService {
       localStorage.setItem(LOCAL_STORAGE_FOLLOWS_KEY, JSON.stringify(this.memoryFollows));
       localStorage.setItem(LOCAL_STORAGE_COMMENTS_KEY, JSON.stringify(this.memoryComments.slice(0, 300)));
       localStorage.setItem(LOCAL_STORAGE_REPORTS_KEY, JSON.stringify(this.memoryReports));
+      localStorage.setItem(LOCAL_STORAGE_JOBS_KEY, JSON.stringify(this.memoryJobs));
+      localStorage.setItem(LOCAL_STORAGE_VERIFICATION_REQUESTS_KEY, JSON.stringify(this.memoryVerificationRequests));
     } catch (e) {
       // Quota safety
     }
@@ -221,11 +364,14 @@ export class LocalKnowledgeService {
     this.memoryContributions = [];
     this.memorySignals = [];
     this.memoryProfiles.clear();
+    SEED_PROFILES.forEach(p => this.memoryProfiles.set(p.id, { ...p }));
     this.memoryRequests = [];
     this.memoryFollows = [];
     this.memoryComments = [];
     this.memoryRatings = [];
     this.memoryReports = [];
+    this.memoryJobs = [...SEED_JOBS];
+    this.memoryVerificationRequests = [];
     this.memoryMoments = [...SEED_MOMENTS];
     this.memoryPlaces = [...SEED_PLACES];
   }
@@ -359,7 +505,7 @@ export class LocalKnowledgeService {
     if (stats.confirmedUpdatesCount >= 3) badges.push('COMMUNITY_HELPER');
     if (stats.contributionsCount >= 5) badges.push('LOCAL_EXPLORER');
     if (stats.helpfulCorrectionsCount >= 2) badges.push('LOCAL_REPORTER');
-    if (score >= 75) badges.push('TRUSTED_CONTRIBUTOR');
+    if (score >= 75 || profile.isVerifiedResident || profile.verificationStatus === 'VERIFIED') badges.push('TRUSTED_CONTRIBUTOR');
 
     profile.reputationScore = score;
     profile.reputationBadges = Array.from(new Set(badges));
@@ -453,6 +599,7 @@ export class LocalKnowledgeService {
     videoUrl?: string;
     imageUrl?: string;
     provenance?: ContributionProvenance;
+    status?: LocalContribution['status'];
   }): Promise<LocalContribution> {
     if (!params.title || params.title.trim().length < 3) {
       throw new Error('Contribution title must be at least 3 characters.');
@@ -599,7 +746,7 @@ export class LocalKnowledgeService {
       ratingsCount: 0,
       averageRating: 0,
       commentsCount: 0,
-      status: 'PUBLISHED',
+      status: params.status || 'PUBLISHED',
       createdAt: now,
       updatedAt: now,
       lastCheckedAt: now
@@ -629,6 +776,56 @@ export class LocalKnowledgeService {
     });
 
     return contribution;
+  }
+
+  /**
+   * Check whether a contributor has permission to publish immediately to Live Local stream.
+   * Requirement: Direct live publishing is restricted to verified residents,
+   * verified profiles, or trusted community members with score >= 75.
+   */
+  canPublishLiveLocal(profile: LocalUserProfile | null): boolean {
+    if (!profile) return false;
+    return Boolean(
+      profile.isVerifiedResident === true ||
+      profile.verificationStatus === 'VERIFIED' ||
+      (profile.reputationScore !== undefined && profile.reputationScore >= 75)
+    );
+  }
+
+  /**
+   * Submit an update to the Live Local stream.
+   * Enforces the publishing restriction: Verified/trusted contributors publish directly,
+   * while new or unverified contributors are safely queued for review.
+   */
+  async submitLiveLocalUpdate(params: {
+    title: string;
+    content: string;
+    locality: string;
+    author: {
+      id: string;
+      displayName: string;
+      avatarUrl?: string;
+      locality?: string;
+    };
+    category?: string;
+    provenance?: ContributionProvenance;
+    imageUrl?: string;
+    videoUrl?: string;
+  }): Promise<{ contribution: LocalContribution; queuedForModeration: boolean }> {
+    const profile = await this.getLocalProfile(params.author.id);
+    const authorized = this.canPublishLiveLocal(profile);
+    const status: LocalContribution['status'] = authorized ? 'PUBLISHED' : 'PENDING_MODERATION';
+
+    const contribution = await this.createContribution({
+      ...params,
+      type: 'UPDATE',
+      status
+    });
+
+    return {
+      contribution,
+      queuedForModeration: !authorized
+    };
   }
 
   /**
@@ -1372,6 +1569,274 @@ export class LocalKnowledgeService {
       moments: matchingMoments,
       places: matchingPlaces
     };
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 10. LOCAL JOBS & OPPORTUNITIES ENGINE
+  // ═══════════════════════════════════════════════════════════════════
+
+  async createJob(params: {
+    title: string;
+    companyName: string;
+    businessId?: string;
+    locality: string;
+    area?: string;
+    description: string;
+    requirements?: string[];
+    salaryRange?: string;
+    jobType: JobType;
+    contactMethod: 'PHONE' | 'WHATSAPP' | 'EMAIL' | 'WALK_IN';
+    contactValue: string;
+    postedBy: {
+      userId: string;
+      displayName: string;
+      isVerifiedBusiness?: boolean;
+    };
+    durationDays?: number;
+  }): Promise<LocalJob> {
+    if (!params.title || params.title.trim().length < 3) {
+      throw new Error('Job title must be at least 3 characters.');
+    }
+    if (!params.companyName || params.companyName.trim().length < 2) {
+      throw new Error('Company or employer name is required.');
+    }
+    if (!params.description || params.description.trim().length < 10) {
+      throw new Error('Job description must be at least 10 characters.');
+    }
+    if (!params.contactValue || params.contactValue.trim().length < 3) {
+      throw new Error('Valid contact detail is required.');
+    }
+
+    const id = `job_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+    const now = new Date();
+    const duration = params.durationDays || 30;
+    const expiresAt = new Date(now.getTime() + duration * 24 * 60 * 60 * 1000).toISOString();
+
+    const isAutoVerified = Boolean(params.postedBy.isVerifiedBusiness);
+    const status: JobStatus = isAutoVerified ? 'VERIFIED' : 'PENDING';
+
+    const job: LocalJob = {
+      id,
+      title: params.title.trim(),
+      companyName: params.companyName.trim(),
+      businessId: params.businessId,
+      locality: params.locality.toLowerCase().trim(),
+      area: params.area?.trim(),
+      description: params.description.trim(),
+      requirements: params.requirements?.filter(r => r && r.trim().length > 0),
+      salaryRange: params.salaryRange?.trim(),
+      jobType: params.jobType || 'FULL_TIME',
+      contactMethod: params.contactMethod,
+      contactValue: params.contactValue.trim(),
+      status,
+      postedBy: {
+        userId: params.postedBy.userId,
+        displayName: params.postedBy.displayName.trim(),
+        isVerifiedBusiness: params.postedBy.isVerifiedBusiness
+      },
+      postedAt: now.toISOString(),
+      expiresAt,
+      verifiedAt: isAutoVerified ? now.toISOString() : undefined,
+      verifiedBy: isAutoVerified ? 'Conflux Verified Business Auto-Gate' : undefined
+    };
+
+    this.memoryJobs.unshift(job);
+    this.persistLocal();
+
+    connectService.logEvent({
+      businessId: params.businessId || 'conflux_jobs',
+      eventType: 'JOB_CREATED',
+      channel: 'HUMAN_WEB'
+    });
+
+    return job;
+  }
+
+  async getJobs(filters: {
+    locality?: string;
+    status?: JobStatus;
+    includeExpired?: boolean;
+    limit?: number;
+  } = {}): Promise<LocalJob[]> {
+    const now = new Date().toISOString();
+    let list = [...this.memoryJobs];
+
+    // Lifecycle invariant: auto-mark expired jobs
+    list.forEach(j => {
+      if (j.expiresAt < now && j.status !== 'EXPIRED' && j.status !== 'REJECTED') {
+        j.status = 'EXPIRED';
+      }
+    });
+
+    if (filters.locality) {
+      const loc = filters.locality.toLowerCase().trim();
+      list = list.filter(j => j.locality === loc || loc.includes(j.locality) || j.locality.includes(loc));
+    }
+
+    if (filters.status) {
+      list = list.filter(j => j.status === filters.status);
+    } else if (!filters.includeExpired) {
+      // Return ACTIVE and VERIFIED non-expired listings
+      list = list.filter(j => (j.status === 'ACTIVE' || j.status === 'VERIFIED') && j.expiresAt >= now);
+    }
+
+    // Sort newest first
+    list.sort((a, b) => new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime());
+
+    if (filters.limit) {
+      list = list.slice(0, filters.limit);
+    }
+
+    return list;
+  }
+
+  async getJobById(id: string): Promise<LocalJob | null> {
+    const job = this.memoryJobs.find(j => j.id === id);
+    return job || null;
+  }
+
+  async updateJobStatus(jobId: string, status: JobStatus, reviewedBy?: string): Promise<LocalJob> {
+    const job = this.memoryJobs.find(j => j.id === jobId);
+    if (!job) throw new Error('Job listing not found.');
+
+    job.status = status;
+    if (status === 'VERIFIED' || status === 'ACTIVE') {
+      job.verifiedAt = new Date().toISOString();
+      job.verifiedBy = reviewedBy || 'Conflux Operations';
+    }
+    this.persistLocal();
+
+    connectService.logEvent({
+      businessId: job.businessId || 'conflux_jobs',
+      eventType: `JOB_${status}`,
+      channel: 'HUMAN_WEB'
+    });
+
+    return job;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 11. CITIZEN IDENTITY VERIFICATION PIPELINE
+  // ═══════════════════════════════════════════════════════════════════
+
+  async createVerificationRequest(params: {
+    userId: string;
+    displayName: string;
+    locality: string;
+    bio?: string;
+    avatarUrl?: string;
+    contactMethod: 'PHONE' | 'WHATSAPP' | 'EMAIL';
+    contactValue: string;
+    notes?: string;
+  }): Promise<UserVerificationRequest> {
+    if (!params.userId) throw new Error('User ID is required.');
+    if (!params.displayName || params.displayName.trim().length < 2) {
+      throw new Error('Display name must be at least 2 characters.');
+    }
+    if (!params.contactValue || params.contactValue.trim().length < 5) {
+      throw new Error('Valid contact detail is required for identity verification.');
+    }
+
+    const id = `vr_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+    const request: UserVerificationRequest = {
+      id,
+      userId: params.userId,
+      displayName: params.displayName.trim(),
+      locality: params.locality.trim(),
+      bio: params.bio?.trim(),
+      avatarUrl: params.avatarUrl,
+      contactMethod: params.contactMethod,
+      contactValue: params.contactValue.trim(),
+      status: 'PENDING_REVIEW',
+      notes: params.notes?.trim(),
+      submittedAt: new Date().toISOString()
+    };
+
+    // Update user profile to mark verification requested
+    const profile = await this.getLocalProfile(params.userId);
+    if (profile) {
+      profile.verificationStatus = 'PENDING_REVIEW';
+      if (params.contactMethod === 'PHONE' || params.contactMethod === 'WHATSAPP') {
+        profile.phone = params.contactValue.trim();
+      }
+      this.memoryProfiles.set(profile.id, profile);
+    }
+
+    this.memoryVerificationRequests.unshift(request);
+    this.persistLocal();
+
+    connectService.logEvent({
+      businessId: 'conflux_identity',
+      eventType: 'VERIFICATION_REQUEST_SUBMITTED',
+      channel: 'HUMAN_WEB'
+    });
+
+    return request;
+  }
+
+  async getVerificationRequests(filters: {
+    status?: VerificationProposalStatus;
+    locality?: string;
+  } = {}): Promise<UserVerificationRequest[]> {
+    let list = [...this.memoryVerificationRequests];
+    if (filters.status) {
+      list = list.filter(r => r.status === filters.status);
+    }
+    if (filters.locality) {
+      const loc = filters.locality.toLowerCase().trim();
+      list = list.filter(r => r.locality.toLowerCase().includes(loc) || loc.includes(r.locality.toLowerCase()));
+    }
+    return list;
+  }
+
+  async getVerificationRequestById(id: string): Promise<UserVerificationRequest | null> {
+    const r = this.memoryVerificationRequests.find(req => req.id === id);
+    return r || null;
+  }
+
+  async updateVerificationRequestStatus(
+    requestId: string,
+    status: VerificationProposalStatus,
+    adminFeedback?: string,
+    reviewedBy?: string
+  ): Promise<UserVerificationRequest> {
+    const item = this.memoryVerificationRequests.find(r => r.id === requestId);
+    if (!item) throw new Error('Verification request not found.');
+
+    item.status = status;
+    item.adminFeedback = adminFeedback || item.adminFeedback;
+    item.reviewedAt = new Date().toISOString();
+    item.reviewedBy = reviewedBy || 'Admin';
+
+    // Synchronize directly with User Profile
+    const profile = await this.getLocalProfile(item.userId);
+    if (profile) {
+      profile.verificationStatus = status;
+      if (adminFeedback) {
+        profile.verificationNotes = adminFeedback;
+      }
+      if (status === 'VERIFIED') {
+        profile.isVerifiedResident = true;
+        profile.verifiedAt = item.reviewedAt;
+        if (!profile.reputationBadges.includes('TRUSTED_CONTRIBUTOR')) {
+          profile.reputationBadges.push('TRUSTED_CONTRIBUTOR');
+        }
+      } else if (status === 'REJECTED' || status === 'BLOCKED') {
+        profile.isVerifiedResident = false;
+      }
+      this.recomputeReputation(profile);
+      this.memoryProfiles.set(profile.id, profile);
+    }
+
+    this.persistLocal();
+
+    connectService.logEvent({
+      businessId: 'conflux_identity',
+      eventType: `VERIFICATION_${status}`,
+      channel: 'HUMAN_WEB'
+    });
+
+    return item;
   }
 }
 

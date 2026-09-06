@@ -93,6 +93,60 @@ export interface CreatorLink {
   label?: string;
 }
 
+export type VerificationProposalStatus =
+  | 'UNVERIFIED'
+  | 'PENDING_REVIEW'
+  | 'CONTACTED'
+  | 'VERIFIED'
+  | 'REJECTED'
+  | 'BLOCKED';
+
+export interface UserVerificationRequest {
+  id: string;
+  userId: string;
+  displayName: string;
+  locality: string;
+  bio?: string;
+  avatarUrl?: string;
+  contactMethod: 'PHONE' | 'WHATSAPP' | 'EMAIL';
+  contactValue: string;
+  status: VerificationProposalStatus;
+  notes?: string;
+  adminFeedback?: string;
+  submittedAt: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
+}
+
+export type JobStatus = 'PENDING' | 'VERIFIED' | 'ACTIVE' | 'EXPIRED' | 'REJECTED';
+
+export type JobType = 'FULL_TIME' | 'PART_TIME' | 'CONTRACT' | 'INTERNSHIP';
+
+export interface LocalJob {
+  id: string;
+  title: string;
+  companyName: string;
+  businessId?: string;
+  locality: string; // e.g. 'ranaghat'
+  area?: string; // e.g. 'Station Road', 'Rathtala', 'Subhas Avenue'
+  description: string;
+  requirements?: string[];
+  salaryRange?: string; // e.g. '₹12,000 - ₹18,000 / month'
+  jobType: JobType;
+  contactMethod: 'PHONE' | 'WHATSAPP' | 'EMAIL' | 'WALK_IN';
+  contactValue: string;
+  status: JobStatus;
+  postedBy: {
+    userId: string;
+    displayName: string;
+    isVerifiedBusiness?: boolean;
+  };
+  postedAt: string;
+  expiresAt: string; // ISO date string
+  verifiedAt?: string;
+  verifiedBy?: string;
+}
+
 export interface LocalUserProfile {
   id: string;
   displayName: string;
@@ -108,6 +162,10 @@ export interface LocalUserProfile {
   explanation: string; // Transparent reason: why this person has this reputation
   joinedDate: string;
   isVerifiedResident?: boolean;
+  verificationStatus?: VerificationProposalStatus;
+  verificationNotes?: string;
+  verifiedAt?: string;
+  phone?: string;
 }
 
 export type ContributionType =

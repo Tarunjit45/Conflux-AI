@@ -27,7 +27,8 @@ import {
   ThumbsUp,
   Flame,
   Radio,
-  Share2
+  Share2,
+  Briefcase
 } from 'lucide-react';
 import { trackLocationEvent } from '../../lib/locationAnalytics';
 import { businessService } from '../../lib/businessService';
@@ -35,8 +36,11 @@ import { localKnowledgeService } from '../../lib/localKnowledgeService';
 import { CreateContributionModal } from '../contributions/CreateContributionModal';
 import { ContributionCard } from '../contributions/ContributionCard';
 import { RequestBusinessModal } from '../contributions/RequestBusinessModal';
+import { RanaghatVisitorPrompt } from './RanaghatVisitorPrompt';
+import { CreateJobModal } from './CreateJobModal';
+import { UserOnboardingFlow } from '../auth/UserOnboardingFlow';
 import { getContributorStanding } from '../../types/localKnowledge';
-import type { LocalContribution, LocalUserProfile, LocalMoment, ContributionType } from '../../types/localKnowledge';
+import type { LocalContribution, LocalUserProfile, LocalMoment, ContributionType, LocalJob, JobType } from '../../types/localKnowledge';
 import type { ConfluxBusiness } from '../../types/business';
 import type { ArticleKnowledgeObject } from '../../types/article';
 
@@ -46,18 +50,39 @@ const LocationDetailPage: React.FC = () => {
   const allLocations = [...NADIA_LOCATIONS, ...OTHER_MAJOR_WB_LOCATIONS];
   const location = allLocations.find(l => l.slug === citySlug && l.districtSlug === districtSlug);
   const parentDistrict = WEST_BENGAL_DISTRICTS.find(d => d.slug === districtSlug);
+  const isRanaghat = location?.slug === 'ranaghat';
 
   const [localBusinesses, setLocalBusinesses] = useState<ConfluxBusiness[]>([]);
   const [contributions, setContributions] = useState<LocalContribution[]>([]);
   const [moments, setMoments] = useState<LocalMoment[]>([]);
   const [localVoices, setLocalVoices] = useState<LocalUserProfile[]>([]);
+  const [jobs, setJobs] = useState<LocalJob[]>([]);
   const [isLoadingBusinesses, setIsLoadingBusinesses] = useState(true);
 
   // Local Knowledge UI state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [isJobModalOpen, setIsJobModalOpen] = useState(false);
+  const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
+  const [isVisitorPromptOpen, setIsVisitorPromptOpen] = useState(false);
+  const [jobTypeFilter, setJobTypeFilter] = useState<'ALL' | JobType>('ALL');
   const [localSearchQuery, setLocalSearchQuery] = useState('');
   const [activeContribTab, setActiveContribTab] = useState<'ALL' | ContributionType>('ALL');
+
+  // Trigger Ranaghat Visitor Entry Prompt if not dismissed during this session
+  useEffect(() => {
+    if (location && location.slug === 'ranaghat') {
+      if (typeof sessionStorage !== 'undefined') {
+        const dismissed = sessionStorage.getItem('conflux_ranaghat_prompt_dismissed');
+        if (!dismissed) {
+          const timer = setTimeout(() => {
+            setIsVisitorPromptOpen(true);
+          }, 1200);
+          return () => clearTimeout(timer);
+        }
+      }
+    }
+  }, [location]);
 
   // Load local verified businesses from Business Graph
   useEffect(() => {
@@ -66,14 +91,15 @@ const LocationDetailPage: React.FC = () => {
       if (!location) return;
       setIsLoadingBusinesses(true);
       try {
-        const [bizResults, contribList, momentList, voiceList] = await Promise.all([
+        const [bizResults, contribList, momentList, voiceList, jobsList] = await Promise.all([
           businessService.searchBusinesses({
             district: districtSlug,
             city: location.slug
           }),
           localKnowledgeService.getContributions({ locality: location.slug }),
           localKnowledgeService.getLocalMoments(location.slug),
-          localKnowledgeService.getLocalVoices(location.slug, 6)
+          localKnowledgeService.getLocalVoices(location.slug, 8),
+          localKnowledgeService.getJobs({ locality: location.slug })
         ]);
 
         const matched = bizResults.map(r => r.business);
@@ -83,6 +109,7 @@ const LocationDetailPage: React.FC = () => {
           setContributions(contribList);
           setMoments(momentList);
           setLocalVoices(voiceList);
+          setJobs(jobsList);
         }
       } catch (err) {
         console.warn('[LocationDetailPage] Error loading local businesses or contributions:', err);
@@ -127,18 +154,59 @@ const LocationDetailPage: React.FC = () => {
     : [...relevantArticles, ...districtArticles.filter(da => !relevantArticles.some(ra => ra.id === da.id))].slice(0, 4);
 
   const filteredContributions = contributions.filter(c => {
-    if (activeContribTab !== 'ALL' && c.contributionType !== activeContribTab) {
+    if (activeContribTab !== 'ALL' && c.type !== activeContribTab) {
       return false;
     }
     if (localSearchQuery.trim()) {
       const q = localSearchQuery.toLowerCase();
       const matchTitle = c.title.toLowerCase().includes(q);
       const matchBody = c.content.toLowerCase().includes(q);
-      const matchBiz = c.businessName?.toLowerCase().includes(q);
-      const matchPlace = c.placeName?.toLowerCase().includes(q);
-      const matchAuthor = c.authorName.toLowerCase().includes(q);
-      const matchTags = c.tags.some(t => t.toLowerCase().includes(q));
-      return matchTitle || matchBody || matchBiz || matchPlace || matchAuthor || matchTags;
+      const matchBiz = c.businessRef?.name?.toLowerCase().includes(q);
+      const matchPlace = c.placeRef?.name?.toLowerCase().includes(q);
+      const matchAuthor = c.author?.displayName?.toLowerCase().includes(q);
+      const matchCategory = c.category?.toLowerCase().includes(q);
+      return matchTitle || matchBody || matchBiz || matchPlace || matchAuthor || matchCategory;
+    }
+    return true;
+  });
+
+  const filteredJobs = jobs.filter(j => {
+    if (jobTypeFilter !== 'ALL' && j.jobType !== jobTypeFilter) {
+      return false;
+    }
+    if (localSearchQuery.trim()) {
+      const q = localSearchQuery.toLowerCase();
+      return (
+        j.title.toLowerCase().includes(q) ||
+        j.companyName.toLowerCase().includes(q) ||
+        j.description.toLowerCase().includes(q) ||
+        (j.area && j.area.toLowerCase().includes(q))
+      );
+    }
+    return true;
+  });
+
+  const filteredBusinesses = localBusinesses.filter(biz => {
+    if (localSearchQuery.trim()) {
+      const q = localSearchQuery.toLowerCase();
+      return (
+        biz.name.toLowerCase().includes(q) ||
+        (biz.categoryName && biz.categoryName.toLowerCase().includes(q)) ||
+        (biz.description && biz.description.toLowerCase().includes(q)) ||
+        (biz.location?.fullAddress && biz.location.fullAddress.toLowerCase().includes(q))
+      );
+    }
+    return true;
+  });
+
+  const filteredVoices = localVoices.filter(voice => {
+    if (localSearchQuery.trim()) {
+      const q = localSearchQuery.toLowerCase();
+      return (
+        voice.displayName.toLowerCase().includes(q) ||
+        (voice.bio && voice.bio.toLowerCase().includes(q)) ||
+        (voice.locality && voice.locality.toLowerCase().includes(q))
+      );
     }
     return true;
   });
@@ -281,9 +349,20 @@ const LocationDetailPage: React.FC = () => {
             </Link>
           </div>
 
-          <h1 className="font-orbitron text-4xl md:text-6xl font-black text-slate-900 tracking-tight leading-[1.1] mb-6">
-            {location.h1Title || `Local Business Visibility, Verification & Automation in ${location.name}`}
-          </h1>
+          {isRanaghat ? (
+            <div className="space-y-3 mb-6">
+              <h1 className="font-orbitron text-4xl md:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
+                Ranaghat
+              </h1>
+              <p className="text-xl md:text-2xl font-bold text-blue-600 font-orbitron">
+                Your trusted local guide to Ranaghat
+              </p>
+            </div>
+          ) : (
+            <h1 className="font-orbitron text-4xl md:text-6xl font-black text-slate-900 tracking-tight leading-[1.1] mb-6">
+              {location.h1Title || `Local Business Visibility, Verification & Automation in ${location.name}`}
+            </h1>
+          )}
           
           <p className="text-lg md:text-xl font-medium text-slate-600 leading-relaxed mb-8">
             {location.summary}
@@ -292,40 +371,40 @@ const LocationDetailPage: React.FC = () => {
           {/* Quick Locality Navigation Bar */}
           <div className="flex flex-wrap items-center gap-2.5 pt-2">
             <a
-              href="#today-in-locality"
-              className="px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 text-xs font-bold transition-all flex items-center gap-1.5"
+              href="#live-local"
+              className="px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 text-xs font-bold transition-all flex items-center gap-1.5 min-h-[44px]"
             >
-              <Flame size={14} className="text-purple-600" /> Today in {location.name}
+              <Radio size={14} className="text-purple-600 animate-pulse" /> Live Local ({moments.filter(m => m.status === 'ACTIVE').length + contributions.length})
             </a>
             <a
-              href="#verified-businesses"
-              className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-md shadow-blue-600/10 flex items-center gap-1.5"
+              href="#jobs"
+              className="px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 text-xs font-bold transition-all flex items-center gap-1.5 min-h-[44px]"
+            >
+              <Briefcase size={14} className="text-emerald-600" /> Local Jobs ({jobs.length})
+            </a>
+            <a
+              href="#trusted-people"
+              className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all flex items-center gap-1.5 min-h-[44px]"
+            >
+              <Users size={14} className="text-slate-600" /> Trusted People ({localVoices.length})
+            </a>
+            <a
+              href="#trusted-businesses"
+              className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-md shadow-blue-600/10 flex items-center gap-1.5 min-h-[44px]"
             >
               <Store size={14} /> Verified Businesses ({localBusinesses.length})
-            </a>
-            <a
-              href="#local-voices"
-              className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all flex items-center gap-1.5"
-            >
-              <Users size={14} className="text-slate-600" /> Local Voices
-            </a>
-            <a
-              href="#community-signals"
-              className="px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold transition-all flex items-center gap-1.5"
-            >
-              <Radio size={14} className="text-emerald-600" /> Community Signals ({contributions.length})
             </a>
             <button
               type="button"
               onClick={() => setIsCreateModalOpen(true)}
-              className="px-4 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ml-auto"
+              className="px-4 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ml-auto min-h-[44px]"
             >
               <Plus size={14} /> Share Contribution
             </button>
             <button
               type="button"
               onClick={() => setIsRequestModalOpen(true)}
-              className="px-4 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer min-h-[44px]"
             >
               Request a Business
             </button>
@@ -340,80 +419,22 @@ const LocationDetailPage: React.FC = () => {
           </div>
         </div>
 
-        {/* ── TODAY IN RANAGHAT (ACTIVE LOCAL MOMENTS & NOTICES) ──────── */}
-        {moments.filter(m => m.status === 'ACTIVE').length > 0 && (
-          <section id="today-in-locality" className="mb-16 scroll-mt-28">
-            <div className="p-8 rounded-3xl bg-gradient-to-br from-purple-900 via-indigo-950 to-slate-950 text-white shadow-xl space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
-                <div className="flex items-center gap-2.5">
-                  <span className="p-2 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-400/30">
-                    <Flame size={20} />
-                  </span>
-                  <div>
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-purple-300 block">
-                      Live Locality Bulletin
-                    </span>
-                    <h2 className="text-2xl font-bold font-orbitron">
-                      Today in {location.name}
-                    </h2>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-purple-200/80 font-mono">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span>Active Local Moments &amp; Public Notices</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                {moments.filter(m => m.status === 'ACTIVE').slice(0, 3).map((moment) => (
-                  <div
-                    key={moment.id}
-                    className="p-5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 flex flex-col justify-between space-y-3"
-                  >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-400/20 text-purple-200 border border-purple-300/30 uppercase">
-                          {moment.momentType}
-                        </span>
-                        <span className="text-[11px] font-mono text-purple-300">
-                          {moment.startDate}
-                        </span>
-                      </div>
-                      <h3 className="text-base font-bold text-white font-orbitron leading-snug">
-                        {moment.title}
-                      </h3>
-                      <p className="text-xs text-slate-300 leading-relaxed line-clamp-3">
-                        {moment.summary}
-                      </p>
-                    </div>
-
-                    <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-purple-200/80">
-                      <span>📍 {moment.locationName}</span>
-                      <span className="font-bold text-emerald-300">✓ {moment.confirmationsCount} confirmed</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
         {/* ── LOCAL INTELLIGENCE SEARCH ───────────────────────────────── */}
         <section id="locality-search" className="mb-16">
           <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
             <div className="flex items-center gap-2">
               <Search size={18} className="text-blue-600" />
               <h3 className="text-sm font-bold font-orbitron text-slate-900 uppercase tracking-wider">
-                Search {location.name} Local Intelligence
+                {isRanaghat ? 'Search Ranaghat Community & Verified Directory' : `Search ${location.name} Local Intelligence`}
               </h3>
             </div>
             <div className="relative">
               <input
                 type="text"
-                placeholder={`Search verified shops, doctors, road updates, or moments in ${location.name}...`}
+                placeholder={isRanaghat ? "What do you want to know about Ranaghat? Search shops, jobs, road notices, or people..." : `Search verified shops, doctors, road updates, or moments in ${location.name}...`}
                 value={localSearchQuery}
                 onChange={(e) => setLocalSearchQuery(e.target.value)}
-                className="w-full pl-4 pr-12 py-3 rounded-2xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium bg-slate-50/50"
+                className="w-full pl-4 pr-12 py-3 rounded-2xl border border-slate-200 text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium bg-slate-50/50 min-h-[44px]"
               />
               {localSearchQuery && (
                 <button
@@ -427,12 +448,440 @@ const LocationDetailPage: React.FC = () => {
           </div>
         </section>
 
-        {/* ── SECTION 1: VERIFIED LOCAL BUSINESSES IN RANAGHAT ───────── */}
-        <section id="verified-businesses" className="mb-20 scroll-mt-28">
+        {/* ── SECTION 1: LIVE LOCAL (REAL-TIME UPDATES, NOTICES, GROUND TRUTH) ─ */}
+        <section id="live-local" className="mb-20 scroll-mt-28">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
+            <div>
+              <span className="px-3 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200 text-[10px] font-black tracking-widest uppercase mb-3 inline-flex items-center gap-1.5">
+                <Radio size={14} className="text-purple-600 animate-pulse" /> Section 1 • Live Ground Truth
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-slate-900 tracking-tight">
+                Live Local in {location.name}
+              </h2>
+              <p className="text-slate-500 font-medium text-sm mt-2 max-w-2xl">
+                Real-time transport alerts, infrastructure notices, market days, and community updates confirmed by {location.name} neighbors.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(true)}
+                className="inline-flex items-center gap-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 px-4 py-2.5 rounded-xl transition-all shadow-md shadow-purple-600/20 cursor-pointer min-h-[44px]"
+              >
+                <Plus size={14} /> Share Local Update
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsRequestModalOpen(true)}
+                className="inline-flex items-center gap-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-4 py-2.5 rounded-xl transition-all cursor-pointer min-h-[44px]"
+              >
+                Can't find a business?
+              </button>
+            </div>
+          </div>
+
+          {/* Publishing Policy Notice */}
+          <div className="mb-6 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-600">
+            <div className="flex items-center gap-2.5">
+              <ShieldCheck size={16} className="text-blue-600 shrink-0" />
+              <span>
+                <strong>Ground Truth Standard:</strong> Publishing live alerts is reserved for verified residents and trusted local guides to protect neighbors from spam and false claims.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsOnboardingModalOpen(true)}
+              className="text-blue-600 hover:text-blue-800 font-bold shrink-0 hover:underline cursor-pointer min-h-[44px] inline-flex items-center"
+            >
+              Get Verified as Resident &rarr;
+            </button>
+          </div>
+
+          {/* Active Local Moments Cards */}
+          {moments.filter(m => m.status === 'ACTIVE').length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+              {moments.filter(m => m.status === 'ACTIVE').slice(0, 3).map((moment) => (
+                <div
+                  key={moment.id}
+                  className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-purple-950 text-white shadow-md border border-slate-800 flex flex-col justify-between space-y-3"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-400/20 text-purple-200 border border-purple-300/30 uppercase">
+                        {moment.momentType}
+                      </span>
+                      <span className="text-[11px] font-mono text-purple-300">
+                        {moment.startDate}
+                      </span>
+                    </div>
+                    <h3 className="text-base font-bold text-white font-orbitron leading-snug">
+                      {moment.title}
+                    </h3>
+                    <p className="text-xs text-slate-300 leading-relaxed line-clamp-3">
+                      {moment.summary}
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-purple-200/80">
+                    <span>📍 {moment.locationName}</span>
+                    <span className="font-bold text-emerald-300">✓ {moment.confirmationsCount} confirmed</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Contribution Type Filter Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
+            {(['ALL', 'DISCOVER', 'RECOMMEND', 'UPDATE', 'REPORT', 'REVIEW', 'EVENT', 'STORY', 'QUESTION'] as const).map((tab) => {
+              const count = tab === 'ALL'
+                ? contributions.length
+                : contributions.filter(c => c.type === tab).length;
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveContribTab(tab)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 min-h-[38px] ${
+                    activeContribTab === tab
+                      ? 'bg-slate-900 text-white shadow-sm'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  <span>{tab === 'ALL' ? 'All Signals' : tab}</span>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${
+                    activeContribTab === tab ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Contributions Feed */}
+          {filteredContributions.length > 0 ? (
+            <div className="space-y-6">
+              {filteredContributions.map((contrib) => (
+                <ContributionCard
+                  key={contrib.id}
+                  contribution={contrib}
+                  onUpdated={(updated) => {
+                    setContributions(prev => prev.map(c => c.id === updated.id ? updated : c));
+                  }}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="p-10 text-center bg-slate-50 rounded-3xl border border-slate-200 space-y-3">
+              <Radio size={32} className="mx-auto text-slate-400" />
+              <p className="text-slate-800 font-bold text-sm">
+                No contributions found {activeContribTab !== 'ALL' ? `for "${activeContribTab}"` : ''} in {location.name}
+              </p>
+              <p className="text-slate-500 text-xs max-w-md mx-auto">
+                Got an update on a local business, road work, community event, or hidden gem? Be the first to share evidence with your neighbors.
+              </p>
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(true)}
+                className="mt-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-blue-700 transition-all cursor-pointer inline-flex items-center gap-1.5 min-h-[44px]"
+              >
+                <Plus size={14} /> Submit First Signal
+              </button>
+            </div>
+          )}
+        </section>
+
+        {/* ── SECTION 2: LOCAL JOBS & OPPORTUNITIES ─────────────────── */}
+        <section id="jobs" className="mb-20 scroll-mt-28">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
+            <div>
+              <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-black tracking-widest uppercase mb-3 inline-flex items-center gap-1.5">
+                <Briefcase size={14} className="text-emerald-600" /> Section 2 • Local Employment
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-slate-900 tracking-tight">
+                Jobs in {location.name}
+              </h2>
+              <p className="text-slate-500 font-medium text-sm mt-2 max-w-2xl">
+                Verified vacancies, retail roles, cold storage operations, and healthcare openings across {location.name} commercial zones.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsJobModalOpen(true)}
+                className="inline-flex items-center gap-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 px-5 py-2.5 rounded-xl transition-all shadow-md shadow-emerald-600/20 cursor-pointer min-h-[44px]"
+              >
+                <Plus size={14} /> Post a Local Job
+              </button>
+            </div>
+          </div>
+
+          {/* Job Type Filter Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
+            {(['ALL', 'FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP'] as const).map((tab) => {
+              const count = tab === 'ALL'
+                ? jobs.length
+                : jobs.filter(j => j.jobType === tab).length;
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setJobTypeFilter(tab)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 min-h-[38px] ${
+                    jobTypeFilter === tab
+                      ? 'bg-slate-900 text-white shadow-sm'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  <span>{tab === 'ALL' ? 'All Roles' : tab.replace('_', ' ')}</span>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${
+                    jobTypeFilter === tab ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Jobs Grid */}
+          {filteredJobs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredJobs.map((job) => (
+                <div
+                  key={job.id}
+                  className="p-6 rounded-3xl bg-white border border-slate-200 hover:border-emerald-300 hover:shadow-md transition-all flex flex-col justify-between group"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold border border-emerald-200">
+                        <CheckCircle2 size={12} className="text-emerald-600" />
+                        {job.status === 'VERIFIED' ? 'Verified Opportunity' : 'Active Listing'}
+                      </span>
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 uppercase">
+                        {job.jobType.replace('_', ' ')}
+                      </span>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-bold font-orbitron text-slate-900 group-hover:text-emerald-600 transition-colors leading-snug">
+                        {job.title}
+                      </h3>
+                      <span className="text-xs font-bold text-slate-600 block mt-0.5">
+                        {job.companyName}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 font-medium">
+                      {job.area && (
+                        <span className="inline-flex items-center gap-1">
+                          <MapPin size={12} className="text-blue-600" /> {job.area}
+                        </span>
+                      )}
+                      {job.salaryRange && (
+                        <span className="inline-flex items-center gap-1 font-bold text-slate-800">
+                          💰 {job.salaryRange}
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
+                      {job.description}
+                    </p>
+
+                    {job.requirements && job.requirements.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {job.requirements.slice(0, 3).map((req, rIdx) => (
+                          <span
+                            key={rIdx}
+                            className="px-2 py-0.5 rounded-md bg-slate-50 border border-slate-100 text-slate-600 text-[10px] font-medium"
+                          >
+                            ✓ {req}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                    <span className="text-[10px] font-mono text-slate-400">
+                      Posted {new Date(job.postedAt).toLocaleDateString()}
+                    </span>
+                    {job.contactMethod === 'WHATSAPP' ? (
+                      <a
+                        href={`https://wa.me/${job.contactValue.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(job.companyName)},%20I%20am%20inquiring%20about%20the%20${encodeURIComponent(job.title)}%20role%20on%20Conflux%20AI%20${encodeURIComponent(location.name)}.`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all shadow-sm min-h-[44px]"
+                      >
+                        <MessageSquare size={13} /> WhatsApp Apply
+                      </a>
+                    ) : job.contactMethod === 'PHONE' ? (
+                      <a
+                        href={`tel:${job.contactValue}`}
+                        className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all min-h-[44px]"
+                      >
+                        <Phone size={13} /> Call Employer
+                      </a>
+                    ) : (
+                      <span className="text-xs font-bold text-blue-600">
+                        {job.contactValue}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-10 text-center bg-slate-50 rounded-3xl border border-slate-200 space-y-3">
+              <Briefcase size={32} className="mx-auto text-slate-400" />
+              <p className="text-slate-800 font-bold text-sm">
+                No job openings listed right now in {location.name}.
+              </p>
+              <p className="text-slate-500 text-xs max-w-md mx-auto">
+                Hiring in {location.name}? Post your vacancy directly to reach local job seekers across Nadia.
+              </p>
+              <button
+                type="button"
+                onClick={() => setIsJobModalOpen(true)}
+                className="mt-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-emerald-700 transition-all cursor-pointer inline-flex items-center gap-1.5 min-h-[44px]"
+              >
+                <Plus size={14} /> Post First Job
+              </button>
+            </div>
+          )}
+        </section>
+
+        {/* ── SECTION 3: TRUSTED PEOPLE (LOCAL CONTRIBUTORS & GUIDES) ─ */}
+        <section id="trusted-people" className="mb-20 scroll-mt-28">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
+            <div>
+              <span className="px-3 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-100 text-[10px] font-black tracking-widest uppercase mb-3 inline-flex items-center gap-1.5">
+                <Users size={14} className="text-purple-600" /> Section 3 • Trusted Local Contributors
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-slate-900 tracking-tight">
+                Trusted People in {location.name}
+              </h2>
+              <p className="text-slate-500 font-medium text-sm mt-2 max-w-2xl">
+                Longtime residents, local guides, and community contributors helping neighbors with verified ground updates.
+              </p>
+            </div>
+            <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
+              <Link
+                to="/my-local"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 px-4 py-2.5 rounded-xl transition-all cursor-pointer min-h-[44px]"
+              >
+                <span>Your Local Profile</span>
+                <ArrowRight size={14} />
+              </Link>
+              <button
+                type="button"
+                onClick={() => setIsOnboardingModalOpen(true)}
+                className="inline-flex items-center gap-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 px-4 py-2.5 rounded-xl transition-all shadow-md shadow-purple-600/20 cursor-pointer min-h-[44px]"
+              >
+                <Plus size={14} /> Join as Contributor
+              </button>
+            </div>
+          </div>
+
+          {filteredVoices.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filteredVoices.map((voice) => {
+                const standing = getContributorStanding({
+                  reputationScore: voice.reputationScore,
+                  locality: location.name,
+                  stats: voice.stats
+                });
+                return (
+                  <div
+                    key={voice.id}
+                    className="p-6 rounded-3xl bg-white border border-slate-200 hover:border-purple-300 hover:shadow-md transition-all flex flex-col justify-between"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center font-black text-base shadow-sm">
+                            {voice.avatarUrl ? (
+                              <img src={voice.avatarUrl} alt={voice.displayName} className="w-full h-full object-cover rounded-2xl" />
+                            ) : (
+                              voice.displayName.charAt(0).toUpperCase()
+                            )}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-bold text-slate-900 text-sm">{voice.displayName}</span>
+                              {voice.isVerifiedResident && (
+                                <CheckCircle2 size={13} className="text-blue-600" title="Identity Verified Resident" />
+                              )}
+                            </div>
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border mt-0.5 ${standing.badgeClass}`}>
+                              <ShieldCheck size={11} />
+                              <span>{standing.label}</span>
+                            </span>
+                          </div>
+                        </div>
+                        <div className="px-2.5 py-1.5 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 text-center shrink-0">
+                          <span className="text-[8px] font-mono uppercase tracking-wider block text-purple-600 font-bold">Local Trust Score</span>
+                          <span className="text-sm font-black font-mono">{voice.reputationScore}</span>
+                        </div>
+                      </div>
+
+                      {voice.bio && (
+                        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed italic">
+                          &ldquo;{voice.bio}&rdquo;
+                        </p>
+                      )}
+
+                      {voice.reputationBadges && voice.reputationBadges.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {voice.reputationBadges.map((b) => (
+                            <span
+                              key={b}
+                              className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1"
+                            >
+                              <span>★</span>
+                              <span>{b.replace(/_/g, ' ')}</span>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                      <span className="font-mono">{voice.stats.contributionsCount} contributions</span>
+                      <span className="font-mono text-emerald-600 font-bold">
+                        {voice.stats.peopleHelpedCount ? `${voice.stats.peopleHelpedCount} helped` : `${voice.stats.confirmedUpdatesCount} confirmed`}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="p-8 text-center bg-slate-50 rounded-3xl border border-slate-200">
+              <Users size={32} className="mx-auto text-slate-400 mb-2" />
+              <p className="text-slate-700 text-sm font-bold mb-1">No community contributors recorded yet in {location.name}.</p>
+              <p className="text-slate-500 text-xs max-w-md mx-auto mb-4">
+                Be the first to share an authentic update, recommendation, or business discovery in {location.name} to establish your local reputation.
+              </p>
+              <button
+                type="button"
+                onClick={() => setIsOnboardingModalOpen(true)}
+                className="px-5 py-2.5 rounded-xl bg-purple-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-purple-700 transition-all cursor-pointer min-h-[44px]"
+              >
+                Join as First Contributor
+              </button>
+            </div>
+          )}
+        </section>
+
+        {/* ── SECTION 4: VERIFIED LOCAL BUSINESSES IN RANAGHAT ───────── */}
+        <section id="trusted-businesses" className="mb-20 scroll-mt-28">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
             <div>
               <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100 text-[10px] font-black tracking-widest uppercase mb-3 inline-flex items-center gap-1.5">
-                <Store size={14} className="text-blue-600" /> Conflux Local Business Graph
+                <Store size={14} className="text-blue-600" /> Section 4 • Local Business Graph
               </span>
               <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-slate-900 tracking-tight">
                 Verified Local Businesses in {location.name}
@@ -444,7 +893,7 @@ const LocationDetailPage: React.FC = () => {
             <div className="flex items-center gap-3 shrink-0">
               <Link
                 to={`/discover?where=${location.slug}`}
-                className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-4 py-2.5 rounded-xl transition-all"
+                className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-4 py-2.5 rounded-xl transition-all min-h-[44px]"
               >
                 <Search size={14} /> Search Discovery Hub <ArrowRight size={14} />
               </Link>
@@ -456,9 +905,9 @@ const LocationDetailPage: React.FC = () => {
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-r-transparent mb-4"></div>
               <p className="text-slate-600 text-sm font-medium">Loading verified businesses for {location.name}...</p>
             </div>
-          ) : localBusinesses.length > 0 ? (
+          ) : filteredBusinesses.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {localBusinesses.map((biz) => {
+              {filteredBusinesses.map((biz) => {
                 const isOpenNow = businessService.isBusinessOpenNow(biz.operatingHours);
                 return (
                   <div
@@ -540,7 +989,7 @@ const LocationDetailPage: React.FC = () => {
                             href={`https://wa.me/${biz.contact.whatsapp.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(biz.name)},%20I%20found%20your%20business%20on%20Conflux%20AI%20Ranaghat.`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                            className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm min-h-[44px]"
                           >
                             <MessageSquare size={13} /> WhatsApp
                           </a>
@@ -548,7 +997,7 @@ const LocationDetailPage: React.FC = () => {
                         {biz.contact.phone && (
                           <a
                             href={`tel:${biz.contact.phone}`}
-                            className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                            className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors min-h-[44px]"
                           >
                             <Phone size={13} /> Call Direct
                           </a>
@@ -557,7 +1006,7 @@ const LocationDetailPage: React.FC = () => {
                       
                       <Link
                         to={`/business/${biz.slug}`}
-                        className="w-full py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                        className="w-full py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors min-h-[44px]"
                       >
                         <span>View Verified Profile</span>
                         <ArrowUpRight size={13} />
@@ -572,7 +1021,7 @@ const LocationDetailPage: React.FC = () => {
               <p className="text-slate-600 text-sm mb-4">No verified businesses currently indexed in {location.name}.</p>
               <Link
                 to="/list-business"
-                className="px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-blue-700 transition-all inline-flex items-center gap-2"
+                className="px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-blue-700 transition-all inline-flex items-center gap-2 min-h-[44px]"
               >
                 List Your {location.name} Business
               </Link>
@@ -582,7 +1031,7 @@ const LocationDetailPage: React.FC = () => {
           {/* Directory CTA Banner */}
           <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-blue-50 via-slate-50 to-emerald-50 border border-blue-100 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold shrink-0">
                 <Store size={20} />
               </div>
               <div>
@@ -592,227 +1041,11 @@ const LocationDetailPage: React.FC = () => {
             </div>
             <Link
               to="/list-business"
-              className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold uppercase tracking-wider transition-all shrink-0"
+              className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold uppercase tracking-wider transition-all shrink-0 min-h-[44px] inline-flex items-center justify-center"
             >
               List Your Business Free &rarr;
             </Link>
           </div>
-        </section>
-
-        {/* ── LOCAL VOICES & CONTRIBUTORS ────────────────────────────── */}
-        <section id="local-voices" className="mb-20 scroll-mt-28">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
-            <div>
-              <span className="px-3 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-100 text-[10px] font-black tracking-widest uppercase mb-3 inline-flex items-center gap-1.5">
-                <Users size={14} className="text-purple-600" /> Trusted Local Contributors
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-slate-900 tracking-tight">
-                Trusted People in {location.name}
-              </h2>
-              <p className="text-slate-500 font-medium text-sm mt-2 max-w-2xl">
-                Longtime residents, local guides, and community contributors helping neighbors with verified ground updates.
-              </p>
-            </div>
-            <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
-              <Link
-                to="/my-local"
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 px-4 py-2.5 rounded-xl transition-all cursor-pointer min-h-[44px]"
-              >
-                <span>Your Local Profile</span>
-                <ArrowRight size={14} />
-              </Link>
-              <button
-                type="button"
-                onClick={() => setIsCreateModalOpen(true)}
-                className="inline-flex items-center gap-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 px-4 py-2.5 rounded-xl transition-all shadow-md shadow-purple-600/20 cursor-pointer min-h-[44px]"
-              >
-                <Plus size={14} /> Join as Contributor
-              </button>
-            </div>
-          </div>
-
-          {localVoices.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {localVoices.map((voice) => {
-                const standing = getContributorStanding({
-                  reputationScore: voice.reputationScore,
-                  locality: location.name,
-                  stats: voice.stats
-                });
-                return (
-                  <div
-                    key={voice.id}
-                    className="p-6 rounded-3xl bg-white border border-slate-200 hover:border-purple-300 hover:shadow-md transition-all flex flex-col justify-between"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center font-black text-base shadow-sm">
-                            {voice.avatarUrl ? (
-                              <img src={voice.avatarUrl} alt={voice.displayName} className="w-full h-full object-cover rounded-2xl" />
-                            ) : (
-                              voice.displayName.charAt(0).toUpperCase()
-                            )}
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-bold text-slate-900 text-sm">{voice.displayName}</span>
-                              {voice.isVerifiedResident && (
-                                <CheckCircle2 size={13} className="text-blue-600" title="Identity Verified" />
-                              )}
-                            </div>
-                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border mt-0.5 ${standing.badgeClass}`}>
-                              <ShieldCheck size={11} />
-                              <span>{standing.label}</span>
-                            </span>
-                          </div>
-                        </div>
-                        <div className="px-2.5 py-1.5 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 text-center shrink-0">
-                          <span className="text-[8px] font-mono uppercase tracking-wider block text-purple-600 font-bold">Local Trust Score</span>
-                          <span className="text-sm font-black font-mono">{voice.reputationScore}</span>
-                        </div>
-                      </div>
-
-                      {voice.bio && (
-                        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed italic">
-                          &ldquo;{voice.bio}&rdquo;
-                        </p>
-                      )}
-
-                      {voice.reputationBadges && voice.reputationBadges.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 pt-1">
-                          {voice.reputationBadges.map((b) => (
-                            <span
-                              key={b}
-                              className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1"
-                            >
-                              <span>★</span>
-                              <span>{b.replace(/_/g, ' ')}</span>
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                      <span className="font-mono">{voice.stats.contributionsCount} contributions</span>
-                      <span className="font-mono text-emerald-600 font-bold">
-                        {voice.stats.peopleHelpedCount ? `${voice.stats.peopleHelpedCount} helped` : `${voice.stats.confirmedUpdatesCount} confirmed`}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="p-8 text-center bg-slate-50 rounded-3xl border border-slate-200">
-              <Users size={32} className="mx-auto text-slate-400 mb-2" />
-              <p className="text-slate-700 text-sm font-bold mb-1">No community contributors recorded yet in {location.name}.</p>
-              <p className="text-slate-500 text-xs max-w-md mx-auto mb-4">
-                Be the first to share an authentic update, recommendation, or business discovery in {location.name} to establish your local reputation.
-              </p>
-              <button
-                type="button"
-                onClick={() => setIsCreateModalOpen(true)}
-                className="px-5 py-2.5 rounded-xl bg-purple-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-purple-700 transition-all cursor-pointer"
-              >
-                Share First Discovery
-              </button>
-            </div>
-          )}
-        </section>
-
-        {/* ── COMMUNITY SIGNALS & CONTRIBUTIONS STREAM ────────────────── */}
-        <section id="community-signals" className="mb-20 scroll-mt-28">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
-            <div>
-              <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-black tracking-widest uppercase mb-3 inline-flex items-center gap-1.5">
-                <Radio size={14} className="text-emerald-600 animate-pulse" /> Live Ground Truth
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-slate-900 tracking-tight">
-                Community Signals in {location.name}
-              </h2>
-              <p className="text-slate-500 font-medium text-sm mt-2 max-w-2xl">
-                Real-time updates, discoveries, price notices, route alerts, and reviews contributed by neighbors and verified by community consensus.
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setIsCreateModalOpen(true)}
-                className="inline-flex items-center gap-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2.5 rounded-xl transition-all shadow-md shadow-blue-600/20 cursor-pointer"
-              >
-                <Plus size={14} /> Add Contribution
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsRequestModalOpen(true)}
-                className="inline-flex items-center gap-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-4 py-2.5 rounded-xl transition-all cursor-pointer"
-              >
-                Can't find a business?
-              </button>
-            </div>
-          </div>
-
-          {/* Contribution Type Filter Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
-            {(['ALL', 'DISCOVER', 'RECOMMEND', 'UPDATE', 'REPORT', 'REVIEW', 'EVENT', 'STORY', 'QUESTION'] as const).map((tab) => {
-              const count = tab === 'ALL'
-                ? contributions.length
-                : contributions.filter(c => c.contributionType === tab).length;
-              return (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => setActiveContribTab(tab)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
-                    activeContribTab === tab
-                      ? 'bg-slate-900 text-white shadow-sm'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  <span>{tab === 'ALL' ? 'All Signals' : tab}</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${
-                    activeContribTab === tab ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
-                  }`}>
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Contributions Feed */}
-          {filteredContributions.length > 0 ? (
-            <div className="space-y-6">
-              {filteredContributions.map((contrib) => (
-                <ContributionCard
-                  key={contrib.id}
-                  contribution={contrib}
-                  onUpdated={(updated) => {
-                    setContributions(prev => prev.map(c => c.id === updated.id ? updated : c));
-                  }}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="p-10 text-center bg-slate-50 rounded-3xl border border-slate-200 space-y-3">
-              <Radio size={32} className="mx-auto text-slate-400" />
-              <p className="text-slate-800 font-bold text-sm">
-                No contributions found {activeContribTab !== 'ALL' ? `for "${activeContribTab}"` : ''} in {location.name}
-              </p>
-              <p className="text-slate-500 text-xs max-w-md mx-auto">
-                Got an update on a local business, road work, community event, or hidden gem? Be the first to share evidence with your neighbors.
-              </p>
-              <button
-                type="button"
-                onClick={() => setIsCreateModalOpen(true)}
-                className="mt-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-blue-700 transition-all cursor-pointer inline-flex items-center gap-1.5"
-              >
-                <Plus size={14} /> Submit First Signal
-              </button>
-            </div>
-          )}
         </section>
 
         {/* ── HOW CONFLUX KNOWS (TRUST & EVIDENCE DOSSIER) ───────────── */}
@@ -1260,6 +1493,41 @@ const LocationDetailPage: React.FC = () => {
         </div>
 
         {/* ── MODALS ─────────────────────────────────────────────────── */}
+        <RanaghatVisitorPrompt
+          isOpen={isVisitorPromptOpen}
+          onClose={() => setIsVisitorPromptOpen(false)}
+          onJoinCommunity={() => {
+            setIsVisitorPromptOpen(false);
+            setIsOnboardingModalOpen(true);
+          }}
+        />
+
+        <CreateJobModal
+          isOpen={isJobModalOpen}
+          onClose={() => setIsJobModalOpen(false)}
+          locality={location.slug}
+          onSuccess={(newJob) => {
+            setJobs(prev => [newJob, ...prev]);
+            setIsJobModalOpen(false);
+          }}
+        />
+
+        {isOnboardingModalOpen && (
+          <div className="fixed inset-0 z-[250] flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-sm overflow-y-auto">
+            <div className="relative w-full max-w-md my-8">
+              <UserOnboardingFlow
+                isModal={true}
+                initialLocality={location.name}
+                onClose={() => setIsOnboardingModalOpen(false)}
+                onComplete={() => {
+                  setIsOnboardingModalOpen(false);
+                  localKnowledgeService.getLocalVoices(location.slug, 8).then(setLocalVoices);
+                }}
+              />
+            </div>
+          </div>
+        )}
+
         <CreateContributionModal
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}

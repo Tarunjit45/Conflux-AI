@@ -65,7 +65,17 @@ import {
 } from "../../lib/connectService";
 import { contributionService } from "../../lib/contributionService";
 import { localKnowledgeService } from "../../lib/localKnowledgeService";
-import type { LocalContribution, BusinessDemandRequest } from "../../types/localKnowledge";
+import type {
+  LocalContribution,
+  BusinessDemandRequest,
+  LocalJob,
+  JobStatus,
+  JobType,
+  UserVerificationRequest,
+  VerificationProposalStatus,
+  LocalUserProfile,
+  LocalMoment
+} from "../../types/localKnowledge";
 import type {
   ConfluxBusiness,
   BusinessPublishStatus,
@@ -95,7 +105,7 @@ const ensureUrlProtocol = (url?: string): string | undefined => {
 
 export const AdminBusinessDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
-    "ENTITIES" | "APPLICATIONS" | "CLAIMS" | "CONTRIBUTIONS" | "MEASUREMENT"
+    "ENTITIES" | "APPLICATIONS" | "CLAIMS" | "CONTRIBUTIONS" | "MEASUREMENT" | "RANAGHAT_HUB"
   >("ENTITIES");
   const [businesses, setBusinesses] = useState<ConfluxBusiness[]>([]);
   const [applications, setApplications] = useState<
@@ -114,6 +124,16 @@ export const AdminBusinessDashboard: React.FC = () => {
   const [contribSubTab, setContribSubTab] = useState<"LOCAL_KNOWLEDGE" | "DEMAND_REQUESTS" | "LEGACY_REVIEWS">("LOCAL_KNOWLEDGE");
   const [localKnowledgeContribs, setLocalKnowledgeContribs] = useState<LocalContribution[]>([]);
   const [businessRequests, setBusinessRequests] = useState<BusinessDemandRequest[]>([]);
+
+  // Ranaghat Community Hub Management State
+  const [ranaghatSubTab, setRanaghatSubTab] = useState<"CITIZENS" | "JOBS" | "LIVE_LOCAL" | "METRICS">("CITIZENS");
+  const [verificationRequests, setVerificationRequests] = useState<UserVerificationRequest[]>([]);
+  const [ranaghatJobs, setRanaghatJobs] = useState<LocalJob[]>([]);
+  const [ranaghatVoices, setRanaghatVoices] = useState<LocalUserProfile[]>([]);
+  const [ranaghatMoments, setRanaghatMoments] = useState<LocalMoment[]>([]);
+  const [citizenFilterStatus, setCitizenFilterStatus] = useState<"ALL" | VerificationProposalStatus>("ALL");
+  const [jobFilterStatus, setJobFilterStatus] = useState<"ALL" | JobStatus>("ALL");
+  const [adminReviewNotes, setAdminReviewNotes] = useState<string>("");
 
   // Modals state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -181,13 +201,17 @@ export const AdminBusinessDashboard: React.FC = () => {
 
   const loadData = async () => {
     setIsLoading(true);
-    const [data, apps, contribs, report, lkContribs, bRequests] = await Promise.all([
+    const [data, apps, contribs, report, lkContribs, bRequests, vRequests, allJobs, rVoices, rMoments] = await Promise.all([
       businessService.getAllBusinesses(),
       businessService.getAllApplications(),
       contributionService.getAllContributions(),
       connectService.getMeasurementReport(),
       localKnowledgeService.getContributions().catch(() => [] as LocalContribution[]),
-      localKnowledgeService.getBusinessRequests().catch(() => [] as BusinessDemandRequest[])
+      localKnowledgeService.getBusinessRequests().catch(() => [] as BusinessDemandRequest[]),
+      localKnowledgeService.getVerificationRequests().catch(() => [] as UserVerificationRequest[]),
+      localKnowledgeService.getJobs({ includeExpired: true }).catch(() => [] as LocalJob[]),
+      localKnowledgeService.getLocalVoices('ranaghat', 100).catch(() => [] as LocalUserProfile[]),
+      localKnowledgeService.getLocalMoments('ranaghat').catch(() => [] as LocalMoment[])
     ]);
     setBusinesses(data);
     setApplications(apps);
@@ -195,7 +219,46 @@ export const AdminBusinessDashboard: React.FC = () => {
     setMeasurementReport(report);
     setLocalKnowledgeContribs(lkContribs);
     setBusinessRequests(bRequests);
+    setVerificationRequests(vRequests);
+    setRanaghatJobs(allJobs.filter(j => j.locality === 'ranaghat'));
+    setRanaghatVoices(rVoices);
+    setRanaghatMoments(rMoments);
     setIsLoading(false);
+  };
+
+  const handleUpdateCitizenVerification = async (
+    requestId: string,
+    status: VerificationProposalStatus,
+    feedback?: string
+  ) => {
+    try {
+      const updated = await localKnowledgeService.updateVerificationRequestStatus(
+        requestId,
+        status,
+        feedback || adminReviewNotes,
+        "Conflux Operations"
+      );
+      setVerificationRequests(prev => prev.map(r => r.id === updated.id ? updated : r));
+      const refreshedVoices = await localKnowledgeService.getLocalVoices('ranaghat', 100);
+      setRanaghatVoices(refreshedVoices);
+      showNotification(`Citizen verification proposal marked as ${status}.`);
+      setAdminReviewNotes("");
+    } catch (err: any) {
+      showNotification(err?.message || "Failed to update citizen verification status.");
+    }
+  };
+
+  const handleUpdateJobStatus = async (
+    jobId: string,
+    status: JobStatus
+  ) => {
+    try {
+      const updated = await localKnowledgeService.updateJobStatus(jobId, status, "Conflux Operations");
+      setRanaghatJobs(prev => prev.map(j => j.id === updated.id ? updated : j));
+      showNotification(`Job listing updated to ${status}.`);
+    } catch (err: any) {
+      showNotification(err?.message || "Failed to update job status.");
+    }
   };
 
   const handleModerateLocalContribution = async (id: string, status: LocalContribution['status']) => {
@@ -972,6 +1035,12 @@ export const AdminBusinessDashboard: React.FC = () => {
   const pendingContribs = contributions.filter(
     (c) => c.moderationStatus === "PENDING_MODERATION",
   );
+  const pendingVerificationRequests = verificationRequests.filter(
+    (r) => r.status === "PENDING_REVIEW",
+  );
+  const pendingRanaghatJobs = ranaghatJobs.filter(
+    (j) => j.status === "PENDING",
+  );
   const publishedBusinesses = businesses.filter(
     (business) => business.status === "PUBLISHED",
   ).length;
@@ -979,7 +1048,7 @@ export const AdminBusinessDashboard: React.FC = () => {
     (business) => business.verificationStatus === "SUPPORTED",
   ).length;
   const attentionCount =
-    pendingApps.length + pendingClaims.length + pendingContribs.length;
+    pendingApps.length + pendingClaims.length + pendingContribs.length + pendingVerificationRequests.length + pendingRanaghatJobs.length;
 
   return (
     <AdminShell>
@@ -1021,7 +1090,7 @@ export const AdminBusinessDashboard: React.FC = () => {
           {[
             { label: "Total entities", value: businesses.length, detail: `${publishedBusinesses} published`, icon: Building2, tone: "text-blue-600 bg-blue-50" },
             { label: "Verified entities", value: verifiedBusinesses, detail: `${businesses.length - verifiedBusinesses} need review`, icon: ShieldCheck, tone: "text-emerald-600 bg-emerald-50" },
-            { label: "Needs attention", value: attentionCount, detail: `${pendingApps.length} applications`, icon: AlertCircle, tone: "text-amber-600 bg-amber-50" },
+            { label: "Needs attention", value: attentionCount, detail: `${pendingApps.length} apps • ${pendingVerificationRequests.length} citizens`, icon: AlertCircle, tone: "text-amber-600 bg-amber-50" },
             { label: "Contributions", value: contributions.length, detail: `${pendingContribs.length} awaiting moderation`, icon: MessageCircle, tone: "text-violet-600 bg-violet-50" },
           ].map(({ label, value, detail, icon: Icon, tone }) => (
             <div key={label} className="min-w-0 rounded-2xl bg-white border border-slate-200 p-4 sm:p-5 shadow-sm">
@@ -1080,6 +1149,17 @@ export const AdminBusinessDashboard: React.FC = () => {
           >
             <MessageCircle size={15} /> User Contributions (
             {pendingContribs.length} Pending)
+          </button>
+
+          <button
+            onClick={() => setActiveTab("RANAGHAT_HUB")}
+            className={`inline-flex shrink-0 items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeTab === "RANAGHAT_HUB"
+                ? "bg-white text-indigo-900 shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <MapPin size={15} /> Ranaghat Hub ({pendingVerificationRequests.length + pendingRanaghatJobs.length} Pending)
           </button>
 
           <button
@@ -2326,6 +2406,595 @@ export const AdminBusinessDashboard: React.FC = () => {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* ── TAB 6: RANAGHAT COMMUNITY HUB COMMAND CENTER ───────────── */}
+        {activeTab === "RANAGHAT_HUB" && (
+          <div className="space-y-6">
+            {/* Header and overview */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-3xl bg-gradient-to-r from-indigo-900 via-slate-900 to-blue-950 text-white shadow-lg">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                    <MapPin size={16} />
+                  </span>
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-indigo-300">
+                    Ranaghat Central Operations
+                  </span>
+                </div>
+                <h2 className="text-2xl font-bold font-orbitron">
+                  Ranaghat Community Hub Command Center
+                </h2>
+                <p className="text-xs text-slate-300 max-w-2xl mt-1">
+                  Human-reviewed resident identity verification, local job opportunity moderation, live ground truth stream, and authentic community telemetry.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3 shrink-0">
+                <a
+                  href="/locations/west-bengal/nadia/ranaghat"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all inline-flex items-center gap-1.5 border border-white/20"
+                >
+                  <ExternalLink size={14} /> View Live Ranaghat Hub
+                </a>
+                <button
+                  type="button"
+                  onClick={loadData}
+                  className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-md"
+                >
+                  <RefreshCw size={14} /> Refresh Data
+                </button>
+              </div>
+            </div>
+
+            {/* Ranaghat Hub Stat Metrics Bar */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block font-bold">Verified Residents</span>
+                <span className="text-2xl font-black font-orbitron text-blue-600 mt-1 block">
+                  {ranaghatVoices.filter(v => v.isVerifiedResident).length}
+                </span>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">{ranaghatVoices.length} total contributors</span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block font-bold">Resident Requests</span>
+                <span className="text-2xl font-black font-orbitron text-amber-600 mt-1 block">
+                  {pendingVerificationRequests.length}
+                </span>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">awaiting human review</span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block font-bold">Active / Verified Jobs</span>
+                <span className="text-2xl font-black font-orbitron text-emerald-600 mt-1 block">
+                  {ranaghatJobs.filter(j => j.status === 'VERIFIED' || j.status === 'ACTIVE').length}
+                </span>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">{ranaghatJobs.length} total vacancies</span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block font-bold">Pending Job Review</span>
+                <span className="text-2xl font-black font-orbitron text-purple-600 mt-1 block">
+                  {pendingRanaghatJobs.length}
+                </span>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">need verification</span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block font-bold">Live Local Signals</span>
+                <span className="text-2xl font-black font-orbitron text-slate-900 mt-1 block">
+                  {localKnowledgeContribs.filter(c => c.locality === 'ranaghat').length}
+                </span>
+                <span className="text-[10px] text-emerald-600 font-bold mt-0.5 block">
+                  {localKnowledgeContribs.filter(c => c.locality === 'ranaghat').reduce((acc, c) => acc + (c.confirmationsCount || 0), 0)} confirmations
+                </span>
+              </div>
+            </div>
+
+            {/* Ranaghat Sub-Tab Switcher */}
+            <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3">
+              <button
+                type="button"
+                onClick={() => setRanaghatSubTab("CITIZENS")}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer min-h-[40px] ${
+                  ranaghatSubTab === "CITIZENS"
+                    ? "bg-indigo-600 text-white shadow-sm"
+                    : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+                }`}
+              >
+                <UserCheck size={14} />
+                <span>Citizen Verification ({pendingVerificationRequests.length} Pending)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setRanaghatSubTab("JOBS")}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer min-h-[40px] ${
+                  ranaghatSubTab === "JOBS"
+                    ? "bg-emerald-600 text-white shadow-sm"
+                    : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+                }`}
+              >
+                <Briefcase size={14} />
+                <span>Job Moderation ({pendingRanaghatJobs.length} Pending)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setRanaghatSubTab("LIVE_LOCAL")}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer min-h-[40px] ${
+                  ranaghatSubTab === "LIVE_LOCAL"
+                    ? "bg-purple-600 text-white shadow-sm"
+                    : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+                }`}
+              >
+                <Radio size={14} />
+                <span>Live Local Ground Truth ({localKnowledgeContribs.filter(c => c.locality === 'ranaghat').length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setRanaghatSubTab("METRICS")}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer min-h-[40px] ${
+                  ranaghatSubTab === "METRICS"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+                }`}
+              >
+                <BarChart3 size={14} />
+                <span>Ranaghat Telemetry &amp; Impact</span>
+              </button>
+            </div>
+
+            {/* SUB-TAB 1: CITIZEN RESIDENT VERIFICATION PIPELINE */}
+            {ranaghatSubTab === "CITIZENS" && (
+              <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                  <div>
+                    <h3 className="text-lg font-bold font-orbitron text-slate-900">
+                      Resident Verification Queue ({verificationRequests.length})
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Human review pipeline for Ranaghat residents requesting verification to publish live alerts.
+                    </p>
+                  </div>
+
+                  {/* Filter Pills */}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {(['ALL', 'PENDING_REVIEW', 'CONTACTED', 'VERIFIED', 'REJECTED', 'BLOCKED'] as const).map(st => (
+                      <button
+                        key={st}
+                        type="button"
+                        onClick={() => setCitizenFilterStatus(st)}
+                        className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                          citizenFilterStatus === st
+                            ? 'bg-slate-900 text-white'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                      >
+                        {st.replace('_', ' ')}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Queue list */}
+                {verificationRequests
+                  .filter(r => citizenFilterStatus === 'ALL' || r.status === citizenFilterStatus)
+                  .length === 0 ? (
+                  <div className="p-10 text-center text-slate-400 text-xs font-medium">
+                    No citizen verification requests match this filter.
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {verificationRequests
+                      .filter(r => citizenFilterStatus === 'ALL' || r.status === citizenFilterStatus)
+                      .map(req => (
+                        <div
+                          key={req.id}
+                          className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-indigo-200 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                        >
+                          <div className="space-y-2 max-w-xl">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-slate-900 text-sm">
+                                {req.displayName}
+                              </span>
+                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono ${
+                                req.status === 'VERIFIED'
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : req.status === 'PENDING_REVIEW'
+                                  ? 'bg-amber-100 text-amber-800'
+                                  : req.status === 'CONTACTED'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : 'bg-red-100 text-red-800'
+                              }`}>
+                                {req.status}
+                              </span>
+                              <span className="text-[11px] text-slate-400 font-mono">
+                                Locality: {req.locality}
+                              </span>
+                            </div>
+
+                            {req.bio && (
+                              <p className="text-xs text-slate-600 italic">
+                                &ldquo;{req.bio}&rdquo;
+                              </p>
+                            )}
+
+                            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 font-mono">
+                              <span>Method: <strong>{req.contactMethod}</strong></span>
+                              <span>Contact: <strong className="text-slate-900">{req.contactValue}</strong></span>
+                              <span>Submitted: {new Date(req.submittedAt).toLocaleString()}</span>
+                            </div>
+
+                            {req.adminFeedback && (
+                              <p className="text-[11px] text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-lg">
+                                <strong>Admin Note:</strong> {req.adminFeedback}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex flex-wrap items-center gap-2 shrink-0">
+                            {req.contactValue && (
+                              <a
+                                href={req.contactMethod === 'WHATSAPP' || req.contactMethod === 'PHONE' ? `https://wa.me/${req.contactValue.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(req.displayName)},%20this%20is%20Conflux%20AI%20verifying%20your%20Ranaghat%20resident%20status.` : `mailto:${req.contactValue}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold inline-flex items-center gap-1.5 transition-colors min-h-[38px]"
+                              >
+                                <MessageSquare size={13} /> Message
+                              </a>
+                            )}
+
+                            {req.status === 'PENDING_REVIEW' && (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateCitizenVerification(req.id, 'CONTACTED')}
+                                  className="px-3 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold transition-colors cursor-pointer min-h-[38px]"
+                                >
+                                  Mark Contacted
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateCitizenVerification(req.id, 'VERIFIED')}
+                                  className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-sm min-h-[38px]"
+                                >
+                                  Verify Resident
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateCitizenVerification(req.id, 'REJECTED')}
+                                  className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-700 text-xs font-bold transition-colors cursor-pointer min-h-[38px]"
+                                >
+                                  Reject
+                                </button>
+                              </>
+                            )}
+
+                            {req.status === 'CONTACTED' && (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateCitizenVerification(req.id, 'VERIFIED')}
+                                  className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-sm min-h-[38px]"
+                                >
+                                  Confirm &amp; Verify
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateCitizenVerification(req.id, 'REJECTED')}
+                                  className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-700 text-xs font-bold transition-colors cursor-pointer min-h-[38px]"
+                                >
+                                  Reject
+                                </button>
+                              </>
+                            )}
+
+                            {req.status === 'VERIFIED' && (
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateCitizenVerification(req.id, 'REJECTED', 'Verification revoked')}
+                                className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-700 text-xs font-bold transition-colors cursor-pointer min-h-[38px]"
+                              >
+                                Revoke Status
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* SUB-TAB 2: LOCAL JOBS & OPPORTUNITIES MODERATION */}
+            {ranaghatSubTab === "JOBS" && (
+              <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                  <div>
+                    <h3 className="text-lg font-bold font-orbitron text-slate-900">
+                      Ranaghat Employment Postings ({ranaghatJobs.length})
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Manage job lifecycle: PENDING &rarr; VERIFIED &rarr; ACTIVE &rarr; EXPIRED / REJECTED.
+                    </p>
+                  </div>
+
+                  {/* Filter Pills */}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {(['ALL', 'PENDING', 'VERIFIED', 'ACTIVE', 'EXPIRED', 'REJECTED'] as const).map(st => (
+                      <button
+                        key={st}
+                        type="button"
+                        onClick={() => setJobFilterStatus(st)}
+                        className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                          jobFilterStatus === st
+                            ? 'bg-slate-900 text-white'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                      >
+                        {st}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {ranaghatJobs
+                  .filter(j => jobFilterStatus === 'ALL' || j.status === jobFilterStatus)
+                  .length === 0 ? (
+                  <div className="p-10 text-center text-slate-400 text-xs font-medium">
+                    No job listings match this filter.
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {ranaghatJobs
+                      .filter(j => jobFilterStatus === 'ALL' || j.status === jobFilterStatus)
+                      .map(job => (
+                        <div
+                          key={job.id}
+                          className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-emerald-200 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                        >
+                          <div className="space-y-2 max-w-xl">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-slate-900 text-sm">
+                                {job.title}
+                              </span>
+                              <span className="text-xs text-slate-600 font-medium">
+                                at {job.companyName}
+                              </span>
+                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono ${
+                                job.status === 'VERIFIED'
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : job.status === 'PENDING'
+                                  ? 'bg-amber-100 text-amber-800'
+                                  : job.status === 'ACTIVE'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : 'bg-slate-200 text-slate-700'
+                              }`}>
+                                {job.status}
+                              </span>
+                            </div>
+
+                            <p className="text-xs text-slate-600 line-clamp-2">
+                              {job.description}
+                            </p>
+
+                            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 font-mono">
+                              <span>Area: <strong>{job.area || 'Ranaghat'}</strong></span>
+                              <span>Type: <strong>{job.jobType}</strong></span>
+                              <span>Salary: <strong>{job.salaryRange || 'Not disclosed'}</strong></span>
+                              <span>Contact: <strong className="text-slate-900">{job.contactValue}</strong></span>
+                              <span>Expires: {new Date(job.expiresAt).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex flex-wrap items-center gap-2 shrink-0">
+                            {job.status === 'PENDING' && (
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateJobStatus(job.id, 'VERIFIED')}
+                                className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-sm min-h-[38px]"
+                              >
+                                Approve &amp; Verify
+                              </button>
+                            )}
+
+                            {job.status !== 'EXPIRED' && job.status !== 'REJECTED' && (
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateJobStatus(job.id, 'EXPIRED')}
+                                className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition-colors cursor-pointer min-h-[38px]"
+                              >
+                                Expire
+                              </button>
+                            )}
+
+                            {job.status !== 'REJECTED' && (
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateJobStatus(job.id, 'REJECTED')}
+                                className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-700 text-xs font-bold transition-colors cursor-pointer min-h-[38px]"
+                              >
+                                Reject
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* SUB-TAB 3: LIVE LOCAL GROUND TRUTH NOTICES */}
+            {ranaghatSubTab === "LIVE_LOCAL" && (
+              <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-5">
+                <div className="pb-3 border-b border-slate-100">
+                  <h3 className="text-lg font-bold font-orbitron text-slate-900">
+                    Live Ground Truth Signals in Ranaghat ({localKnowledgeContribs.filter(c => c.locality === 'ranaghat').length})
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Real-time notices and citizen signals posted on the Ranaghat hub.
+                  </p>
+                </div>
+
+                {localKnowledgeContribs.filter(c => c.locality === 'ranaghat').length === 0 ? (
+                  <div className="p-10 text-center text-slate-400 text-xs font-medium">
+                    No contributions recorded specifically for Ranaghat yet.
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {localKnowledgeContribs
+                      .filter(c => c.locality === 'ranaghat')
+                      .map(contrib => (
+                        <div
+                          key={contrib.id}
+                          className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                        >
+                          <div className="space-y-1.5 max-w-xl">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-slate-900 text-sm">
+                                {contrib.title}
+                              </span>
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800">
+                                {contrib.type}
+                              </span>
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                contrib.status === 'PUBLISHED' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                              }`}>
+                                {contrib.status}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-600 line-clamp-2">
+                              {contrib.content}
+                            </p>
+                            <div className="flex items-center gap-3 text-[11px] text-slate-400 font-mono">
+                              <span>By: {contrib.author.displayName}</span>
+                              <span>✓ {contrib.confirmationsCount} confirmations</span>
+                              <span>Date: {new Date(contrib.createdAt).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            {contrib.status !== 'PUBLISHED' && (
+                              <button
+                                type="button"
+                                onClick={() => handleModerateLocalContribution(contrib.id, 'PUBLISHED')}
+                                className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer"
+                              >
+                                Publish
+                              </button>
+                            )}
+                            {contrib.status !== 'FLAGGED' && (
+                              <button
+                                type="button"
+                                onClick={() => handleModerateLocalContribution(contrib.id, 'FLAGGED')}
+                                className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold cursor-pointer"
+                              >
+                                Flag
+                              </button>
+                            )}
+                            {contrib.status !== 'ARCHIVED' && (
+                              <button
+                                type="button"
+                                onClick={() => handleModerateLocalContribution(contrib.id, 'ARCHIVED')}
+                                className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold cursor-pointer"
+                              >
+                                Archive
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* SUB-TAB 4: AUTHENTIC COMMUNITY TELEMETRY */}
+            {ranaghatSubTab === "METRICS" && (
+              <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <div>
+                    <h3 className="text-lg font-bold font-orbitron text-slate-900">
+                      Ranaghat Community Telemetry &amp; Interaction Stream
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Real recorded telemetry events only. Zero synthetic activity.
+                    </p>
+                  </div>
+                  <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-mono font-bold">
+                    Zero Fabrication Guarantee
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                    <span className="text-xs text-slate-500 font-medium block">Total Contributors</span>
+                    <span className="text-2xl font-black font-orbitron text-slate-900 mt-1 block">
+                      {ranaghatVoices.length}
+                    </span>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                    <span className="text-xs text-slate-500 font-medium block">Community Confirmations</span>
+                    <span className="text-2xl font-black font-orbitron text-emerald-600 mt-1 block">
+                      {localKnowledgeContribs.filter(c => c.locality === 'ranaghat').reduce((acc, c) => acc + (c.confirmationsCount || 0), 0)}
+                    </span>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                    <span className="text-xs text-slate-500 font-medium block">Neighbors Helped</span>
+                    <span className="text-2xl font-black font-orbitron text-blue-600 mt-1 block">
+                      {ranaghatVoices.reduce((acc, v) => acc + (v.stats.peopleHelpedCount || 0), 0)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                    Recent Identity &amp; Community Events
+                  </h4>
+                  {measurementReport?.recentEvents && measurementReport.recentEvents.length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs font-mono">
+                        <thead className="bg-slate-50 text-slate-500 uppercase text-[10px] border-b border-slate-100">
+                          <tr>
+                            <th className="py-2.5 px-4">Time</th>
+                            <th className="py-2.5 px-4">Event</th>
+                            <th className="py-2.5 px-4">Channel</th>
+                            <th className="py-2.5 px-4">Target / Entity</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {measurementReport.recentEvents.slice(0, 15).map(evt => (
+                            <tr key={evt.id} className="hover:bg-slate-50/80">
+                              <td className="py-2 px-4 text-slate-500">{new Date(evt.createdAt).toLocaleTimeString()}</td>
+                              <td className="py-2 px-4">
+                                <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-bold">
+                                  {evt.eventType}
+                                </span>
+                              </td>
+                              <td className="py-2 px-4 text-slate-600">{evt.channel}</td>
+                              <td className="py-2 px-4 text-slate-900 font-bold">{evt.intentId || evt.businessId}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="p-8 text-center text-slate-400 text-xs">
+                      No interaction events recorded yet.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

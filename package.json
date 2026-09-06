@@ -9,6 +9,7 @@
     "test:seo": "node scripts/test_seo_guardrails.js",
     "test:knowledge": "node --experimental-strip-types scripts/test_local_knowledge_network.js",
     "test:identity": "node --experimental-strip-types scripts/test_user_onboarding_and_reputation.js",
+    "test:ranaghat": "node --experimental-strip-types scripts/test_ranaghat_community_hub.js",
     "test:seo-geo": "node --experimental-strip-types scripts/test_business_seo_geo_engine.js",
     "test:phase1": "node --experimental-strip-types scripts/test_phase1_business_graph.js",
     "test:submission": "node --experimental-strip-types scripts/test_business_submission.js",

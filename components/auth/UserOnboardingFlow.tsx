@@ -61,6 +61,7 @@ export const UserOnboardingFlow: React.FC<UserOnboardingFlowProps> = ({
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [bio, setBio] = useState(`Helping people find useful information around ${initialLocality}.`);
   const [selectedAvatar, setSelectedAvatar] = useState<string>('');
+  const [contactValue, setContactValue] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Track ONBOARDING_STARTED on mount
@@ -132,6 +133,20 @@ export const UserOnboardingFlow: React.FC<UserOnboardingFlowProps> = ({
         bio: finalBio,
         avatarUrl: selectedAvatar || undefined
       });
+
+      // Submit verification proposal if contact is provided
+      if (contactValue.trim().length >= 5) {
+        await localKnowledgeService.createVerificationRequest({
+          userId,
+          displayName: finalDisplayName,
+          locality: finalLocality,
+          bio: finalBio,
+          avatarUrl: selectedAvatar || undefined,
+          contactMethod: 'WHATSAPP',
+          contactValue: contactValue.trim(),
+          notes: 'Submitted during conversational citizen onboarding.'
+        });
+      }
 
       // Telemetry: Profile Created & Onboarding Completed
       connectService.logEvent({
@@ -453,6 +468,29 @@ export const UserOnboardingFlow: React.FC<UserOnboardingFlowProps> = ({
                   placeholder={`Helping people find useful information around ${customLocality || locality}.`}
                   className="w-full px-4 py-3 rounded-2xl border border-slate-300 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 font-medium resize-none"
                 />
+              </div>
+
+              {/* Verification Contact (Optional) */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="onboarding-contact" className="text-xs font-bold text-slate-700 block">
+                    WhatsApp or Phone (Optional)
+                  </label>
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-100">
+                    For Resident Verification
+                  </span>
+                </div>
+                <input
+                  id="onboarding-contact"
+                  type="tel"
+                  value={contactValue}
+                  onChange={(e) => setContactValue(e.target.value)}
+                  placeholder="e.g. 9876543210 (Optional)"
+                  className="w-full min-h-[44px] px-4 py-2.5 rounded-2xl border border-slate-300 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 font-medium"
+                />
+                <p className="text-[11px] text-slate-400 leading-tight">
+                  Our local community moderation team will verify your resident status so you can post live updates.
+                </p>
               </div>
 
               <div className="flex items-center gap-3">
