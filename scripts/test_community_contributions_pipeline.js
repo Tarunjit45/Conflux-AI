@@ -150,19 +150,27 @@ async function runCommunityPipelineTests() {
   // ── 3. Multi-Device Retrieval & Shared Feed ──────────────────────────────────
   console.log('\n--- 3. Shared Persistent Feed & Cross-Device Retrieval ---');
 
-  await asyncTest('Device B (separate user / session) retrieves published post from shared feed', async () => {
-    // Simulate Device B: independent user session querying public feed
-    const deviceBFeed = await localKnowledgeService.getContributions({ locality: 'ranaghat' });
+  await asyncTest('Device B (separate user / session) retrieves published post from shared feed without localStorage', async () => {
+    // Completely destroy in-memory and local cache on client to simulate Device B
+    localKnowledgeService.purgeLocalTestData();
+
+    // Simulate Device B (User B with different profile ID) querying public feed from authoritative Supabase
+    const deviceBFeed = await localKnowledgeService.getContributions({
+      locality: 'ranaghat',
+      includeAuthorPending: 'usr_ranaghat_separate_device_b'
+    });
     const target = deviceBFeed.find(c => c.id === publishedPostId);
 
-    assert.ok(target, 'Device B retrieved the published contribution');
+    assert.ok(target, 'Device B retrieved User A published contribution from shared backend');
     assert.strictEqual(target.title, 'Ranaghat Hospital Free Health Checkup Camp');
     assert.strictEqual(target.author.displayName, 'Dr. Sukumar Roy');
     assert.strictEqual(target.status, 'PUBLISHED');
+    assert.ok(target.createdAt, 'Timestamp is properly persisted');
   });
 
   await asyncTest('Published post persists across store re-instantiations (simulated page refresh / restart)', async () => {
     // Reset in-memory contributions to simulate fresh browser session
+    localKnowledgeService.purgeLocalTestData();
     const originalPost = await localKnowledgeService.getContributionById(publishedPostId);
     assert.ok(originalPost, 'Post found by ID in persistent store');
     assert.strictEqual(originalPost.status, 'PUBLISHED');

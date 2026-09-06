@@ -209,7 +209,7 @@ const LocationDetailPage: React.FC = () => {
             district: districtSlug,
             city: location.slug
           }),
-          localKnowledgeService.getContributions({ locality: location.slug, authorId: communityProfileService.getCommunityProfile()?.id }),
+          localKnowledgeService.getContributions({ locality: location.slug, includeAuthorPending: communityProfileService.getCommunityProfile()?.id }),
           localKnowledgeService.getLocalMoments(location.slug),
           localKnowledgeService.getLocalVoices(location.slug, 8),
           localKnowledgeService.getJobs({ locality: location.slug })
@@ -267,9 +267,9 @@ const LocationDetailPage: React.FC = () => {
     : [...relevantArticles, ...districtArticles.filter(da => !relevantArticles.some(ra => ra.id === da.id))].slice(0, 4);
 
   const filteredContributions = contributions.filter(c => {
-    // Truth-first rule: Never show unverified posts to public visitors (unless author viewing own draft or logged-in admin)
+    // Gating rule: Only published contributions are visible publicly (unless author viewing own pending draft, or admin)
     const isAuthor = communityProfileService.getCommunityProfile()?.id === c.author?.id;
-    if (c.verificationState === 'UNVERIFIED' && !isAuthor && !isSuperAdmin) {
+    if (c.status !== 'PUBLISHED' && !isAuthor && !isSuperAdmin) {
       return false;
     }
 
@@ -1830,7 +1830,7 @@ const LocationDetailPage: React.FC = () => {
                   to={`/locations/west-bengal/${districtSlug}/${location.slug}/live`}
                   className="text-xs font-bold text-purple-700 hover:text-purple-900 flex items-center gap-1 uppercase tracking-wider"
                 >
-                  View all Live Local ({contributions.length}) &rarr;
+                  View all Live Local ({filteredContributions.length}) &rarr;
                 </Link>
               </div>
 

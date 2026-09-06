@@ -1061,6 +1061,7 @@ export class LocalKnowledgeService {
     businessId?: string;
     placeId?: string;
     authorId?: string;
+    includeAuthorPending?: string;
     status?: LocalContribution['status'];
     limit?: number;
     query?: string;
@@ -1127,9 +1128,10 @@ export class LocalKnowledgeService {
           ];
           this.persistLocal();
 
-          if (filters.authorId) {
+          const targetPendingAuthor = filters.authorId || filters.includeAuthorPending;
+          if (targetPendingAuthor) {
             const localPending = localNonPublished.filter(c =>
-              c.author.id === filters.authorId &&
+              c.author.id === targetPendingAuthor &&
               !list.some(item => item.id === c.id)
             );
             list = [...list, ...localPending];
@@ -1179,6 +1181,15 @@ export class LocalKnowledgeService {
     const targetStatus = filters.status || 'PUBLISHED';
     if (!filters.authorId || filters.status) {
       list = list.filter(c => c.status === targetStatus);
+    }
+
+    if (filters.includeAuthorPending) {
+      const pending = this.memoryContributions.filter(c =>
+        c.author.id === filters.includeAuthorPending &&
+        c.status === 'PENDING_MODERATION' &&
+        !list.some(item => item.id === c.id)
+      );
+      list = [...list, ...pending];
     }
 
     if (filters.query) {
