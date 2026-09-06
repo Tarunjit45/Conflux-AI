@@ -36,7 +36,8 @@ async function checkLiveDatabase() {
     'user_contributions',
     'connect_telemetry_events',
     'leads',
-    'posts'
+    'posts',
+    'community_contributions'
   ];
 
   const results = [];

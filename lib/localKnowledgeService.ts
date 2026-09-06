@@ -535,12 +535,112 @@ export class LocalKnowledgeService {
   }
 
   // ═══════════════════════════════════════════════════════════════════
-  // 2. CONTRIBUTIONS ENGINE (REPLACING GENERIC POSTS)
+  // 2. CONTRIBUTIONS ENGINE (PERSISTENT MULTI-DEVICE COMMUNITY FEED)
   // ═══════════════════════════════════════════════════════════════════
+
+  /**
+   * Map Supabase database row to canonical LocalContribution domain model
+   */
+  mapSupabaseRowToContribution(row: any): LocalContribution {
+    return {
+      id: row.id,
+      type: row.type as ContributionType,
+      title: row.title,
+      content: row.content,
+      locality: row.locality,
+      author: {
+        id: row.author_id,
+        displayName: row.author_display_name,
+        avatarUrl: row.author_avatar_url || undefined,
+        locality: row.author_locality || row.locality,
+        badge: (row.author_badge as ReputationBadge) || 'LOCAL_CONTRIBUTOR'
+      },
+      businessRef: row.business_id ? {
+        id: row.business_id,
+        name: row.business_name || '',
+        slug: row.business_slug || '',
+        category: row.business_category || undefined
+      } : undefined,
+      placeRef: row.place_id ? {
+        id: row.place_id,
+        name: row.place_name || '',
+        category: row.place_category || undefined
+      } : undefined,
+      eventRef: row.event_ref || undefined,
+      media: Array.isArray(row.media) ? row.media : [],
+      externalPostUrl: row.external_post_url || undefined,
+      category: row.category || 'General Local',
+      provenance: row.provenance || 'FIRST_HAND_CITIZEN',
+      sourceName: row.source_name || undefined,
+      sourceUrl: row.source_url || undefined,
+      verificationState: row.verification_state || 'UNVERIFIED',
+      trustDossier: row.trust_dossier || {
+        whatWeKnow: row.title,
+        whyWeKnowIt: `Reported by ${row.author_display_name}`,
+        source: row.source_name || 'Citizen Report',
+        lastCheckedDate: (row.last_checked_at || row.created_at || '').split('T')[0],
+        whatCommunitySays: 'Recorded in Conflux community ledger.',
+        whatRemainsUncertain: 'Community corroboration is ongoing.'
+      },
+      confirmationsCount: Number(row.confirmations_count || 0),
+      disputesCount: Number(row.disputes_count || 0),
+      ratingsCount: Number(row.ratings_count || 0),
+      averageRating: Number(row.average_rating || 0),
+      commentsCount: Number(row.comments_count || 0),
+      status: row.status as LocalContribution['status'],
+      createdAt: row.created_at,
+      updatedAt: row.updated_at || row.created_at,
+      lastCheckedAt: row.last_checked_at || row.created_at
+    };
+  }
+
+  /**
+   * Map LocalContribution domain model to Supabase database row payload
+   */
+  mapContributionToSupabaseRow(c: LocalContribution): Record<string, any> {
+    return {
+      id: c.id,
+      type: c.type,
+      title: c.title,
+      content: c.content,
+      locality: c.locality.toLowerCase().trim(),
+      author_id: c.author.id,
+      author_display_name: c.author.displayName,
+      author_avatar_url: c.author.avatarUrl || null,
+      author_locality: c.author.locality || null,
+      author_badge: c.author.badge || 'LOCAL_CONTRIBUTOR',
+      business_id: c.businessRef?.id || null,
+      business_name: c.businessRef?.name || null,
+      business_slug: c.businessRef?.slug || null,
+      business_category: c.businessRef?.category || null,
+      place_id: c.placeRef?.id || null,
+      place_name: c.placeRef?.name || null,
+      place_category: c.placeRef?.category || null,
+      event_ref: c.eventRef || null,
+      media: c.media || [],
+      external_post_url: c.externalPostUrl || null,
+      category: c.category || 'General Local',
+      provenance: c.provenance || 'FIRST_HAND_CITIZEN',
+      source_name: c.sourceName || null,
+      source_url: c.sourceUrl || null,
+      verification_state: c.verificationState || 'UNVERIFIED',
+      trust_dossier: c.trustDossier || {},
+      confirmations_count: c.confirmationsCount || 0,
+      disputes_count: c.disputesCount || 0,
+      ratings_count: c.ratingsCount || 0,
+      average_rating: c.averageRating || 0,
+      comments_count: c.commentsCount || 0,
+      status: c.status || 'PUBLISHED',
+      created_at: c.createdAt,
+      updated_at: c.updatedAt,
+      last_checked_at: c.lastCheckedAt
+    };
+  }
 
   /**
    * Create a new Contribution.
    * Automatically extracts structured Signal(s) and connects to entities.
+   * Enforces backend persistence and moderation gates.
    */
   async createContribution(params: {
     type: ContributionType;
@@ -552,6 +652,7 @@ export class LocalKnowledgeService {
       displayName: string;
       avatarUrl?: string;
       locality?: string;
+      isVerifiedResident?: boolean;
     };
     businessId?: string;
     placeId?: string;
@@ -578,6 +679,15 @@ export class LocalKnowledgeService {
     // Resolve author profile
     const authorProfile = await this.getLocalProfile(params.author.id);
     const authorBadge = authorProfile?.reputationBadges[0] || 'LOCAL_CONTRIBUTOR';
+
+    // Authoritative Moderation Gate:
+    // If status is not explicitly specified, verified residents/profiles publish directly,
+    // while unverified or guest submissions are safely queued for review.
+    let status: LocalContribution['status'] = params.status || 'PUBLISHED';
+    if (!params.status) {
+      const authorized = this.canPublishLiveLocal(authorProfile) || params.author.isVerifiedResident === true;
+      status = authorized ? 'PUBLISHED' : 'PENDING_MODERATION';
+    }
 
     // Optional business resolution
     let businessRef: LocalContribution['businessRef'] = undefined;
@@ -707,13 +817,56 @@ export class LocalKnowledgeService {
       ratingsCount: 0,
       averageRating: 0,
       commentsCount: 0,
-      status: params.status || 'PUBLISHED',
+      status,
       createdAt: now,
       updatedAt: now,
       lastCheckedAt: now
     };
 
-    // Store in memory & localStorage
+    // ── PERSISTENCE TO PRODUCTION SHARED BACKEND ───────────────────
+    if (isSupabaseConfigured()) {
+      try {
+        const row = this.mapContributionToSupabaseRow(contribution);
+        const { data: dbRow, error: dbError } = await supabase
+          .from('community_contributions')
+          .insert([row])
+          .select()
+          .maybeSingle();
+
+        if (dbError) {
+          console.error('[LocalKnowledgeService.createContribution] Supabase insert failed:', dbError.message);
+          throw new Error("We couldn't publish this right now. Please try again.");
+        }
+
+        if (dbRow) {
+          const persisted = this.mapSupabaseRowToContribution(dbRow);
+          this.memoryContributions.unshift(persisted);
+          this.persistLocal();
+          await this.extractSignalsFromContribution(persisted);
+
+          if (authorProfile) {
+            authorProfile.stats.contributionsCount += 1;
+            if (persisted.type === 'DISCOVER') authorProfile.stats.verifiedDiscoveriesCount += 1;
+            this.recomputeReputation(authorProfile);
+            this.memoryProfiles.set(authorProfile.id, authorProfile);
+            this.persistLocal();
+          }
+
+          connectService.logEvent({
+            businessId: businessRef?.id || 'conflux_locality',
+            eventType: 'CONTRIBUTION_CREATED',
+            channel: 'HUMAN_WEB'
+          });
+
+          return persisted;
+        }
+      } catch (err: any) {
+        console.error('[LocalKnowledgeService.createContribution] Persistence error:', err);
+        throw new Error(err?.message || "We couldn't publish this right now. Please try again.");
+      }
+    }
+
+    // In-memory fallback (offline / unit testing environments)
     this.memoryContributions.unshift(contribution);
     this.persistLocal();
 
@@ -935,7 +1088,7 @@ export class LocalKnowledgeService {
   }
 
   /**
-   * Filter and retrieve Contributions
+   * Filter and retrieve Contributions from authoritative shared backend
    */
   async getContributions(filters: {
     locality?: string;
@@ -945,7 +1098,80 @@ export class LocalKnowledgeService {
     authorId?: string;
     status?: LocalContribution['status'];
     limit?: number;
+    query?: string;
   } = {}): Promise<LocalContribution[]> {
+    if (isSupabaseConfigured()) {
+      try {
+        let query = supabase
+          .from('community_contributions')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (filters.locality) {
+          query = query.ilike('locality', filters.locality.trim());
+        }
+        if (filters.type) {
+          query = query.eq('type', filters.type);
+        }
+        if (filters.businessId) {
+          query = query.eq('business_id', filters.businessId);
+        }
+        if (filters.placeId) {
+          query = query.eq('place_id', filters.placeId);
+        }
+        if (filters.authorId) {
+          query = query.eq('author_id', filters.authorId);
+        }
+        if (filters.status) {
+          query = query.eq('status', filters.status);
+        } else if (!filters.authorId) {
+          // By default, public feeds only return PUBLISHED records
+          query = query.eq('status', 'PUBLISHED');
+        }
+
+        if (filters.limit) {
+          query = query.limit(filters.limit);
+        }
+
+        const { data, error } = await query;
+        if (!error && data) {
+          let list = data.map(row => this.mapSupabaseRowToContribution(row));
+
+          // Synchronize retrieved records into local cache
+          for (const item of list) {
+            const idx = this.memoryContributions.findIndex(c => c.id === item.id);
+            if (idx >= 0) this.memoryContributions[idx] = item;
+            else this.memoryContributions.push(item);
+          }
+          this.persistLocal();
+
+          if (filters.authorId) {
+            const localPending = this.memoryContributions.filter(c =>
+              c.author.id === filters.authorId &&
+              c.status === 'PENDING_MODERATION' &&
+              !list.some(item => item.id === c.id)
+            );
+            list = [...list, ...localPending];
+          }
+
+          if (filters.query) {
+            const q = filters.query.toLowerCase().trim();
+            list = list.filter(c =>
+              c.title.toLowerCase().includes(q) ||
+              c.content.toLowerCase().includes(q) ||
+              c.category.toLowerCase().includes(q)
+            );
+          }
+          return list;
+        } else if (error) {
+          console.warn('[LocalKnowledgeService.getContributions] Supabase query notice:', error.message);
+        }
+      } catch (err: any) {
+        console.warn('[LocalKnowledgeService.getContributions] Error querying remote database:', err?.message || err);
+      }
+    }
+
+    // In-memory fallback for local tests / offline suites
     let list = [...this.memoryContributions];
 
     if (filters.locality) {
@@ -970,7 +1196,18 @@ export class LocalKnowledgeService {
     }
 
     const targetStatus = filters.status || 'PUBLISHED';
-    list = list.filter(c => c.status === targetStatus);
+    if (!filters.authorId || filters.status) {
+      list = list.filter(c => c.status === targetStatus);
+    }
+
+    if (filters.query) {
+      const q = filters.query.toLowerCase().trim();
+      list = list.filter(c =>
+        c.title.toLowerCase().includes(q) ||
+        c.content.toLowerCase().includes(q) ||
+        c.category.toLowerCase().includes(q)
+      );
+    }
 
     // Sort by newest first
     list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -983,6 +1220,25 @@ export class LocalKnowledgeService {
   }
 
   async getContributionById(id: string): Promise<LocalContribution | null> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('community_contributions')
+          .select('*')
+          .eq('id', id)
+          .maybeSingle();
+
+        if (!error && data) {
+          const item = this.mapSupabaseRowToContribution(data);
+          const idx = this.memoryContributions.findIndex(c => c.id === item.id);
+          if (idx >= 0) this.memoryContributions[idx] = item;
+          else this.memoryContributions.push(item);
+          return item;
+        }
+      } catch (err) {
+        console.warn('[LocalKnowledgeService.getContributionById] Remote query notice:', err);
+      }
+    }
     const item = this.memoryContributions.find(c => c.id === id);
     return item || null;
   }
@@ -1001,7 +1257,7 @@ export class LocalKnowledgeService {
    * When confirmations reach 3+, elevates verification state to COMMUNITY_CORROBORATED.
    */
   async confirmContribution(id: string, userId: string, userDisplayName: string = 'Local Resident'): Promise<LocalContribution> {
-    const item = this.memoryContributions.find(c => c.id === id);
+    const item = await this.getContributionById(id);
     if (!item) throw new Error('Contribution not found.');
 
     // Anti-gaming: Authors cannot confirm their own contribution
@@ -1009,10 +1265,58 @@ export class LocalKnowledgeService {
       throw new Error('Self-confirmation is not allowed.');
     }
 
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase.rpc('confirm_community_contribution', {
+          contribution_id: id,
+          confirming_user_id: userId
+        });
+
+        if (!error && data) {
+          const refreshed = await this.getContributionById(id);
+          if (refreshed) {
+            const authorProfile = await this.getLocalProfile(item.author.id);
+            if (authorProfile) {
+              authorProfile.stats.confirmedUpdatesCount += 1;
+              this.recomputeReputation(authorProfile);
+            }
+            return refreshed;
+          }
+        } else {
+          // Direct fallback update
+          const newConfirmations = (item.confirmationsCount || 0) + 1;
+          const newState = newConfirmations >= 3 && item.verificationState === 'UNVERIFIED'
+            ? 'COMMUNITY_CORROBORATED'
+            : item.verificationState;
+
+          const { data: updatedData, error: updateError } = await supabase
+            .from('community_contributions')
+            .update({
+              confirmations_count: newConfirmations,
+              verification_state: newState,
+              last_checked_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', id)
+            .select()
+            .maybeSingle();
+
+          if (!updateError && updatedData) {
+            const result = this.mapSupabaseRowToContribution(updatedData);
+            const idx = this.memoryContributions.findIndex(c => c.id === id);
+            if (idx >= 0) this.memoryContributions[idx] = result;
+            this.persistLocal();
+            return result;
+          }
+        }
+      } catch (err) {
+        console.warn('[LocalKnowledgeService.confirmContribution] Remote confirm notice:', err);
+      }
+    }
+
     item.confirmationsCount += 1;
     item.lastCheckedAt = new Date().toISOString();
 
-    // If confirmations >= 3 and not already officially verified or disputed, corroborate
     if (item.confirmationsCount >= 3 && item.verificationState === 'UNVERIFIED') {
       item.verificationState = 'COMMUNITY_CORROBORATED';
     }
@@ -1460,11 +1764,63 @@ export class LocalKnowledgeService {
   }
 
   async updateContributionStatus(id: string, status: LocalContribution['status']): Promise<LocalContribution> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('community_contributions')
+          .update({
+            status,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', id)
+          .select()
+          .maybeSingle();
+
+        if (error) {
+          console.error('[LocalKnowledgeService.updateContributionStatus] Remote update error:', error);
+          throw new Error(`Failed to update contribution status: ${error.message}`);
+        }
+        if (data) {
+          const updated = this.mapSupabaseRowToContribution(data);
+          const idx = this.memoryContributions.findIndex(c => c.id === id);
+          if (idx >= 0) this.memoryContributions[idx] = updated;
+          this.persistLocal();
+          return updated;
+        }
+      } catch (err: any) {
+        console.error('[LocalKnowledgeService.updateContributionStatus] Exception:', err);
+        throw err;
+      }
+    }
+
     const item = this.memoryContributions.find(c => c.id === id);
     if (!item) throw new Error('Contribution not found.');
     item.status = status;
     this.persistLocal();
     return item;
+  }
+
+  async deleteContribution(id: string): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase
+          .from('community_contributions')
+          .delete()
+          .eq('id', id);
+
+        if (error) {
+          console.error('[LocalKnowledgeService.deleteContribution] Error deleting:', error);
+          throw new Error(`Failed to delete contribution: ${error.message}`);
+        }
+      } catch (err: any) {
+        console.error('[LocalKnowledgeService.deleteContribution] Exception:', err);
+        throw err;
+      }
+    }
+
+    this.memoryContributions = this.memoryContributions.filter(c => c.id !== id);
+    this.persistLocal();
+    return true;
   }
 
   // ═══════════════════════════════════════════════════════════════════
