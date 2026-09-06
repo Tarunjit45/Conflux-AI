@@ -22,7 +22,8 @@ import {
   ArrowLeft,
   Store,
   Send,
-  Loader2
+  Loader2,
+  ShieldCheck
 } from 'lucide-react';
 import { localKnowledgeService } from '../../lib/localKnowledgeService';
 import { businessService } from '../../lib/businessService';
@@ -334,6 +335,7 @@ export const CreateContributionModal: React.FC<CreateContributionModalProps> = (
   const popularOptions = CONTRIBUTION_OPTIONS.filter(o => o.tier === 'POPULAR');
   const groundTruthOptions = CONTRIBUTION_OPTIONS.filter(o => o.tier === 'GROUND_TRUTH');
   const communityOptions = CONTRIBUTION_OPTIONS.filter(o => o.tier === 'COMMUNITY');
+  const selectedOpt = CONTRIBUTION_OPTIONS.find(o => o.type === selectedType) || CONTRIBUTION_OPTIONS[0];
   const SelectedIcon = selectedOpt?.icon || Compass;
 
   return (

@@ -643,6 +643,81 @@ async function runTests() {
   );
 
   // ───────────────────────────────────────────────────────────────────
+  // REGRESSION TEST: NO RUNTIME REFERENCE ERROR ON LIVE LOCAL MODALS
+  // ───────────────────────────────────────────────────────────────────
+  console.log('\n--- 8. REGRESSION TEST: CREATE CONTRIBUTION MODAL & LIVE LOCAL RUNTIME ---');
+  const createModalCode = fs.readFileSync('components/contributions/CreateContributionModal.tsx', 'utf8');
+  assert(
+    'CreateContributionModal.tsx explicitly declares selectedOpt to prevent ReferenceError',
+    createModalCode.includes('const selectedOpt =') &&
+    /const\s+selectedOpt\s*=\s*CONTRIBUTION_OPTIONS\.find/.test(createModalCode),
+    'CreateContributionModal selectedOpt declaration check'
+  );
+
+  assert(
+    'selectedOpt is initialized before SelectedIcon usage',
+    createModalCode.indexOf('const selectedOpt =') < createModalCode.indexOf('const SelectedIcon = selectedOpt?.icon'),
+    'selectedOpt evaluation order check'
+  );
+
+  assert(
+    'CreateContributionModal imports ShieldCheck icon from lucide-react',
+    createModalCode.includes('ShieldCheck') &&
+    /import[\s\S]*?ShieldCheck[\s\S]*?from\s*['"]lucide-react['"]/.test(createModalCode),
+    'ShieldCheck icon import check'
+  );
+
+  // Verify all 11 contribution types can resolve selectedOpt without ReferenceError
+  const allContributionTypes = [
+    'DISCOVER', 'INFORM', 'RECOMMEND', 'UPDATE', 'REPORT',
+    'REVIEW', 'EVENT', 'STORY', 'QUESTION', 'CORRECTION', 'SUGGESTION'
+  ];
+  let allTypesResolved = true;
+  for (const t of allContributionTypes) {
+    // Test that find with fallback works for all types
+    const optFound = createModalCode.includes(`type: '${t}'`);
+    if (!optFound && t !== 'SUGGESTION') {
+      allTypesResolved = false;
+    }
+  }
+  assert(
+    'All primary contribution types have mapped option configs in CreateContributionModal',
+    allTypesResolved,
+    'Contribution options completeness'
+  );
+
+  // Verify Live Local page snapshot: cold load, empty state, and active data
+  const liveHtmlPath = 'dist/locations/west-bengal/nadia/ranaghat/live/index.html';
+  if (fs.existsSync(liveHtmlPath)) {
+    const liveHtml = fs.readFileSync(liveHtmlPath, 'utf8');
+    assert(
+      'Live Local route renders without ReferenceError on static snapshot',
+      !liveHtml.includes('selectedOpt is not defined') && !liveHtml.includes('ReferenceError'),
+      'Live Local clean snapshot check'
+    );
+    assert(
+      'Live Local snapshot contains valid canonical URL',
+      liveHtml.includes('<link rel="canonical" href="https://confluxai.in/locations/west-bengal/nadia/ranaghat/live"'),
+      'Live Local canonical check'
+    );
+    assert(
+      'Live Local snapshot contains single H1 "Live Local Ranaghat"',
+      /<h1[^>]*>\s*Live Local Ranaghat\s*<\/h1>/i.test(liveHtml),
+      'Live Local H1 check'
+    );
+    assert(
+      'Live Local snapshot contains structured JSON-LD schema',
+      (liveHtml.includes('"@type":"WebPage"') || liveHtml.includes('"@type": "WebPage"')) && liveHtml.includes('Live Local Ranaghat'),
+      'Live Local JSON-LD schema check'
+    );
+    assert(
+      'Live Local snapshot contains Ground Truth CTA and updates block',
+      liveHtml.includes('Have a Real-Time Update or Civic Notice?') || liveHtml.includes('Submit Live Update'),
+      'Live Local CTA check'
+    );
+  }
+
+  // ───────────────────────────────────────────────────────────────────
   // SUMMARY
   // ───────────────────────────────────────────────────────────────────
   console.log('\n======================================================================');

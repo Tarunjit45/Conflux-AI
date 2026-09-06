@@ -2561,8 +2561,7 @@ const LocationDetailPage: React.FC = () => {
           isOpen={isRequestModalOpen}
           onClose={() => setIsRequestModalOpen(false)}
           defaultLocality={location.slug}
-          defaultLocalityName={location.name}
-          onRequestSubmitted={() => {
+          onSuccess={() => {
             // Demand request submitted
           }}
         />
