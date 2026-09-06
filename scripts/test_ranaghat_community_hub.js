@@ -506,7 +506,7 @@ async function runTests() {
   // Regression 11: Only real events increase reputation metrics
   const scoreBefore = verifiedNoPhotoProfile.reputationScore;
   await service.createContribution({
-    type: 'ROAD_NOTICE',
+    type: 'INFORM',
     title: 'Ranaghat Ferry Ghat morning schedule confirmed',
     content: 'Ferry service to Aismali operates every 20 minutes from 6:00 AM onwards.',
     locality: 'Ranaghat',

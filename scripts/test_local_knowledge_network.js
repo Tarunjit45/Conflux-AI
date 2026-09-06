@@ -214,6 +214,7 @@ async function runTests() {
     content: 'Fresh Darjeeling and Dooars loose teas available at wholesale rates.',
     locality: 'ranaghat',
     provenance: 'FIRST_HAND_CITIZEN',
+    status: 'PUBLISHED',
     author: {
       id: 'usr_test_tanmoy',
       displayName: 'Tanmoy Roy',
