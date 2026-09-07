@@ -270,6 +270,7 @@ export interface LocalContribution {
   ratingsCount: number;
   averageRating: number;
   commentsCount: number;
+  helpfulCount?: number;
   status: 'PUBLISHED' | 'PENDING_MODERATION' | 'FLAGGED' | 'ARCHIVED';
   createdAt: string;
   updatedAt: string;

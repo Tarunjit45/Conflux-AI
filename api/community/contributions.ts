@@ -3,7 +3,8 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
-import { PRODUCTION_SUPABASE_URL, PRODUCTION_SUPABASE_ANON_KEY, normalizeSupabaseUrl } from '../../lib/supabase.ts';
+const PRODUCTION_SUPABASE_URL = 'https://cqkljjbnoinztsugwqpf.supabase.co';
+const PRODUCTION_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxa2xqamJub2luenRzdWd3cXBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDg1ODAsImV4cCI6MjA4ODk4NDU4MH0.PokKldexJYwNGgtuRGkIyxpXkEU2PPWe91sJ7Uin9MU';
 
 const getSupabaseClient = () => {
   const rawEnvUrl =
@@ -19,7 +20,7 @@ const getSupabaseClient = () => {
     process.env.SUPABASE_ANON_KEY ||
     PRODUCTION_SUPABASE_ANON_KEY;
 
-  return createClient(normalizeSupabaseUrl(rawEnvUrl), key, {
+  return createClient(rawEnvUrl, key, {
     auth: {
       persistSession: false,
       autoRefreshToken: false

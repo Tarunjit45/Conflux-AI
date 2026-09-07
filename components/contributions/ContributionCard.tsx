@@ -2,7 +2,7 @@
 // Displays structured local contribution, connected entity actions, "How Conflux Knows" trust dossier,
 // community confirmations, disputes, ratings (1-5 stars), and discussion comments.
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -28,17 +28,32 @@ import {
   Check,
   Navigation,
   Heart,
-  Trash2
+  Trash2,
+  Lock
 } from 'lucide-react';
 import { localKnowledgeService } from '../../lib/localKnowledgeService';
 import { useAuth } from '../../lib/authContext';
+import { communityProfileService } from '../../lib/communityProfileService';
+import { CommunityOnboardingModal } from '../onboarding/CommunityOnboardingModal';
 import type { LocalContribution, ContributionComment } from '../../types/localKnowledge';
+
+function getDeviceId(): string {
+  if (typeof window === 'undefined') return 'dev_server';
+  const KEY = 'conflux_device_id';
+  let devId = localStorage.getItem(KEY);
+  if (!devId || devId.length < 5) {
+    devId = 'dev_' + (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`);
+    localStorage.setItem(KEY, devId);
+  }
+  return devId;
+}
 
 interface ContributionCardProps {
   contribution: LocalContribution;
   onUpdated?: (updated: LocalContribution) => void;
   onReportClick?: (contributionId: string) => void;
   onDelete?: (contributionId: string) => void;
+  onRequestAuth?: () => void;
   isAdmin?: boolean;
 }
 
@@ -47,6 +62,7 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
   onUpdated,
   onReportClick,
   onDelete,
+  onRequestAuth,
   isAdmin = false
 }) => {
   const { user } = useAuth();
@@ -55,6 +71,14 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
   const effectiveIsAdmin = isAdmin || user?.role === 'ADMIN';
   const [isDeleting, setIsDeleting] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+
+  // Sync state if initialContribution updates
+  useEffect(() => {
+    setContribution(initialContribution);
+    setHelpfulCount(
+      initialContribution.helpfulCount ?? (initialContribution.trustDossier as any)?.helpfulCount ?? 0
+    );
+  }, [initialContribution]);
 
   const handleAdminVerify = async () => {
     if (!window.confirm(`Admin: Verify and certify "${contribution.title}" as officially verified?`)) {
@@ -101,23 +125,61 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
+  // Device-level single action tracking
+  const [hasRated, setHasRated] = useState(false);
   const [userRating, setUserRating] = useState<number | null>(null);
   const [isRating, setIsRating] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
 
   const [hasMarkedHelpful, setHasMarkedHelpful] = useState(false);
   const [isMarkingHelpful, setIsMarkingHelpful] = useState(false);
-  const [helpfulCount, setHelpfulCount] = useState(0);
+  const [helpfulCount, setHelpfulCount] = useState<number>(
+    initialContribution.helpfulCount ?? (initialContribution.trustDossier as any)?.helpfulCount ?? 0
+  );
 
-  // Handle "This helped me" tap
+  // Community profile & auth state
+  const [communityProfile, setCommunityProfile] = useState(communityProfileService.getCommunityProfile());
+  const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
+
+  const isAuthenticated = Boolean(user || (communityProfile && communityProfile.status === 'PROFILE_COMPLETE'));
+  const activeUserId = user?.id || communityProfile?.id;
+  const activeUserName = user?.fullName || communityProfile?.name || 'Local Resident';
+  const activeUserAvatar = communityProfile?.photoUrl || undefined;
+
+  // On mount: check device deduplication flags
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const ratedVal = localStorage.getItem(`conflux_rated_${contribution.id}`);
+      if (ratedVal) {
+        setUserRating(Number(ratedVal));
+        setHasRated(true);
+      }
+      const helpedVal = localStorage.getItem(`conflux_helped_${contribution.id}`);
+      if (helpedVal === 'true') {
+        setHasMarkedHelpful(true);
+      }
+    }
+  }, [contribution.id]);
+
+  // Handle "Help Me" tap (No account required; 1 click per device)
   const handleMarkHelpful = async () => {
     if (hasMarkedHelpful || isMarkingHelpful) return;
     setIsMarkingHelpful(true);
+    setHasMarkedHelpful(true);
+    setHelpfulCount(prev => prev + 1);
+
     try {
-      const actorId = user?.id || `usr_guest_${Date.now()}`;
-      await localKnowledgeService.markContributionHelpful(contribution.id, actorId);
-      setHasMarkedHelpful(true);
-      setHelpfulCount(prev => prev + 1);
+      const deviceId = getDeviceId();
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`conflux_helped_${contribution.id}`, 'true');
+      }
+      const res = await localKnowledgeService.markContributionHelpful(contribution.id, deviceId);
+      if (typeof res.helpfulCount === 'number') {
+        setHelpfulCount(res.helpfulCount);
+        const updated = { ...contribution, helpfulCount: res.helpfulCount };
+        setContribution(updated);
+        onUpdated?.(updated);
+      }
     } catch {
       // Safe fallback
     } finally {
@@ -130,12 +192,12 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
     if (hasConfirmed || isConfirming) return;
     setIsConfirming(true);
     try {
-      const actorId = user?.id || `usr_guest_${Date.now()}`;
-      const actorName = user?.fullName || 'Local Resident';
+      const actorId = activeUserId || getDeviceId();
+      const actorName = activeUserName;
       const updated = await localKnowledgeService.confirmContribution(contribution.id, actorId, actorName);
       setContribution(updated);
       setHasConfirmed(true);
-      if (onUpdated) onUpdated(updated);
+      onUpdated?.(updated);
     } catch {
       // Safe fallback
     } finally {
@@ -149,8 +211,8 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
     if (!disputeReason.trim() || isDisputing) return;
     setIsDisputing(true);
     try {
-      const actorId = user?.id || `usr_guest_${Date.now()}`;
-      const actorName = user?.fullName || 'Local Resident';
+      const actorId = activeUserId || getDeviceId();
+      const actorName = activeUserName;
       const updated = await localKnowledgeService.disputeContribution(
         contribution.id,
         actorId,
@@ -160,7 +222,7 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
       setContribution(updated);
       setShowDisputeInput(false);
       setDisputeReason('');
-      if (onUpdated) onUpdated(updated);
+      onUpdated?.(updated);
     } catch {
       // Safe fallback
     } finally {
@@ -168,19 +230,26 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
     }
   };
 
-  // Handle 1-5 Star Rating
+  // Handle 1-5 Star Rating (No account required; 1 rating per device)
   const handleRate = async (stars: number) => {
-    if (isRating) return;
+    if (isRating || hasRated) return;
     setIsRating(true);
     setUserRating(stars);
+    setHasRated(true);
+
     try {
-      const actorId = user?.id || `usr_guest_${Date.now()}`;
-      const res = await localKnowledgeService.rateContribution(contribution.id, actorId, stars);
-      setContribution(prev => ({
-        ...prev,
+      const deviceId = getDeviceId();
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`conflux_rated_${contribution.id}`, stars.toString());
+      }
+      const res = await localKnowledgeService.rateContribution(contribution.id, deviceId, stars);
+      const updated = {
+        ...contribution,
         averageRating: res.averageRating,
         ratingsCount: res.ratingsCount
-      }));
+      };
+      setContribution(updated);
+      onUpdated?.(updated);
     } catch {
       // Safe fallback
     } finally {
@@ -202,23 +271,33 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCommentText.trim() || isSubmittingComment) return;
+
+    if (!isAuthenticated || !activeUserId) {
+      alert('You must sign in or create a Conflux profile to participate in community discussions.');
+      return;
+    }
+
     setIsSubmittingComment(true);
 
     try {
-      const actorId = user?.id || `usr_guest_${Date.now()}`;
-      const actorName = user?.fullName || 'Local Resident';
       const comment = await localKnowledgeService.addComment({
         contributionId: contribution.id,
-        userId: actorId,
-        userDisplayName: actorName,
+        userId: activeUserId,
+        userDisplayName: activeUserName,
+        userAvatar: activeUserAvatar,
         content: newCommentText.trim()
       });
 
       setComments(prev => [...prev, comment]);
-      setContribution(prev => ({ ...prev, commentsCount: prev.commentsCount + 1 }));
+      const updated = {
+        ...contribution,
+        commentsCount: (contribution.commentsCount || 0) + 1
+      };
+      setContribution(updated);
       setNewCommentText('');
-    } catch {
-      // Safe fallback
+      onUpdated?.(updated);
+    } catch (err: any) {
+      alert(err?.message || 'Failed to post comment');
     } finally {
       setIsSubmittingComment(false);
     }
@@ -468,24 +547,23 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
       <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs">
         {/* Community Confirmation, Helpful & Dispute */}
         <div className="flex items-center gap-2 flex-wrap">
-          {/* This Helped Me Button */}
+          {/* Help Me Button */}
           <button
             type="button"
             onClick={handleMarkHelpful}
             disabled={hasMarkedHelpful || isMarkingHelpful}
-            className={`min-h-[44px] px-3.5 py-2 rounded-xl border flex items-center gap-1.5 font-bold transition-all cursor-pointer shadow-xs ${
+            className={`min-h-[44px] px-3.5 py-2 rounded-xl border flex items-center gap-1.5 font-bold transition-all ${
               hasMarkedHelpful
-                ? 'bg-rose-50 text-rose-700 border-rose-200'
-                : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'
+                ? 'bg-rose-50 text-rose-700 border-rose-200 cursor-default'
+                : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200 cursor-pointer shadow-xs active:scale-95'
             }`}
+            title={hasMarkedHelpful ? 'You marked this as helpful (1 per device)' : 'Help Me'}
           >
             <Heart size={14} className={hasMarkedHelpful ? 'fill-rose-600 text-rose-600' : 'text-slate-400'} />
-            <span>{hasMarkedHelpful ? 'Helped Me' : 'This helped me'}</span>
-            {helpfulCount > 0 && (
-              <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-100">
-                {helpfulCount}
-              </span>
-            )}
+            <span>{hasMarkedHelpful ? 'Helped Me' : 'Help Me'}</span>
+            <span className="font-mono text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 ml-0.5">
+              {helpfulCount}
+            </span>
           </button>
 
           <button
@@ -518,14 +596,15 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
         {/* 1-5 Star Community Rating */}
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Rate:</span>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
                 type="button"
+                disabled={hasRated || isRating}
                 onClick={() => handleRate(star)}
-                className="p-1 hover:scale-110 transition-transform cursor-pointer"
-                title={`${star} stars`}
+                className={`p-1 transition-transform ${hasRated ? 'cursor-default' : 'hover:scale-110 cursor-pointer'}`}
+                title={hasRated ? `You rated ${userRating} stars (1 rating per device)` : `Rate ${star} star${star > 1 ? 's' : ''}`}
               >
                 <Star
                   size={15}
@@ -539,7 +618,9 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
             ))}
           </div>
           <span className="font-mono font-bold text-xs text-slate-700 ml-1">
-            {contribution.ratingsCount > 0 ? `${contribution.averageRating}★ (${contribution.ratingsCount})` : 'Unrated'}
+            {contribution.ratingsCount > 0
+              ? `${contribution.averageRating.toFixed(1)} ★ · ${contribution.ratingsCount} ${contribution.ratingsCount === 1 ? 'rating' : 'ratings'}`
+              : '0 ratings'}
           </span>
         </div>
 
@@ -640,28 +721,74 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
               <p className="text-xs text-slate-400 italic">No community comments yet. Start the discussion.</p>
             )}
 
-            {/* Comment Form */}
-            <form onSubmit={handleAddComment} className="flex gap-2 pt-1">
-              <input
-                type="text"
-                required
-                placeholder="Add a constructive local comment or detail..."
-                value={newCommentText}
-                onChange={(e) => setNewCommentText(e.target.value)}
-                className="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="submit"
-                disabled={isSubmittingComment}
-                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all disabled:opacity-50 flex items-center gap-1 cursor-pointer"
-              >
-                <Send size={12} />
-                <span>Reply</span>
-              </button>
-            </form>
+            {/* Comment Form or Profile Sign-In Gate */}
+            {isAuthenticated ? (
+              <form onSubmit={handleAddComment} className="space-y-2 pt-1">
+                <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
+                  <span>Commenting as <strong className="text-slate-800 font-semibold">{activeUserName}</strong></span>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    required
+                    placeholder="Add a constructive local comment or detail..."
+                    value={newCommentText}
+                    onChange={(e) => setNewCommentText(e.target.value)}
+                    className="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSubmittingComment || !newCommentText.trim()}
+                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all disabled:opacity-50 flex items-center gap-1 cursor-pointer"
+                  >
+                    <Send size={12} />
+                    <span>{isSubmittingComment ? 'Posting...' : 'Reply'}</span>
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2">
+                <div className="flex items-center justify-center gap-1.5 text-slate-700 font-bold text-xs">
+                  <Lock size={13} className="text-slate-500" />
+                  <span>Conflux Profile Required to Discuss</span>
+                </div>
+                <p className="text-[11px] text-slate-500 max-w-sm mx-auto leading-relaxed">
+                  To ensure authentic local accountability and prevent spam, anonymous comments are disallowed. Join the conversation with your verified Conflux profile.
+                </p>
+                <div className="pt-0.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (onRequestAuth) {
+                        onRequestAuth();
+                      } else {
+                        setIsOnboardingModalOpen(true);
+                      }
+                    }}
+                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-xs inline-flex items-center gap-1.5"
+                  >
+                    <User size={13} />
+                    <span>Sign In / Create Profile</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Community Onboarding Modal fallback */}
+      {isOnboardingModalOpen && (
+        <CommunityOnboardingModal
+          isOpen={isOnboardingModalOpen}
+          initialLocality={contribution.locality || 'Ranaghat'}
+          onClose={() => setIsOnboardingModalOpen(false)}
+          onComplete={(completed) => {
+            setCommunityProfile(completed);
+            setIsOnboardingModalOpen(false);
+          }}
+        />
+      )}
     </article>
   );
 };

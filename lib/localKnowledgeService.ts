@@ -547,9 +547,10 @@ export class LocalKnowledgeService {
       },
       confirmationsCount: Number(row.confirmations_count || 0),
       disputesCount: Number(row.disputes_count || 0),
-      ratingsCount: Number(row.ratings_count || 0),
-      averageRating: Number(row.average_rating || 0),
-      commentsCount: Number(row.comments_count || 0),
+      ratingsCount: Number(row.ratings_count ?? row.trust_dossier?.ratingsCount ?? 0),
+      averageRating: Number(row.average_rating ?? row.trust_dossier?.averageRating ?? 0),
+      commentsCount: Number(row.comments_count ?? row.trust_dossier?.comments?.length ?? 0),
+      helpfulCount: Number(row.helpful_count ?? row.trust_dossier?.helpfulCount ?? (Array.isArray(row.trust_dossier?.helpfulDevices) ? row.trust_dossier.helpfulDevices.length : 0)),
       status: row.status as LocalContribution['status'],
       createdAt: row.created_at,
       updatedAt: row.updated_at || row.created_at,
@@ -1345,11 +1346,11 @@ export class LocalKnowledgeService {
 
   /**
    * "This helped me" human outcome attribution:
-   * Increments peopleHelpedCount and helpfulVotesCount for the author.
+   * Increments helpfulCount for the contribution and author stats.
    * Strictly tracks genuine user interactions. Never fabricates counts.
    */
-  async markContributionHelpful(contributionId: string, userId: string): Promise<{ peopleHelpedCount: number; helpfulVotesCount: number }> {
-    const item = this.memoryContributions.find(c => c.id === contributionId);
+  async markContributionHelpful(contributionId: string, userId: string): Promise<{ helpfulCount: number; peopleHelpedCount: number; helpfulVotesCount: number }> {
+    const item = await this.getContributionById(contributionId);
     if (!item) throw new Error('Contribution not found.');
 
     // Anti-gaming: Authors cannot mark their own contribution as helpful
@@ -1357,15 +1358,42 @@ export class LocalKnowledgeService {
       throw new Error('Self-help feedback is not allowed.');
     }
 
-    const authorProfile = await this.getLocalProfile(item.author.id);
-    if (!authorProfile) {
-      throw new Error('Author profile not found.');
+    // Try serverless API persistence for cross-device synchronization
+    let remoteUpdated = false;
+    if (typeof window !== 'undefined' && typeof fetch !== 'undefined') {
+      try {
+        const res = await fetch('/api/community/interact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'HELPFUL',
+            contributionId,
+            deviceId: userId
+          })
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && typeof json.helpfulCount === 'number') {
+            item.helpfulCount = json.helpfulCount;
+            remoteUpdated = true;
+          }
+        }
+      } catch {
+        // Fallback to local
+      }
     }
 
-    authorProfile.stats.peopleHelpedCount = (authorProfile.stats.peopleHelpedCount || 0) + 1;
-    authorProfile.stats.helpfulVotesCount = (authorProfile.stats.helpfulVotesCount || 0) + 1;
-    this.recomputeReputation(authorProfile);
-    this.memoryProfiles.set(authorProfile.id, authorProfile);
+    if (!remoteUpdated) {
+      item.helpfulCount = (item.helpfulCount || 0) + 1;
+    }
+
+    const authorProfile = await this.getLocalProfile(item.author.id);
+    if (authorProfile) {
+      authorProfile.stats.peopleHelpedCount = (authorProfile.stats.peopleHelpedCount || 0) + 1;
+      authorProfile.stats.helpfulVotesCount = (authorProfile.stats.helpfulVotesCount || 0) + 1;
+      this.recomputeReputation(authorProfile);
+      this.memoryProfiles.set(authorProfile.id, authorProfile);
+    }
 
     // Telemetry
     connectService.logEvent({
@@ -1376,8 +1404,9 @@ export class LocalKnowledgeService {
 
     this.persistLocal();
     return {
-      peopleHelpedCount: authorProfile.stats.peopleHelpedCount,
-      helpfulVotesCount: authorProfile.stats.helpfulVotesCount
+      helpfulCount: item.helpfulCount || 0,
+      peopleHelpedCount: authorProfile?.stats.peopleHelpedCount || 0,
+      helpfulVotesCount: authorProfile?.stats.helpfulVotesCount || 0
     };
   }
 
@@ -1437,16 +1466,44 @@ export class LocalKnowledgeService {
   /**
    * Rate a Contribution (1 - 5 stars).
    * Separate from creator reputation; generates CONTENT_RATING signal.
+   * Persisted to backend for authoritative multi-device synchronization.
    */
   async rateContribution(contributionId: string, userId: string, rating: number): Promise<{ averageRating: number; ratingsCount: number }> {
     if (typeof rating !== 'number' || rating < 1 || rating > 5) {
       throw new Error('Rating must be between 1 and 5 stars.');
     }
 
-    const item = this.memoryContributions.find(c => c.id === contributionId);
+    const item = await this.getContributionById(contributionId);
     if (!item) throw new Error('Contribution not found.');
 
-    // Record rating record
+    // Try serverless API persistence for authoritative cross-device sync
+    let remoteUpdated = false;
+    if (typeof window !== 'undefined' && typeof fetch !== 'undefined') {
+      try {
+        const res = await fetch('/api/community/interact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'RATE',
+            contributionId,
+            deviceId: userId,
+            rating
+          })
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && typeof json.ratingsCount === 'number') {
+            item.ratingsCount = json.ratingsCount;
+            item.averageRating = json.averageRating;
+            remoteUpdated = true;
+          }
+        }
+      } catch {
+        // Fallback to local
+      }
+    }
+
+    // Record local rating record
     this.memoryRatings.push({
       id: generateUuid(),
       contributionId,
@@ -1455,11 +1512,13 @@ export class LocalKnowledgeService {
       createdAt: new Date().toISOString()
     });
 
-    // Compute new aggregate
-    const allForThis = this.memoryRatings.filter(r => r.contributionId === contributionId);
-    const sum = allForThis.reduce((acc, r) => acc + r.rating, 0);
-    item.ratingsCount = allForThis.length;
-    item.averageRating = Number((sum / allForThis.length).toFixed(1));
+    if (!remoteUpdated) {
+      // Compute local aggregate
+      const allForThis = this.memoryRatings.filter(r => r.contributionId === contributionId);
+      const sum = allForThis.reduce((acc, r) => acc + r.rating, 0);
+      item.ratingsCount = allForThis.length;
+      item.averageRating = Number((sum / allForThis.length).toFixed(1));
+    }
 
     // Signal
     await this.createSignal({
@@ -1490,6 +1549,7 @@ export class LocalKnowledgeService {
 
   /**
    * Add a Comment to a Contribution
+   * Invariant: Requires a registered/logged-in Conflux profile. Anonymous comments disallowed.
    */
   async addComment(params: {
     contributionId: string;
@@ -1501,11 +1561,14 @@ export class LocalKnowledgeService {
     if (!params.content || params.content.trim().length < 2) {
       throw new Error('Comment content cannot be empty.');
     }
+    if (!params.userId || params.userId.startsWith('usr_guest') || params.userId === 'anonymous') {
+      throw new Error('You must sign in or create a Conflux profile to participate in community discussions.');
+    }
 
-    const item = this.memoryContributions.find(c => c.id === params.contributionId);
+    const item = await this.getContributionById(params.contributionId);
     if (!item) throw new Error('Contribution not found.');
 
-    const comment: ContributionComment = {
+    const localComment: ContributionComment = {
       id: generateUuid(),
       contributionId: params.contributionId,
       userId: params.userId,
@@ -1515,8 +1578,42 @@ export class LocalKnowledgeService {
       createdAt: new Date().toISOString()
     };
 
-    this.memoryComments.push(comment);
-    item.commentsCount += 1;
+    let remoteComment: ContributionComment | null = null;
+    if (typeof window !== 'undefined' && typeof fetch !== 'undefined') {
+      try {
+        const res = await fetch('/api/community/interact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'COMMENT',
+            contributionId: params.contributionId,
+            comment: {
+              userId: params.userId,
+              userDisplayName: params.userDisplayName,
+              userAvatar: params.userAvatar,
+              content: params.content
+            }
+          })
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.comment) {
+            remoteComment = json.comment;
+            if (typeof json.commentsCount === 'number') {
+              item.commentsCount = json.commentsCount;
+            }
+          }
+        }
+      } catch {
+        // Fallback
+      }
+    }
+
+    const finalComment = remoteComment || localComment;
+    this.memoryComments.push(finalComment);
+    if (!remoteComment) {
+      item.commentsCount = (item.commentsCount || 0) + 1;
+    }
     this.persistLocal();
 
     connectService.logEvent({
@@ -1525,13 +1622,26 @@ export class LocalKnowledgeService {
       channel: 'HUMAN_WEB'
     });
 
-    return comment;
+    return finalComment;
   }
 
   async getComments(contributionId: string): Promise<ContributionComment[]> {
-    return this.memoryComments
-      .filter(c => c.contributionId === contributionId)
-      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    const item = this.memoryContributions.find(c => c.id === contributionId);
+    const dossierComments: ContributionComment[] = (item?.trustDossier && (item.trustDossier as any).comments) || [];
+
+    const map = new Map<string, ContributionComment>();
+    for (const c of dossierComments) {
+      map.set(c.id, c);
+    }
+    for (const c of this.memoryComments) {
+      if (c.contributionId === contributionId) {
+        map.set(c.id, c);
+      }
+    }
+
+    return Array.from(map.values()).sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
   }
 
   // ═══════════════════════════════════════════════════════════════════

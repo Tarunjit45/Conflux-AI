@@ -817,6 +817,7 @@ const LocationDetailPage: React.FC = () => {
                             key={contrib.id}
                             contribution={contrib}
                             isAdmin={isSuperAdmin}
+                            onRequestAuth={() => setIsOnboardingModalOpen(true)}
                             onDelete={(deletedId) => {
                               setContributions(prev => prev.filter(c => c.id !== deletedId));
                             }}
@@ -1841,6 +1842,7 @@ const LocationDetailPage: React.FC = () => {
                       key={contrib.id}
                       contribution={contrib}
                       isAdmin={isSuperAdmin}
+                      onRequestAuth={() => setIsOnboardingModalOpen(true)}
                       onDelete={(deletedId) => {
                         setContributions(prev => prev.filter(c => c.id !== deletedId));
                       }}
@@ -2404,6 +2406,7 @@ const LocationDetailPage: React.FC = () => {
                     <ContributionCard
                       key={contrib.id}
                       contribution={contrib}
+                      onRequestAuth={() => setIsOnboardingModalOpen(true)}
                       onUpdated={(updated) => {
                         setContributions(prev => prev.map(c => c.id === updated.id ? updated : c));
                       }}
