@@ -11,6 +11,8 @@ export interface UserProfile {
   role: UserRole;
   phone?: string;
   createdAt: string;
+  communityProfile?: any;
+  follows?: any[];
 }
 
 export type BusinessType =

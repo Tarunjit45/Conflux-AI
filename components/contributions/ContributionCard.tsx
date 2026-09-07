@@ -29,7 +29,8 @@ import {
   Navigation,
   Heart,
   Trash2,
-  Lock
+  Lock,
+  Plus
 } from 'lucide-react';
 import { localKnowledgeService } from '../../lib/localKnowledgeService';
 import { useAuth } from '../../lib/authContext';
@@ -140,11 +141,64 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
   // Community profile & auth state
   const [communityProfile, setCommunityProfile] = useState(communityProfileService.getCommunityProfile());
   const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
+  const [onboardingPromptTitle, setOnboardingPromptTitle] = useState('Join the Ranaghat community');
+
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isTogglingFollow, setIsTogglingFollow] = useState(false);
 
   const isAuthenticated = Boolean(user || (communityProfile && communityProfile.status === 'PROFILE_COMPLETE'));
   const activeUserId = user?.id || communityProfile?.id;
   const activeUserName = user?.fullName || communityProfile?.name || 'Local Resident';
   const activeUserAvatar = communityProfile?.photoUrl || undefined;
+
+  // Check initial follow status
+  useEffect(() => {
+    if (activeUserId && contribution.author.id) {
+      localKnowledgeService.isFollowing(activeUserId, contribution.author.id).then(setIsFollowing);
+    }
+  }, [activeUserId, contribution.author.id]);
+
+  const handleFollowToggle = async () => {
+    if (!isAuthenticated) {
+      setOnboardingPromptTitle('Join the Ranaghat community to follow local contributors.');
+      setIsOnboardingModalOpen(true);
+      return;
+    }
+    if (isTogglingFollow) return;
+    setIsTogglingFollow(true);
+    try {
+      if (isFollowing) {
+        await localKnowledgeService.unfollowTarget(activeUserId!, contribution.author.id);
+        setIsFollowing(false);
+      } else {
+        await localKnowledgeService.followTarget(activeUserId!, contribution.author.id, 'USER', contribution.author.displayName);
+        setIsFollowing(true);
+      }
+    } catch (e) {
+      console.warn('[ContributionCard] Follow toggle error:', e);
+    } finally {
+      setIsTogglingFollow(false);
+    }
+  };
+
+  const handleDiscussClick = () => {
+    if (!isAuthenticated) {
+      setOnboardingPromptTitle('Join the Ranaghat community to join this discussion.');
+      setIsOnboardingModalOpen(true);
+      return;
+    }
+    toggleComments();
+  };
+
+  const handleOnboardingComplete = (completed: any) => {
+    setCommunityProfile(completed);
+    setIsOnboardingModalOpen(false);
+    // Return user directly to the discussion
+    setShowComments(true);
+    if (comments.length === 0) {
+      loadComments();
+    }
+  };
 
   // On mount: check device deduplication flags
   useEffect(() => {
@@ -362,6 +416,31 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
                 <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
                   {contribution.author.badge.replace(/_/g, ' ')}
                 </span>
+              )}
+              {activeUserId !== contribution.author.id && (
+                <button
+                  type="button"
+                  onClick={handleFollowToggle}
+                  disabled={isTogglingFollow}
+                  className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer min-h-[26px] ${
+                    isFollowing
+                      ? 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+                      : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200'
+                  }`}
+                  title={isFollowing ? 'Following contributor' : 'Follow this contributor'}
+                >
+                  {isFollowing ? (
+                    <>
+                      <Check size={11} strokeWidth={3} className="text-emerald-600" />
+                      <span>Following</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus size={11} strokeWidth={3} />
+                      <span>Follow</span>
+                    </>
+                  )}
+                </button>
               )}
             </div>
             <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
@@ -628,7 +707,7 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
         <div className="flex items-center gap-2.5">
           <button
             type="button"
-            onClick={toggleComments}
+            onClick={handleDiscussClick}
             className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center gap-2 transition-colors cursor-pointer"
           >
             <MessageSquare size={14} />
@@ -759,11 +838,8 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
                   <button
                     type="button"
                     onClick={() => {
-                      if (onRequestAuth) {
-                        onRequestAuth();
-                      } else {
-                        setIsOnboardingModalOpen(true);
-                      }
+                      setOnboardingPromptTitle('Join the Ranaghat community to join this discussion.');
+                      setIsOnboardingModalOpen(true);
                     }}
                     className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-xs inline-flex items-center gap-1.5"
                   >
@@ -777,16 +853,14 @@ export const ContributionCard: React.FC<ContributionCardProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Community Onboarding Modal fallback */}
+      {/* Community Onboarding Modal */}
       {isOnboardingModalOpen && (
         <CommunityOnboardingModal
           isOpen={isOnboardingModalOpen}
           initialLocality={contribution.locality || 'Ranaghat'}
+          promptTitle={onboardingPromptTitle}
           onClose={() => setIsOnboardingModalOpen(false)}
-          onComplete={(completed) => {
-            setCommunityProfile(completed);
-            setIsOnboardingModalOpen(false);
-          }}
+          onComplete={handleOnboardingComplete}
         />
       )}
     </article>

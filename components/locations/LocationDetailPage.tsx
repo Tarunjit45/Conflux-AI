@@ -78,6 +78,10 @@ const LocationDetailPage: React.FC = () => {
   const [jobTypeFilter, setJobTypeFilter] = useState<'ALL' | JobType>('ALL');
   const [localSearchQuery, setLocalSearchQuery] = useState('');
   const [activeContribTab, setActiveContribTab] = useState<'ALL' | ContributionType>('ALL');
+  const [followedIds, setFollowedIds] = useState<string[]>([]);
+  const [togglingFollowId, setTogglingFollowId] = useState<string | null>(null);
+  const [onboardingPromptTitle, setOnboardingPromptTitle] = useState('Join the Ranaghat community');
+  const [onboardingContext, setOnboardingContext] = useState<'POST' | 'FOLLOW' | 'GENERAL'>('GENERAL');
 
   // Admin Moderation State
   const { user, isAdmin, login, logout } = useAuth();
@@ -88,6 +92,45 @@ const LocationDetailPage: React.FC = () => {
   const [adminAuthError, setAdminAuthError] = useState('');
   const [isSubmittingAdminAuth, setIsSubmittingAdminAuth] = useState(false);
   const [isDeletingAll, setIsDeletingAll] = useState(false);
+
+  const currentCommunityProfile = communityProfileService.getCommunityProfile();
+  const isAuthenticated = Boolean(user || (currentCommunityProfile && currentCommunityProfile.status === 'PROFILE_COMPLETE'));
+  const activeUserId = user?.id || currentCommunityProfile?.id;
+
+  useEffect(() => {
+    if (activeUserId) {
+      localKnowledgeService.getUserFollowing(activeUserId).then(follows => {
+        setFollowedIds(follows.filter(f => f.targetType === 'USER').map(f => f.targetId));
+      });
+    } else {
+      setFollowedIds([]);
+    }
+  }, [activeUserId]);
+
+  const handleFollowToggle = async (targetUserId: string, targetName: string) => {
+    if (!isAuthenticated || !activeUserId) {
+      setOnboardingContext('FOLLOW');
+      setOnboardingPromptTitle('Join the Ranaghat community to follow local contributors.');
+      setIsOnboardingModalOpen(true);
+      return;
+    }
+    if (togglingFollowId === targetUserId) return;
+    setTogglingFollowId(targetUserId);
+    try {
+      const isCurrentlyFollowing = followedIds.includes(targetUserId);
+      if (isCurrentlyFollowing) {
+        await localKnowledgeService.unfollowTarget(activeUserId, targetUserId);
+        setFollowedIds(prev => prev.filter(id => id !== targetUserId));
+      } else {
+        await localKnowledgeService.followTarget(activeUserId, targetUserId, 'USER', targetName);
+        setFollowedIds(prev => [...prev, targetUserId]);
+      }
+    } catch (err) {
+      console.warn('[LocationDetailPage] Error toggling follow:', err);
+    } finally {
+      setTogglingFollowId(null);
+    }
+  };
 
   // Clean out any legacy test posts from localStorage on initial page load
   useEffect(() => {
@@ -146,6 +189,8 @@ const LocationDetailPage: React.FC = () => {
   const handleShareUpdateClick = () => {
     const profile = communityProfileService.getCommunityProfile();
     if (!profile || profile.status !== 'PROFILE_COMPLETE') {
+      setOnboardingContext('POST');
+      setOnboardingPromptTitle('Join the Ranaghat community to share an update');
       setIsOnboardingModalOpen(true);
     } else {
       setIsComposerModalOpen(true);
@@ -182,20 +227,8 @@ const LocationDetailPage: React.FC = () => {
     }
   };
 
-  // Trigger Ranaghat Visitor Entry Prompt if not dismissed during this session
-  useEffect(() => {
-    if (location && location.slug === 'ranaghat') {
-      if (typeof sessionStorage !== 'undefined') {
-        const dismissed = sessionStorage.getItem('conflux_ranaghat_prompt_dismissed');
-        if (!dismissed) {
-          const timer = setTimeout(() => {
-            setIsVisitorPromptOpen(true);
-          }, 1200);
-          return () => clearTimeout(timer);
-        }
-      }
-    }
-  }, [location]);
+  // Automatic popups disabled to ensure uninterrupted public browsing
+
 
   // Load local verified businesses from Business Graph
   useEffect(() => {
@@ -483,15 +516,15 @@ const LocationDetailPage: React.FC = () => {
         <span>Live Local</span>
       </Link>
       <Link
-        to={`/locations/west-bengal/${districtSlug}/${location.slug}/jobs`}
+        to={`/locations/west-bengal/${districtSlug}/${location.slug}/ask`}
         className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 min-h-[44px] ${
-          currentSub === 'jobs'
-            ? 'bg-emerald-600 text-white shadow-sm'
+          currentSub === 'ask'
+            ? 'bg-amber-600 text-white shadow-sm'
             : 'text-slate-700 hover:bg-white/70'
         }`}
       >
-        <Briefcase size={13} className={currentSub === 'jobs' ? '' : 'text-emerald-600'} />
-        <span>Jobs ({jobs.length})</span>
+        <HelpCircle size={13} className={currentSub === 'ask' ? '' : 'text-amber-600'} />
+        <span>Ask Ranaghat</span>
       </Link>
       <Link
         to={`/locations/west-bengal/${districtSlug}/${location.slug}/people`}
@@ -516,15 +549,15 @@ const LocationDetailPage: React.FC = () => {
         <span>Businesses ({localBusinesses.length})</span>
       </Link>
       <Link
-        to={`/locations/west-bengal/${districtSlug}/${location.slug}/ask`}
+        to={`/locations/west-bengal/${districtSlug}/${location.slug}/jobs`}
         className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 min-h-[44px] ${
-          currentSub === 'ask'
-            ? 'bg-amber-600 text-white shadow-sm'
+          currentSub === 'jobs'
+            ? 'bg-emerald-600 text-white shadow-sm'
             : 'text-slate-700 hover:bg-white/70'
         }`}
       >
-        <HelpCircle size={13} className={currentSub === 'ask' ? '' : 'text-amber-600'} />
-        <span>Ask Ranaghat</span>
+        <Briefcase size={13} className={currentSub === 'jobs' ? '' : 'text-emerald-600'} />
+        <span>Jobs ({jobs.length})</span>
       </Link>
     </nav>
   );
@@ -1120,10 +1153,34 @@ const LocationDetailPage: React.FC = () => {
                           </div>
 
                           <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                            <span className="font-mono">{voice.stats.contributionsCount} contributions</span>
-                            <span className="font-mono text-emerald-600 font-bold">
-                              {voice.stats.peopleHelpedCount ? `${voice.stats.peopleHelpedCount} helped` : `${voice.stats.confirmedUpdatesCount} confirmed`}
-                            </span>
+                            <div className="flex items-center gap-3">
+                              <span className="font-mono">{voice.stats.contributionsCount} contributions</span>
+                              <span className="font-mono text-emerald-600 font-bold">
+                                {voice.stats.peopleHelpedCount ? `${voice.stats.peopleHelpedCount} helped` : `${voice.stats.confirmedUpdatesCount} confirmed`}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleFollowToggle(voice.id, voice.displayName)}
+                              disabled={togglingFollowId === voice.id}
+                              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1 min-h-[34px] ${
+                                followedIds.includes(voice.id)
+                                  ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                                  : 'bg-slate-100 text-slate-700 hover:bg-purple-50 hover:text-purple-700'
+                              }`}
+                            >
+                              {followedIds.includes(voice.id) ? (
+                                <>
+                                  <CheckCircle2 size={12} className="text-purple-600" />
+                                  <span>Following</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Plus size={12} />
+                                  <span>Follow</span>
+                                </>
+                              )}
+                            </button>
                           </div>
                         </div>
                       );
@@ -1676,29 +1733,29 @@ const LocationDetailPage: React.FC = () => {
                   </div>
                 </Link>
 
-                {/* 2. Jobs */}
+                {/* 2. Ask Ranaghat */}
                 <Link
-                  to={`/locations/west-bengal/${districtSlug}/${location.slug}/jobs`}
-                  className="p-6 rounded-3xl bg-gradient-to-br from-emerald-50 to-white border-2 border-emerald-200 hover:border-emerald-500 hover:shadow-lg transition-all group flex flex-col justify-between min-h-[160px]"
+                  to={`/locations/west-bengal/${districtSlug}/${location.slug}/ask`}
+                  className="p-6 rounded-3xl bg-gradient-to-br from-amber-50 to-white border-2 border-amber-200 hover:border-amber-500 hover:shadow-lg transition-all group flex flex-col justify-between min-h-[160px]"
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-sm">
-                        <Briefcase size={20} />
+                      <span className="w-10 h-10 rounded-2xl bg-amber-600 text-white flex items-center justify-center shadow-sm">
+                        <HelpCircle size={20} />
                       </span>
-                      <span className="text-[11px] font-mono font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
-                        {jobs.length} Open Roles
+                      <span className="text-[11px] font-mono font-bold text-amber-800 bg-amber-100 px-2.5 py-1 rounded-full">
+                        Knowledge &amp; Evidence
                       </span>
                     </div>
-                    <h3 className="text-lg font-bold font-orbitron text-slate-900 group-hover:text-emerald-700 transition-colors">
-                      Ranaghat Jobs
+                    <h3 className="text-lg font-bold font-orbitron text-slate-900 group-hover:text-amber-700 transition-colors">
+                      Ask Ranaghat
                     </h3>
                     <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                      Verified vacancies, retail roles, cold storage operations &amp; clinic staff.
+                      Train timings, doctors near station, market haat days, or power updates.
                     </p>
                   </div>
-                  <div className="pt-3 border-t border-emerald-100 flex items-center justify-between text-xs font-bold text-emerald-700">
-                    <span>View Local Jobs</span>
+                  <div className="pt-3 border-t border-amber-100 flex items-center justify-between text-xs font-bold text-amber-700">
+                    <span>Ask a Question</span>
                     <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
@@ -1757,29 +1814,29 @@ const LocationDetailPage: React.FC = () => {
                   </div>
                 </Link>
 
-                {/* 5. Ask Ranaghat */}
+                {/* 5. Jobs */}
                 <Link
-                  to={`/locations/west-bengal/${districtSlug}/${location.slug}/ask`}
-                  className="p-6 rounded-3xl bg-gradient-to-br from-amber-50 to-white border-2 border-amber-200 hover:border-amber-500 hover:shadow-lg transition-all group flex flex-col justify-between min-h-[160px] sm:col-span-2 lg:col-span-2"
+                  to={`/locations/west-bengal/${districtSlug}/${location.slug}/jobs`}
+                  className="p-6 rounded-3xl bg-gradient-to-br from-emerald-50 to-white border-2 border-emerald-200 hover:border-emerald-500 hover:shadow-lg transition-all group flex flex-col justify-between min-h-[160px] sm:col-span-2 lg:col-span-2"
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="w-10 h-10 rounded-2xl bg-amber-600 text-white flex items-center justify-center shadow-sm">
-                        <HelpCircle size={20} />
+                      <span className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-sm">
+                        <Briefcase size={20} />
                       </span>
-                      <span className="text-[11px] font-mono font-bold text-amber-800 bg-amber-100 px-2.5 py-1 rounded-full">
-                        Community Knowledge &amp; Evidence
+                      <span className="text-[11px] font-mono font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
+                        {jobs.length} Open Roles
                       </span>
                     </div>
-                    <h3 className="text-lg font-bold font-orbitron text-slate-900 group-hover:text-amber-700 transition-colors">
-                      Ask Ranaghat
+                    <h3 className="text-lg font-bold font-orbitron text-slate-900 group-hover:text-emerald-700 transition-colors">
+                      Ranaghat Jobs
                     </h3>
                     <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                      Ask anything about Ranaghat: Sealdah train timings, doctors near station, market haat days, or power updates.
+                      Verified vacancies, retail roles, cold storage operations &amp; clinic staff.
                     </p>
                   </div>
-                  <div className="pt-3 border-t border-amber-100 flex items-center justify-between text-xs font-bold text-amber-700">
-                    <span>Ask a Question or Search Knowledge</span>
+                  <div className="pt-3 border-t border-emerald-100 flex items-center justify-between text-xs font-bold text-emerald-700">
+                    <span>View Local Jobs</span>
                     <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
@@ -1857,60 +1914,27 @@ const LocationDetailPage: React.FC = () => {
               )}
             </section>
 
-            {/* Preview 2: Jobs */}
+            {/* Preview 2: Ask Ranaghat */}
             <section className="mb-16">
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
-                <div>
-                  <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-black tracking-widest uppercase mb-2 inline-flex items-center gap-1.5">
-                    <Briefcase size={14} className="text-emerald-600" /> Local Employment
+              <div className="p-8 rounded-3xl bg-gradient-to-r from-amber-50 via-slate-50 to-blue-50 border border-amber-200 flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div className="space-y-2 max-w-xl">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-md">
+                    Community Intelligence
                   </span>
-                  <h2 className="text-2xl md:text-3xl font-bold font-orbitron text-slate-900">
-                    Jobs in Ranaghat
-                  </h2>
+                  <h3 className="text-2xl font-bold font-orbitron text-slate-900">
+                    Have a question about Ranaghat?
+                  </h3>
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                    Search train schedules, clinic doctors, wholesale haat market days, or municipal notices grounded purely in verified evidence.
+                  </p>
                 </div>
                 <Link
-                  to={`/locations/west-bengal/${districtSlug}/${location.slug}/jobs`}
-                  className="text-xs font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 uppercase tracking-wider"
+                  to={`/locations/west-bengal/${districtSlug}/${location.slug}/ask`}
+                  className="px-6 py-3.5 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md shrink-0 inline-flex items-center gap-2 min-h-[44px]"
                 >
-                  View all Jobs ({jobs.length}) &rarr;
+                  <HelpCircle size={15} /> Ask Ranaghat &rarr;
                 </Link>
               </div>
-
-              {jobs.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {jobs.slice(0, 2).map((job) => (
-                    <div
-                      key={job.id}
-                      className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-emerald-300 transition-all flex flex-col justify-between"
-                    >
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 uppercase">
-                            {job.jobType.replace('_', ' ')}
-                          </span>
-                          <span className="text-xs font-bold text-slate-800 font-mono">
-                            {job.salaryRange}
-                          </span>
-                        </div>
-                        <h3 className="text-base font-bold font-orbitron text-slate-900 leading-snug">
-                          {job.title}
-                        </h3>
-                        <p className="text-xs text-slate-600 font-medium">
-                          {job.companyName} • {job.area}
-                        </p>
-                      </div>
-                      <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                        <span className="text-[10px] font-mono text-slate-400">Verified Listing</span>
-                        <Link to={`/locations/west-bengal/${districtSlug}/${location.slug}/jobs`} className="text-emerald-600 font-bold hover:underline">
-                          Apply / Details &rarr;
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs text-slate-500 italic">No open jobs listed right now.</p>
-              )}
             </section>
 
             {/* Preview 3: Trusted People */}
@@ -1935,22 +1959,46 @@ const LocationDetailPage: React.FC = () => {
               {filteredVoices.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {filteredVoices.slice(0, 2).map((voice) => (
-                    <div key={voice.id} className="p-5 rounded-2xl bg-white border border-slate-200 flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-base shrink-0">
-                        {voice.avatarUrl ? (
-                          <img src={voice.avatarUrl} alt={voice.displayName} className="w-full h-full object-cover rounded-2xl" />
-                        ) : (
-                          voice.displayName.charAt(0).toUpperCase()
-                        )}
-                      </div>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-bold text-slate-900 text-sm">{voice.displayName}</span>
-                          <CheckCircle2 size={13} className="text-blue-600" />
+                    <div key={voice.id} className="p-5 rounded-2xl bg-white border border-slate-200 flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-base shrink-0">
+                          {voice.avatarUrl ? (
+                            <img src={voice.avatarUrl} alt={voice.displayName} className="w-full h-full object-cover rounded-2xl" />
+                          ) : (
+                            voice.displayName.charAt(0).toUpperCase()
+                          )}
                         </div>
-                        <p className="text-xs text-slate-500 line-clamp-1 italic">&ldquo;{voice.bio}&rdquo;</p>
-                        <span className="text-[10px] font-mono text-purple-700 font-bold">Trust Score: {voice.reputationScore}</span>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-slate-900 text-sm">{voice.displayName}</span>
+                            <CheckCircle2 size={13} className="text-blue-600" />
+                          </div>
+                          <p className="text-xs text-slate-500 line-clamp-1 italic">&ldquo;{voice.bio}&rdquo;</p>
+                          <span className="text-[10px] font-mono text-purple-700 font-bold">Trust Score: {voice.reputationScore}</span>
+                        </div>
                       </div>
+                      <button
+                        type="button"
+                        onClick={() => handleFollowToggle(voice.id, voice.displayName)}
+                        disabled={togglingFollowId === voice.id}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1 min-h-[34px] shrink-0 ${
+                          followedIds.includes(voice.id)
+                            ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                            : 'bg-slate-100 text-slate-700 hover:bg-purple-50 hover:text-purple-700'
+                        }`}
+                      >
+                        {followedIds.includes(voice.id) ? (
+                          <>
+                            <CheckCircle2 size={12} className="text-purple-600" />
+                            <span>Following</span>
+                          </>
+                        ) : (
+                          <>
+                            <Plus size={12} />
+                            <span>Follow</span>
+                          </>
+                        )}
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -1959,7 +2007,11 @@ const LocationDetailPage: React.FC = () => {
                   <p className="text-xs text-slate-600 font-medium mb-2">Trusted People is growing. Verified local members will appear here as they complete Conflux verification.</p>
                   <button
                     type="button"
-                    onClick={() => setIsOnboardingModalOpen(true)}
+                    onClick={() => {
+                      setOnboardingContext('FOLLOW');
+                      setOnboardingPromptTitle('Join the Ranaghat community');
+                      setIsOnboardingModalOpen(true);
+                    }}
                     className="text-xs font-bold text-purple-600 hover:underline cursor-pointer"
                   >
                     Join as Contributor &rarr;
@@ -2021,27 +2073,60 @@ const LocationDetailPage: React.FC = () => {
               )}
             </section>
 
-            {/* Preview 5: Ask Ranaghat Preview Card */}
+            {/* Preview 5: Jobs */}
             <section className="mb-20">
-              <div className="p-8 rounded-3xl bg-gradient-to-r from-amber-50 via-slate-50 to-blue-50 border border-amber-200 flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div className="space-y-2 max-w-xl">
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-md">
-                    Community Intelligence
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
+                <div>
+                  <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-black tracking-widest uppercase mb-2 inline-flex items-center gap-1.5">
+                    <Briefcase size={14} className="text-emerald-600" /> Local Employment
                   </span>
-                  <h3 className="text-2xl font-bold font-orbitron text-slate-900">
-                    Have a question about Ranaghat?
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                    Search train schedules, clinic doctors, wholesale haat market days, or municipal notices grounded purely in verified evidence.
-                  </p>
+                  <h2 className="text-2xl md:text-3xl font-bold font-orbitron text-slate-900">
+                    Jobs in Ranaghat
+                  </h2>
                 </div>
                 <Link
-                  to={`/locations/west-bengal/${districtSlug}/${location.slug}/ask`}
-                  className="px-6 py-3.5 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md shrink-0 inline-flex items-center gap-2 min-h-[44px]"
+                  to={`/locations/west-bengal/${districtSlug}/${location.slug}/jobs`}
+                  className="text-xs font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 uppercase tracking-wider"
                 >
-                  <HelpCircle size={15} /> Ask Ranaghat &rarr;
+                  View all Jobs ({jobs.length}) &rarr;
                 </Link>
               </div>
+
+              {jobs.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {jobs.slice(0, 2).map((job) => (
+                    <div
+                      key={job.id}
+                      className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-emerald-300 transition-all flex flex-col justify-between"
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 uppercase">
+                            {job.jobType.replace('_', ' ')}
+                          </span>
+                          <span className="text-xs font-bold text-slate-800 font-mono">
+                            {job.salaryRange}
+                          </span>
+                        </div>
+                        <h3 className="text-base font-bold font-orbitron text-slate-900 leading-snug">
+                          {job.title}
+                        </h3>
+                        <p className="text-xs text-slate-600 font-medium">
+                          {job.companyName} • {job.area}
+                        </p>
+                      </div>
+                      <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <span className="text-[10px] font-mono text-slate-400">Verified Listing</span>
+                        <Link to={`/locations/west-bengal/${districtSlug}/${location.slug}/jobs`} className="text-emerald-600 font-bold hover:underline">
+                          Apply / Details &rarr;
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-slate-500 italic">No open jobs listed right now.</p>
+              )}
             </section>
 
             {/* ── HOW CONFLUX KNOWS (TRUST & EVIDENCE DOSSIER) ───────────── */}
@@ -2674,10 +2759,18 @@ const LocationDetailPage: React.FC = () => {
           <CommunityOnboardingModal
             isOpen={isOnboardingModalOpen}
             initialLocality={location.name}
+            promptTitle={onboardingPromptTitle}
             onClose={() => setIsOnboardingModalOpen(false)}
             onComplete={(completedProfile) => {
               setIsOnboardingModalOpen(false);
-              setIsComposerModalOpen(true);
+              if (onboardingContext === 'POST') {
+                setIsComposerModalOpen(true);
+              }
+              if (completedProfile?.id) {
+                localKnowledgeService.getUserFollowing(completedProfile.id).then(follows => {
+                  setFollowedIds(follows.filter(f => f.targetType === 'USER').map(f => f.targetId));
+                });
+              }
               localKnowledgeService.getLocalVoices(location.slug, 8).then(setLocalVoices);
             }}
           />

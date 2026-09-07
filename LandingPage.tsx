@@ -5,15 +5,19 @@ import { Hero } from './components/Hero.tsx';
 import ContactForm from './components/ContactForm.tsx';
 import {
   ShieldCheck, Search, ArrowRight, CheckCircle2,
-  Building2, Phone, MessageSquare, MapPin, Store
+  Building2, Phone, MessageSquare, MapPin, Store, Radio
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { businessService } from './lib/businessService';
+import { localKnowledgeService } from './lib/localKnowledgeService';
 import type { ConfluxBusiness } from './types/business';
+import type { LocalContribution } from './types/localKnowledge';
 
 const LandingPage: React.FC = () => {
   const [featuredBusinesses, setFeaturedBusinesses] = useState<ConfluxBusiness[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [liveContributions, setLiveContributions] = useState<LocalContribution[]>([]);
+  const [isLoadingLive, setIsLoadingLive] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
@@ -27,6 +31,18 @@ const LandingPage: React.FC = () => {
       .catch(() => {
         if (isMounted) setIsLoading(false);
       });
+
+    localKnowledgeService.getContributions({ locality: 'ranaghat', limit: 3 })
+      .then(contribs => {
+        if (isMounted) {
+          setLiveContributions(contribs);
+          setIsLoadingLive(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setIsLoadingLive(false);
+      });
+
     return () => { isMounted = false; };
   }, []);
 
@@ -35,6 +51,116 @@ const LandingPage: React.FC = () => {
       {/* SECTION 1: Consumer Search-First Hero */}
       <section id="home" className="relative bg-white">
         <Hero />
+      </section>
+
+      {/* SECTION: Live Local Ground Truth — Ranaghat */}
+      <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div>
+              <span className="text-[11px] font-bold text-purple-600 uppercase font-mono tracking-wider flex items-center gap-1.5">
+                <Radio size={14} className="animate-pulse text-purple-600" />
+                Live Ground Truth • Ranaghat
+              </span>
+              <h2 className="text-xl sm:text-2xl font-black font-orbitron text-slate-950 mt-1">
+                Live Local in Ranaghat
+              </h2>
+            </div>
+            <Link
+              to="/locations/west-bengal/nadia/ranaghat/live"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-600 hover:text-purple-800 self-start sm:self-auto"
+            >
+              <span>See all Ranaghat updates</span>
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+
+          {/* Real Live Feed Cards or Honest Empty State */}
+          {isLoadingLive ? (
+            <div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200">
+              <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-purple-600 border-r-transparent mb-2"></div>
+              <p className="text-xs text-slate-500 font-medium">Checking live local updates...</p>
+            </div>
+          ) : liveContributions.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {liveContributions.map((contrib) => (
+                <div
+                  key={contrib.id}
+                  className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:border-purple-300 transition-all flex flex-col justify-between space-y-4"
+                >
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-50 text-purple-700 uppercase">
+                        {contrib.type}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        {new Date(contrib.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+
+                    <h3 className="text-base font-bold font-orbitron text-slate-900 leading-snug">
+                      <Link
+                        to="/locations/west-bengal/nadia/ranaghat/live"
+                        className="hover:text-purple-600 transition-colors"
+                      >
+                        {contrib.title}
+                      </Link>
+                    </h3>
+
+                    <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed">
+                      {contrib.content}
+                    </p>
+
+                    <div className="flex items-center gap-2 pt-1 text-xs text-slate-500">
+                      <span className="font-semibold text-slate-700">
+                        {contrib.author.displayName}
+                      </span>
+                      {contrib.author.locality && (
+                        <span>• {contrib.author.locality}</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                    <span className="font-mono">
+                      {contrib.ratingsCount > 0
+                        ? `${contrib.averageRating.toFixed(1)} ★ (${contrib.ratingsCount})`
+                        : 'Unrated'}
+                    </span>
+                    <Link
+                      to="/locations/west-bengal/nadia/ranaghat/live"
+                      className="text-purple-600 font-bold hover:underline inline-flex items-center gap-1"
+                    >
+                      <span>View in feed</span>
+                      <ArrowRight size={12} />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-8 sm:p-10 text-center bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+              <div className="w-12 h-12 mx-auto rounded-xl bg-purple-50 flex items-center justify-center text-purple-600">
+                <Radio size={24} />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-base font-bold font-orbitron text-slate-900">
+                  Ranaghat is just getting started...
+                </h3>
+                <p className="text-xs text-slate-600 max-w-md mx-auto">
+                  Be the first to share verified road updates, market conditions, or local notices with your neighbors.
+                </p>
+              </div>
+              <Link
+                to="/locations/west-bengal/nadia/ranaghat/live"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all shadow-md shadow-purple-600/20"
+              >
+                <span>Share First Ranaghat Update</span>
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* SECTION 2: Verified Local Places & Services Highlights */}

@@ -1801,6 +1801,13 @@ export class LocalKnowledgeService {
   // 7. FOLLOWING (PEOPLE, BUSINESSES, PLACES)
   // ═══════════════════════════════════════════════════════════════════
 
+  syncFollowsFromAuth(followsList: UserFollow[]): void {
+    if (Array.isArray(followsList)) {
+      this.memoryFollows = followsList;
+      this.persistLocal();
+    }
+  }
+
   async followTarget(followerUserId: string, targetId: string, targetType: UserFollow['targetType'], targetName: string): Promise<UserFollow> {
     const existing = this.memoryFollows.find(f => f.followerUserId === followerUserId && f.targetId === targetId);
     if (existing) return existing;
@@ -1817,6 +1824,15 @@ export class LocalKnowledgeService {
     this.memoryFollows.push(follow);
     this.persistLocal();
 
+    // Persist to Supabase Auth metadata if session exists
+    if (isSupabaseConfigured()) {
+      try {
+        supabase.auth.updateUser({
+          data: { follows: this.memoryFollows }
+        }).catch(() => {});
+      } catch {}
+    }
+
     if (targetType === 'USER') {
       connectService.logEvent({
         businessId: 'conflux_platform',
@@ -1831,6 +1847,15 @@ export class LocalKnowledgeService {
   async unfollowTarget(followerUserId: string, targetId: string): Promise<void> {
     this.memoryFollows = this.memoryFollows.filter(f => !(f.followerUserId === followerUserId && f.targetId === targetId));
     this.persistLocal();
+
+    // Persist to Supabase Auth metadata if session exists
+    if (isSupabaseConfigured()) {
+      try {
+        supabase.auth.updateUser({
+          data: { follows: this.memoryFollows }
+        }).catch(() => {});
+      } catch {}
+    }
   }
 
   async getUserFollowing(userId: string): Promise<UserFollow[]> {

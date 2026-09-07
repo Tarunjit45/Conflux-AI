@@ -28,22 +28,42 @@ import {
   type CommunityProfile
 } from '../../lib/communityProfileService';
 import { localKnowledgeService } from '../../lib/localKnowledgeService';
+import { useAuth } from '../../lib/authContext';
+import { authService } from '../../lib/authService';
 
 interface CommunityOnboardingModalProps {
   isOpen: boolean;
   onClose: () => void;
   onComplete: (profile: CommunityProfile) => void;
   initialLocality?: string;
+  promptTitle?: string;
+  promptSubtitle?: string;
 }
 
 export const CommunityOnboardingModal: React.FC<CommunityOnboardingModalProps> = ({
   isOpen,
   onClose,
   onComplete,
-  initialLocality = 'Ranaghat'
+  initialLocality = 'Ranaghat',
+  promptTitle,
+  promptSubtitle
 }) => {
+  const { user } = useAuth();
   const [step, setStep] = useState<number>(1);
   const totalSteps = 7;
+
+  // Mode: Sign Up vs Existing User Login
+  const [isLoginMode, setIsLoginMode] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  // Account creation fields for Step 7
+  const [accountEmail, setAccountEmail] = useState(user?.email || '');
+  const [accountPassword, setAccountPassword] = useState('');
+  const [accountError, setAccountError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form State
   const [name, setName] = useState('');
@@ -192,6 +212,39 @@ export const CommunityOnboardingModal: React.FC<CommunityOnboardingModalProps> =
     );
   };
 
+  // Login Handler for returning users on Device B / new sessions
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginEmail.trim() || !loginPassword) {
+      setLoginError('Please enter your email and password.');
+      return;
+    }
+    setIsLoggingIn(true);
+    setLoginError('');
+
+    try {
+      const res = await authService.signIn(loginEmail.trim(), loginPassword);
+      if (res.success && res.user) {
+        const restored = communityProfileService.getCommunityProfile();
+        if (restored && (restored.status === 'PROFILE_COMPLETE' || (restored.name && restored.photoUrl))) {
+          onComplete(restored);
+          onClose();
+          return;
+        }
+        // If user logged in but has incomplete community profile, populate name and move to onboarding
+        setIsLoginMode(false);
+        if (res.user.fullName) setName(res.user.fullName);
+        setAccountEmail(res.user.email);
+      } else {
+        setLoginError(res.error || 'Invalid email or password. Please try again.');
+      }
+    } catch (err: any) {
+      setLoginError(err?.message || 'Authentication failed.');
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
   // Final Submit
   const handleCreateProfile = async () => {
     const finalLoc = isCustomLocality ? (customLocality.trim() || 'Ranaghat') : locality;
@@ -217,8 +270,36 @@ export const CommunityOnboardingModal: React.FC<CommunityOnboardingModalProps> =
       return;
     }
 
+    setIsSubmitting(true);
+    setAccountError('');
+
+    let authenticatedUserId = user?.id;
+
+    if (!user && accountEmail.trim() && accountPassword.length >= 6) {
+      try {
+        const regRes = await authService.signUp({
+          email: accountEmail.trim(),
+          password: accountPassword,
+          fullName: name.trim(),
+          role: 'USER'
+        });
+
+        if (regRes.success && regRes.user) {
+          authenticatedUserId = regRes.user.id;
+        } else if (regRes.isAlreadyRegistered) {
+          const loginRes = await authService.signIn(accountEmail.trim(), accountPassword);
+          if (loginRes.success && loginRes.user) {
+            authenticatedUserId = loginRes.user.id;
+          }
+        }
+      } catch (authErr: any) {
+        console.warn('[CommunityOnboardingModal] Auth registration notice:', authErr);
+      }
+    }
+
     // Save complete profile
     const saved = communityProfileService.saveCommunityProfile({
+      id: authenticatedUserId,
       name: name.trim(),
       photoUrl: photoUrl.trim(),
       locality: finalLoc,
@@ -241,7 +322,9 @@ export const CommunityOnboardingModal: React.FC<CommunityOnboardingModalProps> =
       console.warn('[CommunityOnboardingModal] localKnowledgeService sync note:', err);
     }
 
+    setIsSubmitting(false);
     onComplete(saved);
+    onClose();
   };
 
   const finalLocalityDisplay = isCustomLocality
@@ -261,30 +344,97 @@ export const CommunityOnboardingModal: React.FC<CommunityOnboardingModalProps> =
           <X size={18} />
         </button>
 
-        {/* Progress Tracker */}
-        <div className="mb-6 space-y-2">
-          <div className="flex items-center justify-between text-xs text-slate-500 font-mono font-medium">
-            <span>Question {step} of {totalSteps}</span>
-            <span className="text-purple-600 font-bold uppercase tracking-wider">
-              {step === 1 && 'Real Name'}
-              {step === 2 && 'Photo'}
-              {step === 3 && 'Locality'}
-              {step === 4 && 'Interests'}
-              {step === 5 && 'Goals'}
-              {step === 6 && 'Bio'}
-              {step === 7 && 'Confirm'}
-            </span>
+        {/* Dynamic Context Prompt Banner */}
+        {promptTitle && (
+          <div className="mb-4 p-3.5 rounded-2xl bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 text-purple-900 text-xs font-bold flex items-center gap-2">
+            <Sparkles size={16} className="text-purple-600 shrink-0" />
+            <div className="space-y-0.5 text-left">
+              <span>{promptTitle}</span>
+              {promptSubtitle && <p className="text-[11px] font-normal text-purple-700">{promptSubtitle}</p>}
+            </div>
           </div>
-          <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-purple-600 to-indigo-600 transition-all duration-300 rounded-full"
-              style={{ width: `${(step / totalSteps) * 100}%` }}
-            />
-          </div>
-        </div>
+        )}
 
-        {/* Dynamic Question Steps */}
-        <AnimatePresence mode="wait">
+        {isLoginMode ? (
+          <div className="space-y-5">
+            <div className="space-y-1.5 text-center">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 inline-block">
+                Welcome Back
+              </span>
+              <h2 className="text-2xl font-black text-slate-900 font-orbitron tracking-tight">
+                Sign In to Your Conflux Profile
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-sm mx-auto">
+                Sign in to restore your profile, contributions, and followed contributors across devices.
+              </p>
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-4 pt-2">
+              <div className="space-y-1.5 text-left">
+                <label className="text-xs font-bold text-slate-700 block">Email</label>
+                <input
+                  type="email"
+                  required
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder="your.email@example.com"
+                  className="w-full min-h-[44px] px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-600 font-medium"
+                />
+              </div>
+
+              <div className="space-y-1.5 text-left">
+                <label className="text-xs font-bold text-slate-700 block">Password</label>
+                <input
+                  type="password"
+                  required
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="w-full min-h-[44px] px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-600 font-medium"
+                />
+              </div>
+
+              {loginError && (
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium">
+                  {loginError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isLoggingIn}
+                className="w-full min-h-[44px] py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm shadow-md shadow-purple-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+              >
+                <span>{isLoggingIn ? 'Signing In...' : 'Sign In & Continue'}</span>
+              </button>
+            </form>
+          </div>
+        ) : (
+          <>
+            {/* Progress Tracker */}
+            <div className="mb-6 space-y-2">
+              <div className="flex items-center justify-between text-xs text-slate-500 font-mono font-medium">
+                <span>Question {step} of {totalSteps}</span>
+                <span className="text-purple-600 font-bold uppercase tracking-wider">
+                  {step === 1 && 'Real Name'}
+                  {step === 2 && 'Photo'}
+                  {step === 3 && 'Locality'}
+                  {step === 4 && 'Interests'}
+                  {step === 5 && 'Goals'}
+                  {step === 6 && 'Bio'}
+                  {step === 7 && 'Confirm'}
+                </span>
+              </div>
+              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-purple-600 to-indigo-600 transition-all duration-300 rounded-full"
+                  style={{ width: `${(step / totalSteps) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Dynamic Question Steps */}
+            <AnimatePresence mode="wait">
           {/* ── QUESTION 1: REAL NAME ───────────────────────────────── */}
           {step === 1 && (
             <motion.div
@@ -795,6 +945,47 @@ export const CommunityOnboardingModal: React.FC<CommunityOnboardingModalProps> =
                 )}
               </div>
 
+              {!user && (
+                <div className="p-4 rounded-2xl bg-purple-50/60 border border-purple-200/80 space-y-3 text-left">
+                  <div className="space-y-0.5">
+                    <span className="text-xs font-bold text-slate-900 block">
+                      Account Login (Sync Across Devices)
+                    </span>
+                    <p className="text-[11px] text-slate-500 leading-tight">
+                      Enter your email and password so your verified profile is saved to your account and recognized on all your devices.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-700 block mb-1">Email *</label>
+                      <input
+                        type="email"
+                        required
+                        value={accountEmail}
+                        onChange={(e) => setAccountEmail(e.target.value)}
+                        placeholder="name@example.com"
+                        className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-purple-600 font-medium bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-700 block mb-1">Password *</label>
+                      <input
+                        type="password"
+                        required
+                        minLength={6}
+                        value={accountPassword}
+                        onChange={(e) => setAccountPassword(e.target.value)}
+                        placeholder="Min 6 characters"
+                        className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-purple-600 font-medium bg-white"
+                      />
+                    </div>
+                  </div>
+                  {accountError && (
+                    <p className="text-xs text-rose-600 font-medium">{accountError}</p>
+                  )}
+                </div>
+              )}
+
               <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-center gap-2">
                 <ShieldCheck size={16} className="text-purple-600 shrink-0" />
                 <span>By confirming, you agree to publish honest, factual local ground truth for Ranaghat.</span>
@@ -810,16 +1001,52 @@ export const CommunityOnboardingModal: React.FC<CommunityOnboardingModalProps> =
                 </button>
                 <button
                   type="button"
+                  disabled={isSubmitting}
                   onClick={handleCreateProfile}
-                  className="min-h-[44px] px-6 py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm shadow-md shadow-purple-600/25 inline-flex items-center gap-2 cursor-pointer transition-all"
+                  className="min-h-[44px] px-6 py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm shadow-md shadow-purple-600/25 inline-flex items-center gap-2 cursor-pointer transition-all disabled:opacity-50"
                 >
                   <Check size={16} />
-                  <span>Create My Profile</span>
+                  <span>{isSubmitting ? 'Creating Profile...' : 'Create My Profile'}</span>
                 </button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
+      </>
+    )}
+
+        {/* Bottom Toggle: Create Profile vs Sign In */}
+        <div className="pt-4 mt-2 border-t border-slate-100 flex items-center justify-center text-xs text-slate-500">
+          {isLoginMode ? (
+            <div>
+              New to the Ranaghat community?{' '}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLoginMode(false);
+                  setLoginError('');
+                }}
+                className="text-purple-600 font-bold hover:underline cursor-pointer ml-1"
+              >
+                Create Profile &rarr;
+              </button>
+            </div>
+          ) : (
+            <div>
+              Already have a Conflux profile?{' '}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLoginMode(true);
+                  setLoginError('');
+                }}
+                className="text-purple-600 font-bold hover:underline cursor-pointer ml-1"
+              >
+                Sign In &rarr;
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

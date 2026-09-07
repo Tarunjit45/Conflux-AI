@@ -2,6 +2,8 @@
 
 import { supabase, isSupabaseConfigured } from './supabase.ts';
 import type { UserProfile, UserRole } from '../types/business.ts';
+import { communityProfileService } from './communityProfileService.ts';
+import { localKnowledgeService } from './localKnowledgeService.ts';
 
 const LOCAL_STORAGE_USER_KEY = 'conflux_active_user_session';
 
@@ -37,15 +39,28 @@ export class AuthService {
             .eq('id', session.user.id)
             .maybeSingle();
 
+          const meta = session.user.user_metadata || {};
+          const communityProfile = meta.communityProfile || null;
+          const follows = Array.isArray(meta.follows) ? meta.follows : [];
+
+          if (communityProfile) {
+            communityProfileService.syncFromAuthUser(communityProfile);
+          }
+          if (follows.length > 0) {
+            localKnowledgeService.syncFollowsFromAuth(follows);
+          }
+
           if (profile) {
             const role: UserRole = (isAdminEmail ? 'ADMIN' : (profile.role as UserRole)) || 'USER';
             const userObj: UserProfile = {
               id: profile.id,
               email: profile.email,
-              fullName: profile.full_name,
+              fullName: profile.full_name || meta.full_name,
               role,
               phone: profile.phone,
-              createdAt: profile.created_at
+              createdAt: profile.created_at,
+              communityProfile,
+              follows
             };
             this.memorySession = userObj;
             return userObj;
@@ -56,8 +71,11 @@ export class AuthService {
           const userObj: UserProfile = {
             id: session.user.id,
             email: session.user.email || '',
+            fullName: meta.full_name,
             role,
-            createdAt: session.user.created_at
+            createdAt: session.user.created_at,
+            communityProfile,
+            follows
           };
 
           // Auto-provision profile row in database

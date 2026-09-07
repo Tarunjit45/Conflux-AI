@@ -3,6 +3,8 @@
 // ONBOARDING_NOT_STARTED -> ONBOARDING_IN_PROGRESS -> PROFILE_INCOMPLETE -> PROFILE_COMPLETE
 // Invariant: Anonymous posting is prohibited. Only PROFILE_COMPLETE users can publish updates.
 
+import { supabase, isSupabaseConfigured } from './supabase.ts';
+
 export type CommunityProfileState =
   | 'ONBOARDING_NOT_STARTED'
   | 'ONBOARDING_IN_PROGRESS'
@@ -223,6 +225,24 @@ class CommunityProfileService {
     return profile.status || 'PROFILE_INCOMPLETE';
   }
 
+  syncFromAuthUser(remoteProfile: CommunityProfile | null): void {
+    if (!remoteProfile) return;
+    if (isProfileComplete(remoteProfile) || remoteProfile.status === 'PROFILE_COMPLETE') {
+      this.cachedProfile = {
+        ...remoteProfile,
+        status: 'PROFILE_COMPLETE'
+      };
+      if (typeof localStorage !== 'undefined') {
+        try {
+          localStorage.setItem(COMMUNITY_PROFILE_STORAGE_KEY, JSON.stringify(this.cachedProfile));
+          localStorage.setItem('conflux_local_user_id', remoteProfile.id);
+        } catch (e) {
+          console.warn('[CommunityProfileService] Local storage sync note:', e);
+        }
+      }
+    }
+  }
+
   saveCommunityProfile(data: Partial<CommunityProfile>): CommunityProfile {
     const existing = this.getCommunityProfile();
     const now = new Date().toISOString();
@@ -270,6 +290,36 @@ class CommunityProfileService {
       } catch (err) {
         console.warn('[CommunityProfileService] Failed to persist profile to localStorage:', err);
       }
+    }
+
+    // Persist to Supabase Auth user_metadata if active session exists
+    if (isSupabaseConfigured()) {
+      try {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session?.user) {
+            supabase.auth.updateUser({
+              data: {
+                communityProfile: updated
+              }
+            }).catch(e => console.warn('[CommunityProfileService] Auth metadata sync notice:', e));
+          }
+        }).catch(() => {});
+      } catch (e) {
+        console.warn('[CommunityProfileService] Supabase session sync notice:', e);
+      }
+    }
+
+    // Background sync to serverless profile endpoint
+    if (typeof window !== 'undefined' && typeof fetch !== 'undefined') {
+      fetch('/api/community/interact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'SAVE_PROFILE',
+          userId: id,
+          profile: updated
+        })
+      }).catch(() => {});
     }
 
     return updated;

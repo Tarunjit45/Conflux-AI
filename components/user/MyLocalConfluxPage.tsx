@@ -111,6 +111,16 @@ export const MyLocalConfluxPage: React.FC = () => {
     }
   };
 
+  const handleUnfollow = async (targetId: string) => {
+    const userId = user?.id || (typeof localStorage !== 'undefined' && localStorage.getItem('conflux_local_user_id')) || 'usr_guest_active';
+    try {
+      await localKnowledgeService.unfollowTarget(userId, targetId);
+      setFollows(prev => prev.filter(f => f.targetId !== targetId));
+    } catch (err) {
+      console.warn('[MyLocalConfluxPage] Unfollow error:', err);
+    }
+  };
+
   const standing = getContributorStanding({
     reputationScore: profile?.reputationScore,
     locality: primaryLocality,
@@ -321,6 +331,64 @@ export const MyLocalConfluxPage: React.FC = () => {
                 <Plus size={15} />
                 <span>Share First Local Discovery</span>
               </button>
+            </div>
+          )}
+        </section>
+
+        {/* ── 2B. FOLLOWING ─────────────────────────────────────────── */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+            <div>
+              <h2 className="text-lg sm:text-xl font-bold font-orbitron text-slate-900 flex items-center gap-2">
+                <Users size={18} className="text-indigo-600" />
+                <span>Following ({follows.length})</span>
+              </h2>
+              <p className="text-xs text-slate-500 font-medium">
+                Local contributors and verified residents you follow for updates.
+              </p>
+            </div>
+          </div>
+
+          {follows.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {follows.map(f => (
+                <div
+                  key={f.id}
+                  className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-between gap-3"
+                >
+                  <div className="space-y-0.5 min-w-0">
+                    <span className="font-bold text-sm text-slate-900 truncate block">
+                      {f.targetName}
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-400 uppercase block">
+                      {f.targetType} {f.targetLocality ? `• ${f.targetLocality}` : ''}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleUnfollow(f.targetId)}
+                    className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 text-xs font-bold transition-all cursor-pointer shrink-0 min-h-[36px]"
+                  >
+                    Unfollow
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2">
+              <Users size={24} className="mx-auto text-slate-400" />
+              <p className="text-xs text-slate-600 font-medium">
+                You are not following any contributors yet.
+              </p>
+              <p className="text-[11px] text-slate-400">
+                Follow trusted local residents on the Live Local feed or Trusted People directory to see their updates.
+              </p>
+              <Link
+                to={`/locations/west-bengal/nadia/${primaryLocality.toLowerCase()}/live`}
+                className="inline-flex items-center gap-1 text-xs font-bold text-purple-600 hover:underline pt-1"
+              >
+                <span>Browse Live Local feed &rarr;</span>
+              </Link>
             </div>
           )}
         </section>
