@@ -47,6 +47,7 @@ export const PublicBusinessProfile: React.FC = () => {
   const [leadPhone, setLeadPhone] = useState('');
   const [leadService, setLeadService] = useState('');
   const [leadMessage, setLeadMessage] = useState('');
+  const [isSubmittingLead, setIsSubmittingLead] = useState(false);
   const [leadSuccessMessage, setLeadSuccessMessage] = useState<string | null>(null);
   const [leadErrorMessage, setLeadErrorMessage] = useState<string | null>(null);
 
@@ -81,8 +82,8 @@ export const PublicBusinessProfile: React.FC = () => {
           console.warn('[PublicBusinessProfile] Error fetching community signals:', err);
         }
 
-        // Fetch commercial subscription entitlements
-        subscriptionService.getBusinessEntitlements(found.id)
+        // Fetch commercial subscription entitlements (fail-safe with embedded business fallback)
+        subscriptionService.getBusinessEntitlements(found.id, undefined, found)
           .then(ent => setEntitlements(ent))
           .catch(() => null);
 

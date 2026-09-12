@@ -6,6 +6,8 @@ import type { BusinessSubscription, BusinessEntitlements, PlanTier, Subscription
 import { CONFLUX_PLANS } from '../types/subscription.ts';
 
 export class SubscriptionService {
+  private isDedicatedTableAvailable: boolean | null = null;
+
   /**
    * Derive technical feature entitlements from subscription state
    * Rules:
@@ -43,9 +45,9 @@ export class SubscriptionService {
 
   /**
    * Retrieve active subscription for a business from Supabase
-   * Reads from dedicated business_subscriptions table, falling back to businesses.verification_breakdown.subscription
+   * Reads from dedicated business_subscriptions table (when provisioned), falling back gracefully to businesses.verification_breakdown.subscription
    */
-  async getBusinessSubscription(businessId: string, client?: SupabaseClient): Promise<BusinessSubscription> {
+  async getBusinessSubscription(businessId: string, client?: SupabaseClient, businessObj?: any): Promise<BusinessSubscription> {
     const db = client || supabase;
     const defaultFree: BusinessSubscription = {
       businessId,
@@ -60,30 +62,52 @@ export class SubscriptionService {
 
     if (!businessId) return defaultFree;
 
-    try {
-      // 1. Check dedicated business_subscriptions table
-      const { data: subData, error: subError } = await db
-        .from('business_subscriptions')
-        .select('*')
-        .eq('business_id', businessId)
-        .maybeSingle();
+    // 0. High-performance shortcut: if business object is already in memory, check embedded subscription breakdown
+    if (businessObj?.verificationBreakdown?.subscription) {
+      return {
+        ...defaultFree,
+        ...businessObj.verificationBreakdown.subscription,
+        businessId
+      };
+    }
 
-      if (!subError && subData) {
-        return {
-          id: subData.id,
-          businessId: subData.business_id,
-          plan: subData.plan as PlanTier,
-          status: subData.status as SubscriptionStatus,
-          billingCycle: subData.billing_cycle || 'MONTHLY',
-          amountInr: Number(subData.amount_inr) || 0,
-          activatedAt: subData.activated_at,
-          expiresAt: subData.expires_at,
-          autoRenew: Boolean(subData.auto_renew),
-          paymentProvider: subData.payment_provider,
-          paymentReference: subData.payment_reference,
-          createdAt: subData.created_at,
-          updatedAt: subData.updated_at
-        };
+    // If businessObj is provided and has no subscription, and dedicated table is known not to exist, return default free immediately
+    if (businessObj && !businessObj.verificationBreakdown?.subscription && this.isDedicatedTableAvailable === false) {
+      return defaultFree;
+    }
+
+    try {
+      // 1. Check dedicated business_subscriptions table only if not previously confirmed missing
+      if (this.isDedicatedTableAvailable !== false) {
+        const { data: subData, error: subError } = await db
+          .from('business_subscriptions')
+          .select('*')
+          .eq('business_id', businessId)
+          .maybeSingle();
+
+        if (subError) {
+          if (subError.code === 'PGRST205' || subError.message?.includes('schema cache')) {
+            // PostgREST 404: Table not yet provisioned in Supabase schema cache
+            this.isDedicatedTableAvailable = false;
+          }
+        } else if (subData) {
+          this.isDedicatedTableAvailable = true;
+          return {
+            id: subData.id,
+            businessId: subData.business_id,
+            plan: subData.plan as PlanTier,
+            status: subData.status as SubscriptionStatus,
+            billingCycle: subData.billing_cycle || 'MONTHLY',
+            amountInr: Number(subData.amount_inr) || 0,
+            activatedAt: subData.activated_at,
+            expiresAt: subData.expires_at,
+            autoRenew: Boolean(subData.auto_renew),
+            paymentProvider: subData.payment_provider,
+            paymentReference: subData.payment_reference,
+            createdAt: subData.created_at,
+            updatedAt: subData.updated_at
+          };
+        }
       }
 
       // 2. Check businesses.verification_breakdown.subscription in public.businesses
@@ -102,7 +126,7 @@ export class SubscriptionService {
         };
       }
     } catch (err) {
-      console.warn('[SubscriptionService.getBusinessSubscription] Non-fatal query error, returning default free:', err);
+      console.warn('[SubscriptionService.getBusinessSubscription] Non-fatal query notice, returning default free:', err);
     }
 
     return defaultFree;
@@ -111,8 +135,8 @@ export class SubscriptionService {
   /**
    * Retrieve evaluated entitlements for a business
    */
-  async getBusinessEntitlements(businessId: string, client?: SupabaseClient): Promise<BusinessEntitlements> {
-    const sub = await this.getBusinessSubscription(businessId, client);
+  async getBusinessEntitlements(businessId: string, client?: SupabaseClient, businessObj?: any): Promise<BusinessEntitlements> {
+    const sub = await this.getBusinessSubscription(businessId, client, businessObj);
     return this.evaluateEntitlements(sub);
   }
 
@@ -171,34 +195,39 @@ export class SubscriptionService {
     };
 
     // 1. Attempt write to business_subscriptions table if exists
-    try {
-      const { data: upsertData, error: upsertErr } = await db
-        .from('business_subscriptions')
-        .upsert([{
-          business_id: businessId,
-          plan,
-          status,
-          billing_cycle: billingCycle,
-          amount_inr: amountInr,
-          activated_at: activatedAt,
-          expires_at: expiresAt,
-          auto_renew: autoRenew,
-          payment_provider: paymentProvider,
-          payment_reference: subRecord.paymentReference,
-          updated_at: now.toISOString()
-        }], { onConflict: 'business_id' })
-        .select()
-        .maybeSingle();
+    if (this.isDedicatedTableAvailable !== false) {
+      try {
+        const { data: upsertData, error: upsertErr } = await db
+          .from('business_subscriptions')
+          .upsert([{
+            business_id: businessId,
+            plan,
+            status,
+            billing_cycle: billingCycle,
+            amount_inr: amountInr,
+            activated_at: activatedAt,
+            expires_at: expiresAt,
+            auto_renew: autoRenew,
+            payment_provider: paymentProvider,
+            payment_reference: subRecord.paymentReference,
+            updated_at: now.toISOString()
+          }], { onConflict: 'business_id' })
+          .select()
+          .maybeSingle();
 
-      if (!upsertErr && upsertData) {
-        return {
-          ...subRecord,
-          id: upsertData.id,
-          createdAt: upsertData.created_at
-        };
+        if (!upsertErr && upsertData) {
+          this.isDedicatedTableAvailable = true;
+          return {
+            ...subRecord,
+            id: upsertData.id,
+            createdAt: upsertData.created_at
+          };
+        } else if (upsertErr?.code === 'PGRST205') {
+          this.isDedicatedTableAvailable = false;
+        }
+      } catch {
+        this.isDedicatedTableAvailable = false;
       }
-    } catch {
-      // Table may not yet be provisioned; fallback to verification_breakdown in businesses table
     }
 
     // 2. Persist safely in public.businesses.verification_breakdown.subscription
