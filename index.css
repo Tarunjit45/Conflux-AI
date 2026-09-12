@@ -1,26 +1,29 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ── Root Design Tokens ─────────────────────────────────────── */
+/* ── Root Design Tokens (Calm, Trustworthy, Modern) ────────── */
 :root {
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
-  --bg-card: #f1f5f9;
-  --accent-blue: #0000ff;
-  --accent-blue-light: #3333ff;
-  --accent-blue-dark: #000099;
+  --bg-card: #ffffff;
+  --accent-blue: #1d4ed8;
+  --accent-blue-light: #2563eb;
+  --accent-blue-dark: #1e40af;
   --accent-navy: #0f172a;
   --accent-navy-mid: #1e293b;
   --text-primary: #0f172a;
-  --text-secondary: #020617; /* Darker for better contrast */
-  --text-muted: #475569; /* Darker for better contrast */
-  --border-light: rgba(15, 23, 42, 0.1);
-  --border-blue: rgba(0, 0, 255, 0.25);
-  --glow-blue: rgba(0, 0, 255, 0.25);
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --text-secondary: #1e293b;
+  --text-muted: #64748b;
+  --border-light: #e2e8f0;
+  --border-blue: rgba(29, 78, 216, 0.2);
+  --trust-green: #059669;
+  --trust-green-light: #ecfdf5;
+  --partner-blue: #2563eb;
+  --partner-blue-light: #eff6ff;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light;
@@ -39,7 +42,7 @@ body {
   padding: 0;
   background-color: var(--bg-primary);
   scroll-behavior: smooth;
-  color: #000000; /* Force black for maximum visibility */
+  color: #0f172a;
 }
 
 body {
@@ -58,7 +61,8 @@ body {
 
 /* ── Typography ─────────────────────────────────────────────── */
 .font-orbitron {
-  font-family: 'Inter', sans-serif; /* Simplified for user readability */
+  font-family: 'Inter', sans-serif !important;
+  letter-spacing: -0.02em;
 }
 
 .font-inter {
@@ -66,60 +70,36 @@ body {
 }
 
 h1 {
-  font-size: clamp(2.5rem, 8vw, 5rem);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+  font-size: clamp(2.25rem, 6vw, 4rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  font-weight: 800;
 }
 
-/* ── Gradient Text ──────────────────────────────────────────── */
+/* ── Refined Headings ───────────────────────────────────────── */
 .text-gradient {
-  background: linear-gradient(135deg, #0000ff 0%, #3333ff 40%, #6666ff 80%, #0000ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  background-size: 300% 300%;
-  animation: gradientFlow 6s ease infinite;
+  color: #1d4ed8;
 }
 
 .text-gradient-gold {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #fcd34d 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #d97706;
 }
 
-@keyframes gradientFlow {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-/* ── Glow / Shadow Effects ──────────────────────────────────── */
+/* ── Subtle Elevation Tokens ────────────────────────────────── */
 .glow-blue {
-  box-shadow: 0 0 24px rgba(0, 0, 255, 0.2), inset 0 0 12px rgba(0, 0, 255, 0.08);
-  transition: box-shadow 0.3s ease;
+  box-shadow: 0 4px 14px rgba(29, 78, 216, 0.12);
 }
 
 .glow-blue:hover {
-  box-shadow: 0 0 40px rgba(0, 0, 255, 0.35), inset 0 0 20px rgba(0, 0, 255, 0.15);
+  box-shadow: 0 6px 20px rgba(29, 78, 216, 0.18);
 }
 
-/* Legacy compat */
 .glow-blue-compat {
-  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.1);
-  transition: box-shadow 0.3s ease;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
 }
 
 .glow-blue-compat:hover {
-  box-shadow: 0 8px 32px rgba(0, 0, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(29, 78, 216, 0.12);
 }
 
 /* 2026 GEO & Bento Utilities */
@@ -235,138 +215,50 @@ h1 {
   animation: spark-travel 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-@keyframes lightning-flash {
-  0%, 93%, 98%, 100% { opacity: 0; filter: brightness(1); }
-  94%, 96% { opacity: 0.8; filter: brightness(2); }
-  95%, 97% { opacity: 0.3; filter: brightness(1.5); }
-}
-
-.animate-lightning {
-  animation: lightning-flash 8s infinite;
-}
-
-@keyframes lightning-strike {
-  0%, 90% { opacity: 0; transform: scaleY(0); }
-  92% { opacity: 1; transform: scaleY(1); filter: brightness(2) drop-shadow(0 0 20px #3333ff); }
-  93% { opacity: 0; transform: scaleY(1); }
-  95% { opacity: 0.8; transform: scaleY(1.1); filter: brightness(1.5) drop-shadow(0 0 10px #0000ff); }
-  96%, 100% { opacity: 0; transform: scaleY(1); }
-}
-
-.animate-lightning-strike {
-  animation: lightning-strike 7s infinite;
-  transform-origin: top;
-}
-
-@keyframes spark-explosion {
-  0%, 92% { transform: scale(0); opacity: 0; }
-  94% { transform: scale(1.5); opacity: 1; }
-  100% { transform: scale(2); opacity: 0; }
-}
-
-.animate-spark-explosion {
-  animation: spark-explosion 7s infinite;
-}
-
-@keyframes particle-float {
-  0% { transform: translateY(0) scale(1) translateX(0); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateY(-300px) scale(0) translateX(50px); opacity: 0; }
-}
-
-.animate-particle-float {
-  animation: particle-float linear infinite;
-}
-
-/* DNA / Wave Background Animations */
-@keyframes wave-shift {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-.animate-wave-shift {
-  animation: wave-shift 20s linear infinite;
-}
-
-.animate-wave-shift-slow {
-  animation: wave-shift 30s linear infinite reverse;
-}
-
-/* ── Gradient Borders ───────────────────────────────────────── */
-.border-gradient {
-  border: 1px solid transparent;
-  background-clip: padding-box;
-  position: relative;
-}
-
-.border-gradient::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, rgba(0, 0, 255, 0.5), rgba(51, 51, 255, 0.3), rgba(15, 23, 42, 0.15));
-  z-index: -1;
-}
-
-/* ── CTA Button Styles ──────────────────────────────────────── */
+/* ── Clean Button Tokens ────────────────────────────────────── */
 .btn-primary {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, #0000ff 0%, #0000cc 100%);
-  border: none;
-  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1d4ed8;
+  border: 1px solid #1d4ed8;
+  color: #ffffff;
   font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 14px 32px;
-  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 20px rgba(0, 0, 255, 0.2);
-}
-
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 35px rgba(0, 0, 255, 0.5);
-}
-
-.btn-primary:hover::before {
-  left: 100%;
+  background: #1e40af;
+  border-color: #1e40af;
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
 }
 
 .btn-outline {
-  background: transparent;
-  border: 2px solid rgba(0, 0, 128, 0.3);
-  color: #000080;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
   font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 14px 32px;
-  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
 }
 
 .btn-outline:hover {
-  background: rgba(0, 0, 255, 0.08);
-  border-color: rgba(0, 0, 255, 0.6);
-  color: #0000ff;
-  box-shadow: 0 0 20px rgba(0, 0, 255, 0.1);
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
 }
 
 /* ── Section Tags ───────────────────────────────────────────── */

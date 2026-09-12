@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, MapPin, ShieldCheck, Building2 } from 'lucide-react';
+import { Search, MapPin, Building2, User } from 'lucide-react';
+import { useAuth } from '../../lib/authContext';
 
 interface NavTab {
   id: string;
@@ -17,47 +18,56 @@ const NAV_TABS: NavTab[] = [
     icon: Search
   },
   {
-    id: 'local',
-    name: 'Local',
-    path: '/locations/west-bengal/nadia/ranaghat',
+    id: 'locations',
+    name: 'Locations',
+    path: '/locations',
     icon: MapPin
   },
   {
-    id: 'verify',
-    name: 'Verify',
-    path: '/verify',
-    icon: ShieldCheck
-  },
-  {
     id: 'business',
-    name: 'Business',
+    name: 'For Business',
     path: '/business',
     icon: Building2
+  },
+  {
+    id: 'account',
+    name: 'Account',
+    path: '/login',
+    icon: User
   }
 ];
 
 export const BottomNav: React.FC = () => {
   const { pathname } = useLocation();
+  const { user, role } = useAuth();
 
-  // Hide on admin routes
-  if (pathname.startsWith('/admin')) {
+  // Hide on admin routes and business profile pages (where profile's sticky contact bar takes precedence)
+  const isBusinessDetail = pathname.startsWith('/business/') && pathname !== '/business' && pathname !== '/business/audit';
+  if (pathname.startsWith('/admin') || isBusinessDetail) {
     return null;
   }
 
   const isTabActive = (tab: NavTab) => {
-    if (tab.id === 'local') {
-      return pathname.startsWith('/locations') || pathname.startsWith('/my-local') || pathname.startsWith('/onboarding') || pathname.startsWith('/register');
-    }
-    if (tab.id === 'business') {
-      return pathname === '/business' || pathname.startsWith('/business/') || pathname === '/list-business';
-    }
-    if (tab.id === 'verify') {
-      return pathname.startsWith('/verify');
-    }
     if (tab.id === 'discover') {
       return pathname === '/discover' || pathname === '/';
     }
+    if (tab.id === 'locations') {
+      return pathname.startsWith('/locations');
+    }
+    if (tab.id === 'business') {
+      return pathname === '/business' || pathname === '/list-business';
+    }
+    if (tab.id === 'account') {
+      return pathname === '/login' || pathname === '/auth' || pathname.startsWith('/admin');
+    }
     return pathname === tab.path;
+  };
+
+  const getTargetTabPath = (tab: NavTab) => {
+    if (tab.id === 'account' && user && role === 'ADMIN') {
+      return '/admin/businesses';
+    }
+    return tab.path;
   };
 
   return (
@@ -72,7 +82,7 @@ export const BottomNav: React.FC = () => {
           return (
             <Link
               key={tab.id}
-              to={tab.path}
+              to={getTargetTabPath(tab)}
               aria-current={active ? 'page' : undefined}
               className={`min-h-[44px] flex flex-col items-center justify-center gap-0.5 px-1 rounded-xl transition-all select-none active:scale-95 ${
                 active

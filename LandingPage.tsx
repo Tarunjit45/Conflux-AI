@@ -1,23 +1,27 @@
-// Conflux Platform — Local Visibility & Trust Platform Homepage (Consumer-First Discovery)
+// Conflux Platform — Local Trust & Discovery Platform Homepage
 
 import React, { useEffect, useState } from 'react';
 import { Hero } from './components/Hero.tsx';
-import ContactForm from './components/ContactForm.tsx';
 import {
-  ShieldCheck, Search, ArrowRight, CheckCircle2,
-  Building2, Phone, MessageSquare, MapPin, Store, Radio
+  ShieldCheck, ArrowRight, CheckCircle2,
+  Building2, Phone, MessageSquare, MapPin, Store, Compass
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { businessService } from './lib/businessService';
-import { localKnowledgeService } from './lib/localKnowledgeService';
 import type { ConfluxBusiness } from './types/business';
-import type { LocalContribution } from './types/localKnowledge';
+
+const POPULAR_DISTRICTS = [
+  { name: 'Nadia', slug: 'nadia', count: 'Ranaghat, Krishnanagar, Kalyani' },
+  { name: 'Kolkata', slug: 'kolkata', count: 'Central, Salt Lake, South' },
+  { name: 'North 24 Parganas', slug: 'north-24-parganas', count: 'Barasat, Barrackpore, Habra' },
+  { name: 'South 24 Parganas', slug: 'south-24-parganas', count: 'Baruipur, Sonarpur, Diamond Harbour' },
+  { name: 'Hooghly', slug: 'hooghly', count: 'Chinsurah, Serampore, Chandannagar' },
+  { name: 'Howrah', slug: 'howrah', count: 'Howrah City, Bally, Uluberia' },
+];
 
 const LandingPage: React.FC = () => {
   const [featuredBusinesses, setFeaturedBusinesses] = useState<ConfluxBusiness[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [liveContributions, setLiveContributions] = useState<LocalContribution[]>([]);
-  const [isLoadingLive, setIsLoadingLive] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
@@ -32,17 +36,6 @@ const LandingPage: React.FC = () => {
         if (isMounted) setIsLoading(false);
       });
 
-    localKnowledgeService.getContributions({ locality: 'ranaghat', limit: 3 })
-      .then(contribs => {
-        if (isMounted) {
-          setLiveContributions(contribs);
-          setIsLoadingLive(false);
-        }
-      })
-      .catch(() => {
-        if (isMounted) setIsLoadingLive(false);
-      });
-
     return () => { isMounted = false; };
   }, []);
 
@@ -53,131 +46,21 @@ const LandingPage: React.FC = () => {
         <Hero />
       </section>
 
-      {/* SECTION: Live Local Ground Truth — Ranaghat */}
-      <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-            <div>
-              <span className="text-[11px] font-bold text-purple-600 uppercase font-mono tracking-wider flex items-center gap-1.5">
-                <Radio size={14} className="animate-pulse text-purple-600" />
-                Live Ground Truth • Ranaghat
-              </span>
-              <h2 className="text-xl sm:text-2xl font-black font-orbitron text-slate-950 mt-1">
-                Live Local in Ranaghat
-              </h2>
-            </div>
-            <Link
-              to="/locations/west-bengal/nadia/ranaghat/live"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-600 hover:text-purple-800 self-start sm:self-auto"
-            >
-              <span>See all Ranaghat updates</span>
-              <ArrowRight size={14} />
-            </Link>
-          </div>
-
-          {/* Real Live Feed Cards or Honest Empty State */}
-          {isLoadingLive ? (
-            <div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200">
-              <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-purple-600 border-r-transparent mb-2"></div>
-              <p className="text-xs text-slate-500 font-medium">Checking live local updates...</p>
-            </div>
-          ) : liveContributions.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {liveContributions.map((contrib) => (
-                <div
-                  key={contrib.id}
-                  className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:border-purple-300 transition-all flex flex-col justify-between space-y-4"
-                >
-                  <div className="space-y-2.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-50 text-purple-700 uppercase">
-                        {contrib.type}
-                      </span>
-                      <span className="text-[10px] text-slate-400 font-mono">
-                        {new Date(contrib.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-
-                    <h3 className="text-base font-bold font-orbitron text-slate-900 leading-snug">
-                      <Link
-                        to="/locations/west-bengal/nadia/ranaghat/live"
-                        className="hover:text-purple-600 transition-colors"
-                      >
-                        {contrib.title}
-                      </Link>
-                    </h3>
-
-                    <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed">
-                      {contrib.content}
-                    </p>
-
-                    <div className="flex items-center gap-2 pt-1 text-xs text-slate-500">
-                      <span className="font-semibold text-slate-700">
-                        {contrib.author.displayName}
-                      </span>
-                      {contrib.author.locality && (
-                        <span>• {contrib.author.locality}</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                    <span className="font-mono">
-                      {contrib.ratingsCount > 0
-                        ? `${contrib.averageRating.toFixed(1)} ★ (${contrib.ratingsCount})`
-                        : 'Unrated'}
-                    </span>
-                    <Link
-                      to="/locations/west-bengal/nadia/ranaghat/live"
-                      className="text-purple-600 font-bold hover:underline inline-flex items-center gap-1"
-                    >
-                      <span>View in feed</span>
-                      <ArrowRight size={12} />
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-8 sm:p-10 text-center bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
-              <div className="w-12 h-12 mx-auto rounded-xl bg-purple-50 flex items-center justify-center text-purple-600">
-                <Radio size={24} />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-base font-bold font-orbitron text-slate-900">
-                  Ranaghat is just getting started...
-                </h3>
-                <p className="text-xs text-slate-600 max-w-md mx-auto">
-                  Be the first to share verified road updates, market conditions, or local notices with your neighbors.
-                </p>
-              </div>
-              <Link
-                to="/locations/west-bengal/nadia/ranaghat/live"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all shadow-md shadow-purple-600/20"
-              >
-                <span>Share First Ranaghat Update</span>
-                <ArrowRight size={14} />
-              </Link>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* SECTION 2: Verified Local Places & Services Highlights */}
+      {/* SECTION 2: Verified Local Businesses Highlights */}
       <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-12 bg-slate-50 border-b border-slate-200">
-        <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
+        <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
             <div>
-              <span className="text-[11px] font-bold text-blue-600 uppercase font-mono tracking-wider block">
-                Verified Local Highlights
+              <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
+                Local Discoveries
               </span>
-              <h2 className="text-xl sm:text-2xl font-black font-orbitron text-slate-950">
-                Statutory Verified Businesses in West Bengal
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-950 font-inter mt-1">
+                Verified Businesses in West Bengal
               </h2>
             </div>
             <Link
               to="/discover"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 self-start sm:self-auto"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 hover:text-blue-800 self-start sm:self-auto"
             >
               <span>Explore full directory</span>
               <ArrowRight size={14} />
@@ -186,7 +69,12 @@ const LandingPage: React.FC = () => {
 
           {/* Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {featuredBusinesses.length > 0 ? (
+            {isLoading ? (
+              <div className="col-span-full p-8 text-center bg-white rounded-2xl border border-slate-200">
+                <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-blue-700 border-r-transparent mb-2" />
+                <p className="text-xs text-slate-500 font-medium">Finding verified businesses...</p>
+              </div>
+            ) : featuredBusinesses.length > 0 ? (
               featuredBusinesses.map((biz) => {
                 const isOpen = businessService.isBusinessOpenNow(biz.operatingHours);
                 return (
@@ -196,16 +84,16 @@ const LandingPage: React.FC = () => {
                   >
                     <div className="space-y-2">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-black border border-emerald-200">
-                          <ShieldCheck size={11} className="text-emerald-600" /> Conflux Verified
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold border border-emerald-200">
+                          <ShieldCheck size={12} className="text-emerald-600" /> Conflux Verified
                         </span>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isOpen ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isOpen ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
                           {isOpen ? '● Open Now' : 'Closed'}
                         </span>
                       </div>
 
-                      <h3 className="text-base font-bold font-orbitron text-slate-900 leading-snug">
-                        <Link to={`/business/${biz.slug}`} className="hover:text-blue-600 transition-colors">
+                      <h3 className="text-base font-bold text-slate-900 leading-snug">
+                        <Link to={`/business/${biz.slug}`} className="hover:text-blue-700 transition-colors">
                           {biz.name}
                         </Link>
                       </h3>
@@ -241,7 +129,7 @@ const LandingPage: React.FC = () => {
                       )}
                       <Link
                         to={`/business/${biz.slug}`}
-                        className="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors min-h-[40px] flex items-center justify-center"
+                        className="p-2 rounded-xl text-slate-400 hover:text-blue-700 hover:bg-blue-50 transition-colors min-h-[40px] flex items-center justify-center"
                         title="View profile"
                       >
                         <ArrowRight size={16} />
@@ -254,7 +142,7 @@ const LandingPage: React.FC = () => {
               <div className="col-span-full p-8 text-center bg-white rounded-2xl border border-slate-200">
                 <Store size={28} className="mx-auto text-slate-400 mb-2" />
                 <p className="text-xs text-slate-600">Discover verified local businesses across West Bengal.</p>
-                <Link to="/discover" className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
+                <Link to="/discover" className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-blue-700 hover:underline">
                   Browse full directory &rarr;
                 </Link>
               </div>
@@ -263,90 +151,128 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* SECTION 3: How Conflux Verifies (Calm, 3-Pillar Truth) */}
+      {/* SECTION 3: How Conflux Builds Trust */}
       <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-100">
-        <div className="max-w-4xl mx-auto space-y-6 text-center">
-          <div className="space-y-1">
-            <span className="text-[11px] font-bold text-blue-600 uppercase font-mono tracking-wider">
+        <div className="max-w-4xl mx-auto space-y-8 text-center">
+          <div className="space-y-2">
+            <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
               Verification Standards
             </span>
-            <h2 className="text-xl sm:text-2xl font-black font-orbitron text-slate-950">
-              Why You Can Trust What You See on Conflux
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 font-inter">
+              How Conflux Builds Trust
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto">
-              We separate verified legal facts from uncorroborated claims. No paid search ranking, no synthetic reviews.
+            <p className="text-sm text-slate-600 max-w-lg mx-auto leading-relaxed">
+              We separate verified facts from marketing claims so you can connect with local businesses in confidence.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left pt-2">
-            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-left pt-2">
+            <div className="p-6 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-2.5">
+              <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs font-mono">
                 01
               </div>
-              <h3 className="text-sm font-bold font-orbitron text-slate-900">Official Registries</h3>
+              <h3 className="text-sm font-bold text-slate-900 font-inter">Official Registries</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Checked against primary government databases including MCA, GSTIN, MSME Udyam, and Trade Licenses.
+                Checked against primary government sources including MCA master data, GSTIN, MSME Udyam, and Trade Licenses.
               </p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">
+            <div className="p-6 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-2.5">
+              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs font-mono">
                 02
               </div>
-              <h3 className="text-sm font-bold font-orbitron text-slate-900">Community Ground Truth</h3>
+              <h3 className="text-sm font-bold text-slate-900 font-inter">Ground Truth</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Operating hours, route updates, and local notices corroborated by real neighbors and verified shop owners.
+                Physical premises, contact points, and operating hours are verified with local checks and evidence before verification is granted.
               </p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs">
+            <div className="p-6 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-2.5">
+              <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs font-mono">
                 03
               </div>
-              <h3 className="text-sm font-bold font-orbitron text-slate-900">Zero Sponsored Bias</h3>
+              <h3 className="text-sm font-bold text-slate-900 font-inter">Zero Sponsored Bias</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Businesses cannot buy higher search rank or fake trust badges. Evidence and accuracy decide visibility.
+                Businesses cannot buy higher search rank or purchase trust badges. Evidence and accuracy decide visibility.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SECTION 4: Gentle Business Owner Banner */}
-      <section className="py-10 sm:py-14 px-4 sm:px-6 lg:px-12 bg-slate-900 text-white">
+      {/* SECTION 4: Explore Your Area */}
+      <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-12 bg-slate-50 border-b border-slate-200">
+        <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div>
+              <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
+                Regional Coverage
+              </span>
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-950 font-inter mt-1">
+                Explore Your Area
+              </h2>
+            </div>
+            <Link
+              to="/locations"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 hover:text-blue-800 self-start sm:self-auto"
+            >
+              <span>All locations</span>
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {POPULAR_DISTRICTS.map((dist) => (
+              <Link
+                key={dist.slug}
+                to={`/locations/west-bengal/${dist.slug}`}
+                className="p-4 sm:p-5 rounded-xl bg-white border border-slate-200 hover:border-blue-300 hover:shadow-sm transition-all group flex items-start justify-between"
+              >
+                <div className="space-y-1">
+                  <h3 className="text-sm font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                    {dist.name}
+                  </h3>
+                  <p className="text-xs text-slate-500 line-clamp-1">
+                    {dist.count}
+                  </p>
+                </div>
+                <Compass size={18} className="text-slate-400 group-hover:text-blue-600 transition-colors shrink-0 mt-0.5" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 5: For Business Owners */}
+      <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-12 bg-slate-900 text-white">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
-          <div className="space-y-1.5 max-w-xl">
-            <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest block">
+          <div className="space-y-2 max-w-xl">
+            <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider block">
               For Local Business Owners
             </span>
-            <h3 className="text-lg sm:text-xl font-bold font-orbitron text-white">
+            <h3 className="text-xl sm:text-2xl font-bold text-white font-inter">
               Get your business discovered, trusted, and contacted.
             </h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Make your business visible on Google, Maps, and AI search with structured Schema.org markup and statutory verification badges.
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              List your business, verify your statutory credentials, and make it easy for local customers to reach you directly via WhatsApp and phone.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-2.5 shrink-0 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full sm:w-auto">
             <Link
               to="/list-business"
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all text-center min-h-[44px] flex items-center justify-center shadow-md shadow-emerald-900/30"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all text-center min-h-[44px] flex items-center justify-center shadow-md shadow-blue-900/30"
             >
               List Business Free
             </Link>
             <Link
               to="/business"
-              className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all text-center min-h-[44px] flex items-center justify-center"
+              className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all text-center min-h-[44px] flex items-center justify-center"
             >
               Learn More &rarr;
             </Link>
           </div>
         </div>
-      </section>
-
-      {/* SECTION 5: Direct Contact / Partnership */}
-      <section id="contact" className="py-14 sm:py-20 px-4 sm:px-6 md:px-12 lg:px-24 bg-slate-50 border-t border-slate-200">
-        <ContactForm />
       </section>
     </main>
   );

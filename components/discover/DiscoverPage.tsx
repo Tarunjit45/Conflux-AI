@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   Search, MapPin, Building2, ShieldCheck, Clock, Phone,
   MessageSquare, ArrowRight, Sparkles, AlertCircle, CheckCircle2,
@@ -15,7 +15,7 @@ import { localKnowledgeService } from '../../lib/localKnowledgeService';
 import { ContributionCard } from '../contributions/ContributionCard';
 import { RequestBusinessModal } from '../contributions/RequestBusinessModal';
 import { CreateContributionModal } from '../contributions/CreateContributionModal';
-import type { BusinessSearchResult, CapabilityActionType } from '../../types/business';
+import type { BusinessSearchResult, CapabilityActionType, ConfluxBusiness } from '../../types/business';
 import type { LocalContribution } from '../../types/localKnowledge';
 import { WEST_BENGAL_DISTRICTS } from '../../data/locationsData';
 
@@ -29,29 +29,35 @@ interface CategoryShortcut {
 
 const CATEGORY_SHORTCUTS: CategoryShortcut[] = [
   { id: 'all', name: 'All Categories', icon: '✨' },
-  { id: 'health', name: 'Healthcare & Diagnostics', icon: '🏥', categoryFilter: 'healthcare' },
+  { id: 'health', name: 'Healthcare & Clinics', icon: '🏥', categoryFilter: 'healthcare' },
   { id: 'food', name: 'Restaurants & Dining', icon: '🍽️', categoryFilter: 'food-hospitality' },
-  { id: 'gyms', name: 'Gyms & Fitness', icon: '💪', categoryFilter: 'fitness-wellness' },
   { id: 'repairs', name: 'AC & Home Repairs', icon: '🛠️', categoryFilter: 'services-repairs' },
+  { id: 'textiles', name: 'Handloom & Sarees', icon: '🧵', categoryFilter: 'handloom-textiles' },
+  { id: 'retail', name: 'Retail & Shops', icon: '🛍️', categoryFilter: 'retail-shops' },
+  { id: 'gyms', name: 'Gyms & Fitness', icon: '💪', categoryFilter: 'fitness-wellness' },
   { id: 'hotels', name: 'Hotels & Lodging', icon: '🏨', categoryFilter: 'tourism-hospitality' },
   { id: 'salons', name: 'Salons & Spa', icon: '✂️', categoryFilter: 'salons-beauty' },
-  { id: 'textiles', name: 'Handloom & Textiles', icon: '🧵', categoryFilter: 'handloom-textiles' },
   { id: 'agro', name: 'Agro & Cold Storage', icon: '🌾', categoryFilter: 'agriculture-farming' },
-  { id: 'mfg', name: 'Manufacturing & Machining', icon: '⚙️', categoryFilter: 'manufacturing-industrial' },
+  { id: 'mfg', name: 'Manufacturing', icon: '⚙️', categoryFilter: 'manufacturing-industrial' },
   { id: 'it', name: 'IT & Software', icon: '💻', categoryFilter: 'it-software' }
 ];
 
 export const DiscoverPage: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [results, setResults] = useState<BusinessSearchResult[]>([]);
+  const [fallbackBusinesses, setFallbackBusinesses] = useState<ConfluxBusiness[]>([]);
   const [contributions, setContributions] = useState<LocalContribution[]>([]);
   const [discoveryMode, setDiscoveryMode] = useState<'BUSINESSES' | 'COMMUNITY_SIGNALS'>('BUSINESSES');
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Search & Filter State — Default is completely clean with no artificial location or intent preset
-  const [whatQuery, setWhatQuery] = useState('');
-  const [whereQuery, setWhereQuery] = useState('');
+  // Search & Filter State — Initialize from URL search params if present
+  const initialWhat = searchParams.get('what') || '';
+  const initialWhere = searchParams.get('where') || '';
+
+  const [whatQuery, setWhatQuery] = useState(initialWhat);
+  const [whereQuery, setWhereQuery] = useState(initialWhere);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [openNowOnly, setOpenNowOnly] = useState(false);
@@ -64,6 +70,13 @@ export const DiscoverPage: React.FC = () => {
     (openNowOnly ? 1 : 0) +
     (requiredAction !== 'all' ? 1 : 0) +
     (activeCategory !== 'all' ? 1 : 0);
+
+  // Load fallback verified businesses once
+  useEffect(() => {
+    businessService.searchBusinesses({ verifiedOnly: true })
+      .then(res => setFallbackBusinesses(res.slice(0, 3).map(r => r.business)))
+      .catch(() => {});
+  }, []);
 
   const executeSearch = async (overrideWhat?: string, overrideWhere?: string) => {
     setIsLoading(true);
@@ -134,18 +147,27 @@ export const DiscoverPage: React.FC = () => {
     }
   };
 
+  // Run search whenever filters or URL params change
   useEffect(() => {
     executeSearch();
   }, [activeCategory, verifiedOnly, openNowOnly, requiredAction]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const params = new URLSearchParams();
+    if (whatQuery.trim()) params.set('what', whatQuery.trim());
+    if (whereQuery.trim()) params.set('where', whereQuery.trim());
+    setSearchParams(params);
     executeSearch();
   };
 
   const handleIntentShortcut = (what: string, where: string = '') => {
     setWhatQuery(what);
     setWhereQuery(where);
+    const params = new URLSearchParams();
+    if (what.trim()) params.set('what', what.trim());
+    if (where.trim()) params.set('where', where.trim());
+    setSearchParams(params);
     executeSearch(what, where);
   };
 
@@ -156,6 +178,7 @@ export const DiscoverPage: React.FC = () => {
     setVerifiedOnly(false);
     setOpenNowOnly(false);
     setRequiredAction('all');
+    setSearchParams({});
     businessService.searchBusinesses().then(res => setResults(res));
   };
 
@@ -179,103 +202,114 @@ export const DiscoverPage: React.FC = () => {
     requiredAction !== 'all';
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-28 pt-4">
-      {/* ── HERO SECTION ────────────────────────────────────────── */}
-      <section className="bg-gradient-to-b from-blue-900 via-indigo-950 to-slate-900 text-white pt-16 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        {/* Subtle background glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-slate-50 text-slate-900 pb-28 font-inter">
+      {/* ── DAYLIGHT HERO SECTION ─────────────────────────────────── */}
+      <section className="bg-white border-b border-slate-200 text-slate-900 pt-10 sm:pt-14 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        {/* Subtle background gradient */}
+        <div className="absolute top-0 right-0 w-full md:w-1/2 h-full bg-slate-50/60 -z-10" />
+        <div className="absolute top-10 right-10 w-72 h-72 bg-blue-50/40 rounded-full blur-3xl -z-10 pointer-events-none" />
 
-        <div className="max-w-5xl mx-auto text-center space-y-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs font-bold tracking-wide uppercase font-mono"
-          >
-            <ShieldCheck size={15} className="text-emerald-400" />
-            Verified Local Business Discovery &amp; Connection Hub
-          </motion.div>
+        <div className="max-w-4xl mx-auto text-center space-y-5 relative z-10">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-blue-800 text-xs font-semibold">
+            <ShieldCheck size={14} className="text-blue-600" />
+            <span>Local Trust &amp; Discovery Hub</span>
+          </div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-3xl sm:text-5xl md:text-6xl font-bold font-orbitron tracking-tight text-white leading-tight"
-          >
-            Find a Local Business You Can Trust
-          </motion.h1>
+          <div className="space-y-2">
+            <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight leading-tight">
+              Find a local business you can trust.
+            </h1>
+            <p className="text-xs sm:text-base text-slate-600 max-w-xl mx-auto leading-relaxed">
+              Discover statutory-verified businesses, clinics, and local services across West Bengal.
+            </p>
+          </div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed"
-          >
-            Find a business. Check the evidence. Decide with confidence. Discover statutory-verified enterprises, clinics, diagnostic centers, artisans, and services you can connect with directly.
-          </motion.p>
-
-          {/* ── UNIFIED SEARCH INPUT BAR ─────────────────────────── */}
-          <motion.form
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
+          {/* ── GUIDED 2-STEP SEARCH INPUT BAR ─────────────────────── */}
+          <form
             onSubmit={handleSearchSubmit}
-            className="max-w-3xl mx-auto mt-6 p-2 rounded-2xl sm:rounded-3xl bg-white/95 backdrop-blur-md shadow-2xl border border-white/20 text-slate-900"
+            className="max-w-3xl mx-auto mt-4 p-2 sm:p-2.5 rounded-2xl bg-white shadow-lg shadow-slate-200/80 border border-slate-200 text-slate-900 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 text-left"
           >
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <div className="relative flex-1 flex items-center px-3 py-2">
-                <Search className="text-blue-600 shrink-0 mr-2.5 sm:mr-3" size={20} />
-                <input
-                  type="text"
-                  value={whatQuery}
-                  onChange={e => setWhatQuery(e.target.value)}
-                  placeholder="Find a doctor, cafe, AC repair, saree shop..."
-                  className="w-full bg-transparent text-base font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
-                />
-                {whatQuery && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setWhatQuery('');
-                      executeSearch('', whereQuery);
-                    }}
-                    className="p-1 rounded-full text-slate-400 hover:text-slate-600 mr-1 cursor-pointer"
-                    title="Clear search"
-                  >
-                    <X size={16} />
-                  </button>
-                )}
-              </div>
-
-              {/* Filter Drawer Toggle */}
-              <button
-                type="button"
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className={`min-h-[44px] px-3 sm:px-4 py-2 rounded-xl sm:rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                  isFilterOpen || activeFilterCount > 0
-                    ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                }`}
-                title="Filters"
-              >
-                <Filter size={15} />
-                <span className="hidden sm:inline">Filters</span>
-                {activeFilterCount > 0 && (
-                  <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">
-                    {activeFilterCount}
-                  </span>
-                )}
-              </button>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                className="min-h-[44px] py-2.5 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
-              >
-                <Sparkles size={16} className="hidden sm:inline" />
-                <span>Search</span>
-              </button>
+            {/* Step 1: What */}
+            <div className="relative flex items-center flex-1 pl-3 pr-2 py-1 bg-slate-50/70 sm:bg-transparent rounded-xl sm:rounded-none">
+              <Search className="text-blue-600 shrink-0 mr-2.5" size={18} />
+              <input
+                type="text"
+                value={whatQuery}
+                onChange={e => setWhatQuery(e.target.value)}
+                placeholder="What are you looking for? (Doctor, AC...)"
+                className="w-full bg-transparent text-sm sm:text-base font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none py-1.5"
+              />
+              {whatQuery && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setWhatQuery('');
+                    executeSearch('', whereQuery);
+                  }}
+                  className="p-1 rounded-full text-slate-400 hover:text-slate-600 mr-1 cursor-pointer"
+                  title="Clear search"
+                >
+                  <X size={15} />
+                </button>
+              )}
             </div>
-          </motion.form>
+
+            <div className="hidden sm:block w-px h-8 bg-slate-200 my-auto" />
+
+            {/* Step 2: Where */}
+            <div className="relative flex items-center flex-1 pl-3 pr-2 py-1 bg-slate-50/70 sm:bg-transparent rounded-xl sm:rounded-none">
+              <MapPin className="text-slate-400 shrink-0 mr-2.5" size={18} />
+              <input
+                type="text"
+                value={whereQuery}
+                onChange={e => setWhereQuery(e.target.value)}
+                placeholder="Where? (Ranaghat, Nadia, Kolkata)"
+                className="w-full bg-transparent text-sm sm:text-base font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none py-1.5"
+              />
+              {whereQuery && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setWhereQuery('');
+                    executeSearch(whatQuery, '');
+                  }}
+                  className="p-1 rounded-full text-slate-400 hover:text-slate-600 mr-1 cursor-pointer"
+                  title="Clear location"
+                >
+                  <X size={15} />
+                </button>
+              )}
+            </div>
+
+            {/* Filter Drawer Toggle */}
+            <button
+              type="button"
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className={`min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer ${
+                isFilterOpen || activeFilterCount > 0
+                  ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+              }`}
+              title="Filters"
+            >
+              <Filter size={14} />
+              <span className="hidden sm:inline">Filters</span>
+              {activeFilterCount > 0 && (
+                <span className="w-5 h-5 rounded-full bg-blue-700 text-white text-[10px] font-bold flex items-center justify-center">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="min-h-[44px] py-2.5 px-5 sm:px-6 rounded-xl bg-blue-700 hover:bg-blue-800 active:bg-blue-900 text-white font-bold text-sm shadow-md shadow-blue-700/20 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
+            >
+              <span>Search</span>
+              <ArrowRight size={15} />
+            </button>
+          </form>
 
           {/* ── COLLAPSIBLE FILTER PANEL ─────────────────────────── */}
           <AnimatePresence>
@@ -388,10 +422,11 @@ export const DiscoverPage: React.FC = () => {
           </AnimatePresence>
 
           {/* Quick Category Shortcuts */}
-          <div className="flex flex-wrap items-center justify-center gap-2 pt-2 text-xs">
-            <span className="text-slate-400 font-mono text-[11px]">Search Suggestions:</span>
+          {/* Quick Category Shortcuts */}
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs">
+            <span className="text-slate-400 font-medium text-xs">Popular:</span>
             {[
-              { label: '🏥 Diagnostic & USG', query: 'USG' },
+              { label: '🏥 Diagnostic & Doctors', query: 'Doctor' },
               { label: '🍽️ Restaurants', query: 'Restaurant' },
               { label: '💪 Gyms', query: 'Gym' },
               { label: '❄️ AC Repair', query: 'AC Repair' },
@@ -402,7 +437,7 @@ export const DiscoverPage: React.FC = () => {
                 key={pill.label}
                 type="button"
                 onClick={() => handleIntentShortcut(pill.query, '')}
-                className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-slate-200 text-[11px] font-semibold transition-colors cursor-pointer"
+                className="px-3 py-1 rounded-full bg-slate-100 hover:bg-blue-50 hover:text-blue-700 border border-slate-200 text-slate-700 text-xs font-medium transition-colors cursor-pointer"
               >
                 {pill.label}
               </button>
@@ -410,15 +445,15 @@ export const DiscoverPage: React.FC = () => {
           </div>
 
           {/* Trust Value Badges Under Search */}
-          <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-xs font-semibold text-slate-300">
+          <div className="flex flex-wrap items-center justify-center gap-6 pt-3 text-xs font-medium text-slate-500">
             <span className="inline-flex items-center gap-1.5">
-              <CheckCircle2 size={15} className="text-emerald-400" /> Statutory Evidence Grounded
+              <CheckCircle2 size={14} className="text-emerald-600" /> Statutory Evidence Grounded
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <CheckCircle2 size={15} className="text-emerald-400" /> Zero Sponsored Ranking Bias
+              <CheckCircle2 size={14} className="text-emerald-600" /> Zero Sponsored Ranking Bias
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <CheckCircle2 size={15} className="text-emerald-400" /> Direct Phone, WhatsApp &amp; Booking
+              <CheckCircle2 size={14} className="text-emerald-600" /> Direct WhatsApp &amp; Call
             </span>
           </div>
         </div>
@@ -426,7 +461,7 @@ export const DiscoverPage: React.FC = () => {
 
       {/* ── INTENT & CATEGORY SHORTCUT CHIPS ────────────────────── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
-        <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-lg border border-slate-200/80">
+        <div className="bg-white rounded-2xl p-3 sm:p-4 shadow-md border border-slate-200">
           <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             {CATEGORY_SHORTCUTS.map(cat => {
               const isActive = activeCategory === cat.id;
@@ -434,10 +469,10 @@ export const DiscoverPage: React.FC = () => {
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition-all shrink-0 cursor-pointer ${
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all shrink-0 cursor-pointer ${
                     isActive
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 scale-[1.02]'
-                      : 'bg-slate-100/80 text-slate-700 hover:bg-slate-200/80 hover:text-slate-900'
+                      ? 'bg-blue-700 text-white shadow-sm shadow-blue-700/20'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
                 >
                   <span>{cat.icon}</span>
@@ -458,7 +493,7 @@ export const DiscoverPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setVerifiedOnly(!verifiedOnly)}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`min-h-[40px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 verifiedOnly
                   ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-500/20'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -472,13 +507,13 @@ export const DiscoverPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setOpenNowOnly(!openNowOnly)}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`min-h-[40px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 openNowOnly
-                  ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20'
+                  ? 'bg-blue-700 text-white shadow-sm shadow-blue-700/20'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              <Clock size={14} className={openNowOnly ? 'text-white' : 'text-blue-600'} />
+              <Clock size={14} className={openNowOnly ? 'text-white' : 'text-blue-700'} />
               <span>Open Now</span>
             </button>
 
@@ -486,9 +521,9 @@ export const DiscoverPage: React.FC = () => {
             <select
               value={requiredAction}
               onChange={e => setRequiredAction(e.target.value as any)}
-              className="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold focus:outline-none cursor-pointer border-none"
+              className="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold focus:outline-none cursor-pointer border-none min-h-[40px]"
             >
-              <option value="all">All Channels</option>
+              <option value="all">All Contact Methods</option>
               <option value="WHATSAPP">WhatsApp Direct</option>
               <option value="CALL">Direct Call</option>
               <option value="BOOKING">Online Booking</option>
@@ -498,7 +533,7 @@ export const DiscoverPage: React.FC = () => {
             {hasActiveFilters && (
               <button
                 onClick={handleResetFilters}
-                className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-red-600 px-3 py-2 rounded-xl hover:bg-red-50 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-red-600 px-3 py-2 rounded-xl hover:bg-red-50 transition-colors cursor-pointer min-h-[40px]"
               >
                 <RotateCcw size={12} />
                 <span>Reset Filters</span>
@@ -506,18 +541,18 @@ export const DiscoverPage: React.FC = () => {
             )}
           </div>
 
-          {/* Results Counter & Methodology Tag */}
-          <div className="flex items-center gap-3 text-xs text-slate-500 font-mono">
+          {/* Results Counter */}
+          <div className="flex items-center gap-2 text-xs text-slate-500">
             <span className="font-bold text-slate-900">
               {isLoading
-                ? 'Querying Graph...'
+                ? 'Searching...'
                 : results.length === 0
-                ? '0 Businesses Listed'
-                : `${results.length} ${results.length === 1 ? 'Business' : 'Businesses'} Found`}
+                ? '0 Businesses'
+                : `${results.length} ${results.length === 1 ? 'Business' : 'Businesses'}`}
             </span>
-            <span className="hidden sm:inline text-slate-300">|</span>
-            <span className="hidden sm:inline text-[11px] text-slate-400">
-              Ranked by Conflux Explainable Trust Engine
+            <span className="text-slate-300">|</span>
+            <span className="text-slate-500">
+              West Bengal Directory
             </span>
           </div>
         </div>
@@ -530,7 +565,7 @@ export const DiscoverPage: React.FC = () => {
               onClick={() => setDiscoveryMode('BUSINESSES')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                 discoveryMode === 'BUSINESSES'
-                  ? 'bg-blue-600 text-white shadow-sm'
+                  ? 'bg-blue-700 text-white shadow-sm'
                   : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
               }`}
             >
@@ -593,7 +628,7 @@ export const DiscoverPage: React.FC = () => {
             ) : (
               <div className="p-12 text-center bg-white rounded-3xl border border-slate-200 space-y-3">
                 <Radio size={36} className="mx-auto text-slate-400" />
-                <h3 className="text-lg font-bold font-orbitron text-slate-800">
+                <h3 className="text-lg font-bold text-slate-800">
                   No community signals recorded yet for this location
                 </h3>
                 <p className="text-xs text-slate-500 max-w-md mx-auto">
@@ -602,7 +637,7 @@ export const DiscoverPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(true)}
-                  className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer inline-flex items-center gap-1.5"
+                  className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1.5"
                 >
                   <Plus size={14} /> Submit First Signal
                 </button>
@@ -615,7 +650,7 @@ export const DiscoverPage: React.FC = () => {
             {[1, 2, 3].map(n => (
               <div
                 key={n}
-                className="p-7 rounded-3xl bg-white border border-slate-200 shadow-sm animate-pulse space-y-4"
+                className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm animate-pulse space-y-4"
               >
                 <div className="h-4 bg-slate-200 rounded w-1/3"></div>
                 <div className="h-6 bg-slate-200 rounded w-3/4"></div>
@@ -626,153 +661,188 @@ export const DiscoverPage: React.FC = () => {
             ))}
           </div>
         ) : results.length === 0 ? (
-          /* Honest Empty State — 0 Real Businesses in Clean Directory */
-          <div className="p-12 sm:p-16 rounded-3xl bg-white border border-slate-200 text-center space-y-5 max-w-2xl mx-auto shadow-sm">
-            <div className="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 mx-auto flex items-center justify-center">
-              <Building2 size={32} />
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-xl font-bold font-orbitron text-slate-900 capitalize">
-                {whereQuery.trim()
-                  ? `No businesses listed in ${whereQuery.trim()} yet.`
-                  : 'No businesses listed yet.'}
-              </h3>
-              <p className="text-sm text-slate-600 leading-relaxed max-w-lg mx-auto">
-                We are building the local business network with real, verified businesses, not fabricated listings or synthetic placeholder ratings.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-amber-50/70 border border-amber-200/80 text-xs text-amber-900 space-y-1.5 text-left">
-              <div className="font-bold flex items-center gap-1.5">
-                <Building2 size={15} className="text-amber-700" /> Are you a business owner?
+          /* Honest Empty State with Fallback Suggestions */
+          <div className="space-y-8">
+            <div className="p-8 sm:p-12 rounded-2xl bg-white border border-slate-200 text-center space-y-5 max-w-2xl mx-auto shadow-sm">
+              <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-700 mx-auto flex items-center justify-center">
+                <Building2 size={28} />
               </div>
-              <p className="text-[11px] text-amber-800 leading-relaxed">
-                List your business on Conflux to establish your verified identity, control accurate operational details, and receive authentic direct customer inquiries.
-              </p>
-              <div className="pt-1">
+              <div className="space-y-2">
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 capitalize">
+                  {whereQuery.trim()
+                    ? `No verified businesses found in "${whereQuery.trim()}" yet.`
+                    : 'No matching businesses found.'}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-lg mx-auto">
+                  We verify every business against official statutory registries before listing. You can request a business in this area or explore verified providers across West Bengal below.
+                </p>
+              </div>
+
+              <div className="pt-2 flex flex-wrap items-center justify-center gap-2.5">
+                {hasActiveFilters && (
+                  <button
+                    onClick={handleResetFilters}
+                    className="px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold transition-all cursor-pointer"
+                  >
+                    View All Businesses
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setIsRequestModalOpen(true)}
+                  className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-all cursor-pointer"
+                >
+                  Request a Business
+                </button>
                 <Link
                   to="/list-business"
-                  className="inline-flex items-center gap-1 text-xs font-bold text-amber-900 underline hover:text-amber-950"
+                  className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all"
                 >
-                  List Your Business on Conflux &rarr;
+                  List a Business Free
                 </Link>
               </div>
             </div>
 
-            <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
-              {hasActiveFilters && (
-                <button
-                  onClick={handleResetFilters}
-                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all cursor-pointer"
-                >
-                  Clear All Filters
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => setIsRequestModalOpen(true)}
-                className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-md shadow-amber-600/20 transition-all cursor-pointer"
-              >
-                Can't find a business? Request it &rarr;
-              </button>
-              <Link
-                to="/list-business"
-                className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all"
-              >
-                List Your Business
-              </Link>
-              <a
-                href="mailto:contact@confluxai.in?subject=Suggest%20a%20Local%20Business"
-                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all"
-              >
-                Invite a Business to Conflux
-              </a>
-            </div>
+            {/* Fallback Listings: Never leave user in an empty room */}
+            {fallbackBusinesses.length > 0 && (
+              <div className="space-y-4 pt-4 border-t border-slate-200">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-slate-900">
+                    Verified Businesses You Can Connect With in West Bengal
+                  </h4>
+                  <Link to="/discover" onClick={handleResetFilters} className="text-xs font-bold text-blue-700 hover:underline">
+                    View full directory &rarr;
+                  </Link>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {fallbackBusinesses.map((biz) => {
+                    const isOpen = businessService.isBusinessOpenNow(biz.operatingHours);
+                    return (
+                      <div
+                        key={biz.id}
+                        className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:border-blue-300 transition-all flex flex-col justify-between space-y-3"
+                      >
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold border border-emerald-200">
+                              <ShieldCheck size={11} className="text-emerald-600" /> Conflux Verified
+                            </span>
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isOpen ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                              {isOpen ? '● Open' : 'Closed'}
+                            </span>
+                          </div>
+                          <h5 className="text-sm font-bold text-slate-900">
+                            <Link to={`/business/${biz.slug}`} className="hover:text-blue-700">
+                              {biz.name}
+                            </Link>
+                          </h5>
+                          <p className="text-xs text-slate-500 flex items-center gap-1">
+                            <MapPin size={11} className="text-blue-600" />
+                            <span>{biz.location.locality || biz.location.city}, {biz.location.district}</span>
+                          </p>
+                        </div>
+                        <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
+                          {biz.contact.whatsapp && (
+                            <a
+                              href={`https://wa.me/${biz.contact.whatsapp.replace(/[^0-9]/g, '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 py-1.5 px-3 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold text-center border border-emerald-200"
+                            >
+                              WhatsApp
+                            </a>
+                          )}
+                          {biz.contact.phone && (
+                            <a
+                              href={`tel:${biz.contact.phone}`}
+                              className="flex-1 py-1.5 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold text-center"
+                            >
+                              Call
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           /* Populated Results Grid — Compact Scannable Cards */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {results.map(({ business: biz, rankingExplanation }) => {
+            {results.map(({ business: biz }) => {
               const isOpenNow = businessService.isBusinessOpenNow(biz.operatingHours);
               const isVerified = biz.verificationStatus === 'SUPPORTED';
-              const profileUrl = `/business/india/west-bengal/${biz.location.district}/${biz.location.city}/${biz.slug}`;
+              const isPartner = (biz as any).commercialPlan && (biz as any).commercialPlan !== 'FREE';
+              const profileUrl = `/business/${biz.slug}`;
 
               return (
-                <motion.div
+                <div
                   key={biz.id}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group space-y-3.5"
+                  className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between group space-y-3.5"
                 >
                   <div className="space-y-2">
-                    {/* Top Identity & Status Row */}
+                    {/* Badges Row */}
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        {isVerified ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold font-mono shadow-sm">
-                            <ShieldCheck size={13} className="text-emerald-600 shrink-0" /> VERIFIED
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold font-mono">
-                            {biz.verificationStatus}
+                        {isVerified && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold shadow-sm">
+                            <ShieldCheck size={12} className="text-emerald-600 shrink-0" /> Conflux Verified
                           </span>
                         )}
-                        <span className="font-mono text-[10px] text-slate-400">
-                          {biz.confluxBusinessId}
-                        </span>
+                        {isPartner && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold">
+                            Conflux Partner
+                          </span>
+                        )}
                       </div>
 
                       <span
-                        className={`font-bold font-mono text-[10px] px-2 py-0.5 rounded-md shrink-0 ${
+                        className={`font-semibold text-[10px] px-2 py-0.5 rounded-full shrink-0 ${
                           isOpenNow
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-slate-100 text-slate-600'
+                            ? 'bg-emerald-50 text-emerald-700'
+                            : 'bg-slate-100 text-slate-500'
                         }`}
                       >
-                        {isOpenNow ? 'OPEN NOW' : 'CLOSED'}
+                        {isOpenNow ? '● Open Now' : 'Closed'}
                       </span>
                     </div>
 
-                    {/* Business Name & Category */}
+                    {/* Business Name & Location */}
                     <div>
-                      <h3 className="text-base sm:text-lg font-bold font-orbitron text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                      <h3 className="text-base font-bold text-slate-900 group-hover:text-blue-700 transition-colors line-clamp-1">
                         <Link to={profileUrl}>{biz.name}</Link>
                       </h3>
-                      <div className="text-xs font-semibold text-slate-500 mt-0.5 capitalize flex items-center gap-1.5 flex-wrap">
-                        <span className="text-blue-700 font-bold">{biz.categoryName || biz.categoryId}</span>
+                      <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                        <span className="text-blue-700 font-semibold">{biz.categoryName || biz.categoryId}</span>
                         <span>•</span>
                         <span className="flex items-center gap-1 text-slate-600">
-                          <MapPin size={12} className="text-slate-400 shrink-0" />
-                          {biz.location.city}, {biz.location.district}
+                          <MapPin size={11} className="text-slate-400 shrink-0" />
+                          {biz.location.locality || biz.location.city}, {biz.location.district}
                         </span>
                       </div>
                     </div>
 
-                    {/* Services / Evidence snippet */}
-                    {biz.services && biz.services.length > 0 ? (
-                      <p className="text-[11px] text-slate-600 line-clamp-1">
-                        {biz.services.slice(0, 3).join(' • ')}
-                      </p>
-                    ) : biz.evidenceSummary ? (
-                      <p className="text-[11px] text-slate-500 line-clamp-1 italic">
-                        {biz.evidenceSummary}
-                      </p>
-                    ) : null}
+                    {/* Short summary or services */}
+                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                      {biz.shortSummary || biz.description}
+                    </p>
                   </div>
 
                   {/* 1-Tap Connect Actions */}
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 flex-1">
+                    <div className="flex items-center gap-2 flex-1">
                       {biz.contact.whatsapp && (
                         <a
-                          href={`https://wa.me/${biz.contact.whatsapp.replace(/[^0-9]/g, '')}`}
+                          href={`https://wa.me/${biz.contact.whatsapp.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(biz.name)},%20I%20found%20your%20business%20on%20Conflux%20AI.`}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => handleActionClick(biz.id, 'WHATSAPP_CLICK')}
-                          className="min-h-[44px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 text-emerald-800 text-xs font-bold border border-emerald-200 transition-colors cursor-pointer"
+                          className="min-h-[40px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all cursor-pointer"
                           title="WhatsApp Inquiry"
                         >
-                          <MessageSquare size={15} className="text-emerald-600 shrink-0" />
+                          <MessageSquare size={13} className="shrink-0" />
                           <span>WhatsApp</span>
                         </a>
                       )}
@@ -781,10 +851,10 @@ export const DiscoverPage: React.FC = () => {
                         <a
                           href={`tel:${biz.contact.phone}`}
                           onClick={() => handleActionClick(biz.id, 'PHONE_CLICK')}
-                          className="min-h-[44px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 active:bg-blue-200 text-blue-800 text-xs font-bold border border-blue-200 transition-colors cursor-pointer"
+                          className="min-h-[40px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-colors cursor-pointer"
                           title="Call Directly"
                         >
-                          <Phone size={15} className="text-blue-600 shrink-0" />
+                          <Phone size={13} className="text-blue-600 shrink-0" />
                           <span>Call</span>
                         </a>
                       )}
@@ -792,14 +862,14 @@ export const DiscoverPage: React.FC = () => {
 
                     <Link
                       to={profileUrl}
-                      className="min-h-[44px] px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 text-xs font-bold transition-colors inline-flex items-center justify-center gap-1 shrink-0"
+                      className="min-h-[40px] px-3 py-2 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 text-slate-600 text-xs font-semibold transition-colors inline-flex items-center justify-center gap-1 shrink-0"
                       title="View Details"
                     >
                       <span>Details</span>
                       <ChevronRight size={14} />
                     </Link>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>
@@ -808,67 +878,67 @@ export const DiscoverPage: React.FC = () => {
         {/* ── WHY CONFLUX TRUST MATTERS (EXPLAINER SECTION) ──────── */}
         <div className="mt-16 pt-12 border-t border-slate-200 space-y-8">
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <h2 className="text-2xl font-bold font-orbitron text-slate-900">
+            <h2 className="text-2xl font-bold text-slate-900 font-inter">
               Why Conflux Discovery is Different
             </h2>
-            <p className="text-sm text-slate-600">
-              Unlike generic directories or ad-driven search portals, Conflux is built on immutable statutory verification.
+            <p className="text-xs sm:text-sm text-slate-600">
+              Unlike generic directories or ad-driven portals, Conflux is built on immutable statutory verification.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                <ShieldCheck size={22} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+              <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                <ShieldCheck size={20} />
               </div>
-              <h3 className="text-base font-bold text-slate-900 font-orbitron">
+              <h3 className="text-sm font-bold text-slate-900 font-inter">
                 Primary Registrar Grounding
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                We independently corroborate registration identifiers, licenses, and GI tags against Ministry of Corporate Affairs, FSSAI, and IAF CertSearch dockets before certifying a business.
+                We independently corroborate registration identifiers, licenses, and trade documents against official registries before verifying a business.
               </p>
             </div>
 
-            <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-                <Compass size={22} />
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+              <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                <Compass size={20} />
               </div>
-              <h3 className="text-base font-bold text-slate-900 font-orbitron">
-                Explainable Organic Discovery
+              <h3 className="text-sm font-bold text-slate-900 font-inter">
+                Organic Discovery
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Zero hidden bidding auctions. Ranking is computed transparently based on verification depth, exact locality relevance, and confirmed operational capability.
+                Zero hidden bidding auctions. Ranking is computed transparently based on verification depth, locality relevance, and confirmed operational capability.
               </p>
             </div>
 
-            <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-                <MessageSquare size={22} />
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+              <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+                <MessageSquare size={20} />
               </div>
-              <h3 className="text-base font-bold text-slate-900 font-orbitron">
-                Direct Machine &amp; Human Connect
+              <h3 className="text-sm font-bold text-slate-900 font-inter">
+                Direct Connect
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Connect directly with business owners via phone, official WhatsApp, and direct booking channels — with zero middleman commissions or lead laundering.
+                Connect directly with business owners via phone and official WhatsApp — zero middleman commissions or lead laundering.
               </p>
             </div>
           </div>
 
           {/* Business Owner Onboarding Card */}
-          <div className="p-8 rounded-3xl bg-gradient-to-r from-blue-900 to-indigo-900 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
-            <div className="space-y-2 text-center sm:text-left">
-              <h3 className="text-xl font-bold font-orbitron">
+          <div className="p-6 sm:p-8 rounded-2xl bg-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="space-y-1.5 text-center sm:text-left">
+              <h3 className="text-lg sm:text-xl font-bold font-inter text-white">
                 Are you a local business owner?
               </h3>
-              <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
-                List your business or submit statutory credentials to the Conflux Business Graph to establish verified presence and connect directly with local customers.
+              <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
+                List your business and submit statutory credentials to establish verified presence and connect directly with customers in your locality.
               </p>
             </div>
             <Link
               to="/list-business"
-              className="px-6 py-3 rounded-2xl bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold shadow-lg transition-all shrink-0 cursor-pointer"
+              className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shrink-0 min-h-[44px] flex items-center justify-center"
             >
-              List Your Business &rarr;
+              List Your Business Free &rarr;
             </Link>
           </div>
         </div>

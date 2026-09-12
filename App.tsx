@@ -388,6 +388,7 @@ const ScrollToTop = () => {
 const App: React.FC = () => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isAgencyRoute = ['/solutions', '/services', '/creative', '/impact', '/portfolio', '/work', '/contact'].some(p => location.pathname.startsWith(p));
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
@@ -418,10 +419,10 @@ const App: React.FC = () => {
       <div className={`relative min-h-screen w-full bg-[#f8fafc] selection:bg-blue-600 selection:text-white overflow-x-hidden font-inter ${isAdminRoute ? '' : 'pb-16 md:pb-0'}`}>
         <ScrollToTop />
         
-        {/* Scroll progress bar — blue */}
+        {/* Scroll progress bar — calm blue */}
         <motion.div
           className="fixed top-0 left-0 right-0 h-[3px] z-[200]"
-          style={{ scaleX, transformOrigin: 'left', background: 'linear-gradient(90deg, #0000ff, #3333ff, #6666ff)' }}
+          style={{ scaleX, transformOrigin: 'left', background: 'linear-gradient(90deg, #1d4ed8, #2563eb, #3b82f6)' }}
         />
 
         <Navbar customLogo={siteLogo} />
@@ -502,8 +503,8 @@ const App: React.FC = () => {
         {/* First-Time User Onboarding & Role Selection Prompt */}
         <UserOnboardingPrompt />
 
-        {/* Integrated Chatbot */}
-        <Chatbot />
+        {/* Integrated Chatbot — Only rendered on agency/services routes to keep local discovery calm and unblocked */}
+        {isAgencyRoute && <Chatbot />}
 
         {/* Mobile-Only Bottom Navigation */}
         <BottomNav />

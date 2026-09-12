@@ -365,117 +365,132 @@ export const PublicBusinessProfile: React.FC = () => {
           <span className="text-slate-800 font-bold truncate max-w-[200px]">{business.name}</span>
         </nav>
 
-        {/* ── TOP HERO CARD ────────────────────────────────────────── */}
-        <div className="p-5 sm:p-8 md:p-10 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6">
+        {/* ── TOP HERO CARD (5-SECOND RULE ABOVE THE FOLD) ─────────────── */}
+        <div className="p-6 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6 font-inter">
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
             <div className="space-y-3 max-w-3xl">
               
-              {/* Conflux Business ID & Verification Badges */}
-              <div className="flex flex-wrap items-center gap-2.5">
-                <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">
-                  {business.confluxBusinessId}
-                </span>
-
+              {/* Badges Row */}
+              <div className="flex flex-wrap items-center gap-2">
                 {isVerified ? (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold font-mono shadow-sm">
-                    <ShieldCheck size={14} className="text-emerald-600" /> CONFLUX VERIFIED
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold shadow-sm">
+                    <ShieldCheck size={14} className="text-emerald-600" /> Conflux Verified
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-bold font-mono">
-                    STANDARD LISTING ({business.verificationStatus})
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
+                    Standard Listing
                   </span>
                 )}
 
                 {entitlements?.isPaid && (
                   <span
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold font-mono border border-emerald-200"
-                    title="Commercial Growth Partner — Statutory license verification is evaluated independently."
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold"
+                    title="Conflux Partner — Commercial tier, strictly decoupled from statutory verification."
                   >
-                    <Sparkles size={13} className="text-emerald-600" />
-                    GROWTH PARTNER
+                    <Sparkles size={13} className="text-blue-600" />
+                    Conflux Partner
                   </span>
                 )}
 
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                  isOpenNow ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
+                }`}>
+                  {isOpenNow ? '● Open Now' : 'Closed'}
+                </span>
+
                 {isClaimed ? (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-800 text-xs font-bold font-mono">
-                    <UserCheck size={13} /> VERIFIED PROPRIETOR
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-800 text-xs font-medium">
+                    <UserCheck size={13} /> Verified Owner
                   </span>
                 ) : (
                   <button
                     onClick={() => setIsClaimModalOpen(true)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-bold font-mono hover:bg-amber-100 transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-medium hover:bg-amber-100 transition-colors cursor-pointer"
                   >
-                    Claim This Business Profile &rarr;
+                    Claim This Business &rarr;
                   </button>
                 )}
               </div>
 
               {/* Title & Legal Name */}
               <div>
-                <h1 className="text-2xl sm:text-4xl font-bold font-orbitron text-slate-900 tracking-tight">
+                <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight leading-tight">
                   {business.name}
                 </h1>
                 {business.legalName && (
-                  <div className="text-xs font-bold text-slate-500 mt-1 font-mono">
-                    Legal Registered Name: {business.legalName}
+                  <div className="text-xs text-slate-500 mt-1">
+                    Registered Name: <span className="font-semibold text-slate-700">{business.legalName}</span>
                   </div>
                 )}
               </div>
 
               {/* Category & Locality */}
-              <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-600">
-                <span className="capitalize text-slate-900 font-bold bg-slate-100 px-2.5 py-1 rounded-md">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
+                <span className="text-blue-700 font-bold bg-blue-50 px-2.5 py-1 rounded-lg">
                   {business.categoryName || business.categoryId}
                 </span>
                 <span className="flex items-center gap-1">
-                  <MapPin size={14} className="text-slate-400" />
-                  <span className="capitalize">{business.location.city}, {business.location.district}</span>
+                  <MapPin size={13} className="text-slate-400" />
+                  <span>{business.location.locality || business.location.city}, {business.location.district}</span>
                 </span>
-                <span className="flex items-center gap-1 font-mono">
-                  <Clock size={14} className="text-slate-400" />
-                  <span className={isOpenNow ? 'text-emerald-700 font-bold' : 'text-slate-500 font-bold'}>
-                    {isOpenNow ? 'OPEN NOW' : 'CLOSED'}
-                  </span>
+                <span className="text-slate-400">&bull;</span>
+                <span className="text-slate-500 font-mono text-[11px]">
+                  ID: {business.confluxBusinessId}
                 </span>
               </div>
 
-              <p className="text-sm sm:text-base text-slate-700 leading-relaxed pt-2">
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed pt-1 max-w-2xl">
                 {business.description}
               </p>
             </div>
 
             {/* Quick Outbound Connect Panel */}
-            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3 shrink-0 lg:w-72">
-              <div className="flex items-center justify-between">
-                <div className="text-xs font-bold font-orbitron text-slate-900 uppercase tracking-wider">
-                  Direct Customer Connect
-                </div>
-                {entitlements?.isPaid && (
-                  <span className="text-[10px] font-mono text-emerald-700 font-bold bg-emerald-100/70 px-2 py-0.5 rounded border border-emerald-200">
-                    ⚡ Priority Route
-                  </span>
-                )}
+            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5 shrink-0 lg:w-72">
+              <div className="text-xs font-bold text-slate-900 uppercase tracking-wider pb-1 border-b border-slate-200">
+                Direct Contact
               </div>
+
+              {business.contact.whatsapp && (
+                <a
+                  href={`https://wa.me/${business.contact.whatsapp.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(business.name)},%20I%20found%20your%20business%20on%20Conflux%20AI.`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => handleActionClick('WHATSAPP_CLICK')}
+                  className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
+                >
+                  <MessageSquare size={15} /> WhatsApp
+                </a>
+              )}
 
               {business.contact.phone && (
                 <a
                   href={`tel:${business.contact.phone}`}
                   onClick={() => handleActionClick('PHONE_CLICK')}
-                  className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-2.5 px-4 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
                 >
-                  <Phone size={14} /> Call {business.contact.phone}
+                  <Phone size={15} /> Call Directly
                 </a>
               )}
 
-              {business.contact.whatsapp && (
+              <a
+                href={`https://maps.google.com/?q=${encodeURIComponent(business.location.fullAddress)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => handleActionClick('DIRECTIONS_CLICK')}
+                className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
+              >
+                <Compass size={15} className="text-blue-600" /> Directions &amp; Map
+              </a>
+
+              {business.contact.websiteUrl && (
                 <a
-                  href={`https://wa.me/${business.contact.whatsapp.replace(/[^0-9]/g, '')}`}
+                  href={business.contact.websiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={() => handleActionClick('WHATSAPP_CLICK')}
-                  className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  onClick={() => handleActionClick('WEBSITE_CLICK')}
+                  className="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <MessageSquare size={14} /> Direct WhatsApp Chat
+                  <Globe size={13} /> Visit Website <ExternalLink size={11} />
                 </a>
               )}
 
@@ -485,44 +500,9 @@ export const PublicBusinessProfile: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => handleActionClick('BOOKING_CLICK')}
-                  className="w-full py-2.5 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-2 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-purple-200"
                 >
-                  <Calendar size={14} /> Online Booking / Order
-                </a>
-              )}
-
-              {business.contact.websiteUrl && (
-                <a
-                  href={business.contact.websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => handleActionClick('WEBSITE_CLICK')}
-                  className="w-full py-2.5 px-4 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <Globe size={14} /> Visit Official Website <ExternalLink size={12} />
-                </a>
-              )}
-
-              {/* Verified Social Channels */}
-              {business.socialLinks && business.socialLinks.filter(s => s.isActive && s.platform === 'facebook').map(s => (
-                <a
-                  key={s.id}
-                  href={s.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full py-2.5 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer border border-blue-200"
-                >
-                  <Share2 size={14} className="text-blue-600" /> {s.label || 'Official Facebook Page'} <ExternalLink size={12} />
-                </a>
-              ))}
-              {(!business.socialLinks || business.socialLinks.length === 0) && business.onlineSources?.facebookUrl && (
-                <a
-                  href={business.onlineSources.facebookUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full py-2.5 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer border border-blue-200"
-                >
-                  <Share2 size={14} className="text-blue-600" /> Official Facebook Store <ExternalLink size={12} />
+                  <Calendar size={13} /> Online Booking <ExternalLink size={11} />
                 </a>
               )}
             </div>
@@ -765,18 +745,17 @@ export const PublicBusinessProfile: React.FC = () => {
                     </span>
                   </div>
 
-                  <h2 className="text-base sm:text-lg font-bold font-orbitron text-slate-900 group-hover:text-blue-600 transition-colors flex items-center gap-2">
-                    <span>How Conflux Knows</span>
-                    <span className="text-xs font-mono font-normal text-slate-500">
-                      (Tap to {isDossierExpanded ? 'collapse' : 'view evidence'})
-                    </span>
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-blue-700 transition-colors flex items-center gap-2 font-inter">
+                    <span>Business Verification &amp; Evidence</span>
                   </h2>
 
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    {business.verificationStatus === 'SUPPORTED'
-                      ? 'Statutory entity corroboration, direct proprietor submission, and public digital sources audited.'
-                      : 'Standard listing corroborated against public records and direct proprietor declaration.'}
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    Business information checked against available official registries, proprietor submission, and ground reality.
                   </p>
+
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 pt-1">
+                    {isDossierExpanded ? 'Hide detailed verification evidence' : 'See detailed verification evidence'}
+                  </span>
                 </div>
 
                 <div className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-2xl bg-slate-100 group-hover:bg-blue-50 text-slate-600 group-hover:text-blue-600 transition-colors shrink-0">
@@ -1716,15 +1695,15 @@ export const PublicBusinessProfile: React.FC = () => {
           </div>
         </div>
       )}
-      {/* ── MOBILE STICKY ACTION BAR (ANCHORED ABOVE BOTTOMNAV) ── */}
-      <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-3 py-2.5 flex items-center justify-between gap-2 md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+      {/* ── MOBILE STICKY ACTION BAR (ANCHORED TO SCREEN BOTTOM) ── */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] flex items-center justify-between gap-2 md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)] font-inter">
         {business.contact.whatsapp && (
           <a
-            href={`https://wa.me/${business.contact.whatsapp.replace(/[^0-9]/g, '')}`}
+            href={`https://wa.me/${business.contact.whatsapp.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(business.name)},%20I%20found%20your%20business%20on%20Conflux%20AI.`}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => handleActionClick('WHATSAPP_CLICK')}
-            className="min-h-[44px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 active:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all"
+            className="min-h-[44px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 active:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
           >
             <MessageSquare size={16} />
             <span>WhatsApp</span>
@@ -1735,7 +1714,7 @@ export const PublicBusinessProfile: React.FC = () => {
           <a
             href={`tel:${business.contact.phone}`}
             onClick={() => handleActionClick('PHONE_CLICK')}
-            className="min-h-[44px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-600 active:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all"
+            className="min-h-[44px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
           >
             <Phone size={16} />
             <span>Call</span>
@@ -1747,7 +1726,7 @@ export const PublicBusinessProfile: React.FC = () => {
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => handleActionClick('DIRECTIONS_CLICK')}
-          className="min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-100 active:bg-slate-200 text-slate-800 text-xs font-bold border border-slate-200 flex items-center justify-center gap-1 shrink-0"
+          className="min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-100 active:bg-slate-200 text-slate-800 text-xs font-bold border border-slate-200 flex items-center justify-center gap-1 shrink-0 cursor-pointer"
           title="Directions"
         >
           <Compass size={16} className="text-blue-600" />
