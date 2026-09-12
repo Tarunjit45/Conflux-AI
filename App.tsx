@@ -47,6 +47,7 @@ import { UserOnboardingFlow } from './components/auth/UserOnboardingFlow';
 import { BottomNav } from './components/navigation/BottomNav';
 import { AuthProvider } from './lib/authContext';
 import { trackPageView } from './lib/analytics';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 const routeMeta: Record<string, { title: string; description: string }> = {
   '/my-local': {
@@ -427,7 +428,8 @@ const App: React.FC = () => {
 
         <Navbar customLogo={siteLogo} />
 
-        <Routes>
+        <ErrorBoundary>
+          <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/discover" element={<DiscoverPage />} />
           <Route path="/my-local" element={<MyLocalConfluxPage />} />
@@ -492,6 +494,7 @@ const App: React.FC = () => {
           <Route path="/onboarding" element={<UserOnboardingFlow />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        </ErrorBoundary>
 
         <Footer siteLogo={siteLogo} />
 

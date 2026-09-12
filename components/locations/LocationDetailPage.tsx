@@ -373,45 +373,49 @@ const LocationDetailPage: React.FC = () => {
     return true;
   });
 
-  // Intent Telemetry Tracking (Section 14)
+  // Intent Telemetry Tracking (Section 14) (fail-safe)
   useEffect(() => {
     if (isRanaghat) {
-      if (!subPage) {
-        connectService.logEvent({
-          businessId: 'ranaghat_hub',
-          eventType: 'RANAGHAT_HUB_VIEW',
-          channel: 'HUMAN_WEB'
-        });
-      } else if (subPage === 'live') {
-        connectService.logEvent({
-          businessId: 'ranaghat_hub',
-          eventType: 'LIVE_LOCAL_OPEN',
-          channel: 'HUMAN_WEB'
-        });
-      } else if (subPage === 'jobs') {
-        connectService.logEvent({
-          businessId: 'ranaghat_hub',
-          eventType: 'JOBS_OPEN',
-          channel: 'HUMAN_WEB'
-        });
-      } else if (subPage === 'people') {
-        connectService.logEvent({
-          businessId: 'ranaghat_hub',
-          eventType: 'TRUSTED_PEOPLE_OPEN',
-          channel: 'HUMAN_WEB'
-        });
-      } else if (subPage === 'businesses') {
-        connectService.logEvent({
-          businessId: 'ranaghat_hub',
-          eventType: 'BUSINESSES_OPEN',
-          channel: 'HUMAN_WEB'
-        });
-      } else if (subPage === 'ask') {
-        connectService.logEvent({
-          businessId: 'ranaghat_hub',
-          eventType: 'ASK_RANAGHAT_OPEN',
-          channel: 'HUMAN_WEB'
-        });
+      try {
+        if (!subPage) {
+          connectService.logEvent({
+            businessId: 'ranaghat_hub',
+            eventType: 'RANAGHAT_HUB_VIEW',
+            channel: 'HUMAN_WEB'
+          });
+        } else if (subPage === 'live') {
+          connectService.logEvent({
+            businessId: 'ranaghat_hub',
+            eventType: 'LIVE_LOCAL_OPEN',
+            channel: 'HUMAN_WEB'
+          });
+        } else if (subPage === 'jobs') {
+          connectService.logEvent({
+            businessId: 'ranaghat_hub',
+            eventType: 'JOBS_OPEN',
+            channel: 'HUMAN_WEB'
+          });
+        } else if (subPage === 'people') {
+          connectService.logEvent({
+            businessId: 'ranaghat_hub',
+            eventType: 'TRUSTED_PEOPLE_OPEN',
+            channel: 'HUMAN_WEB'
+          });
+        } else if (subPage === 'businesses') {
+          connectService.logEvent({
+            businessId: 'ranaghat_hub',
+            eventType: 'BUSINESSES_OPEN',
+            channel: 'HUMAN_WEB'
+          });
+        } else if (subPage === 'ask') {
+          connectService.logEvent({
+            businessId: 'ranaghat_hub',
+            eventType: 'ASK_RANAGHAT_OPEN',
+            channel: 'HUMAN_WEB'
+          });
+        }
+      } catch {
+        // Telemetry fail-open
       }
     }
   }, [isRanaghat, subPage]);

@@ -28,7 +28,9 @@ const LandingPage: React.FC = () => {
     businessService.searchBusinesses({ verifiedOnly: true })
       .then(results => {
         if (isMounted) {
-          setFeaturedBusinesses(results.slice(0, 3).map(r => r.business));
+          if (Array.isArray(results)) {
+            setFeaturedBusinesses(results.slice(0, 3).map(r => r?.business).filter(Boolean));
+          }
           setIsLoading(false);
         }
       })

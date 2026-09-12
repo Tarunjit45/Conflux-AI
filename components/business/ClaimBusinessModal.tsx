@@ -44,12 +44,16 @@ export const ClaimBusinessModal: React.FC<ClaimBusinessModalProps> = ({
     setErrorMessage(null);
 
     try {
-      // Log telemetry event
-      await connectService.logEvent({
-        businessId: business.id,
-        eventType: 'CLAIM_CLICK',
-        channel: 'HUMAN_WEB'
-      });
+      // Log telemetry event (fail-safe)
+      try {
+        await connectService.logEvent({
+          businessId: business.id,
+          eventType: 'CLAIM_CLICK',
+          channel: 'HUMAN_WEB'
+        });
+      } catch {
+        // Telemetry fail-open
+      }
 
       const res = await businessService.claimBusiness(business.id, {
         ownerName,

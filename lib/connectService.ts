@@ -79,6 +79,54 @@ const isUuid = (str?: string): boolean => {
 export class ConnectService {
   private memoryEvents: ConnectEventRecord[] = [];
 
+  constructor() {
+    this.logEvent = this.logEvent.bind(this);
+    this.recordConnectAction = this.recordConnectAction.bind(this);
+  }
+
+  /**
+   * Primary canonical telemetry logging API.
+   * Records an interaction or discovery event (human web click, business view, or AI agent query).
+   * Fail-safe: Always catches internally, guarantees safe non-blocking execution.
+   */
+  async logEvent(params: {
+    businessId?: string;
+    eventType: ConnectEventType;
+    channel?: 'WHATSAPP' | 'PHONE' | 'WEBSITE' | 'DIRECTIONS' | 'BOOKING' | 'HUMAN_WEB' | 'AI_AGENT_REST_API' | 'AI_AGENT_MCP';
+    intentId?: string;
+  }): Promise<ConnectEventRecord> {
+    try {
+      if (!params || !params.eventType) {
+        console.warn('[ConnectService.logEvent] Missing event parameters');
+        return {
+          id: `evt_invalid_${Date.now()}`,
+          businessId: params?.businessId || '',
+          intentId: params?.intentId,
+          eventType: params?.eventType || ('BUSINESS_VIEW' as ConnectEventType),
+          channel: (params?.channel as any) || 'HUMAN_WEB',
+          createdAt: new Date().toISOString()
+        };
+      }
+
+      return await this.recordConnectAction(
+        params.businessId || '',
+        params.eventType,
+        (params.channel as any) || 'HUMAN_WEB',
+        params.intentId
+      );
+    } catch (err) {
+      console.warn('[ConnectService.logEvent] Telemetry capture notice (fail-open):', err);
+      return {
+        id: `evt_fallback_${Date.now()}`,
+        businessId: params?.businessId || '',
+        intentId: params?.intentId,
+        eventType: params?.eventType || ('BUSINESS_VIEW' as ConnectEventType),
+        channel: (params?.channel as any) || 'HUMAN_WEB',
+        createdAt: new Date().toISOString()
+      };
+    }
+  }
+
   /**
    * Records a user intent to connect with a business
    * Writes simultaneously to Supabase connect_telemetry_events and fallback memory
@@ -89,26 +137,51 @@ export class ConnectService {
     channel: 'WHATSAPP' | 'PHONE' | 'WEBSITE' | 'DIRECTIONS' | 'BOOKING' | 'HUMAN_WEB' = 'HUMAN_WEB',
     intentId?: string
   ): Promise<ConnectEventRecord> {
-    const event: ConnectEventRecord = {
-      id: `evt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-      businessId,
-      intentId,
-      eventType,
-      channel,
-      sessionPseudonym: this.getOrCreateSessionPseudonym(),
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const event: ConnectEventRecord = {
+        id: `evt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        businessId: businessId || '',
+        intentId,
+        eventType,
+        channel: channel || 'HUMAN_WEB',
+        sessionPseudonym: this.getOrCreateSessionPseudonym(),
+        createdAt: new Date().toISOString()
+      };
 
-    // Store in memory
-    this.memoryEvents.unshift(event);
-    if (this.memoryEvents.length > 500) {
-      this.memoryEvents = this.memoryEvents.slice(0, 500);
+      // Store in memory
+      this.memoryEvents.unshift(event);
+      if (this.memoryEvents.length > 500) {
+        this.memoryEvents = this.memoryEvents.slice(0, 500);
+      }
+
+      // Store in local storage queue (fail-safe)
+      if (typeof window !== 'undefined') {
+        try {
+          const raw = localStorage.getItem(LOCAL_STORAGE_EVENTS_KEY);
+          const events: ConnectEventRecord[] = raw ? JSON.parse(raw) : [];
+          events.unshift(event);
+          if (events.length > 500) events.pop();
+          localStorage.setItem(LOCAL_STORAGE_EVENTS_KEY, JSON.stringify(events));
+        } catch {
+          // Storage quota / security guard
+        }
+      }
+
+      // Attempt persistent write in Supabase
+      this.persistEventToDatabase(event);
+
+      return event;
+    } catch (err) {
+      console.warn('[ConnectService.recordConnectAction] Fail-open notice:', err);
+      return {
+        id: `evt_${Date.now()}`,
+        businessId: businessId || '',
+        intentId,
+        eventType,
+        channel: channel || 'HUMAN_WEB',
+        createdAt: new Date().toISOString()
+      };
     }
-
-    // Attempt persistent write in Supabase
-    this.persistEventToDatabase(event);
-
-    return event;
   }
 
   private async persistEventToDatabase(event: ConnectEventRecord) {
@@ -127,13 +200,19 @@ export class ConnectService {
   }
 
   private getOrCreateSessionPseudonym(): string {
-    if (typeof window === 'undefined') return `ses_${Math.random().toString(36).substring(2, 10)}`;
-    let pseudonym = sessionStorage.getItem('conflux_session_pseudonym');
-    if (!pseudonym) {
-      pseudonym = `ses_${Math.random().toString(36).substring(2, 10)}`;
-      sessionStorage.setItem('conflux_session_pseudonym', pseudonym);
+    try {
+      if (typeof window === 'undefined' || !window.sessionStorage) {
+        return `ses_${Math.random().toString(36).substring(2, 10)}`;
+      }
+      let pseudonym = sessionStorage.getItem('conflux_session_pseudonym');
+      if (!pseudonym) {
+        pseudonym = `ses_${Math.random().toString(36).substring(2, 10)}`;
+        sessionStorage.setItem('conflux_session_pseudonym', pseudonym);
+      }
+      return pseudonym;
+    } catch {
+      return `ses_${Math.random().toString(36).substring(2, 10)}`;
     }
-    return pseudonym;
   }
 
   /**

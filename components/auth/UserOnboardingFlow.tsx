@@ -58,13 +58,17 @@ export const UserOnboardingFlow: React.FC<UserOnboardingFlowProps> = ({
   const [contactValue, setContactValue] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Track ONBOARDING_STARTED on mount
+  // Track ONBOARDING_STARTED on mount (fail-safe)
   useEffect(() => {
-    connectService.logEvent({
-      businessId: 'conflux_identity',
-      eventType: 'ONBOARDING_STARTED',
-      channel: 'HUMAN_WEB'
-    });
+    try {
+      connectService.logEvent({
+        businessId: 'conflux_identity',
+        eventType: 'ONBOARDING_STARTED',
+        channel: 'HUMAN_WEB'
+      });
+    } catch {
+      // Telemetry fail-open
+    }
   }, []);
 
   // Update bio placeholder when locality changes
@@ -76,11 +80,15 @@ export const UserOnboardingFlow: React.FC<UserOnboardingFlowProps> = ({
   }, [locality, customLocality]);
 
   const handleNextStep = (stepNumber: number) => {
-    connectService.logEvent({
-      businessId: 'conflux_identity',
-      eventType: 'ONBOARDING_STEP_COMPLETED',
-      channel: 'HUMAN_WEB'
-    });
+    try {
+      connectService.logEvent({
+        businessId: 'conflux_identity',
+        eventType: 'ONBOARDING_STEP_COMPLETED',
+        channel: 'HUMAN_WEB'
+      });
+    } catch {
+      // Telemetry fail-open
+    }
     setStep(stepNumber + 1);
   };
 

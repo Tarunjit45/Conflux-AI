@@ -74,7 +74,11 @@ export const DiscoverPage: React.FC = () => {
   // Load fallback verified businesses once
   useEffect(() => {
     businessService.searchBusinesses({ verifiedOnly: true })
-      .then(res => setFallbackBusinesses(res.slice(0, 3).map(r => r.business)))
+      .then(res => {
+        if (Array.isArray(res)) {
+          setFallbackBusinesses(res.slice(0, 3).map(r => r.business).filter(Boolean));
+        }
+      })
       .catch(() => {});
   }, []);
 
@@ -133,17 +137,21 @@ export const DiscoverPage: React.FC = () => {
       })
     ]);
 
-    setResults(res);
-    setContributions(contribs);
+    setResults(Array.isArray(res) ? res : []);
+    setContributions(Array.isArray(contribs) ? contribs : []);
     setIsLoading(false);
 
-    // Track search intent telemetry
+    // Track search intent telemetry (fail-safe)
     if (parsedWhat || parsedWhere) {
-      connectService.logEvent({
-        businessId: 'conflux_discovery_hub',
-        eventType: 'DISCOVERY_SEARCH',
-        intentId: `${parsedWhat || 'all_services'} | ${parsedWhere || 'all_locations'}`
-      });
+      try {
+        connectService.logEvent({
+          businessId: 'conflux_discovery_hub',
+          eventType: 'DISCOVERY_SEARCH',
+          intentId: `${parsedWhat || 'all_services'} | ${parsedWhere || 'all_locations'}`
+        });
+      } catch {
+        // Telemetry fail-open
+      }
     }
   };
 
@@ -179,18 +187,24 @@ export const DiscoverPage: React.FC = () => {
     setOpenNowOnly(false);
     setRequiredAction('all');
     setSearchParams({});
-    businessService.searchBusinesses().then(res => setResults(res));
+    businessService.searchBusinesses().then(res => {
+      if (Array.isArray(res)) setResults(res);
+    });
   };
 
   const handleActionClick = (
     bizId: string,
     actionType: 'PHONE_CLICK' | 'WHATSAPP_CLICK' | 'DIRECTIONS_CLICK' | 'BOOKING_CLICK'
   ) => {
-    connectService.logEvent({
-      businessId: bizId,
-      eventType: actionType,
-      channel: 'HUMAN_WEB'
-    });
+    try {
+      connectService.logEvent({
+        businessId: bizId,
+        eventType: actionType,
+        channel: 'HUMAN_WEB'
+      });
+    } catch {
+      // Telemetry fail-open
+    }
   };
 
   const hasActiveFilters =

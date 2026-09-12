@@ -3,6 +3,7 @@ import './index.css';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 console.log("Conflux AI: System handshake initiated...");
 
@@ -19,9 +20,11 @@ const init = () => {
     const root = createRoot(container);
     root.render(
       <React.StrictMode>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <ErrorBoundary>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </ErrorBoundary>
       </React.StrictMode>
     );
 

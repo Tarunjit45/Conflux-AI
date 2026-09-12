@@ -86,12 +86,16 @@ export const PublicBusinessProfile: React.FC = () => {
           .then(ent => setEntitlements(ent))
           .catch(() => null);
 
-        // Log telemetry view event
-        connectService.logEvent({
-          businessId: found.id,
-          eventType: 'BUSINESS_VIEW',
-          channel: 'HUMAN_WEB'
-        });
+        // Log telemetry view event (fail-safe)
+        try {
+          connectService.logEvent({
+            businessId: found.id,
+            eventType: 'BUSINESS_VIEW',
+            channel: 'HUMAN_WEB'
+          });
+        } catch {
+          // Telemetry fail-open
+        }
       }
     }
     setIsLoading(false);
@@ -159,11 +163,15 @@ export const PublicBusinessProfile: React.FC = () => {
 
   const handleActionClick = (action: any) => {
     if (!business) return;
-    connectService.logEvent({
-      businessId: business.id,
-      eventType: action,
-      channel: 'HUMAN_WEB'
-    });
+    try {
+      connectService.logEvent({
+        businessId: business.id,
+        eventType: action,
+        channel: 'HUMAN_WEB'
+      });
+    } catch {
+      // Telemetry fail-open
+    }
   };
 
   const handleLeadSubmit = async (e: React.FormEvent) => {
