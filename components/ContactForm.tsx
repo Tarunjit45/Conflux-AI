@@ -4,13 +4,18 @@ import { Send, Mail, User, Building2, Briefcase, CheckCircle2, Loader2, AlertCir
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
-const ContactForm: React.FC = () => {
+interface ContactFormProps {
+  businessId?: string;
+  defaultBusinessName?: string;
+}
+
+const ContactForm: React.FC<ContactFormProps> = ({ businessId, defaultBusinessName }) => {
   const formRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    company: '',
+    company: defaultBusinessName || '',
     goal: '',
     message: '',
     website_url_hp: '' // Anti-spam honeypot
@@ -29,6 +34,8 @@ const ContactForm: React.FC = () => {
 
     const urlParams = new URLSearchParams(window.location.search);
     const leadPayload = {
+      businessId: businessId || undefined,
+      business_id: businessId || undefined,
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
@@ -68,12 +75,14 @@ const ContactForm: React.FC = () => {
           .from('leads')
           .insert([
             {
-              name: formData.name,
-              email: formData.email,
-              phone: formData.phone,
-              company: formData.company,
-              goal: formData.goal,
-              message: formData.message,
+              business_id: businessId || null,
+              business_name: formData.company,
+              contact_name: formData.name,
+              contact_email: formData.email,
+              contact_phone: formData.phone || null,
+              service_requested: formData.goal || null,
+              message: formData.message || null,
+              status: 'PENDING',
               created_at: new Date().toISOString(),
             }
           ]);

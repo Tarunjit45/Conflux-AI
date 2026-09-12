@@ -65,6 +65,7 @@ import {
 } from "../../lib/connectService";
 import { contributionService } from "../../lib/contributionService";
 import { localKnowledgeService } from "../../lib/localKnowledgeService";
+import { BusinessValueModal } from "../business/BusinessValueModal";
 import type {
   LocalContribution,
   BusinessDemandRequest,
@@ -139,6 +140,7 @@ export const AdminBusinessDashboard: React.FC = () => {
   const [adminReviewNotes, setAdminReviewNotes] = useState<string>("");
 
   // Modals state
+  const [activityBiz, setActivityBiz] = useState<ConfluxBusiness | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingBusiness, setEditingBusiness] =
     useState<ConfluxBusiness | null>(null);
@@ -1447,6 +1449,14 @@ export const AdminBusinessDashboard: React.FC = () => {
 
                             <td className="py-4 px-6 text-right">
                               <div className="inline-flex items-center gap-2">
+                                <button
+                                  onClick={() => setActivityBiz(biz)}
+                                  className="p-2 rounded-xl text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition-colors cursor-pointer"
+                                  title="Customer Activity, Leads & Plan Entitlements"
+                                >
+                                  <BarChart3 size={16} />
+                                </button>
+
                                 <Link
                                   to={profilePath}
                                   target="_blank"
@@ -2314,6 +2324,35 @@ export const AdminBusinessDashboard: React.FC = () => {
         {/* ── TAB 5: REVENUE VALIDATION & MEASUREMENT ─────────────── */}
         {activeTab === "MEASUREMENT" && measurementReport && (
           <div className="space-y-8">
+            {/* Individual Business Customer Value Inspector */}
+            <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <h3 className="text-sm font-bold font-orbitron text-slate-900 flex items-center gap-2">
+                  <BarChart3 size={16} className="text-blue-600" /> Individual Business Activity &amp; Leads Docket
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Select any business entity to inspect profile views, WhatsApp clicks, phone calls, and customer leads.
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <select
+                  onChange={(e) => {
+                    const found = businesses.find(b => b.id === e.target.value);
+                    if (found) setActivityBiz(found);
+                  }}
+                  defaultValue=""
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 text-slate-700"
+                >
+                  <option value="" disabled>Select Business to Inspect...</option>
+                  {businesses.map(b => (
+                    <option key={b.id} value={b.id}>
+                      {b.name} ({b.location.city})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             {/* Top Scorecard Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               {/* Card 1: Onboarded */}
@@ -4312,6 +4351,14 @@ export const AdminBusinessDashboard: React.FC = () => {
           );
         })()}
       </AnimatePresence>
+
+      {/* Business Customer Activity, Leads & Plan Entitlements Modal */}
+      <BusinessValueModal
+        business={activityBiz}
+        isOpen={Boolean(activityBiz)}
+        onClose={() => setActivityBiz(null)}
+        isAdmin={true}
+      />
       </div>
     </AdminShell>
   );

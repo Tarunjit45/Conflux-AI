@@ -133,6 +133,12 @@ export const VerifyPortal: React.FC = () => {
           <p className="text-slate-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
             Establish whether an economically important business claim is backed by authoritative primary registrars, first-party records, or unverified secondary assertions.
           </p>
+          <div className="p-3.5 max-w-2xl mx-auto rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-600 text-left flex items-start gap-2.5">
+            <span className="font-bold text-slate-800 uppercase tracking-wider text-[10px] bg-slate-200 px-2 py-0.5 rounded shrink-0">Dataset Notice</span>
+            <span>
+              <strong>Curated Benchmark Mode:</strong> The public evaluator demonstrates deterministic evidence resolution against curated reference benchmark corpora. Live statutory licenses (GSTIN, MCA, FSSAI) are reviewed directly by administrators during business onboarding; this tool does not connect to live government APIs.
+            </span>
+          </div>
         </div>
 
         {/* Input Form Card */}

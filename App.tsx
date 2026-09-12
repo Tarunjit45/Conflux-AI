@@ -475,8 +475,16 @@ const App: React.FC = () => {
               <AdminBusinessDashboard />
             </ProtectedRoute>
           } />
-          <Route path="/admin/cms" element={<AdminCMS />} />
-          <Route path="/admin/location-coverage" element={<LocationCoverageDashboard />} />
+          <Route path="/admin/cms" element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminCMS />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/location-coverage" element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <LocationCoverageDashboard />
+            </ProtectedRoute>
+          } />
           <Route path="/login" element={<AuthModal />} />
           <Route path="/auth" element={<AuthModal />} />
           <Route path="/register" element={<UserOnboardingFlow />} />

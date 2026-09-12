@@ -24,12 +24,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ success: false, error: 'Missing business id or slug parameter.' });
   }
 
-  const allBusinesses = await businessService.getAllBusinesses();
-  const biz = allBusinesses.find(b =>
-    b.id.toLowerCase() === targetId ||
-    b.confluxBusinessId.toLowerCase() === targetId ||
-    b.slug.toLowerCase() === targetId
-  );
+  let biz = await businessService.getBusinessById(targetId);
+  if (!biz) {
+    biz = await businessService.getBusinessBySlug(targetId);
+  }
 
   if (!biz) {
     return res.status(404).json({ success: false, error: `Business "${targetId}" not found in Conflux Graph.` });

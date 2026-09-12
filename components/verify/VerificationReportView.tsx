@@ -91,6 +91,9 @@ export const VerificationReportView: React.FC<VerificationReportViewProps> = ({ 
           <h2 className="text-xl font-black text-white">{result.entity.name}</h2>
         </div>
         <div className="flex items-center gap-3">
+          <span className="text-[11px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 font-mono">
+            Benchmark Corpus
+          </span>
           {result.cacheHit && (
             <span className="text-[11px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700">
               ⚡ Cached Result

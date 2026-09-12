@@ -680,7 +680,8 @@ export class BusinessService {
           );
         }
       } catch (err: any) {
-        console.warn('[BusinessService.createBusiness] Database insert skipped or failed (falling back to memory store):', err?.message || err);
+        console.error('[BusinessService.createBusiness] Database insert failed:', err?.message || err);
+        throw new Error(`[DATABASE_ERROR] Failed to save business to Supabase: ${err?.message || err}`);
       }
     }
 
@@ -692,8 +693,6 @@ export class BusinessService {
    * Update an existing business node
    */
   async updateBusiness(id: string, updates: Partial<ConfluxBusiness>): Promise<ConfluxBusiness> {
-    saveAdminOverride(id, updates);
-
     if (isSupabaseConfigured()) {
       try {
         const payload: any = { updated_at: new Date().toISOString() };
@@ -737,7 +736,10 @@ export class BusinessService {
         } else {
           updateQuery = updateQuery.or(`conflux_business_id.eq.${id},slug.eq.${id}`);
         }
-        await updateQuery;
+        const { error: updateErr } = await updateQuery;
+        if (updateErr) {
+          throw new Error(`[DATABASE_ERROR] Failed to update business in Supabase: ${updateErr.message}`);
+        }
 
         // Trigger serverless API route to commit via server environment if running in browser
         if (typeof window !== 'undefined' && typeof fetch === 'function') {
@@ -839,9 +841,12 @@ export class BusinessService {
           }
         }
       } catch (err: any) {
-        console.warn('[BusinessService.updateBusiness] Database warning (saved to local store):', err);
+        console.error('[BusinessService.updateBusiness] Database update failed:', err);
+        throw new Error(`[DATABASE_ERROR] Failed to update business in Supabase: ${err?.message || err}`);
       }
     }
+
+    saveAdminOverride(id, updates);
 
     const primaryImage = updates.storefrontPhotoUrl || (updates.media?.find(m => m.mediaType === 'IMAGE' && m.status !== 'INACTIVE')?.url);
 

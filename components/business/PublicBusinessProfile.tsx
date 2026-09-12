@@ -23,12 +23,15 @@ import { businessOptimizationEngine } from '../../lib/seo/businessOptimizationEn
 import { type ConfluxBusiness, type BusinessMediaItem, normalizePublicSourceField } from '../../types/business';
 import type { ReviewRatingContribution } from '../../types/contribution';
 import type { LocalContribution } from '../../types/localKnowledge';
+import { subscriptionService } from '../../lib/subscriptionService';
+import type { BusinessEntitlements } from '../../types/subscription';
 
 export const PublicBusinessProfile: React.FC = () => {
   const { district, city, slug } = useParams<{ district: string; city: string; slug: string }>();
   const { user } = useAuth();
   const isAuthenticated = Boolean(user);
   const [business, setBusiness] = useState<ConfluxBusiness | null>(null);
+  const [entitlements, setEntitlements] = useState<BusinessEntitlements | null>(null);
   const [reviews, setReviews] = useState<ReviewRatingContribution[]>([]);
   const [communitySignals, setCommunitySignals] = useState<LocalContribution[]>([]);
   const [isSignalModalOpen, setIsSignalModalOpen] = useState(false);
@@ -44,8 +47,8 @@ export const PublicBusinessProfile: React.FC = () => {
   const [leadPhone, setLeadPhone] = useState('');
   const [leadService, setLeadService] = useState('');
   const [leadMessage, setLeadMessage] = useState('');
-  const [isSubmittingLead, setIsSubmittingLead] = useState(false);
   const [leadSuccessMessage, setLeadSuccessMessage] = useState<string | null>(null);
+  const [leadErrorMessage, setLeadErrorMessage] = useState<string | null>(null);
 
   // Contribution Modal States
   const [activeContribModal, setActiveContribModal] = useState<'REVIEW' | 'EDIT' | 'REPORT' | null>(null);
@@ -77,6 +80,11 @@ export const PublicBusinessProfile: React.FC = () => {
         } catch (err) {
           console.warn('[PublicBusinessProfile] Error fetching community signals:', err);
         }
+
+        // Fetch commercial subscription entitlements
+        subscriptionService.getBusinessEntitlements(found.id)
+          .then(ent => setEntitlements(ent))
+          .catch(() => null);
 
         // Log telemetry view event
         connectService.logEvent({
@@ -163,6 +171,7 @@ export const PublicBusinessProfile: React.FC = () => {
     if (!business || !leadName || !leadEmail) return;
 
     setIsSubmittingLead(true);
+    setLeadErrorMessage(null);
     try {
       const res = await connectService.submitLead({
         businessId: business.id,
@@ -181,9 +190,11 @@ export const PublicBusinessProfile: React.FC = () => {
         setLeadPhone('');
         setLeadService('');
         setLeadMessage('');
+      } else {
+        setLeadErrorMessage(res.error || 'Failed to dispatch inquiry. Please reach out to the business directly.');
       }
     } catch (err: any) {
-      alert(`Error submitting inquiry: ${err.message}`);
+      setLeadErrorMessage(err?.message || 'Error submitting inquiry. Please contact the business directly.');
     } finally {
       setIsSubmittingLead(false);
     }
@@ -375,6 +386,16 @@ export const PublicBusinessProfile: React.FC = () => {
                   </span>
                 )}
 
+                {entitlements?.isPaid && (
+                  <span
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold font-mono border border-emerald-200"
+                    title="Commercial Growth Partner — Statutory license verification is evaluated independently."
+                  >
+                    <Sparkles size={13} className="text-emerald-600" />
+                    GROWTH PARTNER
+                  </span>
+                )}
+
                 {isClaimed ? (
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-800 text-xs font-bold font-mono">
                     <UserCheck size={13} /> VERIFIED PROPRIETOR
@@ -425,8 +446,15 @@ export const PublicBusinessProfile: React.FC = () => {
 
             {/* Quick Outbound Connect Panel */}
             <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3 shrink-0 lg:w-72">
-              <div className="text-xs font-bold font-orbitron text-slate-900 uppercase tracking-wider">
-                Direct Customer Connect
+              <div className="flex items-center justify-between">
+                <div className="text-xs font-bold font-orbitron text-slate-900 uppercase tracking-wider">
+                  Direct Customer Connect
+                </div>
+                {entitlements?.isPaid && (
+                  <span className="text-[10px] font-mono text-emerald-700 font-bold bg-emerald-100/70 px-2 py-0.5 rounded border border-emerald-200">
+                    ⚡ Priority Route
+                  </span>
+                )}
               </div>
 
               {business.contact.phone && (
@@ -1227,7 +1255,28 @@ export const PublicBusinessProfile: React.FC = () => {
                   <p className="text-xs leading-relaxed">{leadSuccessMessage}</p>
                 </div>
               ) : (
-                <form onSubmit={handleLeadSubmit} className="space-y-4">
+                <div className="space-y-4">
+                  {leadErrorMessage && (
+                    <div className="p-4 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 space-y-2 text-xs">
+                      <div className="flex items-center gap-2 font-bold text-sm text-amber-800">
+                        <AlertCircle size={16} className="text-amber-600" /> Inbound Routing Notice
+                      </div>
+                      <p>{leadErrorMessage}</p>
+                      {business.contactPhone && (
+                        <div className="pt-2">
+                          <a
+                            href={`https://wa.me/${business.contactPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${business.name}, I am inquiring about ${leadService || 'your services'}: ${leadMessage || ''}`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition"
+                          >
+                            Contact directly on WhatsApp &rarr;
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <form onSubmit={handleLeadSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-slate-700">Your Full Name *</label>
@@ -1297,6 +1346,7 @@ export const PublicBusinessProfile: React.FC = () => {
                     {isSubmittingLead ? 'Routing Inbound Lead...' : 'Send Inquiry'} <Send size={14} />
                   </button>
                 </form>
+                </div>
               )}
             </div>
 
