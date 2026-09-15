@@ -38,18 +38,23 @@ import { ForBusinessPage } from './components/business/ForBusinessPage';
 import { VisibilityAuditPage } from './components/business/VisibilityAuditPage';
 import { PublicBusinessProfile } from './components/business/PublicBusinessProfile';
 import { BusinessSubmissionPage } from './components/submission/BusinessSubmissionPage';
+import { SimpleOwnerDashboard } from './components/business/SimpleOwnerDashboard';
 import { AdminBusinessDashboard } from './components/admin/AdminBusinessDashboard';
 import { MyLocalConfluxPage } from './components/user/MyLocalConfluxPage';
 import { AuthModal } from './components/auth/AuthModal';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { UserOnboardingPrompt } from './components/auth/UserOnboardingPrompt';
 import { UserOnboardingFlow } from './components/auth/UserOnboardingFlow';
+import { ContributePage } from './components/contribute/ContributePage';
 import { BottomNav } from './components/navigation/BottomNav';
 import { AuthProvider } from './lib/authContext';
 import { trackPageView } from './lib/analytics';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 const routeMeta: Record<string, { title: string; description: string }> = {
+  '/contribute': {
+    title: 'Help Improve Local Information | Conflux AI',
+    description: 'Share and update factual local information, business details, or corrections for your locality with Conflux AI.'
+  },
   '/my-local': {
     title: 'My Local Conflux | Local Intelligence, Reputation & Community Signals | Conflux AI',
     description: 'Personalized local intelligence dashboard. View your local reputation score, community confirmations, demand requests, and followed businesses in your locality.'
@@ -432,8 +437,10 @@ const App: React.FC = () => {
           <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/discover" element={<DiscoverPage />} />
+          <Route path="/contribute" element={<ContributePage />} />
           <Route path="/my-local" element={<MyLocalConfluxPage />} />
           <Route path="/business" element={<ForBusinessPage />} />
+          <Route path="/business/dashboard" element={<SimpleOwnerDashboard />} />
           <Route path="/business/audit" element={<VisibilityAuditPage />} />
           <Route path="/list-business" element={<BusinessSubmissionPage />} />
           <Route path="/submit-business" element={<BusinessSubmissionPage />} />
@@ -503,8 +510,6 @@ const App: React.FC = () => {
           <BrandingControl onUpload={handleLogoUpload} onReset={handleLogoReset} currentLogo={siteLogo} />
         )}
 
-        {/* First-Time User Onboarding & Role Selection Prompt */}
-        <UserOnboardingPrompt />
 
         {/* Integrated Chatbot — Only rendered on agency/services routes to keep local discovery calm and unblocked */}
         {isAgencyRoute && <Chatbot />}

@@ -153,6 +153,91 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
+      {/* SECTION: Latest Local Information */}
+      <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-200">
+        <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div>
+              <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
+                Local Knowledge
+              </span>
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-950 font-inter mt-1">
+                Latest Local Information &amp; Guides
+              </h2>
+            </div>
+            <Link
+              to="/blog"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 hover:text-blue-800 self-start sm:self-auto"
+            >
+              <span>Browse all guides</span>
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Link
+              to="/locations/west-bengal/nadia/ranaghat"
+              className="p-5 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-300 hover:shadow-sm transition-all flex flex-col justify-between space-y-3 group"
+            >
+              <div className="space-y-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md inline-block">
+                  Nadia &bull; Ranaghat
+                </span>
+                <h3 className="text-base font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                  Ranaghat Local Hub &amp; Verified Directory
+                </h3>
+                <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                  Verified healthcare clinics, pharmacies, retail stores, and transport details for Ranaghat subdivision.
+                </p>
+              </div>
+              <span className="text-xs font-bold text-blue-700 inline-flex items-center gap-1">
+                View locality guide &rarr;
+              </span>
+            </Link>
+
+            <Link
+              to="/verify"
+              className="p-5 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-300 hover:shadow-sm transition-all flex flex-col justify-between space-y-3 group"
+            >
+              <div className="space-y-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md inline-block">
+                  Verification Standards
+                </span>
+                <h3 className="text-base font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                  How to Verify Business Credentials in India
+                </h3>
+                <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                  Step-by-step guidance on checking MCA company registrations, active GSTIN tax numbers, and municipal trade licenses.
+                </p>
+              </div>
+              <span className="text-xs font-bold text-blue-700 inline-flex items-center gap-1">
+                Check evidence guide &rarr;
+              </span>
+            </Link>
+
+            <Link
+              to="/contribute"
+              className="p-5 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-300 hover:shadow-sm transition-all flex flex-col justify-between space-y-3 group"
+            >
+              <div className="space-y-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700 bg-purple-50 px-2.5 py-1 rounded-md inline-block">
+                  Community Network
+                </span>
+                <h3 className="text-base font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                  Help Improve Your Local Area
+                </h3>
+                <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                  Know a reliable doctor, shop, or service that should be verified on Conflux? Share verified details with neighbors.
+                </p>
+              </div>
+              <span className="text-xs font-bold text-blue-700 inline-flex items-center gap-1">
+                Suggest information &rarr;
+              </span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* SECTION 3: How Conflux Builds Trust */}
       <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-100">
         <div className="max-w-4xl mx-auto space-y-8 text-center">

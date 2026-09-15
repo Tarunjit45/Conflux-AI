@@ -571,94 +571,8 @@ export const DiscoverPage: React.FC = () => {
           </div>
         </div>
 
-        {/* ── DISCOVERY VIEW SWITCHER: BUSINESSES VS COMMUNITY SIGNALS ── */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setDiscoveryMode('BUSINESSES')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-                discoveryMode === 'BUSINESSES'
-                  ? 'bg-blue-700 text-white shadow-sm'
-                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
-              }`}
-            >
-              <Building2 size={14} />
-              <span>Verified Businesses ({results.length})</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setDiscoveryMode('COMMUNITY_SIGNALS')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-                discoveryMode === 'COMMUNITY_SIGNALS'
-                  ? 'bg-purple-600 text-white shadow-sm'
-                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
-              }`}
-            >
-              <Radio size={14} className={discoveryMode === 'COMMUNITY_SIGNALS' ? 'animate-pulse' : ''} />
-              <span>Community Signals ({contributions.length})</span>
-            </button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setIsRequestModalOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
-            >
-              <HelpCircle size={13} /> Can't find a business?
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsCreateModalOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
-            >
-              <Plus size={13} /> Share Signal
-            </button>
-          </div>
-        </div>
-
         {/* ── SEARCH RESULTS GRID / STATES ──────────────────────── */}
-        {discoveryMode === 'COMMUNITY_SIGNALS' ? (
-          <div>
-            {isLoading ? (
-              <div className="p-12 text-center bg-white rounded-3xl border border-slate-200">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-purple-600 border-r-transparent mb-4"></div>
-                <p className="text-slate-600 text-sm font-medium">Loading community signals &amp; ground truth...</p>
-              </div>
-            ) : contributions.length > 0 ? (
-              <div className="space-y-6">
-                {contributions.map((c) => (
-                  <ContributionCard
-                    key={c.id}
-                    contribution={c}
-                    onUpdated={(updated) => {
-                      setContributions(prev => prev.map(item => item.id === updated.id ? updated : item));
-                    }}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="p-12 text-center bg-white rounded-3xl border border-slate-200 space-y-3">
-                <Radio size={36} className="mx-auto text-slate-400" />
-                <h3 className="text-lg font-bold text-slate-800">
-                  No community signals recorded yet for this location
-                </h3>
-                <p className="text-xs text-slate-500 max-w-md mx-auto">
-                  Be the first to share an authentic update, recommendation, or business discovery.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1.5"
-                >
-                  <Plus size={14} /> Submit First Signal
-                </button>
-              </div>
-            )}
-          </div>
-        ) : isLoading ? (
+        {isLoading ? (
           /* Loading Skeleton State */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map(n => (
@@ -675,55 +589,72 @@ export const DiscoverPage: React.FC = () => {
             ))}
           </div>
         ) : results.length === 0 ? (
-          /* Honest Empty State with Fallback Suggestions */
+          /* Calm Empty State with Clear Progressive Actions */
           <div className="space-y-8">
             <div className="p-8 sm:p-12 rounded-2xl bg-white border border-slate-200 text-center space-y-5 max-w-2xl mx-auto shadow-sm">
               <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-700 mx-auto flex items-center justify-center">
                 <Building2 size={28} />
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900 capitalize">
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-900">
                   {whereQuery.trim()
-                    ? `No verified businesses found in "${whereQuery.trim()}" yet.`
-                    : 'No matching businesses found.'}
+                    ? `We're building the trusted local network in ${whereQuery.trim()}.`
+                    : "We're building the trusted local network here."}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-lg mx-auto">
-                  We verify every business against official statutory registries before listing. You can request a business in this area or explore verified providers across West Bengal below.
+                  {whereQuery.trim()
+                    ? `No verified businesses found in ${whereQuery.trim()} yet. We verify every business against primary statutory records before publishing.`
+                    : 'No verified businesses match this specific filter yet.'}
                 </p>
               </div>
 
+              {/* One clear set of next actions */}
               <div className="pt-2 flex flex-wrap items-center justify-center gap-2.5">
-                {hasActiveFilters && (
-                  <button
-                    onClick={handleResetFilters}
-                    className="px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold transition-all cursor-pointer"
-                  >
-                    View All Businesses
-                  </button>
-                )}
                 <button
                   type="button"
-                  onClick={() => setIsRequestModalOpen(true)}
-                  className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-all cursor-pointer"
+                  onClick={() => {
+                    setWhereQuery('Nadia');
+                    executeSearch(whatQuery, 'Nadia');
+                  }}
+                  className="px-5 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold transition-all cursor-pointer shadow-sm"
                 >
-                  Request a Business
+                  Explore Nadia District
                 </button>
                 <Link
                   to="/list-business"
-                  className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all"
+                  className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all"
                 >
-                  List a Business Free
+                  Add a Business Free
                 </Link>
+                <Link
+                  to="/contribute"
+                  className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all"
+                >
+                  Suggest Local Information
+                </Link>
+                {hasActiveFilters && (
+                  <button
+                    onClick={handleResetFilters}
+                    className="px-4 py-2.5 rounded-xl text-slate-500 hover:text-slate-900 text-xs font-semibold"
+                  >
+                    Clear Filters
+                  </button>
+                )}
               </div>
             </div>
 
-            {/* Fallback Listings: Never leave user in an empty room */}
+            {/* Fallback Listings: Gracefully expand to nearest verified businesses */}
             {fallbackBusinesses.length > 0 && (
               <div className="space-y-4 pt-4 border-t border-slate-200">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-slate-900">
-                    Verified Businesses You Can Connect With in West Bengal
-                  </h4>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-900">
+                      Verified Businesses in Nadia &amp; West Bengal
+                    </h4>
+                    <span className="text-xs text-slate-500">
+                      Statutory verified establishments ready to connect
+                    </span>
+                  </div>
                   <Link to="/discover" onClick={handleResetFilters} className="text-xs font-bold text-blue-700 hover:underline">
                     View full directory &rarr;
                   </Link>

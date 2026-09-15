@@ -74,17 +74,10 @@ export const BusinessSubmissionPage: React.FC = () => {
         setErrorMessage('Please enter your city, municipality, or town.');
         return;
       }
-      if (!fullAddress || fullAddress.trim().length < 3) {
-        setErrorMessage('Please enter your locality, market, or physical street address.');
-        return;
-      }
     } else if (currentStep === 3) {
-      if (hasWebsite === null) {
-        setErrorMessage('Please indicate whether you have a business website.');
-        return;
-      }
-      if (hasWebsite && (!websiteUrl || websiteUrl.trim().length < 4)) {
-        setErrorMessage('Please enter a valid website URL or select "I don\'t have a website".');
+      // Step 3 (Online presence) is optional per Section 11: "Add any links you already have"
+      if (websiteUrl && websiteUrl.trim().length > 0 && !websiteUrl.includes('.')) {
+        setErrorMessage('Please enter a valid website URL or leave it blank.');
         return;
       }
     } else if (currentStep === 4) {
@@ -98,10 +91,7 @@ export const BusinessSubmissionPage: React.FC = () => {
         return;
       }
     } else if (currentStep === 6) {
-      if (hasOnlineSources === null) {
-        setErrorMessage('Please indicate whether your business has existing online profiles.');
-        return;
-      }
+      // Step 6 (Verification) is optional documentation/proof notes
     }
 
     setCurrentStep(prev => prev + 1);
@@ -215,17 +205,17 @@ export const BusinessSubmissionPage: React.FC = () => {
               >
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
-                    1. Business Identity
+                    1 of 7 &bull; Business
                   </span>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
-                    What is your business name?
+                    Add your business
                   </h1>
-                  <p className="text-xs sm:text-sm text-slate-600">
-                    Enter the name customers use to identify your shop, clinic, or service.
+                  <p className="text-sm text-slate-600">
+                    Let's get your business onto Conflux.
                   </p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-4 pt-2">
                   <div>
                     <label className="text-xs font-bold text-slate-700 block mb-1.5">
                       Business Name *
@@ -234,28 +224,14 @@ export const BusinessSubmissionPage: React.FC = () => {
                       type="text"
                       value={businessName}
                       onChange={e => setBusinessName(e.target.value)}
-                      placeholder="e.g. Ghosh Diagnostics &amp; Clinic"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
+                      placeholder="Enter your business name"
+                      className="w-full px-4 py-3.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                       autoFocus
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                      Registered / Legal Name <span className="text-slate-400 font-normal">(optional)</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={legalName}
-                      onChange={e => setLegalName(e.target.value)}
-                      placeholder="e.g. Ghosh Diagnostics Pvt Ltd (if different)"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                     />
                   </div>
                 </div>
               </motion.div>
             )}
-
             {/* ── STEP 2: LOCATION ──────────────────────────────────── */}
             {currentStep === 2 && (
               <motion.div
@@ -267,20 +243,34 @@ export const BusinessSubmissionPage: React.FC = () => {
               >
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
-                    2. Location
+                    2 of 7 &bull; Location
                   </span>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
-                    Where is your business located?
+                    Where is your business?
                   </h1>
-                  <p className="text-xs sm:text-sm text-slate-600">
-                    Help local customers in West Bengal find your physical location.
+                  <p className="text-sm text-slate-600">
+                    Help local customers in West Bengal find your business.
                   </p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-4 pt-2">
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                      City / Locality *
+                    </label>
+                    <input
+                      type="text"
+                      value={city}
+                      onChange={e => setCity(e.target.value)}
+                      placeholder="e.g. Ranaghat, Krishnanagar, Kalyani"
+                      className="w-full px-4 py-3.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                      autoFocus
+                    />
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-bold text-slate-700 block mb-1.5">District *</label>
+                      <label className="text-xs font-bold text-slate-700 block mb-1.5">District</label>
                       <select
                         value={district}
                         onChange={e => setDistrict(e.target.value)}
@@ -293,34 +283,23 @@ export const BusinessSubmissionPage: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="text-xs font-bold text-slate-700 block mb-1.5">City / Town *</label>
+                      <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                        Street Address <span className="text-slate-400 font-normal">(optional)</span>
+                      </label>
                       <input
                         type="text"
-                        value={city}
-                        onChange={e => setCity(e.target.value)}
-                        placeholder="e.g. Ranaghat, Krishnanagar, Kalyani"
+                        value={fullAddress}
+                        onChange={e => setFullAddress(e.target.value)}
+                        placeholder="e.g. Subhas Avenue, Near Hospital"
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
                       />
                     </div>
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                      Street Address &amp; Locality *
-                    </label>
-                    <input
-                      type="text"
-                      value={fullAddress}
-                      onChange={e => setFullAddress(e.target.value)}
-                      placeholder="e.g. Mission Gate Road, Near Post Office"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
-                    />
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {/* ── STEP 3: WEBSITE ───────────────────────────────────── */}
+            {/* ── STEP 3: ONLINE PRESENCE ────────────────────────────── */}
             {currentStep === 3 && (
               <motion.div
                 key="step3"
@@ -331,67 +310,73 @@ export const BusinessSubmissionPage: React.FC = () => {
               >
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
-                    3. Website
+                    3 of 7 &bull; Online Presence
                   </span>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
-                    Do you have a business website?
+                    Where can customers find you online?
                   </h1>
+                  <p className="text-sm text-slate-600">
+                    Add any links you already have. We use available public sources to verify your business details.
+                  </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setHasWebsite(true)}
-                    className={`p-5 rounded-2xl border text-left transition-all cursor-pointer ${
-                      hasWebsite === true
-                        ? 'border-blue-700 bg-blue-50/50 ring-2 ring-blue-700/20'
-                        : 'border-slate-200 hover:border-slate-300 bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <Globe className={hasWebsite === true ? 'text-blue-700' : 'text-slate-400'} size={20} />
-                      {hasWebsite === true && <CheckCircle2 size={18} className="text-blue-700" />}
-                    </div>
-                    <h3 className="font-bold text-slate-900 text-sm">Yes, I have a website</h3>
-                    <p className="text-xs text-slate-500 mt-1">Provide your existing domain URL.</p>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setHasWebsite(false);
-                      setWebsiteUrl('');
-                    }}
-                    className={`p-5 rounded-2xl border text-left transition-all cursor-pointer ${
-                      hasWebsite === false
-                        ? 'border-blue-700 bg-blue-50/50 ring-2 ring-blue-700/20'
-                        : 'border-slate-200 hover:border-slate-300 bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <HelpCircle className={hasWebsite === false ? 'text-blue-700' : 'text-slate-400'} size={20} />
-                      {hasWebsite === false && <CheckCircle2 size={18} className="text-blue-700" />}
-                    </div>
-                    <h3 className="font-bold text-slate-900 text-sm">No website</h3>
-                    <p className="text-xs text-slate-500 mt-1">Conflux can verify through direct contact and official records.</p>
-                  </button>
-                </div>
-
-                {hasWebsite === true && (
-                  <div className="space-y-1.5 pt-2">
-                    <label className="text-xs font-bold text-slate-700 block">
-                      Website URL *
-                    </label>
+                <div className="space-y-3 pt-2">
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">Website URL</label>
                     <input
                       type="url"
                       value={websiteUrl}
                       onChange={e => setWebsiteUrl(e.target.value)}
-                      placeholder="https://yourbusiness.in"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
-                      autoFocus
+                      placeholder="https://yourbusiness.in (optional)"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
                     />
                   </div>
-                )}
+
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">Google Business Profile / Maps Link</label>
+                    <input
+                      type="url"
+                      value={onlineSources.googleBusinessUrl}
+                      onChange={e => setOnlineSources({ ...onlineSources, googleBusinessUrl: e.target.value })}
+                      placeholder="https://maps.google.com/... (optional)"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 block mb-1">Facebook</label>
+                      <input
+                        type="url"
+                        value={onlineSources.facebookUrl}
+                        onChange={e => setOnlineSources({ ...onlineSources, facebookUrl: e.target.value })}
+                        placeholder="https://facebook.com/... (optional)"
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 block mb-1">Instagram</label>
+                      <input
+                        type="url"
+                        value={onlineSources.instagramUrl}
+                        onChange={e => setOnlineSources({ ...onlineSources, instagramUrl: e.target.value })}
+                        placeholder="https://instagram.com/... (optional)"
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">LinkedIn or Directory Profile</label>
+                    <input
+                      type="url"
+                      value={onlineSources.linkedinUrl}
+                      onChange={e => setOnlineSources({ ...onlineSources, linkedinUrl: e.target.value })}
+                      placeholder="https://linkedin.com/... (optional)"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
+                    />
+                  </div>
+                </div>
               </motion.div>
             )}
 
@@ -406,17 +391,17 @@ export const BusinessSubmissionPage: React.FC = () => {
               >
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
-                    4. Contact Details
+                    4 of 7 &bull; Contact Information
                   </span>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
-                    How can customers reach you?
+                    How can customers contact you?
                   </h1>
-                  <p className="text-xs sm:text-sm text-slate-600">
-                    Provide verified direct numbers for phone and WhatsApp inquiries.
+                  <p className="text-sm text-slate-600">
+                    Only provide what is actually necessary for customers to reach your business directly.
                   </p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-4 pt-2">
                   <div>
                     <label className="text-xs font-bold text-slate-700 block mb-1.5">
                       Phone Number *
@@ -459,35 +444,17 @@ export const BusinessSubmissionPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-                    <div>
-                      <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                        Representative Name <span className="text-slate-400 font-normal">(optional)</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={ownerName}
-                        onChange={e => setOwnerName(e.target.value)}
-                        placeholder="e.g. Amit Ghosh"
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                        Designation
-                      </label>
-                      <select
-                        value={ownerRole}
-                        onChange={e => setOwnerRole(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 bg-white"
-                      >
-                        <option value="Owner">Owner / Proprietor</option>
-                        <option value="Founder">Founder</option>
-                        <option value="Manager">Manager</option>
-                        <option value="Authorized Representative">Authorized Representative</option>
-                      </select>
-                    </div>
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                      Owner or Manager Name <span className="text-slate-400 font-normal">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={ownerName}
+                      onChange={e => setOwnerName(e.target.value)}
+                      placeholder="e.g. Amit Ghosh"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                    />
                   </div>
                 </div>
               </motion.div>
@@ -504,17 +471,17 @@ export const BusinessSubmissionPage: React.FC = () => {
               >
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
-                    5. Category &amp; Services
+                    5 of 7 &bull; Business Details
                   </span>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
-                    What does your business offer?
+                    Tell us about your business
                   </h1>
-                  <p className="text-xs sm:text-sm text-slate-600">
-                    Select your primary sector and describe your key services or products.
+                  <p className="text-sm text-slate-600">
+                    Collect only the minimum useful information customers need.
                   </p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-4 pt-2">
                   <div>
                     <label className="text-xs font-bold text-slate-700 block mb-1.5">
                       Category *
@@ -540,13 +507,13 @@ export const BusinessSubmissionPage: React.FC = () => {
 
                   <div>
                     <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                      Business Description &amp; Services *
+                      Short Description *
                     </label>
                     <textarea
-                      rows={4}
+                      rows={3}
                       value={description}
                       onChange={e => setDescription(e.target.value)}
-                      placeholder="e.g. Specialist pathology testing, ultrasound, ECG, and general doctor consultations. Open 7 days a week."
+                      placeholder="e.g. Trusted dental and oral healthcare clinic providing orthodontics, implants, and consultations. Open 7 days a week."
                       className="w-full p-4 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
                     />
                   </div>
@@ -554,7 +521,7 @@ export const BusinessSubmissionPage: React.FC = () => {
               </motion.div>
             )}
 
-            {/* ── STEP 6: EVIDENCE / ONLINE SOURCES ─────────────────── */}
+            {/* ── STEP 6: HELP US VERIFY ────────────────────────────── */}
             {currentStep === 6 && (
               <motion.div
                 key="step6"
@@ -565,81 +532,34 @@ export const BusinessSubmissionPage: React.FC = () => {
               >
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
-                    6. Verification Evidence
+                    6 of 7 &bull; Verification
                   </span>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
-                    Do you have existing online profiles?
+                    Help us verify your business
                   </h1>
-                  <p className="text-xs sm:text-sm text-slate-600">
-                    Existing profiles help Conflux corroborate your business details faster.
+                  <p className="text-sm text-slate-600">
+                    We use available public and first-party sources to check business information.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setHasOnlineSources(true)}
-                    className={`p-5 rounded-2xl border text-left transition-all cursor-pointer ${
-                      hasOnlineSources === true
-                        ? 'border-blue-700 bg-blue-50/50 ring-2 ring-blue-700/20'
-                        : 'border-slate-200 hover:border-slate-300 bg-white'
-                    }`}
-                  >
-                    <h3 className="font-bold text-slate-900 text-sm">Yes, I have profiles</h3>
-                    <p className="text-xs text-slate-500 mt-1">Google Maps, Facebook, Instagram, or trade portal.</p>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setHasOnlineSources(false)}
-                    className={`p-5 rounded-2xl border text-left transition-all cursor-pointer ${
-                      hasOnlineSources === false
-                        ? 'border-blue-700 bg-blue-50/50 ring-2 ring-blue-700/20'
-                        : 'border-slate-200 hover:border-slate-300 bg-white'
-                    }`}
-                  >
-                    <h3 className="font-bold text-slate-900 text-sm">No online profiles</h3>
-                    <p className="text-xs text-slate-500 mt-1">Conflux will verify via direct phone contact and location checks.</p>
-                  </button>
-                </div>
-
-                {hasOnlineSources === true && (
-                  <div className="space-y-3 pt-2">
-                    <div>
-                      <label className="text-xs font-bold text-slate-700 block mb-1">Google Business Profile / Maps URL</label>
-                      <input
-                        type="url"
-                        value={onlineSources.googleBusinessUrl}
-                        onChange={e => setOnlineSources({ ...onlineSources, googleBusinessUrl: e.target.value })}
-                        placeholder="https://maps.google.com/..."
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-xs font-bold text-slate-700 block mb-1">Facebook Page</label>
-                        <input
-                          type="url"
-                          value={onlineSources.facebookUrl}
-                          onChange={e => setOnlineSources({ ...onlineSources, facebookUrl: e.target.value })}
-                          placeholder="https://facebook.com/..."
-                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-bold text-slate-700 block mb-1">Instagram Profile</label>
-                        <input
-                          type="url"
-                          value={onlineSources.instagramUrl}
-                          onChange={e => setOnlineSources({ ...onlineSources, instagramUrl: e.target.value })}
-                          placeholder="https://instagram.com/..."
-                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
-                        />
-                      </div>
-                    </div>
+                <div className="space-y-4 pt-2">
+                  <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 text-xs text-blue-900 leading-relaxed">
+                    <strong>How verification works:</strong> We corroborate your business against government registrations (Trade License, GSTIN, MCA, or MSME Udyam) and physical location checks. You do not have to upload everything now.
                   </div>
-                )}
+
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                      Trade License, GSTIN or Registration Number <span className="text-slate-400 font-normal">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={legalName}
+                      onChange={e => setLegalName(e.target.value)}
+                      placeholder="e.g. GSTIN: 19XXXXX... or Municipality Trade License No."
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                    />
+                  </div>
+                </div>
               </motion.div>
             )}
 
@@ -718,43 +638,38 @@ export const BusinessSubmissionPage: React.FC = () => {
                   <CheckCircle2 size={32} />
                 </div>
 
-                <div className="space-y-1.5">
-                  <span className="text-xs font-mono font-bold text-emerald-700 uppercase tracking-widest">
+                <div className="space-y-2">
+                  <span className="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest">
                     Reference #{submissionResult.applicationId}
                   </span>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
-                    Verification request received
+                    Your business has been submitted
                   </h1>
-                  <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                    We have received the listing details for <strong>{submissionResult.businessName}</strong>. Our team will verify your information before publishing your profile.
+                  <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+                    Conflux will review the information and verification sources.
                   </p>
                 </div>
 
-                {/* Verification Pipeline Tracker */}
+                {/* Status Badge */}
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                  <span>Status: Under review</span>
+                </div>
+
+                {/* Next Steps Explanation */}
                 <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 max-w-md mx-auto text-left space-y-2.5 text-xs">
-                  <div className="font-bold text-slate-700 uppercase font-mono tracking-wider border-b border-slate-200 pb-2">
-                    Verification Status
+                  <div className="font-bold text-slate-800 uppercase font-mono tracking-wider border-b border-slate-200 pb-2">
+                    What happens next?
                   </div>
-
-                  <div className="flex items-center justify-between font-semibold text-emerald-800 bg-emerald-50/80 p-2.5 rounded-xl border border-emerald-200">
-                    <span>1. Submission received</span>
-                    <CheckCircle2 size={16} className="text-emerald-600" />
-                  </div>
-
-                  <div className="flex items-center justify-between font-medium text-slate-700 bg-white p-2.5 rounded-xl border border-slate-200">
-                    <span>2. Details review</span>
-                    <span className="text-amber-600 font-mono text-[11px]">In Queue ⏳</span>
-                  </div>
-
-                  <div className="flex items-center justify-between font-medium text-slate-700 bg-white p-2.5 rounded-xl border border-slate-200">
-                    <span>3. Source verification</span>
-                    <span className="text-slate-400 font-mono text-[11px]">Pending ⏳</span>
-                  </div>
-
-                  <div className="flex items-center justify-between font-medium text-slate-700 bg-white p-2.5 rounded-xl border border-slate-200">
-                    <span>4. Profile publication</span>
-                    <span className="text-slate-400 font-mono text-[11px]">Pending ⏳</span>
-                  </div>
+                  <p className="text-slate-600 leading-relaxed">
+                    1. <strong>Document corroboration:</strong> Our local verification team will check your registered details against official government registries (MCA, GSTIN, Trade License).
+                  </p>
+                  <p className="text-slate-600 leading-relaxed">
+                    2. <strong>Direct confirmation:</strong> We will verify your WhatsApp and telephone reachability.
+                  </p>
+                  <p className="text-slate-600 leading-relaxed">
+                    3. <strong>Public launch:</strong> Once approved, your business will receive the <strong>✓ Conflux Verified</strong> badge and become discoverable across Nadia and West Bengal.
+                  </p>
                 </div>
 
                 <div className="flex flex-wrap items-center justify-center gap-3 pt-2">

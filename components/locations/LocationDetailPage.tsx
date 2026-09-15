@@ -1390,14 +1390,25 @@ const LocationDetailPage: React.FC = () => {
                     })}
                   </div>
                 ) : (
-                  <div className="p-8 text-center bg-slate-50 rounded-3xl border border-slate-200">
-                    <p className="text-slate-600 text-sm mb-4">No verified businesses currently indexed in Ranaghat.</p>
-                    <Link
-                      to="/list-business"
-                      className="px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-blue-700 transition-all inline-flex items-center gap-2 min-h-[44px]"
-                    >
-                      List a Ranaghat Business
-                    </Link>
+                  <div className="p-8 text-center bg-slate-50 rounded-3xl border border-slate-200 space-y-3">
+                    <p className="text-slate-800 font-bold text-sm">No verified businesses currently indexed in Ranaghat.</p>
+                    <p className="text-slate-500 text-xs max-w-md mx-auto">
+                      Explore verified establishments across Nadia district or add your business to get verified.
+                    </p>
+                    <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                      <Link
+                        to="/list-business"
+                        className="px-5 py-2.5 rounded-xl bg-blue-700 text-white text-xs font-bold hover:bg-blue-800 transition-all inline-flex items-center gap-2 min-h-[44px]"
+                      >
+                        Add a Business Free
+                      </Link>
+                      <Link
+                        to="/discover"
+                        className="px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-all inline-flex items-center gap-2 min-h-[44px]"
+                      >
+                        Explore Nadia Businesses &rarr;
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>

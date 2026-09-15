@@ -7,44 +7,40 @@ import { Youtube, Facebook, Instagram, Linkedin, Twitter, ArrowUpRight, Mail, Ma
 const Footer: React.FC<{ siteLogo: string | null }> = ({ siteLogo }) => {
   const footerSections = [
     {
-      title: "Platform",
+      title: "Discover",
       links: [
         { name: "Discover Businesses", path: "/discover" },
-        { name: "For Businesses", path: "/business" },
-        { name: "Visibility Audit", path: "/business/audit" },
-        { name: "List Your Business", path: "/list-business" },
-        { name: "West Bengal Locations", path: "/locations" }
+        { name: "West Bengal Locations", path: "/locations" },
+        { name: "Nadia District Hub", path: "/locations/west-bengal/nadia" },
+        { name: "Ranaghat Local Guide", path: "/locations/west-bengal/nadia/ranaghat" },
+        { name: "Help Improve (Contribute)", path: "/contribute" }
       ]
     },
     {
-      title: "Solutions",
+      title: "For Businesses",
       links: [
-        { name: "Local Search & Entity Graph", path: "/solutions" },
-        { name: "AI Search Readiness (GEO)", path: "/solutions" },
-        { name: "Evidence & Trust Badges", path: "/solutions" },
-        { name: "WhatsApp Speed-to-Lead", path: "/solutions" },
-        { name: "Semantic Knowledge Map", path: "/semantic-map" }
+        { name: "List Your Business Free", path: "/list-business" },
+        { name: "For Business Owners", path: "/business" },
+        { name: "Owner Dashboard", path: "/business/dashboard" },
+        { name: "Visibility Audit", path: "/business/audit" }
       ]
     },
     {
-      title: "Verification",
+      title: "Trust & Verification",
       links: [
-        { name: "Conflux Verify Portal", path: "/verify" },
-        { name: "Evidence Methodology", path: "/verify/methodology" },
+        { name: "How Verification Works", path: "/verify" },
+        { name: "Evidence Standards", path: "/verify/methodology" },
         { name: "Verify Indian Company", path: "/verify/guides/how-to-verify-indian-company-legal-existence" },
-        { name: "Verify GST & Udyam", path: "/verify/guides/how-to-verify-gst-udyam-registration" },
-        { name: "Verify ISO Certificate", path: "/verify/guides/how-to-verify-iso-certificate" }
+        { name: "Verify GST & Udyam", path: "/verify/guides/how-to-verify-gst-udyam-registration" }
       ]
     },
     {
-      title: "Company",
+      title: "About",
       links: [
         { name: "About Conflux", path: "/about" },
-        { name: "Authority Signals", path: "/authority" },
+        { name: "Local Knowledge Blog", path: "/blog" },
         { name: "Workplace Policy", path: "/workplace-policy" },
-        { name: "Knowledge Blog", path: "/blog" },
-        { name: "Social Impact", path: "/impact" },
-        { name: "Contact Platform", path: "/contact" }
+        { name: "Contact", path: "/contact" }
       ]
     }
   ];

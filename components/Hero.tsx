@@ -52,16 +52,16 @@ export const Hero: React.FC = () => {
         {/* Trust Pill */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-blue-800 text-xs font-semibold tracking-wide">
           <ShieldCheck className="w-4 h-4 text-blue-600" />
-          <span>Local Trust &amp; Discovery &bull; West Bengal</span>
+          <span>Local Information &amp; Trust Network</span>
         </div>
 
-        {/* Primary Headline */}
+        {/* Primary Headline & Supporting Copy */}
         <div className="space-y-3">
           <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight leading-tight max-w-3xl mx-auto font-inter">
-            Find a local business you can trust.
+            Discover your local area with confidence.
           </h1>
           <p className="text-slate-600 text-sm sm:text-lg max-w-2xl mx-auto leading-relaxed">
-            Discover verified local clinics, shops, artisans, and services with statutory evidence.
+            Find local information and businesses, check the evidence, and connect directly.
           </p>
         </div>
 
@@ -77,7 +77,7 @@ export const Hero: React.FC = () => {
               type="text"
               value={whatQuery}
               onChange={(e) => setWhatQuery(e.target.value)}
-              placeholder="What are you looking for? (Doctor, AC...)"
+              placeholder="Search local businesses, services, places..."
               className="w-full bg-transparent text-sm sm:text-base font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none py-2"
               autoComplete="off"
             />
@@ -92,19 +92,19 @@ export const Hero: React.FC = () => {
               type="text"
               value={whereQuery}
               onChange={(e) => setWhereQuery(e.target.value)}
-              placeholder="Where? (Ranaghat, Nadia, Kolkata)"
+              placeholder="Enter a city, locality or area"
               className="w-full bg-transparent text-sm sm:text-base font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none py-2"
               autoComplete="off"
             />
           </div>
 
-          {/* Submit Action */}
+          {/* Submit Action: Explore */}
           <button
             type="submit"
-            aria-label="Search local businesses"
-            className="px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 active:bg-blue-900 text-white font-bold text-sm shadow-md shadow-blue-700/20 transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer min-h-[44px]"
+            aria-label="Explore local area"
+            className="px-7 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 active:bg-blue-900 text-white font-bold text-sm shadow-md shadow-blue-700/20 transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer min-h-[44px]"
           >
-            <span>Search</span>
+            <span>Explore</span>
             <ArrowRight size={15} />
           </button>
         </form>
@@ -138,9 +138,9 @@ export const Hero: React.FC = () => {
 
         {/* Business Owner Pathway */}
         <div className="pt-2 text-xs text-slate-500">
-          Own a local business in West Bengal?{' '}
-          <Link to="/list-business" className="font-semibold text-blue-700 hover:underline inline-flex items-center gap-0.5">
-            List and get verified free &rarr;
+          Own a local business?{' '}
+          <Link to="/list-business" className="font-bold text-blue-700 hover:underline">
+            List your business free &rarr;
           </Link>
         </div>
 
