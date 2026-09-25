@@ -15,6 +15,7 @@ import type {
 import { generateConfluxBusinessId, slugifyBusinessName } from './businessId.ts';
 import { verificationService } from './verify/verificationService.ts';
 import { enrichmentService } from './enrichmentService.ts';
+import { emailService } from './emailService.ts';
 
 // Test/Development Memory Cache
 let memoryStore: ConfluxBusiness[] = [];
@@ -686,6 +687,17 @@ export class BusinessService {
     }
 
     memoryStore.unshift(newBiz);
+
+    // Dispatch business submitted notification to owner/submitter & admin (non-blocking)
+    if (newBiz.contact.email) {
+      emailService.sendBusinessSubmitted(newBiz).catch(err => {
+        console.warn('[BusinessService] Business submitted email notice:', err);
+      });
+    }
+    emailService.sendAdminNewBusinessSubmission(newBiz).catch(err => {
+      console.warn('[BusinessService] Admin new business notice:', err);
+    });
+
     return newBiz;
   }
 
@@ -968,6 +980,11 @@ export class BusinessService {
       sourceUrls: [biz.contact.websiteUrl || 'https://mca.gov.in']
     });
 
+    // Dispatch claim received notification (non-blocking)
+    emailService.sendBusinessClaimed(biz, ownerInfo).catch(err => {
+      console.warn('[BusinessService] Claim received email notice:', err);
+    });
+
     return {
       success: true,
       message: 'Claim request submitted successfully. Our verification team will review your statutory credentials.'
@@ -978,10 +995,17 @@ export class BusinessService {
    * Approve an owner claim after statutory review
    */
   async approveClaim(businessId: string): Promise<ConfluxBusiness> {
-    return this.updateBusiness(businessId, {
+    const updated = await this.updateBusiness(businessId, {
       claimStatus: 'VERIFIED_OWNER',
       isClaimed: true
     });
+
+    // Dispatch business approved notification (non-blocking)
+    emailService.sendBusinessApproved(updated).catch(err => {
+      console.warn('[BusinessService] Business approved email notice:', err);
+    });
+
+    return updated;
   }
 
   /**

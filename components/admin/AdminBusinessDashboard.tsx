@@ -54,6 +54,7 @@ import {
   Loader2,
   Sparkles,
   Radio,
+  Mail,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AdminShell } from "./AdminSidebar";
@@ -100,6 +101,8 @@ import { WEST_BENGAL_DISTRICTS } from "../../data/locationsData";
 import { BUSINESS_CATEGORY_TAXONOMY } from "../../data/taxonomiesData";
 import { verificationPaymentService, evaluateVerificationEvidence } from "../../lib/verificationPaymentService";
 import type { VerificationOrder } from "../../types/verificationPayment";
+import { emailService } from "../../lib/emailService";
+import type { EmailLog } from "../../types/email";
 
 const ensureUrlProtocol = (url?: string): string | undefined => {
   if (!url) return undefined;
@@ -111,7 +114,7 @@ const ensureUrlProtocol = (url?: string): string | undefined => {
 
 export const AdminBusinessDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
-    "ENTITIES" | "VERIFICATION_QUEUE" | "APPLICATIONS" | "CLAIMS" | "CONTRIBUTIONS" | "MEASUREMENT" | "RANAGHAT_HUB"
+    "ENTITIES" | "VERIFICATION_QUEUE" | "APPLICATIONS" | "CLAIMS" | "CONTRIBUTIONS" | "MEASUREMENT" | "RANAGHAT_HUB" | "EMAIL_LOGS"
   >("ENTITIES");
   const [businesses, setBusinesses] = useState<ConfluxBusiness[]>([]);
   const [applications, setApplications] = useState<
@@ -119,6 +122,9 @@ export const AdminBusinessDashboard: React.FC = () => {
   >([]);
   const [contributions, setContributions] = useState<UserContribution[]>([]);
   const [verificationOrders, setVerificationOrders] = useState<VerificationOrder[]>([]);
+  const [emailLogs, setEmailLogs] = useState<EmailLog[]>([]);
+  const [selectedEmailFilter, setSelectedEmailFilter] = useState<'ALL' | 'SENT' | 'SANDBOX' | 'FAILED' | 'SKIPPED'>('ALL');
+  const [emailSearchQuery, setEmailSearchQuery] = useState("");
   const [selectedVerificationFilter, setSelectedVerificationFilter] = useState<'ALL' | 'NEEDS_REVIEW' | 'MORE_EVIDENCE' | 'VERIFIED' | 'REJECTED'>('ALL');
   const [reviewNotesInput, setReviewNotesInput] = useState<{ [orderId: string]: string }>({});
   const [registrarInput, setRegistrarInput] = useState<{ [orderId: string]: string }>({});
@@ -215,7 +221,7 @@ export const AdminBusinessDashboard: React.FC = () => {
 
   const loadData = async () => {
     setIsLoading(true);
-    const [data, apps, contribs, report, lkContribs, bRequests, vRequests, allJobs, rVoices, rMoments, allProfiles, vOrders] = await Promise.all([
+    const [data, apps, contribs, report, lkContribs, bRequests, vRequests, allJobs, rVoices, rMoments, allProfiles, vOrders, eLogs] = await Promise.all([
       businessService.getAllBusinesses(),
       businessService.getAllApplications(),
       contributionService.getAllContributions(),
@@ -227,7 +233,8 @@ export const AdminBusinessDashboard: React.FC = () => {
       localKnowledgeService.getLocalVoices('ranaghat', 100).catch(() => [] as LocalUserProfile[]),
       localKnowledgeService.getLocalMoments('ranaghat').catch(() => [] as LocalMoment[]),
       localKnowledgeService.getAllLocalProfiles().catch(() => [] as LocalUserProfile[]),
-      verificationPaymentService.getAllApplications().catch(() => [] as VerificationOrder[])
+      verificationPaymentService.getAllApplications().catch(() => [] as VerificationOrder[]),
+      emailService.getAllEmailLogs().catch(() => [] as EmailLog[])
     ]);
     setBusinesses(data);
     setApplications(apps);
@@ -241,6 +248,7 @@ export const AdminBusinessDashboard: React.FC = () => {
     setRanaghatMoments(rMoments);
     setAllLocalProfiles(allProfiles);
     setVerificationOrders(vOrders);
+    setEmailLogs(eLogs);
     setIsLoading(false);
   };
 
@@ -1321,6 +1329,21 @@ export const AdminBusinessDashboard: React.FC = () => {
             }`}
           >
             <BarChart3 size={15} /> Telemetry &amp; Metrics
+          </button>
+
+          <button
+            onClick={() => setActiveTab("EMAIL_LOGS")}
+            className={`inline-flex shrink-0 items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeTab === "EMAIL_LOGS"
+                ? "bg-white text-indigo-900 shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <Mail size={15} className="text-indigo-600" />
+            <span>Email Audit Logs</span>
+            <span className="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-[10px] font-bold">
+              {emailLogs.length}
+            </span>
           </button>
         </div>
 
@@ -3748,6 +3771,230 @@ export const AdminBusinessDashboard: React.FC = () => {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* ── TAB 7: TRANSACTIONAL EMAIL & NOTIFICATION AUDIT LOGS ───────── */}
+        {activeTab === "EMAIL_LOGS" && (
+          <div className="space-y-6">
+            {/* Header & Overview Card */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-3xl bg-slate-900 text-white shadow-sm">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-400/30">
+                    <Mail size={16} />
+                  </span>
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-indigo-400">
+                    Centralized Event Stream
+                  </span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-black tracking-tight">
+                  Transactional Email &amp; Notification Audit Logs
+                </h2>
+                <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
+                  Cryptographically trackable delivery records for verification receipts, review queue evidence requests, badge determinations, and admin alerts. Strictly confidential.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={loadData}
+                  className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <RefreshCw size={14} className={isLoading ? "animate-spin" : ""} />
+                  <span>Refresh Logs</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Metric KPI Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs">
+                <span className="block text-[11px] font-bold uppercase text-slate-400">Total Dispatched</span>
+                <span className="text-xl font-black text-slate-900 font-mono mt-1 block">{emailLogs.length}</span>
+              </div>
+              <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 shadow-2xs">
+                <span className="block text-[11px] font-bold uppercase text-emerald-800">Delivered (Sent)</span>
+                <span className="text-xl font-black text-emerald-700 font-mono mt-1 block">
+                  {emailLogs.filter(l => l.status === 'SENT').length}
+                </span>
+              </div>
+              <div className="p-4 rounded-2xl bg-cyan-50/60 border border-cyan-200 shadow-2xs">
+                <span className="block text-[11px] font-bold uppercase text-cyan-800">Sandbox / Dev</span>
+                <span className="text-xl font-black text-cyan-700 font-mono mt-1 block">
+                  {emailLogs.filter(l => l.status === 'SANDBOX').length}
+                </span>
+              </div>
+              <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 shadow-2xs">
+                <span className="block text-[11px] font-bold uppercase text-amber-800">Deduplicated</span>
+                <span className="text-xl font-black text-amber-700 font-mono mt-1 block">
+                  {emailLogs.filter(l => l.status === 'SKIPPED_DUPLICATE' || l.status === 'SKIPPED_PREFERENCE').length}
+                </span>
+              </div>
+              <div className="p-4 rounded-2xl bg-rose-50/60 border border-rose-200 shadow-2xs">
+                <span className="block text-[11px] font-bold uppercase text-rose-800">Failed / Retried</span>
+                <span className="text-xl font-black text-rose-700 font-mono mt-1 block">
+                  {emailLogs.filter(l => l.status === 'FAILED').length}
+                </span>
+              </div>
+            </div>
+
+            {/* DPDP Compliance Notice */}
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-start gap-3">
+              <ShieldCheck size={18} className="text-indigo-600 shrink-0 mt-0.5" />
+              <div className="leading-relaxed">
+                <strong className="text-slate-900 block mb-0.5">Admin Security &amp; DPDP Notice:</strong>
+                All dispatched emails in this log are strictly transactional notifications necessary for order fulfillment, evidence collection, and security alerts. Marketing emails are separate and require prior consent. This log is accessible only by authenticated administrators.
+              </div>
+            </div>
+
+            {/* Filter and Search Controls */}
+            <div className="p-4 rounded-2xl bg-white border border-slate-200 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                {/* Status Filter Buttons */}
+                <div className="flex items-center gap-1.5 overflow-x-auto">
+                  {(['ALL', 'SENT', 'SANDBOX', 'FAILED', 'SKIPPED'] as const).map(filter => (
+                    <button
+                      key={filter}
+                      type="button"
+                      onClick={() => setSelectedEmailFilter(filter)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        selectedEmailFilter === filter
+                          ? 'bg-slate-900 text-white'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {filter}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Search Box */}
+                <div className="relative w-full sm:w-72">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    value={emailSearchQuery}
+                    onChange={e => setEmailSearchQuery(e.target.value)}
+                    placeholder="Search recipient or order ID..."
+                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-hidden focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+
+              {/* Email Audit Log Table */}
+              <div className="overflow-x-auto border-t border-slate-100 pt-3">
+                {(() => {
+                  const filteredLogs = emailLogs.filter(log => {
+                    if (selectedEmailFilter === 'SENT' && log.status !== 'SENT') return false;
+                    if (selectedEmailFilter === 'SANDBOX' && log.status !== 'SANDBOX') return false;
+                    if (selectedEmailFilter === 'FAILED' && log.status !== 'FAILED') return false;
+                    if (selectedEmailFilter === 'SKIPPED' && !log.status.startsWith('SKIPPED')) return false;
+
+                    if (emailSearchQuery.trim()) {
+                      const q = emailSearchQuery.toLowerCase();
+                      const matchRecip = log.recipient.toLowerCase().includes(q);
+                      const matchEntity = log.entityId?.toLowerCase().includes(q);
+                      const matchEvent = log.eventType.toLowerCase().includes(q);
+                      const matchSub = log.subject.toLowerCase().includes(q);
+                      if (!matchRecip && !matchEntity && !matchEvent && !matchSub) return false;
+                    }
+                    return true;
+                  });
+
+                  if (filteredLogs.length === 0) {
+                    return (
+                      <div className="p-12 text-center text-slate-400 text-xs">
+                        <Mail size={32} className="mx-auto text-slate-300 mb-2 opacity-50" />
+                        <p>No email logs found matching current filter/query.</p>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-50 text-slate-500 uppercase text-[10px] font-mono border-b border-slate-200">
+                        <tr>
+                          <th className="py-2.5 px-3">Status</th>
+                          <th className="py-2.5 px-3">Event Type</th>
+                          <th className="py-2.5 px-3">Recipient &amp; Entity</th>
+                          <th className="py-2.5 px-3">Subject</th>
+                          <th className="py-2.5 px-3">Provider / Message ID</th>
+                          <th className="py-2.5 px-3">Timestamp</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {filteredLogs.map(log => {
+                          const statusColor =
+                            log.status === 'SENT'
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                              : log.status === 'SANDBOX'
+                              ? 'bg-cyan-50 text-cyan-800 border-cyan-200'
+                              : log.status === 'FAILED'
+                              ? 'bg-rose-50 text-rose-800 border-rose-200'
+                              : 'bg-amber-50 text-amber-800 border-amber-200';
+
+                          return (
+                            <tr key={log.id} className="hover:bg-slate-50/80 transition-colors">
+                              <td className="py-3 px-3">
+                                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusColor}`}>
+                                  {log.status}
+                                </span>
+                              </td>
+                              <td className="py-3 px-3">
+                                <span className="font-mono text-[11px] font-semibold text-slate-900 block">
+                                  {log.eventType}
+                                </span>
+                                <span className="text-[10px] text-slate-400 uppercase font-mono">
+                                  {log.category}
+                                </span>
+                              </td>
+                              <td className="py-3 px-3">
+                                <span className="font-bold text-slate-900 block truncate max-w-[200px]" title={log.recipient}>
+                                  {log.recipient}
+                                </span>
+                                {log.entityId && (
+                                  <span className="font-mono text-[10px] text-slate-500 block truncate max-w-[200px]" title={log.entityId}>
+                                    ID: {log.entityId}
+                                  </span>
+                                )}
+                              </td>
+                              <td className="py-3 px-3">
+                                <span className="text-slate-700 block truncate max-w-[220px]" title={log.subject}>
+                                  {log.subject}
+                                </span>
+                                {log.errorMessage && (
+                                  <span className="text-rose-600 text-[10px] block truncate max-w-[220px]" title={log.errorMessage}>
+                                    Error: {log.errorMessage}
+                                  </span>
+                                )}
+                              </td>
+                              <td className="py-3 px-3">
+                                <span className="text-[10px] font-mono text-slate-600 block">
+                                  {log.provider}
+                                </span>
+                                <span className="text-[10px] font-mono text-slate-400 block truncate max-w-[140px]" title={log.providerMessageId || 'N/A'}>
+                                  {log.providerMessageId || 'N/A'}
+                                </span>
+                              </td>
+                              <td className="py-3 px-3 text-slate-500 font-mono text-[11px]">
+                                {new Date(log.createdAt).toLocaleString('en-IN', {
+                                  day: '2-digit',
+                                  month: 'short',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  );
+                })()}
+              </div>
+            </div>
           </div>
         )}
       </div>

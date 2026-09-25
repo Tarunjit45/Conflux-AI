@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build && node scripts/generate_sitemaps.js && node scripts/prerender_articles.js",
     "test:seo": "node scripts/test_seo_guardrails.js",
+    "test:email": "node --experimental-strip-types scripts/test_email_system.js",
     "test:verification": "node --experimental-strip-types scripts/test_verification_flow.js",
     "test:google-reviews": "node --experimental-strip-types scripts/test_google_reviews.js",
     "test:knowledge": "node --experimental-strip-types scripts/test_local_knowledge_network.js",

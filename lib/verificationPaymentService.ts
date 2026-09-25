@@ -10,6 +10,7 @@ import type {
   CreateVerificationOrderResponse
 } from '../types/verificationPayment.ts';
 import { businessService } from './businessService.ts';
+import { emailService } from './emailService.ts';
 
 const LOCAL_STORAGE_ORDERS_KEY = 'conflux_verification_orders_v1';
 let memoryVerificationOrders: VerificationOrder[] = [];
@@ -349,7 +350,7 @@ export class VerificationPaymentService {
     if (existingActive) {
       return {
         success: false,
-        error: `An active verification application is already in progress (${existingActive.verificationStatus}) for this business.`,
+        error: `An active verification order is already in progress (${existingActive.verificationStatus}) for this business.`,
         orderId: existingActive.orderId
       };
     }
@@ -398,7 +399,7 @@ export class VerificationPaymentService {
         const errResult = await response.json().catch(() => null);
         return {
           success: false,
-          error: errResult?.error || 'An active verification application is already in progress.',
+          error: errResult?.error || 'An active verification order is already in progress.',
           orderId: errResult?.orderId
         };
       }
@@ -532,6 +533,15 @@ export class VerificationPaymentService {
     }
 
     this.saveLocalOrder(existing);
+
+    // Dispatch transactional payment confirmation email & admin alert (non-blocking)
+    emailService.sendVerificationPaymentSuccess(existing).catch(err => {
+      console.warn('[VerificationPaymentService] Payment success email notice:', err);
+    });
+    emailService.sendAdminVerificationPayment(existing).catch(err => {
+      console.warn('[VerificationPaymentService] Admin payment alert notice:', err);
+    });
+
     return existing;
   }
 
@@ -564,6 +574,15 @@ export class VerificationPaymentService {
     }
 
     this.saveLocalOrder(existing);
+
+    // Dispatch evidence received notification & admin queue alert (non-blocking)
+    emailService.sendVerificationSubmitted(existing).catch(err => {
+      console.warn('[VerificationPaymentService] Evidence submitted email notice:', err);
+    });
+    emailService.sendAdminVerificationSubmitted(existing).catch(err => {
+      console.warn('[VerificationPaymentService] Admin review queue alert notice:', err);
+    });
+
     return existing;
   }
 
@@ -699,6 +718,12 @@ export class VerificationPaymentService {
     }
 
     this.saveLocalOrder(order);
+
+    // Dispatch verification approved email to applicant (non-blocking)
+    emailService.sendVerificationApproved(order).catch(err => {
+      console.warn('[VerificationPaymentService] Verification approved email notice:', err);
+    });
+
     return order;
   }
 
@@ -737,6 +762,12 @@ export class VerificationPaymentService {
     }
 
     this.saveLocalOrder(order);
+
+    // Dispatch action required email to applicant (non-blocking)
+    emailService.sendVerificationMoreEvidence(order, notes).catch(err => {
+      console.warn('[VerificationPaymentService] More evidence email notice:', err);
+    });
+
     return order;
   }
 
@@ -775,6 +806,12 @@ export class VerificationPaymentService {
     }
 
     this.saveLocalOrder(order);
+
+    // Dispatch verification rejected evaluation outcome email (non-blocking)
+    emailService.sendVerificationRejected(order, reason).catch(err => {
+      console.warn('[VerificationPaymentService] Verification rejected email notice:', err);
+    });
+
     return order;
   }
 

@@ -118,7 +118,7 @@ export const VerificationCheckoutModal: React.FC<VerificationCheckoutModalProps>
           <div className="space-y-1">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold">
               <ShieldCheck size={14} className="text-emerald-600" />
-              Conflux Verified Application
+              Conflux Verified Order
             </span>
             <h2 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
               Get Your Business Verified
@@ -174,7 +174,7 @@ export const VerificationCheckoutModal: React.FC<VerificationCheckoutModalProps>
               <span>Verification Review &amp; Refund Policy</span>
             </div>
             <ul className="list-disc list-inside space-y-0.5 text-amber-900/90">
-              <li><strong>Review Fee:</strong> ₹499 is an application review fee for manual evidence inspection. Payment does NOT guarantee verification approval.</li>
+              <li><strong>Review Fee:</strong> ₹499 is an order review fee for manual evidence inspection. Payment does NOT guarantee verification approval.</li>
               <li><strong>If More Evidence Required:</strong> If documents are incomplete, you may supply additional proof within 14 days with zero extra charge.</li>
               <li><strong>Non-Refundable:</strong> Once manual investigation and registrar lookups commence, the review fee is strictly non-refundable regardless of outcome.</li>
               <li><strong>Review Turnaround:</strong> Typical review time: 1–2 business days.</li>

@@ -244,7 +244,7 @@ export const VerificationReturnPage: React.FC = () => {
                 {isPaid ? 'Payment Confirmed &bull; Assessment Active' : 'Payment Awaiting Confirmation'}
               </h1>
               <p className="text-xs text-slate-600">
-                Application for <strong>{order.businessName}</strong> &bull; Amount: <strong>₹{order.amountInr.toFixed(2)} INR</strong>
+                Order for <strong>{order.businessName}</strong> &bull; Amount: <strong>₹{order.amountInr.toFixed(2)} INR</strong>
               </p>
             </div>
 
@@ -295,7 +295,7 @@ export const VerificationReturnPage: React.FC = () => {
                 </span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px] font-mono uppercase">Business Application ID</span>
+                <span className="text-slate-400 block text-[10px] font-mono uppercase">Business / Order ID</span>
                 <span className="font-bold text-slate-900 font-mono truncate block">{order.businessSlug}</span>
               </div>
               <div>
@@ -306,7 +306,7 @@ export const VerificationReturnPage: React.FC = () => {
 
             <div className="pt-2 border-t border-slate-200/70 space-y-1.5">
               <div className="flex justify-between text-slate-600">
-                <span>Verification Application Assessment Service (1-Year Review)</span>
+                <span>Verification Order Assessment Service (1-Year Review)</span>
                 <span className="font-mono font-medium">₹499.00</span>
               </div>
               <div className="flex justify-between text-slate-500 text-[11px]">
@@ -425,7 +425,7 @@ export const VerificationReturnPage: React.FC = () => {
                     <span>Review Protocol &amp; Invariants:</span>
                   </div>
                   <ul className="list-disc list-inside space-y-1 text-[11px] text-slate-600">
-                    <li>Payment is an application review fee, not an automatic verification guarantee.</li>
+                    <li>Payment is an order review fee, not an automatic verification guarantee.</li>
                     <li>Status updates and evidence requests are communicated directly to <strong>{order.customerEmail}</strong>.</li>
                     <li>Once corroborated, your public profile receives the official <strong>✓ Conflux Verified</strong> badge with 1-year temporal validity (strictly independent from sponsored placement or search ranking).</li>
                   </ul>
@@ -470,7 +470,7 @@ export const VerificationReturnPage: React.FC = () => {
                     Verification Rejected
                   </span>
                   <h2 className="text-xl font-bold text-slate-950 pt-2">
-                    Application Could Not Be Verified
+                    Order Could Not Be Verified
                   </h2>
                   <p className="text-xs text-slate-600 leading-relaxed">
                     Our verification team could not authenticate the submitted claims against official statutory registries.
@@ -744,7 +744,7 @@ export const VerificationReturnPage: React.FC = () => {
                       ) : (
                         <>
                           <ShieldCheck size={16} />
-                          <span>Submit Application for Manual Review</span>
+                          <span>Submit Order for Manual Review</span>
                           <ArrowRight size={15} />
                         </>
                       )}

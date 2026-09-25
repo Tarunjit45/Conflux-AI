@@ -81,7 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           const active = activeOrders[0];
           return res.status(409).json({
             success: false,
-            error: `An active verification application or verified badge is already in progress (${active.verification_status}) for this business.`,
+            error: `An active verification order or verified badge is already in progress (${active.verification_status}) for this business.`,
             orderId: active.order_id,
             verificationStatus: active.verification_status
           });

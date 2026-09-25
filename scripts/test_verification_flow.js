@@ -54,7 +54,7 @@ runTest('Verification Order Payload: Pricing strictly ₹499 INR & Valid Custome
     order_meta: {
       return_url: `https://www.confluxai.in/verify/payment-return?order_id=${orderId}`
     },
-    order_note: `Conflux Verified Application for ${req.businessName}`
+    order_note: `Conflux Verified Order for ${req.businessName}`
   };
 
   assert.strictEqual(cashfreePayload.order_amount, 499.00, 'Order amount must be 499.00 INR');

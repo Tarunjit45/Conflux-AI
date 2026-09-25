@@ -4,6 +4,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
+import { emailService } from '../lib/emailService.ts';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -91,6 +92,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             updated_at: new Date().toISOString()
           })
           .eq('order_id', orderId);
+
+        // Dispatch payment receipt and admin notification idempotently (non-blocking)
+        if (existingOrder?.customer_email) {
+          try {
+            await emailService.sendVerificationPaymentSuccess({
+              orderId,
+              businessSlug: existingOrder.business_slug,
+              businessName: existingOrder.business_name,
+              customerName: existingOrder.customer_name,
+              customerEmail: existingOrder.customer_email,
+              customerPhone: existingOrder.customer_phone,
+              amountInr: Number(existingOrder.amount_inr) || 499.00,
+              paymentReference: cfPaymentId || existingOrder.payment_reference,
+              paymentTime: paymentTime,
+              verificationStatus: nextVerStatus as any,
+              paymentStatus: 'PAID'
+            } as any);
+
+            await emailService.sendAdminVerificationPayment({
+              orderId,
+              businessSlug: existingOrder.business_slug,
+              businessName: existingOrder.business_name,
+              customerEmail: existingOrder.customer_email,
+              amountInr: Number(existingOrder.amount_inr) || 499.00
+            } as any);
+          } catch (mailErr) {
+            console.warn('[Cashfree Webhook Email Notice]', mailErr);
+          }
+        }
       } else if (paymentStatus === 'FAILED' || paymentStatus === 'USER_DROPPED') {
         // Only mark FAILED if not already PAID
         if (!existingOrder || existingOrder.payment_status !== 'PAID') {

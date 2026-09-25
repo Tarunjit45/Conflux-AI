@@ -4,6 +4,7 @@ import { supabase, isSupabaseConfigured } from './supabase.ts';
 import type { UserProfile, UserRole } from '../types/business.ts';
 import { communityProfileService } from './communityProfileService.ts';
 import { localKnowledgeService } from './localKnowledgeService.ts';
+import { emailService } from './emailService.ts';
 
 const LOCAL_STORAGE_USER_KEY = 'conflux_active_user_session';
 
@@ -227,6 +228,9 @@ export class AuthService {
             console.warn('Profile creation notice:', e);
           }
           const profile = await this.getCurrentUser(true);
+          if (profile) {
+            emailService.sendAccountCreated(profile).catch(e => console.warn('[AuthService] Welcome email notice:', e));
+          }
           return { success: true, user: profile || undefined };
         }
       } catch (err: any) {
@@ -247,6 +251,7 @@ export class AuthService {
         createdAt: new Date().toISOString()
       };
       this.setLocalSession(mockUser);
+      emailService.sendAccountCreated(mockUser).catch(e => console.warn('[AuthService] Dev welcome email notice:', e));
       return { success: true, user: mockUser };
     }
 
