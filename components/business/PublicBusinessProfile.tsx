@@ -25,6 +25,8 @@ import type { ReviewRatingContribution } from '../../types/contribution';
 import type { LocalContribution } from '../../types/localKnowledge';
 import { subscriptionService } from '../../lib/subscriptionService';
 import type { BusinessEntitlements } from '../../types/subscription';
+import { GoogleReviewsSection } from './GoogleReviewsSection';
+import { VerificationCheckoutModal } from '../verification/VerificationCheckoutModal';
 
 export const PublicBusinessProfile: React.FC = () => {
   const { district, city, slug } = useParams<{ district: string; city: string; slug: string }>();
@@ -38,6 +40,7 @@ export const PublicBusinessProfile: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isOpenNow, setIsOpenNow] = useState(false);
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
+  const [isVerificationCheckoutOpen, setIsVerificationCheckoutOpen] = useState(false);
   const [previewMediaItem, setPreviewMediaItem] = useState<BusinessMediaItem | null>(null);
   const [isDossierExpanded, setIsDossierExpanded] = useState(false);
 
@@ -386,9 +389,19 @@ export const PublicBusinessProfile: React.FC = () => {
                     <ShieldCheck size={14} className="text-emerald-600" /> Conflux Verified
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
-                    Standard Listing
-                  </span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
+                      Standard Listing
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setIsVerificationCheckoutOpen(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-800 hover:bg-blue-100 border border-blue-200 text-xs font-bold transition-all cursor-pointer shadow-2xs"
+                    >
+                      <ShieldCheck size={14} className="text-blue-600" />
+                      <span>Apply for Conflux Verified &bull; ₹499</span>
+                    </button>
+                  </div>
                 )}
 
                 {entitlements?.isPaid && (
@@ -451,6 +464,45 @@ export const PublicBusinessProfile: React.FC = () => {
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed pt-1 max-w-2xl">
                 {business.description}
               </p>
+
+              {/* ── REQUIREMENT 10: PUBLIC VERIFIED PROFILE SUMMARY CARD ── */}
+              {isVerified && (
+                <div className="p-4 sm:p-5 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-xs text-slate-800 space-y-2.5 shadow-2xs max-w-2xl">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 font-bold text-xs font-mono">
+                      <ShieldCheck size={14} className="text-emerald-700" /> ✓ Conflux Verified
+                    </span>
+                    <div className="flex items-center gap-3 text-[11px] font-mono text-slate-600">
+                      <span>Verified on: <strong className="text-slate-900">{business.lastVerifiedAt ? new Date(business.lastVerifiedAt).toLocaleDateString() : 'Active'}</strong></span>
+                      <span>&bull;</span>
+                      <span>Valid until: <strong className="text-slate-900">{business.lastVerifiedAt ? new Date(new Date(business.lastVerifiedAt).getTime() + 365*24*60*60*1000).toLocaleDateString() : new Date(Date.now() + 365*24*60*60*1000).toLocaleDateString()}</strong></span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="font-bold text-slate-900 text-[11px] uppercase tracking-wider font-mono block">
+                      What Conflux reviewed:
+                    </span>
+                    <ul className="list-disc list-inside space-y-0.5 text-[11px] text-slate-700">
+                      <li>Operational business identity &amp; legal/trade name ({business.legalName || business.name})</li>
+                      <li>Physical business premises in {business.location.city || business.location.district}</li>
+                      <li>{business.primaryRegistrar ? `Statutory registry standing (${business.primaryRegistrar})` : 'Statutory municipal / tax licensing records'}</li>
+                      <li>Authentic direct contact channels</li>
+                    </ul>
+                  </div>
+
+                  <div className="pt-1 flex items-center justify-between flex-wrap gap-2 text-[10px] text-slate-500 border-t border-emerald-200/60">
+                    <span>Independent manual verification &bull; Strictly decoupled from search ranking or advertising</span>
+                    <button
+                      type="button"
+                      onClick={() => setIsDossierExpanded(true)}
+                      className="font-bold text-blue-700 hover:text-blue-900 hover:underline cursor-pointer inline-flex items-center gap-1 text-[11px]"
+                    >
+                      <span>Verification details &rarr;</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Quick Outbound Connect Panel */}
@@ -1010,6 +1062,61 @@ export const PublicBusinessProfile: React.FC = () => {
                   </div>
                 </div>
 
+                {!isVerified ? (
+                  <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                    <div className="space-y-1">
+                      <div className="font-bold text-blue-950 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider">
+                        <ShieldCheck size={16} className="text-blue-700 shrink-0" />
+                        <span>Apply for Conflux Verified — ₹499 / First Year Review</span>
+                      </div>
+                      <p className="text-blue-900/90 leading-relaxed text-[11px]">
+                        Independent manual review against municipal trade licenses, GSTIN, or official state registries. Receive the official <strong>✓ Conflux Verified</strong> badge.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsVerificationCheckoutOpen(true)}
+                      className="px-4 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs shrink-0 cursor-pointer shadow-xs transition-all inline-flex items-center gap-1.5 self-start sm:self-auto"
+                    >
+                      <span>Apply for Review</span>
+                      <ArrowRight size={13} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="p-4 sm:p-5 rounded-2xl bg-emerald-100/70 border border-emerald-300 text-xs text-emerald-950 space-y-2.5">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="font-bold flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-emerald-950">
+                        <ShieldCheck size={16} className="text-emerald-700" />
+                        <span>✓ Conflux Verified</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-[11px] font-mono text-emerald-900">
+                        <span>Verified on: <strong>{business.lastVerifiedAt ? new Date(business.lastVerifiedAt).toLocaleDateString() : 'Active'}</strong></span>
+                        <span>&bull;</span>
+                        <span>Valid until: <strong>{business.lastVerifiedAt ? new Date(new Date(business.lastVerifiedAt).getTime() + 365*24*60*60*1000).toLocaleDateString() : new Date(Date.now() + 365*24*60*60*1000).toLocaleDateString()}</strong></span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1 pt-1 border-t border-emerald-200/70">
+                      <span className="font-bold text-emerald-950 text-[10px] uppercase font-mono tracking-wider block">
+                        What Conflux reviewed:
+                      </span>
+                      <ul className="list-disc list-inside space-y-0.5 text-[11px] text-emerald-950/90">
+                        <li>Operational business identity &amp; legal/trade name ({business.legalName || business.name})</li>
+                        <li>Physical operating premises in {business.location.city || business.location.district}</li>
+                        <li>{business.primaryRegistrar ? `Statutory registry standing (${business.primaryRegistrar})` : 'Municipal trade licensing / official registrations'}</li>
+                        <li>Authentic direct contact channels</li>
+                      </ul>
+                    </div>
+
+                    <p className="text-[11px] leading-relaxed pt-1 border-t border-emerald-200/80">
+                      {business.evidenceSummary || `Conflux reviewed defined business information and submitted statutory evidence against ${business.primaryRegistrar || 'official registries'}.`}
+                    </p>
+                    <div className="text-[10px] text-emerald-900/80 pt-1 border-t border-emerald-200/70">
+                      <strong>Policy Notice:</strong> Verified status reflects manual review of defined business information and submitted evidence. It is strictly independent from search ranking, commercial sponsorship, or advertising. Conflux has not evaluated claims outside the submitted evidence scope.
+                    </div>
+                  </div>
+                )}
+
                 <div className="p-3 rounded-xl bg-white border border-emerald-200/80 text-[11px] text-slate-700 space-y-1">
                   <div className="font-bold text-slate-900 flex items-center gap-1">
                     <Lock size={12} className="text-emerald-600" /> Absence &ne; Contradiction Invariant:
@@ -1164,6 +1271,9 @@ export const PublicBusinessProfile: React.FC = () => {
               )}
             </div>
 
+            {/* ── GOOGLE CUSTOMER REVIEWS (OFFICIAL GOOGLE PLACES API) ─── */}
+            <GoogleReviewsSection business={business} />
+
             {/* ── COMMUNITY SIGNALS & GROUND-TRUTH INTELLIGENCE ─────────── */}
             <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
@@ -1250,10 +1360,10 @@ export const PublicBusinessProfile: React.FC = () => {
                         <AlertCircle size={16} className="text-amber-600" /> Inbound Routing Notice
                       </div>
                       <p>{leadErrorMessage}</p>
-                      {business.contactPhone && (
+                      {(business.contact?.whatsapp || business.contact?.phone) && (
                         <div className="pt-2">
                           <a
-                            href={`https://wa.me/${business.contactPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${business.name}, I am inquiring about ${leadService || 'your services'}: ${leadMessage || ''}`)}`}
+                            href={`https://wa.me/${(business.contact?.whatsapp || business.contact?.phone || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${business.name}, I am inquiring about ${leadService || 'your services'}: ${leadMessage || ''}`)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition"
@@ -1742,6 +1852,15 @@ export const PublicBusinessProfile: React.FC = () => {
           <span>Directions</span>
         </a>
       </div>
+
+      {/* Paid Conflux Verified Application Modal */}
+      {business && (
+        <VerificationCheckoutModal
+          isOpen={isVerificationCheckoutOpen}
+          onClose={() => setIsVerificationCheckoutOpen(false)}
+          business={business}
+        />
+      )}
     </div>
   );
 };

@@ -354,6 +354,7 @@ const fixedStaticRoutes = [
   { path: '/work', expectedH1: 'Selected Client Work & Case Studies' },
   { path: '/careers', expectedH1: 'Careers & Engineering Opportunities' },
   { path: '/workplace-policy', expectedH1: 'Workplace Policy & Operating Principles' },
+  { path: '/refund-policy', expectedH1: 'Cancellation & Refund Policy' },
   { path: '/authority', expectedH1: 'Technical Authority & Security Standards' },
   { path: '/semantic-map', expectedH1: 'Generative Engine Optimization & Semantic Map' },
   { path: '/locations/west-bengal/nadia/ranaghat', expectedH1: 'Ranaghat' },

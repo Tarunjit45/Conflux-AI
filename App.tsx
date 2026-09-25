@@ -33,6 +33,9 @@ import VerifyPortal from './components/verify/VerifyPortal';
 import MethodologyPage from './components/verify/MethodologyPage';
 import VerifyGuideDetailPage from './components/verify/guides/VerifyGuideDetailPage';
 import WorkplacePolicyPage from './components/WorkplacePolicyPage';
+import RefundPolicyPage from './components/RefundPolicyPage.tsx';
+import PrivacyPolicyPage from './components/PrivacyPolicyPage.tsx';
+import TermsPage from './components/TermsPage.tsx';
 import { DiscoverPage } from './components/discover/DiscoverPage';
 import { ForBusinessPage } from './components/business/ForBusinessPage';
 import { VisibilityAuditPage } from './components/business/VisibilityAuditPage';
@@ -40,6 +43,7 @@ import { PublicBusinessProfile } from './components/business/PublicBusinessProfi
 import { BusinessSubmissionPage } from './components/submission/BusinessSubmissionPage';
 import { SimpleOwnerDashboard } from './components/business/SimpleOwnerDashboard';
 import { AdminBusinessDashboard } from './components/admin/AdminBusinessDashboard';
+import { VerificationReturnPage } from './components/verification/VerificationReturnPage';
 import { MyLocalConfluxPage } from './components/user/MyLocalConfluxPage';
 import { AuthModal } from './components/auth/AuthModal';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
@@ -51,6 +55,10 @@ import { trackPageView } from './lib/analytics';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 const routeMeta: Record<string, { title: string; description: string }> = {
+  '/verify/payment-return': {
+    title: 'Verification Application Status & Evidence | Conflux AI',
+    description: 'Confirmation and evidence intake portal for paid Conflux Verified applications.'
+  },
   '/contribute': {
     title: 'Help Improve Local Information | Conflux AI',
     description: 'Share and update factual local information, business details, or corrections for your locality with Conflux AI.'
@@ -134,6 +142,18 @@ const routeMeta: Record<string, { title: string; description: string }> = {
   '/workplace-policy': {
     title: 'Workplace Policy & Operating Principles | Conflux AI',
     description: 'Conflux AI workplace principles, remote-first operational expectations, ownership standards, communication, and professional conduct.'
+  },
+  '/refund-policy': {
+    title: 'Cancellation & Refund Policy | Conflux AI',
+    description: 'Cancellation and refund terms for Conflux AI services, including the ₹499 Conflux Verified application assessment fee, 14-day cure window, and Cashfree gateway reversals.'
+  },
+  '/privacy-policy': {
+    title: 'Privacy Policy & DPDP Act Data Protection Notice | Conflux AI',
+    description: 'Privacy policy and data protection disclosures for Conflux AI under the Digital Personal Data Protection Act, 2023 (DPDP Act) and IT Act 2000.'
+  },
+  '/terms': {
+    title: 'Terms of Service & Consumer Protection Disclosure | Conflux AI',
+    description: 'Terms of service and disclosures for Conflux AI in compliance with Consumer Protection (E-Commerce) Rules, 2020.'
   },
   '/contact': {
     title: 'Contact Us | Conflux AI Kolkata',
@@ -458,6 +478,9 @@ const App: React.FC = () => {
           <Route path="/work" element={<PortfolioPage />} />
           <Route path="/careers" element={<CareersPage />} />
           <Route path="/workplace-policy" element={<WorkplacePolicyPage />} />
+          <Route path="/refund-policy" element={<RefundPolicyPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/authority" element={<AuthorityPage />} />
           <Route path="/faq" element={<FaqPage />} />
@@ -476,6 +499,7 @@ const App: React.FC = () => {
           <Route path="/locations/west-bengal/:citySlug/:industrySlug" element={<IndustryLocationPage />} />
           <Route path="/thank-you" element={<ThankYouPage />} />
           <Route path="/verify" element={<VerifyPortal />} />
+          <Route path="/verify/payment-return" element={<VerificationReturnPage />} />
           <Route path="/verify/methodology" element={<MethodologyPage />} />
           <Route path="/verify/guides/:guideSlug" element={<VerifyGuideDetailPage />} />
           <Route path="/verify/:entitySlug/:claimSlug" element={<VerifyPortal />} />

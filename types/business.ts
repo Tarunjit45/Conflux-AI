@@ -1,6 +1,7 @@
 // Conflux Platform — Phase 1 Agent-Native Business Graph & Submission Type Definitions
 
 import type { VerificationStatus, SourceTier } from './verify.ts';
+import type { GoogleReviewsData } from './googleReviews.ts';
 
 export type UserRole = 'ADMIN' | 'BUSINESS_OWNER' | 'USER' | 'PUBLIC_USER';
 
@@ -83,6 +84,7 @@ export interface BusinessContact {
   bookingUrl?: string;
   appointmentUrl?: string;
   googleMapsUrl?: string;
+  googlePlaceId?: string;
   socialProfiles?: Record<string, string>;
 }
 
@@ -160,6 +162,8 @@ export interface ConfluxBusiness {
     publicSourceEnriched: boolean;
     confluxVerified: boolean;
   };
+  googlePlaceId?: string;
+  googleReviews?: GoogleReviewsData;
   createdAt: string;
   updatedAt: string;
 }
@@ -318,6 +322,7 @@ export interface PrivateEvidenceDocument {
 
 export interface SubmittedOnlineSources {
   googleBusinessUrl?: string;
+  googlePlaceId?: string;
   facebookUrl?: string;
   instagramUrl?: string;
   linkedinUrl?: string;

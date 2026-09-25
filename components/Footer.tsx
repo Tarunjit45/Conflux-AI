@@ -39,6 +39,9 @@ const Footer: React.FC<{ siteLogo: string | null }> = ({ siteLogo }) => {
       links: [
         { name: "About Conflux", path: "/about" },
         { name: "Local Knowledge Blog", path: "/blog" },
+        { name: "Refund Policy", path: "/refund-policy" },
+        { name: "Privacy Policy (DPDP)", path: "/privacy-policy" },
+        { name: "Terms of Service", path: "/terms" },
         { name: "Workplace Policy", path: "/workplace-policy" },
         { name: "Contact", path: "/contact" }
       ]
@@ -144,6 +147,9 @@ const Footer: React.FC<{ siteLogo: string | null }> = ({ siteLogo }) => {
           </div>
           <div className="flex flex-wrap gap-4 sm:gap-6">
             <Link to="/about" className="hover:text-slate-200">About</Link>
+            <Link to="/refund-policy" className="hover:text-slate-200">Refund Policy</Link>
+            <Link to="/privacy-policy" className="hover:text-slate-200">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-slate-200">Terms of Service</Link>
             <Link to="/workplace-policy" className="hover:text-slate-200">Workplace Policy</Link>
             <Link to="/business/audit" className="hover:text-slate-200">Visibility Audit</Link>
             <Link to="/verify/methodology" className="hover:text-slate-200">Verification Standards</Link>

@@ -15,11 +15,13 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../lib/authContext';
 import { businessService } from '../../lib/businessService';
 import type { ConfluxBusiness } from '../../types/business';
+import { VerificationCheckoutModal } from '../verification/VerificationCheckoutModal';
 
 export const SimpleOwnerDashboard: React.FC = () => {
   const { user } = useAuth();
   const [businesses, setBusinesses] = useState<ConfluxBusiness[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isVerificationCheckoutOpen, setIsVerificationCheckoutOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -41,6 +43,7 @@ export const SimpleOwnerDashboard: React.FC = () => {
   }, [user]);
 
   const activeBusiness = businesses[0];
+  const isVerified = activeBusiness?.verificationStatus === 'SUPPORTED';
 
   return (
     <div className="min-h-[85vh] bg-slate-50 py-10 sm:py-16 px-4 sm:px-6 lg:px-8 font-inter text-slate-900">
@@ -83,10 +86,26 @@ export const SimpleOwnerDashboard: React.FC = () => {
                 <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                   1. Current Status
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold">
-                  <ShieldCheck size={14} className="text-emerald-600" />
-                  Live &amp; Verified
-                </span>
+                {isVerified ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold">
+                    <ShieldCheck size={14} className="text-emerald-600" />
+                    Live &amp; Verified
+                  </span>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
+                      Standard Listing
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setIsVerificationCheckoutOpen(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 text-xs font-bold transition-all cursor-pointer shadow-2xs"
+                    >
+                      <ShieldCheck size={13} className="text-blue-600" />
+                      <span>Get Verified &bull; ₹499</span>
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
@@ -156,6 +175,28 @@ export const SimpleOwnerDashboard: React.FC = () => {
               </h3>
 
               <div className="space-y-3 pt-1">
+                {!isVerified && (
+                  <div className="p-4 sm:p-5 rounded-2xl bg-blue-50/80 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
+                    <div className="space-y-1">
+                      <div className="font-bold text-blue-950 flex items-center gap-1.5 text-xs">
+                        <ShieldCheck size={16} className="text-blue-700 shrink-0" />
+                        <span>Apply for Conflux Verified — ₹499 for First Year Review</span>
+                      </div>
+                      <p className="text-blue-900/90 leading-relaxed text-[11px]">
+                        Submit municipal Trade License, GSTIN, or statutory documentation for manual review and earn the official Conflux Verified badge.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsVerificationCheckoutOpen(true)}
+                      className="px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs shrink-0 cursor-pointer shadow-xs transition-all inline-flex items-center gap-1.5 self-start sm:self-auto"
+                    >
+                      <span>Apply for Verification</span>
+                      <ArrowRight size={13} />
+                    </button>
+                  </div>
+                )}
+
                 <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-4">
                   <div className="space-y-1">
                     <div className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
@@ -212,6 +253,14 @@ export const SimpleOwnerDashboard: React.FC = () => {
         )}
 
       </div>
+
+      {activeBusiness && (
+        <VerificationCheckoutModal
+          isOpen={isVerificationCheckoutOpen}
+          onClose={() => setIsVerificationCheckoutOpen(false)}
+          business={activeBusiness}
+        />
+      )}
     </div>
   );
 };

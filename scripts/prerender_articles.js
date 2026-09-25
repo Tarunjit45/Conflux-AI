@@ -3051,6 +3051,106 @@ const staticPages = [
       </div>
     </div>
     `
+  },
+  {
+    path: '/refund-policy',
+    title: 'Cancellation & Refund Policy | Conflux AI',
+    desc: 'Cancellation and refund terms for Conflux AI services, including the ₹499 Conflux Verified application assessment fee, 14-day cure window, and Cashfree gateway reversals.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/verify" style="margin: 0 10px; color: #475569; text-decoration: none;">Verify</a>
+            <a href="/refund-policy" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Refund Policy</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 38px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">
+          Cancellation &amp; Refund Policy
+        </h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 24px;">
+          Cancellation, assessment, and refund terms for Conflux AI services, including the ₹499 Conflux Verified application fee, manual evidence review standards, 14-day cure period, and Cashfree payment reversals.
+        </p>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; font-size: 14px; color: #334155; line-height: 1.6;">
+          <p><strong>Application Assessment Fee:</strong> The ₹499 fee covers manual human documentary inspection, geocoroboration, and primary registrar verification. Payment does not guarantee verification approval. The fee is non-refundable once manual review has commenced.</p>
+          <p style="margin-top: 12px;"><strong>14-Day Cure Period:</strong> Incomplete applications are granted 14 calendar days to upload supplementary documentation with zero extra fees.</p>
+        </div>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/privacy-policy',
+    title: 'Privacy Policy | Conflux AI',
+    desc: 'Privacy Policy for Conflux AI detailing compliance with DPDP Act 2023, Information Technology Act 2000, secure documentary evidence handling, and data principal rights.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/verify" style="margin: 0 10px; color: #475569; text-decoration: none;">Verify</a>
+            <a href="/privacy-policy" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Privacy Policy</a>
+            <a href="/terms" style="margin: 0 10px; color: #475569; text-decoration: none;">Terms</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 38px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">
+          Privacy Policy
+        </h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 24px;">
+          Digital Personal Data Protection Act, 2023 (DPDP Act) and Information Technology Act, 2000 compliance notice for Conflux AI users and verification applicants.
+        </p>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; font-size: 14px; color: #334155; line-height: 1.6;">
+          <p><strong>Data Fiduciary Identity:</strong> Conflux AI, West Bengal, India. Data Protection Grievance Officer: <a href="mailto:privacy@confluxai.in">privacy@confluxai.in</a>.</p>
+          <p style="margin-top: 12px;"><strong>Private Documentary Evidence:</strong> Government identity cards, tax documents, and business registrations uploaded for verification are stored in secure, private object storage and never exposed to the public internet.</p>
+          <p style="margin-top: 12px;"><strong>Public Identifier Masking:</strong> Only masked registration numbers (e.g. 19******A1Z5) are displayed publicly to demonstrate statutory standing without exposing sensitive registration keys.</p>
+        </div>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/terms',
+    title: 'Terms of Service | Conflux AI',
+    desc: 'Terms of Service for Conflux AI under Consumer Protection (E-Commerce) Rules 2020. Free listing terms, Conflux Verified assessment fee rules, and search ranking decoupling.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/verify" style="margin: 0 10px; color: #475569; text-decoration: none;">Verify</a>
+            <a href="/privacy-policy" style="margin: 0 10px; color: #475569; text-decoration: none;">Privacy Policy</a>
+            <a href="/terms" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Terms</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 900px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 38px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">
+          Terms of Service
+        </h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 24px;">
+          Terms of Service and marketplace disclosures under Consumer Protection (E-Commerce) Rules, 2020 for Conflux AI.
+        </p>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; font-size: 14px; color: #334155; line-height: 1.6;">
+          <p><strong>Free Listing Platform:</strong> Creating, maintaining, and publishing local business directory profiles on Conflux AI is 100% free of charge.</p>
+          <p style="margin-top: 12px;"><strong>Conflux Verified Assessment Fee:</strong> The ₹499 one-time payment is solely an evaluation assessment fee covering manual human documentary inspection for a 1-year verification validity period.</p>
+          <p style="margin-top: 12px;"><strong>Ranking Decoupling:</strong> Verification status is strictly independent of search ranking, organic discovery, algorithmic indexing, and advertising. Verification cannot be bought to artificially boost directory positioning.</p>
+        </div>
+      </main>
+    </div>
+    `
   }
 ];
 
@@ -3190,6 +3290,27 @@ publishedBusinesses.forEach(biz => {
       <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px;">
         <span style="color: #64748b; font-weight: bold;">Explore More:</span>
         ${opt.internalLinks.map(l => `<a href="${escapeHtml(l.url)}" style="color: #2563eb; font-weight: 600; text-decoration: none;">${escapeHtml(l.anchorText)} →</a>`).join(' ')}
+      </div>
+    </section>
+
+    <!-- Google Customer Reviews Section (Official Google Places Integration) -->
+    <section style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 24px; margin-bottom: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+        <div>
+          <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
+            Google Customer Reviews
+          </h2>
+          <p style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;">
+            Public customer ratings and reviews for ${escapeHtml(biz.name)} via Google Maps Platform.
+          </p>
+        </div>
+        ${biz.contact?.googleMapsUrl ? `<a href="${escapeHtml(biz.contact.googleMapsUrl)}" target="_blank" rel="noopener noreferrer" style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #0f172a; text-decoration: none;">View on Google →</a>` : ''}
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; font-size: 13px; color: #475569;">
+        ${biz.contact?.googleMapsUrl ? `Official Google Maps listing is linked for ${escapeHtml(biz.name)}. Live reviews sync via official Google Places API.` : `No Google Business Profile currently linked for this listing.`}
+      </div>
+      <div style="margin-top: 12px; font-size: 11px; color: #94a3b8;">
+        Powered by Google Maps Platform • Conflux AI maintains separate evidence verification and does not compute aggregate scores from external reviews.
       </div>
     </section>
 

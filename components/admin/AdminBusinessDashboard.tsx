@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Building2,
+  Briefcase,
   Plus,
   Search,
   Filter,
@@ -97,6 +98,8 @@ import type {
 } from "../../types/contribution";
 import { WEST_BENGAL_DISTRICTS } from "../../data/locationsData";
 import { BUSINESS_CATEGORY_TAXONOMY } from "../../data/taxonomiesData";
+import { verificationPaymentService, evaluateVerificationEvidence } from "../../lib/verificationPaymentService";
+import type { VerificationOrder } from "../../types/verificationPayment";
 
 const ensureUrlProtocol = (url?: string): string | undefined => {
   if (!url) return undefined;
@@ -108,13 +111,19 @@ const ensureUrlProtocol = (url?: string): string | undefined => {
 
 export const AdminBusinessDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
-    "ENTITIES" | "APPLICATIONS" | "CLAIMS" | "CONTRIBUTIONS" | "MEASUREMENT" | "RANAGHAT_HUB"
+    "ENTITIES" | "VERIFICATION_QUEUE" | "APPLICATIONS" | "CLAIMS" | "CONTRIBUTIONS" | "MEASUREMENT" | "RANAGHAT_HUB"
   >("ENTITIES");
   const [businesses, setBusinesses] = useState<ConfluxBusiness[]>([]);
   const [applications, setApplications] = useState<
     BusinessSubmissionApplication[]
   >([]);
   const [contributions, setContributions] = useState<UserContribution[]>([]);
+  const [verificationOrders, setVerificationOrders] = useState<VerificationOrder[]>([]);
+  const [selectedVerificationFilter, setSelectedVerificationFilter] = useState<'ALL' | 'NEEDS_REVIEW' | 'MORE_EVIDENCE' | 'VERIFIED' | 'REJECTED'>('ALL');
+  const [reviewNotesInput, setReviewNotesInput] = useState<{ [orderId: string]: string }>({});
+  const [registrarInput, setRegistrarInput] = useState<{ [orderId: string]: string }>({});
+  const [isProcessingOrder, setIsProcessingOrder] = useState<{ [orderId: string]: boolean }>({});
+  const [selectedOrderDossier, setSelectedOrderDossier] = useState<VerificationOrder | null>(null);
   const [measurementReport, setMeasurementReport] =
     useState<MeasurementReport | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -206,7 +215,7 @@ export const AdminBusinessDashboard: React.FC = () => {
 
   const loadData = async () => {
     setIsLoading(true);
-    const [data, apps, contribs, report, lkContribs, bRequests, vRequests, allJobs, rVoices, rMoments, allProfiles] = await Promise.all([
+    const [data, apps, contribs, report, lkContribs, bRequests, vRequests, allJobs, rVoices, rMoments, allProfiles, vOrders] = await Promise.all([
       businessService.getAllBusinesses(),
       businessService.getAllApplications(),
       contributionService.getAllContributions(),
@@ -217,7 +226,8 @@ export const AdminBusinessDashboard: React.FC = () => {
       localKnowledgeService.getJobs({ includeExpired: true }).catch(() => [] as LocalJob[]),
       localKnowledgeService.getLocalVoices('ranaghat', 100).catch(() => [] as LocalUserProfile[]),
       localKnowledgeService.getLocalMoments('ranaghat').catch(() => [] as LocalMoment[]),
-      localKnowledgeService.getAllLocalProfiles().catch(() => [] as LocalUserProfile[])
+      localKnowledgeService.getAllLocalProfiles().catch(() => [] as LocalUserProfile[]),
+      verificationPaymentService.getAllApplications().catch(() => [] as VerificationOrder[])
     ]);
     setBusinesses(data);
     setApplications(apps);
@@ -230,7 +240,68 @@ export const AdminBusinessDashboard: React.FC = () => {
     setRanaghatVoices(rVoices);
     setRanaghatMoments(rMoments);
     setAllLocalProfiles(allProfiles);
+    setVerificationOrders(vOrders);
     setIsLoading(false);
+  };
+
+  const handleApproveVerificationOrder = async (order: VerificationOrder) => {
+    const notes = reviewNotesInput[order.orderId] || 'Statutory documentation verified against official registries.';
+    const registrar = registrarInput[order.orderId] || order.evidence?.statutoryDocType?.replace('_', ' ') || 'Trade License & Municipal Registry';
+    
+    setIsProcessingOrder(prev => ({ ...prev, [order.orderId]: true }));
+    try {
+      await verificationPaymentService.adminApprove(order.orderId, notes, registrar, 'Conflux Admin');
+      showNotification(`Verification for "${order.businessName}" APPROVED. 1-year verified badge published!`);
+      await loadData();
+    } catch (err: any) {
+      alert(`Approval error: ${err?.message || err}`);
+    } finally {
+      setIsProcessingOrder(prev => ({ ...prev, [order.orderId]: false }));
+    }
+  };
+
+  const handleRequestMoreEvidenceOrder = async (order: VerificationOrder) => {
+    let notes = reviewNotesInput[order.orderId];
+    if (!notes || !notes.trim()) {
+      const promptInput = prompt('Enter specific evidence or clarification required from applicant:', 'Please supply a clear photograph of the exterior shop signboard and current Trade License certificate.');
+      if (!promptInput) return;
+      notes = promptInput;
+    }
+
+    setIsProcessingOrder(prev => ({ ...prev, [order.orderId]: true }));
+    try {
+      await verificationPaymentService.adminRequestMoreEvidence(order.orderId, notes, 'Conflux Admin');
+      showNotification(`Additional evidence requested from "${order.customerName}" for ${order.businessName}.`);
+      await loadData();
+    } catch (err: any) {
+      alert(`Error requesting evidence: ${err?.message || err}`);
+    } finally {
+      setIsProcessingOrder(prev => ({ ...prev, [order.orderId]: false }));
+    }
+  };
+
+  const handleRejectVerificationOrder = async (order: VerificationOrder) => {
+    let reason = reviewNotesInput[order.orderId];
+    if (!reason || !reason.trim()) {
+      const promptInput = prompt('Enter reason for verification rejection:', 'Submitted credentials could not be corroborated with official municipal or tax databases.');
+      if (!promptInput) return;
+      reason = promptInput;
+    }
+
+    if (!confirm(`Are you sure you want to REJECT the verification application for "${order.businessName}"?`)) {
+      return;
+    }
+
+    setIsProcessingOrder(prev => ({ ...prev, [order.orderId]: true }));
+    try {
+      await verificationPaymentService.adminReject(order.orderId, reason, 'Conflux Admin');
+      showNotification(`Verification application for "${order.businessName}" REJECTED.`);
+      await loadData();
+    } catch (err: any) {
+      alert(`Rejection error: ${err?.message || err}`);
+    } finally {
+      setIsProcessingOrder(prev => ({ ...prev, [order.orderId]: false }));
+    }
   };
 
   const handleUpdateCitizenVerification = async (
@@ -1100,6 +1171,9 @@ export const AdminBusinessDashboard: React.FC = () => {
   const pendingRanaghatJobs = ranaghatJobs.filter(
     (j) => j.status === "PENDING",
   );
+  const pendingPaidVerifications = verificationOrders.filter(
+    (o) => o.verificationStatus === "UNDER_REVIEW" || o.verificationStatus === "PAID"
+  );
   const publishedBusinesses = businesses.filter(
     (business) => business.status === "PUBLISHED",
   ).length;
@@ -1107,7 +1181,7 @@ export const AdminBusinessDashboard: React.FC = () => {
     (business) => business.verificationStatus === "SUPPORTED",
   ).length;
   const attentionCount =
-    pendingApps.length + pendingClaims.length + pendingContribs.length + pendingVerificationRequests.length + pendingRanaghatJobs.length;
+    pendingPaidVerifications.length + pendingApps.length + pendingClaims.length + pendingContribs.length + pendingVerificationRequests.length + pendingRanaghatJobs.length;
 
   return (
     <AdminShell>
@@ -1174,6 +1248,23 @@ export const AdminBusinessDashboard: React.FC = () => {
             }`}
           >
             <Building2 size={15} /> Business Entities ({businesses.length})
+          </button>
+
+          <button
+            onClick={() => setActiveTab("VERIFICATION_QUEUE")}
+            className={`inline-flex shrink-0 items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeTab === "VERIFICATION_QUEUE"
+                ? "bg-white text-emerald-900 shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <ShieldCheck size={15} className="text-emerald-600" />
+            <span>Verification Queue</span>
+            {pendingPaidVerifications.length > 0 && (
+              <span className="px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold">
+                {pendingPaidVerifications.length}
+              </span>
+            )}
           </button>
 
           <button
@@ -1498,6 +1589,459 @@ export const AdminBusinessDashboard: React.FC = () => {
                   </table>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB: CONFLUX VERIFIED REVIEW QUEUE (PAID APPLICATIONS) ──── */}
+        {activeTab === "VERIFICATION_QUEUE" && (
+          <div className="space-y-6">
+            <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6">
+              
+              {/* Header & Subtitle */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold font-mono">
+                      <ShieldCheck size={14} className="text-emerald-600" />
+                      ₹499 Paid Verification Review
+                    </span>
+                    <span className="text-xs font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                      Launch Fee Model
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-bold font-orbitron text-slate-900 tracking-tight">
+                    Conflux Verified Review Queue ({verificationOrders.length})
+                  </h3>
+                  <p className="text-xs text-slate-500 leading-relaxed max-w-3xl">
+                    Payment covers the independent manual evaluation. Inspect submitted statutory credentials against official state, municipal, GSTIN, or trade registries before issuing the 1-year verified badge.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={loadData}
+                    className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-all"
+                  >
+                    <RefreshCw size={13} /> Refresh Queue
+                  </button>
+                </div>
+              </div>
+
+              {/* Status Filters & Search Bar */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+                  {[
+                    { id: 'ALL', label: 'All Orders', count: verificationOrders.length },
+                    {
+                      id: 'NEEDS_REVIEW',
+                      label: 'Needs Review',
+                      count: verificationOrders.filter(o => o.verificationStatus === 'UNDER_REVIEW' || o.verificationStatus === 'PAID').length
+                    },
+                    {
+                      id: 'MORE_EVIDENCE',
+                      label: 'More Evidence Needed',
+                      count: verificationOrders.filter(o => o.verificationStatus === 'MORE_EVIDENCE_REQUIRED').length
+                    },
+                    {
+                      id: 'VERIFIED',
+                      label: 'Approved (1-Year)',
+                      count: verificationOrders.filter(o => o.verificationStatus === 'VERIFIED').length
+                    },
+                    {
+                      id: 'REJECTED',
+                      label: 'Rejected',
+                      count: verificationOrders.filter(o => o.verificationStatus === 'REJECTED').length
+                    }
+                  ].map((filterItem) => (
+                    <button
+                      key={filterItem.id}
+                      onClick={() => setSelectedVerificationFilter(filterItem.id as any)}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                        selectedVerificationFilter === filterItem.id
+                          ? 'bg-blue-700 text-white shadow-xs'
+                          : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                      }`}
+                    >
+                      <span>{filterItem.label}</span>
+                      <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                        selectedVerificationFilter === filterItem.id
+                          ? 'bg-blue-800 text-blue-100'
+                          : 'bg-slate-200 text-slate-700'
+                      }`}>
+                        {filterItem.count}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="relative min-w-[220px]">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search by business, applicant, ID..."
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium outline-none focus:ring-2 focus:ring-blue-600/20"
+                  />
+                </div>
+              </div>
+
+              {/* Orders List */}
+              {isLoading ? (
+                <div className="p-16 text-center text-slate-400 font-mono text-xs">
+                  Loading verification review queue...
+                </div>
+              ) : verificationOrders.length === 0 ? (
+                <div className="p-12 text-center bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 mx-auto flex items-center justify-center">
+                    <ShieldCheck size={24} />
+                  </div>
+                  <h4 className="text-base font-bold text-slate-900">
+                    No Verification Orders in Queue
+                  </h4>
+                  <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+                    Businesses applying for paid Conflux Verified (₹499) will appear here for statutory evaluation and manual approval.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {verificationOrders
+                    .filter(o => {
+                      if (selectedVerificationFilter === 'NEEDS_REVIEW') {
+                        return o.verificationStatus === 'UNDER_REVIEW' || o.verificationStatus === 'PAID';
+                      }
+                      if (selectedVerificationFilter === 'MORE_EVIDENCE') {
+                        return o.verificationStatus === 'MORE_EVIDENCE_REQUIRED';
+                      }
+                      if (selectedVerificationFilter === 'VERIFIED') {
+                        return o.verificationStatus === 'VERIFIED';
+                      }
+                      if (selectedVerificationFilter === 'REJECTED') {
+                        return o.verificationStatus === 'REJECTED';
+                      }
+                      return true;
+                    })
+                    .filter(o => {
+                      if (!searchQuery.trim()) return true;
+                      const q = searchQuery.toLowerCase();
+                      return (
+                        o.businessName.toLowerCase().includes(q) ||
+                        o.customerName.toLowerCase().includes(q) ||
+                        o.orderId.toLowerCase().includes(q) ||
+                        o.customerEmail.toLowerCase().includes(q) ||
+                        o.customerPhone.includes(q)
+                      );
+                    })
+                    .map((order) => {
+                      const isOrderProcessing = isProcessingOrder[order.orderId] || false;
+                      const isPaid = order.paymentStatus === 'PAID';
+                      const isApproved = order.verificationStatus === 'VERIFIED';
+                      const isRejected = order.verificationStatus === 'REJECTED';
+                      const isMoreEvidence = order.verificationStatus === 'MORE_EVIDENCE_REQUIRED';
+
+                      return (
+                        <div
+                          key={order.orderId}
+                          className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs space-y-5 hover:border-slate-300 transition-all"
+                        >
+                          {/* Top Row: Business Name, Order ID, Badges */}
+                          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-3 border-b border-slate-100">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <Link
+                                  to={`/business/${order.businessSlug}`}
+                                  target="_blank"
+                                  className="text-base sm:text-lg font-bold text-slate-950 hover:text-blue-700 transition-colors inline-flex items-center gap-1.5"
+                                >
+                                  <span>{order.businessName}</span>
+                                  <ExternalLink size={13} className="text-slate-400" />
+                                </Link>
+                                <span className="font-mono text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-bold">
+                                  {order.orderId}
+                                </span>
+                              </div>
+                              <div className="text-xs text-slate-500">
+                                Applicant: <strong>{order.customerName}</strong> &bull; Submitted: {new Date(order.createdAt).toLocaleDateString()} at {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {/* Payment Badge */}
+                              {isPaid ? (
+                                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold font-mono">
+                                  <CheckCircle2 size={13} className="text-emerald-600" />
+                                  ₹499 PAID
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-xs font-bold font-mono">
+                                  <Clock size={13} />
+                                  PAYMENT PENDING
+                                </span>
+                              )}
+
+                              {/* Verification Status Badge */}
+                              <span
+                                className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold font-mono ${
+                                  isApproved
+                                    ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                                    : isRejected
+                                    ? 'bg-rose-100 text-rose-900 border border-rose-200'
+                                    : isMoreEvidence
+                                    ? 'bg-amber-100 text-amber-900 border border-amber-200'
+                                    : 'bg-blue-100 text-blue-900 border border-blue-200'
+                                }`}
+                              >
+                                {isApproved && <ShieldCheck size={13} className="text-emerald-700" />}
+                                {order.verificationStatus.replace(/_/g, ' ')}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Contact & Gateway Reference Details */}
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-xs">
+                            <div>
+                              <span className="text-slate-400 block text-[10px] font-mono uppercase">Notification Email</span>
+                              <a href={`mailto:${order.customerEmail}`} className="font-bold text-blue-700 hover:underline">
+                                {order.customerEmail}
+                              </a>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block text-[10px] font-mono uppercase">Contact Phone / Mobile</span>
+                              <a href={`tel:${order.customerPhone}`} className="font-bold text-slate-800 hover:text-blue-700">
+                                {order.customerPhone}
+                              </a>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 block text-[10px] font-mono uppercase">Payment Gateway Reference</span>
+                              <span className="font-mono font-bold text-slate-700 truncate block">
+                                {order.paymentReference || 'Direct / Sandbox Ref'}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Submitted Evidence Details */}
+                          {order.evidence ? (
+                            <div className="p-4 rounded-xl bg-slate-50/70 border border-slate-200 space-y-3 text-xs">
+                              <div className="flex items-center justify-between flex-wrap gap-2">
+                                <span className="font-bold text-slate-900 uppercase tracking-wider font-mono text-[11px] flex items-center gap-1.5">
+                                  <FileText size={14} className="text-blue-600" />
+                                  Submitted Statutory Documentation &amp; Storefront Details
+                                </span>
+                                <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-mono text-[10px] font-bold">
+                                  Doc Type: {order.evidence.statutoryDocType?.replace(/_/g, ' ')}
+                                </span>
+                              </div>
+
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-200">
+                                <div className="space-y-1">
+                                  <span className="text-slate-400 block text-[10px] uppercase font-mono">Declared Legal Name</span>
+                                  <div className="font-bold text-slate-900">{order.evidence.legalName || order.businessName}</div>
+                                  <span className="text-slate-400 block text-[10px] uppercase font-mono pt-1">Physical Address</span>
+                                  <div className="text-slate-700">{order.evidence.fullAddress}</div>
+                                  <div className="text-slate-500 font-medium">{order.evidence.city}, {order.evidence.district}</div>
+                                </div>
+
+                                <div className="space-y-1 sm:pl-3">
+                                  <span className="text-slate-400 block text-[10px] uppercase font-mono">Registration / License Number</span>
+                                  <div className="font-mono font-bold text-blue-800 bg-blue-50 px-2 py-1 rounded border border-blue-100 inline-block">
+                                    {order.evidence.statutoryDocNumber}
+                                  </div>
+                                  {order.evidence.whatsapp && (
+                                    <div className="pt-1">
+                                      <span className="text-slate-400 block text-[10px] uppercase font-mono">WhatsApp Channel</span>
+                                      <span className="font-medium text-emerald-800">{order.evidence.whatsapp}</span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="space-y-1.5 sm:pl-3">
+                                  <span className="text-slate-400 block text-[10px] uppercase font-mono">Evidence Links &amp; References</span>
+                                  <div className="space-y-1">
+                                    {order.evidence.evidenceDocUrl && (
+                                      <a
+                                        href={order.evidence.evidenceDocUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-700 hover:underline font-bold inline-flex items-center gap-1 block"
+                                      >
+                                        <ExternalLink size={11} /> Document Docket &rarr;
+                                      </a>
+                                    )}
+                                    {order.evidence.storefrontPhotoUrl && (
+                                      <a
+                                        href={order.evidence.storefrontPhotoUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-700 hover:underline font-bold inline-flex items-center gap-1 block"
+                                      >
+                                        <ExternalLink size={11} /> Storefront Photo &rarr;
+                                      </a>
+                                    )}
+                                    {order.evidence.googleMapsUrl && (
+                                      <a
+                                        href={order.evidence.googleMapsUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-700 hover:underline font-bold inline-flex items-center gap-1 block"
+                                      >
+                                        <ExternalLink size={11} /> Google Maps Profile &rarr;
+                                      </a>
+                                    )}
+                                    {order.evidence.websiteUrl && (
+                                      <a
+                                        href={order.evidence.websiteUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-700 hover:underline font-bold inline-flex items-center gap-1 block"
+                                      >
+                                        <ExternalLink size={11} /> Official Website &rarr;
+                                      </a>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {order.evidence.applicantNotes && (
+                                <div className="pt-2 border-t border-slate-200/60 text-slate-600 italic">
+                                  <strong>Applicant Note:</strong> &ldquo;{order.evidence.applicantNotes}&rdquo;
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="p-3.5 rounded-xl bg-amber-50/60 border border-amber-200 text-xs text-amber-900 flex items-center gap-2">
+                              <AlertCircle size={15} className="text-amber-700 shrink-0" />
+                              <span>Applicant has paid ₹499 fee and is currently filling the post-payment evidence onboarding form.</span>
+                            </div>
+                          )}
+
+                          {/* Admin Review & Decision Controls */}
+                          {!isApproved && !isRejected && (
+                            <div className="p-4 rounded-xl bg-slate-100/70 border border-slate-200 space-y-3">
+                              <span className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono block">
+                                Verification Officer Evaluation
+                              </span>
+
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                <div>
+                                  <label className="text-[11px] font-bold text-slate-600 block mb-1">
+                                    Primary Statutory Registrar Name
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="e.g. Ranaghat Municipality / Trade License Register"
+                                    value={registrarInput[order.orderId] ?? (order.evidence?.statutoryDocType?.replace(/_/g, ' ') || 'Trade License & Municipal Registry')}
+                                    onChange={e => setRegistrarInput(prev => ({ ...prev, [order.orderId]: e.target.value }))}
+                                    className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-blue-600/20"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="text-[11px] font-bold text-slate-600 block mb-1">
+                                    Evaluation Notes / Reason for Applicant
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="e.g. Validated against municipal trade licensing master roll. Active standing."
+                                    value={reviewNotesInput[order.orderId] ?? ''}
+                                    onChange={e => setReviewNotesInput(prev => ({ ...prev, [order.orderId]: e.target.value }))}
+                                    className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-blue-600/20"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Live Derived Evidence Semantics Preview */}
+                              {(() => {
+                                const preview = evaluateVerificationEvidence(order.evidence, registrarInput[order.orderId]);
+                                return (
+                                  <div className="p-3 rounded-xl bg-white border border-slate-200 text-xs space-y-1">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-slate-500 font-medium">Evaluated Claim:</span>
+                                      <span className="font-bold text-blue-800">{preview.evaluatedClaim}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-slate-500 font-medium">Verification Level:</span>
+                                      <span className={`font-mono font-bold px-2 py-0.5 rounded text-[11px] ${preview.verificationLevel === 'STATUTORY_VERIFIED' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                                        {preview.verificationLevel}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-slate-500 font-medium">Derived Confidence:</span>
+                                      <span className="font-mono font-bold text-slate-900">{preview.confidenceScore}% (Derived from evidence)</span>
+                                    </div>
+                                    <div className="flex items-center justify-between pt-0.5 text-[11px] text-slate-500">
+                                      <span>Public Masked Docket:</span>
+                                      <span className="font-mono font-bold text-slate-700">{preview.maskedDocumentNumber}</span>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
+
+                              <div className="pt-2 flex flex-wrap items-center gap-3">
+                                <button
+                                  type="button"
+                                  disabled={isOrderProcessing}
+                                  onClick={() => handleApproveVerificationOrder(order)}
+                                  className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                >
+                                  <ShieldCheck size={15} />
+                                  <span>{isOrderProcessing ? 'Approving...' : 'Approve Conflux Verified (1-Year)'}</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  disabled={isOrderProcessing}
+                                  onClick={() => handleRequestMoreEvidenceOrder(order)}
+                                  className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                >
+                                  <HelpCircle size={15} />
+                                  <span>Request More Evidence</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  disabled={isOrderProcessing}
+                                  onClick={() => handleRejectVerificationOrder(order)}
+                                  className="px-4 py-2.5 rounded-xl bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                >
+                                  <XCircle size={15} />
+                                  <span>Reject Application</span>
+                                </button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Historical Evaluation Record if Approved / Rejected */}
+                          {(isApproved || isRejected || isMoreEvidence) && (
+                            <div className={`p-4 rounded-xl text-xs space-y-1 ${
+                              isApproved ? 'bg-emerald-50 border border-emerald-200 text-emerald-900' :
+                              isRejected ? 'bg-rose-50 border border-rose-200 text-rose-900' :
+                              'bg-amber-50 border border-amber-200 text-amber-900'
+                            }`}>
+                              <div className="font-bold flex items-center gap-1.5 font-mono text-[11px] uppercase">
+                                {isApproved && <CheckCircle2 size={14} className="text-emerald-700" />}
+                                {isRejected && <XCircle size={14} className="text-rose-700" />}
+                                {isMoreEvidence && <AlertCircle size={14} className="text-amber-700" />}
+                                <span>Evaluation Docket: {order.verificationStatus.replace(/_/g, ' ')}</span>
+                              </div>
+                              <p className="leading-relaxed">
+                                {order.reviewNotes || order.evidenceRequestedNotes || 'Evaluated by Conflux Operations.'}
+                              </p>
+                              <div className="flex items-center gap-4 text-[10px] text-slate-500 font-mono pt-1">
+                                <span>Evaluator: {order.reviewedBy || 'Conflux Admin'}</span>
+                                {order.expiresAt && (
+                                  <span>&bull; Validity Expires: {new Date(order.expiresAt).toLocaleDateString()}</span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                        </div>
+                      );
+                    })}
+                </div>
+              )}
+
             </div>
           </div>
         )}
