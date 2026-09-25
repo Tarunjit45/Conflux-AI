@@ -97,7 +97,7 @@ const RefundPolicyPage: React.FC = () => {
                 </div>
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
-                  <span className="text-xs text-slate-700">Physical address, geocoordinate, and storefront imagery corroboration</span>
+                  <span className="text-xs text-slate-700">Declared address, geocoordinate, and storefront visual corroboration</span>
                 </div>
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
@@ -105,7 +105,7 @@ const RefundPolicyPage: React.FC = () => {
                 </div>
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
-                  <span className="text-xs text-slate-700">Issuance of an immutable, tamper-resistant verification docket on the Conflux Business Graph</span>
+                  <span className="text-xs text-slate-700">Issuance of a Public Verification Record on the Conflux Business Graph</span>
                 </div>
               </div>
               <p className="font-semibold text-slate-900 pt-2">

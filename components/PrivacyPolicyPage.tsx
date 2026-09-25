@@ -145,7 +145,7 @@ export const PrivacyPolicyPage: React.FC = () => {
                   <tr className="hover:bg-slate-50/50">
                     <td className="p-3 font-semibold text-slate-900">Uploaded Evidence Files</td>
                     <td className="p-3 text-slate-600">License Certificates, PDFs, Exterior Storefront Signboard Photos</td>
-                    <td className="p-3 text-slate-700">Ground truth documentary inspection by compliance officers. Storefront photos verify physical signage and trading reality.</td>
+                    <td className="p-3 text-slate-700">Documentary inspection by compliance officers. Storefront photos support visual signage and premise presence claims.</td>
                     <td className="p-3 text-slate-900 font-bold">Documents: 100% Private. Storefront Photo: Public upon consent.</td>
                   </tr>
                 </tbody>
@@ -280,7 +280,7 @@ export const PrivacyPolicyPage: React.FC = () => {
                 </div>
               </div>
               <p className="text-[11px] text-slate-400 pt-1 border-t border-slate-100">
-                Note on DPDP Act Commencement: Provisions of the Digital Personal Data Protection Act, 2023 that depend on central government notification of specific rules and the operationalization of the Data Protection Board of India will become active in accordance with official gazette notifications.
+                Note on DPDP Implementation: The Digital Personal Data Protection Rules, 2025 have been notified. Conflux AI aligns its data minimization, notice, private documentary storage, identifier masking, and grievance redressal with the Act and Rules across their phased commencement and enforcement timelines. Conflux AI does not claim full legal compliance merely because these policies exist and submits its data handling practices to periodic human and legal review.
               </p>
             </div>
           </section>

@@ -17,7 +17,8 @@ let memoryVerificationOrders: VerificationOrder[] = [];
 export interface EvidenceEvaluationOutcome {
   verificationStatus: 'SUPPORTED' | 'PARTIALLY_SUPPORTED';
   verificationLevel: 'BASIC' | 'STATUTORY_VERIFIED';
-  confidenceScore: number;
+  verificationLevelLabel: 'Statutory evidence confirmed' | 'Primary-source evidence confirmed' | 'Corroborated' | 'Applicant evidence only' | 'Unable to verify';
+  confidenceScore: number; // Internal non-probabilistic triage weight (0-100)
   evaluatedClaim: string;
   claimsReviewed: string[];
   evidenceUsed: string;
@@ -37,6 +38,27 @@ export function maskDocumentNumber(num?: string): string {
   return `${prefix}${'•'.repeat(maskLength)}${suffix}`;
 }
 
+export function getVerificationLevelLabel(
+  status?: string,
+  level?: string,
+  primaryRegistrar?: string,
+  evidenceDocType?: string
+): 'Statutory evidence confirmed' | 'Primary-source evidence confirmed' | 'Corroborated' | 'Applicant evidence only' | 'Unable to verify' {
+  if (level === 'STATUTORY_VERIFIED' || (status === 'SUPPORTED' && primaryRegistrar && primaryRegistrar !== 'None' && evidenceDocType !== 'STOREFRONT_PHOTO')) {
+    return 'Statutory evidence confirmed';
+  }
+  if (primaryRegistrar && (primaryRegistrar.includes('Directorate') || primaryRegistrar.includes('Ministry') || primaryRegistrar.includes('FSSAI'))) {
+    return 'Primary-source evidence confirmed';
+  }
+  if (status === 'SUPPORTED' || level === 'BASIC' || level === 'GEO_CORROBORATED' || status === 'PARTIALLY_SUPPORTED') {
+    return 'Corroborated';
+  }
+  if (status === 'UNVERIFIED' || status === 'PENDING') {
+    return 'Applicant evidence only';
+  }
+  return 'Unable to verify';
+}
+
 export function evaluateVerificationEvidence(
   evidence?: VerificationEvidencePayload,
   adminRegistrarOverride?: string,
@@ -50,6 +72,7 @@ export function evaluateVerificationEvidence(
     return {
       verificationStatus: 'PARTIALLY_SUPPORTED',
       verificationLevel: 'BASIC',
+      verificationLevelLabel: 'Applicant evidence only',
       confidenceScore: 50.0,
       evaluatedClaim: 'Proprietor Business Profile Claim',
       claimsReviewed: [
@@ -77,11 +100,12 @@ export function evaluateVerificationEvidence(
       return {
         verificationStatus: 'SUPPORTED',
         verificationLevel: 'STATUTORY_VERIFIED',
+        verificationLevelLabel: 'Statutory evidence confirmed',
         confidenceScore: confidence,
         evaluatedClaim: 'GST Registration Claim',
         claimsReviewed: [
           'Operational business identity & commercial trade name',
-          'Physical operating address in declared district',
+          'Declared business operating address in declared district',
           'Active GSTIN statutory tax registration under GST Act 2017',
           'Direct customer communication channels'
         ],
@@ -99,11 +123,12 @@ export function evaluateVerificationEvidence(
       return {
         verificationStatus: 'SUPPORTED',
         verificationLevel: 'STATUTORY_VERIFIED',
+        verificationLevelLabel: 'Statutory evidence confirmed',
         confidenceScore: confidence,
         evaluatedClaim: 'Food Safety & Standards Authority of India (FSSAI) License Claim',
         claimsReviewed: [
           'Operational food business identity & trade name',
-          'Physical operating premises in declared district',
+          'Declared premise location in declared district',
           'Statutory food safety license under FSS Act 2006',
           'Direct customer communication channels'
         ],
@@ -121,11 +146,12 @@ export function evaluateVerificationEvidence(
       return {
         verificationStatus: 'SUPPORTED',
         verificationLevel: 'STATUTORY_VERIFIED',
+        verificationLevelLabel: 'Statutory evidence confirmed',
         confidenceScore: confidence,
         evaluatedClaim: 'Municipal / Panchayat Trade License Claim',
         claimsReviewed: [
           'Operational business identity & commercial trade name',
-          'Physical operating establishment address in declared locality',
+          'Declared establishment address in declared locality',
           'Statutory municipal trade license standing',
           'Direct customer communication channels'
         ],
@@ -143,11 +169,12 @@ export function evaluateVerificationEvidence(
       return {
         verificationStatus: 'SUPPORTED',
         verificationLevel: 'STATUTORY_VERIFIED',
+        verificationLevelLabel: 'Statutory evidence confirmed',
         confidenceScore: confidence,
         evaluatedClaim: 'MSME Udyam Registration Claim',
         claimsReviewed: [
           'Operational business enterprise identity & trade name',
-          'Physical operating address in declared district',
+          'Declared enterprise address in declared district',
           'Statutory MSME Udyam registration standing',
           'Direct customer communication channels'
         ],
@@ -165,11 +192,12 @@ export function evaluateVerificationEvidence(
       return {
         verificationStatus: 'SUPPORTED',
         verificationLevel: 'STATUTORY_VERIFIED',
+        verificationLevelLabel: 'Statutory evidence confirmed',
         confidenceScore: confidence,
         evaluatedClaim: 'Clinical Establishment Registration Claim',
         claimsReviewed: [
           'Clinical establishment identity & medical institution name',
-          'Physical operating clinic/diagnostic/hospital premises',
+          'Declared healthcare facility address',
           'Statutory clinical establishment licensing standing',
           'Direct patient appointment & contact channels'
         ],
@@ -187,11 +215,12 @@ export function evaluateVerificationEvidence(
       return {
         verificationStatus: 'SUPPORTED',
         verificationLevel: 'STATUTORY_VERIFIED',
+        verificationLevelLabel: 'Statutory evidence confirmed',
         confidenceScore: confidence,
         evaluatedClaim: 'Professional Council Accreditation Claim',
         claimsReviewed: [
           'Professional practice identity & credentials',
-          'Physical office/chamber premises',
+          'Declared office/chamber address',
           'Statutory professional council standing',
           'Direct client contact channels'
         ],
@@ -204,23 +233,24 @@ export function evaluateVerificationEvidence(
     }
 
     case 'STOREFRONT_PHOTO': {
-      // Visual / location evidence ONLY -> Basic level, not statutory verified
+      // Visual premise evidence ONLY -> Basic level, not statutory verified
       const confidence = hasStorefront ? 65.0 : 55.0;
-      const registrar = adminRegistrarOverride || 'Physical Storefront Visual Corroboration';
+      const registrar = adminRegistrarOverride || 'Storefront Visual Corroboration';
       return {
         verificationStatus: 'PARTIALLY_SUPPORTED',
         verificationLevel: 'BASIC',
+        verificationLevelLabel: 'Corroborated',
         confidenceScore: confidence,
-        evaluatedClaim: 'Physical Exterior Storefront & Premise Visual Claim',
+        evaluatedClaim: 'Exterior Storefront & Premise Visual Claim',
         claimsReviewed: [
-          'Operational business identity & exterior signboard',
-          'Physical premises existence at declared locality',
+          'Declared business identity & exterior signboard imagery',
+          'Visual premise existence at declared address',
           'Declared direct contact channels'
         ],
-        evidenceUsed: 'Physical Storefront Signboard Photography',
+        evidenceUsed: 'Storefront Signboard Photography (Visual Evidence)',
         claimType: 'GENERAL_FACT',
         primaryRegistrar: registrar,
-        evidenceSummary: `Conflux reviewed defined business information and visual storefront evidence confirming physical premises at the declared address. Scope is visual/location evidence only; statutory registrations were not evaluated.`,
+        evidenceSummary: `Conflux reviewed defined business information and visual storefront evidence supporting a premise visual claim at the declared address. Scope is visual/location evidence only; actual physical site inspection was not conducted, and statutory registrations were not evaluated.`,
         maskedDocumentNumber: maskedDoc
       };
     }
@@ -232,17 +262,18 @@ export function evaluateVerificationEvidence(
       return {
         verificationStatus: 'PARTIALLY_SUPPORTED',
         verificationLevel: 'BASIC',
+        verificationLevelLabel: 'Applicant evidence only',
         confidenceScore: confidence,
         evaluatedClaim: 'Proprietor Documentation Claim',
         claimsReviewed: [
           'Operational business identity & trade name',
-          'Physical address presence at declared locality',
+          'Declared address presence at declared locality',
           'Declared direct contact channels'
         ],
         evidenceUsed: `Proprietor Submitted Documentation (${docType})`,
         claimType: 'GENERAL_FACT',
         primaryRegistrar: registrar,
-        evidenceSummary: `Conflux reviewed defined business information and submitted documentation on file. Scope is bounded to the specific submitted documents.`,
+        evidenceSummary: `Conflux reviewed defined business information and submitted documentation on file. Scope is bounded to the specific submitted documents; actual physical site inspection was not conducted.`,
         maskedDocumentNumber: maskedDoc
       };
     }

@@ -100,7 +100,7 @@ export const TermsPage: React.FC = () => {
                 <strong>Free Standard Business Listing:</strong> Any genuine business proprietor may list their enterprise on the Conflux directory at zero charge. Standard listings include basic profile data, operating hours, direct contact lines, and map links.
               </li>
               <li>
-                <strong>Paid Conflux Verified Assessment (₹499/Year):</strong> An optional, paid evaluation service where Conflux compliance officers manually inspect statutory government records (Trade License, GSTIN, FSSAI, MSME Udyam) and physical storefront imagery. If authenticated, the business receives the official <strong>✓ Conflux Verified</strong> badge with 1-year temporal validity.
+                <strong>Paid Conflux Verified Assessment (₹499/Year):</strong> An optional, paid evaluation service where Conflux compliance officers manually inspect statutory government records (Trade License, GSTIN, FSSAI, MSME Udyam) and storefront visual evidence. If authenticated, the business receives the official <strong>✓ Conflux Verified</strong> badge with 1-year temporal validity.
               </li>
               <li>
                 <strong>Local Community Contributions:</strong> Community members may submit factual updates, corrections, and reviews subject to administrative moderation.
@@ -129,7 +129,7 @@ export const TermsPage: React.FC = () => {
                 </div>
               </div>
               <p className="text-xs text-slate-600 pt-1">
-                <strong>Tax Notice:</strong> Under current small business turnover thresholds under the Central Goods and Services Tax Act, 2017, Conflux AI does not charge or collect GST. If registration thresholds are crossed in the future, invoices and checkout breakdowns will be updated with official GSTIN credentials. No fabricated tax claims are ever made.
+                <strong>Tax Notice:</strong> Total: ₹499. GST is not charged. If GST status changes later, invoicing and checkout breakdowns will be updated accordingly. No fabricated GST charges or GSTIN are displayed.
               </p>
             </div>
           </section>

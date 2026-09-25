@@ -27,6 +27,7 @@ import { subscriptionService } from '../../lib/subscriptionService';
 import type { BusinessEntitlements } from '../../types/subscription';
 import { GoogleReviewsSection } from './GoogleReviewsSection';
 import { VerificationCheckoutModal } from '../verification/VerificationCheckoutModal';
+import { getVerificationLevelLabel } from '../../lib/verificationPaymentService';
 
 export const PublicBusinessProfile: React.FC = () => {
   const { district, city, slug } = useParams<{ district: string; city: string; slug: string }>();
@@ -485,7 +486,7 @@ export const PublicBusinessProfile: React.FC = () => {
                     </span>
                     <ul className="list-disc list-inside space-y-0.5 text-[11px] text-slate-700">
                       <li>Operational business identity &amp; legal/trade name ({business.legalName || business.name})</li>
-                      <li>Physical business premises in {business.location.city || business.location.district}</li>
+                      <li>Declared address &amp; visual premise evidence in {business.location.city || business.location.district}</li>
                       <li>{business.primaryRegistrar ? `Statutory registry standing (${business.primaryRegistrar})` : 'Statutory municipal / tax licensing records'}</li>
                       <li>Authentic direct contact channels</li>
                     </ul>
@@ -801,8 +802,8 @@ export const PublicBusinessProfile: React.FC = () => {
                       <ShieldCheck size={14} className="text-emerald-600 shrink-0" />
                       <span>✓ Information Checked by Conflux</span>
                     </span>
-                    <span className="text-xs font-mono font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
-                      {business.confidenceScore || 0}% Confidence
+                    <span className="text-xs font-mono font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                      {getVerificationLevelLabel(business.verificationStatus, business.verificationLevel, business.primaryRegistrar)}
                     </span>
                   </div>
 
@@ -1102,7 +1103,7 @@ export const PublicBusinessProfile: React.FC = () => {
                       </span>
                       <ul className="list-disc list-inside space-y-0.5 text-[11px] text-emerald-950/90">
                         <li>Operational business identity &amp; legal/trade name ({business.legalName || business.name})</li>
-                        <li>Physical operating premises in {business.location.city || business.location.district}</li>
+                        <li>Declared address &amp; visual premise evidence in {business.location.city || business.location.district}</li>
                         <li>{business.primaryRegistrar ? `Statutory registry standing (${business.primaryRegistrar})` : 'Municipal trade licensing / official registrations'}</li>
                         <li>Authentic direct contact channels</li>
                       </ul>

@@ -310,17 +310,17 @@ export const VerificationReturnPage: React.FC = () => {
                 <span className="font-mono font-medium">₹499.00</span>
               </div>
               <div className="flex justify-between text-slate-500 text-[11px]">
-                <span>Goods &amp; Services Tax (GST) &mdash; Not Applicable under turnover exemption</span>
-                <span className="font-mono">₹0.00</span>
+                <span>Goods &amp; Services Tax (GST)</span>
+                <span className="font-mono">GST is not charged</span>
               </div>
               <div className="flex justify-between font-bold text-slate-950 pt-1 border-t border-slate-200 text-sm">
                 <span>Total Amount Paid (INR)</span>
-                <span className="font-mono text-emerald-700">₹499.00 INR</span>
+                <span className="font-mono text-emerald-700">₹499.00 INR (GST is not charged)</span>
               </div>
             </div>
 
             <p className="text-[10px] text-slate-500 pt-1 leading-relaxed italic">
-              <strong>Billing Transparency Notice:</strong> Conflux AI is currently not registered for GST under the small enterprise threshold under the Central Goods and Services Tax Act, 2017. No GST has been charged or collected. Payment covers the manual human and documentary review service and does NOT guarantee verification approval, ranking boosts, or commercial leads.
+              <strong>Billing Transparency Notice:</strong> Total: ₹499. GST is not charged. Payment covers the manual human and documentary review service and does NOT guarantee verification approval, ranking boosts, or commercial leads. If GST status changes later, invoicing and checkout breakdowns will be updated accordingly.
             </p>
           </div>
 
@@ -374,7 +374,7 @@ export const VerificationReturnPage: React.FC = () => {
                   </span>
                   <ul className="list-disc list-inside space-y-1 text-slate-700 text-xs">
                     <li>Operational business identity &amp; legal entity name ({order.evidence?.legalName || order.businessName})</li>
-                    <li>Physical business premises in {order.evidence?.city || 'Nadia'}, {order.evidence?.district || 'West Bengal'}</li>
+                    <li>Declared address &amp; visual premise evidence in {order.evidence?.city || 'Nadia'}, {order.evidence?.district || 'West Bengal'}</li>
                     <li>Statutory registration credentials ({order.evidence?.statutoryDocType?.replace(/_/g, ' ') || 'Trade License Registry'})</li>
                     <li>Authentic direct customer communication channels (Phone &amp; WhatsApp)</li>
                   </ul>
@@ -528,7 +528,7 @@ export const VerificationReturnPage: React.FC = () => {
                       <strong>Legal Name &amp; Contact:</strong> To verify lawful representation and deliver status updates and clarification requests.
                     </div>
                     <div className="p-2.5 rounded-xl bg-white border border-slate-200">
-                      <strong>Physical Address:</strong> To verify operating physical premises and eliminate phantom or fraudulent listings.
+                      <strong>Declared Address:</strong> To verify declared operating location and eliminate phantom or fraudulent listings.
                     </div>
                     <div className="p-2.5 rounded-xl bg-white border border-slate-200">
                       <strong>Statutory License / Number:</strong> To cross-reference with official state/central registry records (MCA, GSTN, FoSCoS, Udyam).

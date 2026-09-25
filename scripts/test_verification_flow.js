@@ -3,7 +3,7 @@
 
 import crypto from 'crypto';
 import assert from 'assert';
-import { evaluateVerificationEvidence, maskDocumentNumber } from '../lib/verificationPaymentService.ts';
+import { evaluateVerificationEvidence, maskDocumentNumber, getVerificationLevelLabel } from '../lib/verificationPaymentService.ts';
 
 console.log('\n======================================================');
 console.log('  CONFLUX AI — PAID VERIFIED & CASHFREE TEST SUITE  ');
@@ -360,6 +360,8 @@ runTest('Evidence Methodology: Maps explicit statutory claims & derives grounded
   });
   assert.strictEqual(gstinEvaluation.verificationStatus, 'SUPPORTED');
   assert.strictEqual(gstinEvaluation.verificationLevel, 'STATUTORY_VERIFIED');
+  assert.strictEqual(gstinEvaluation.verificationLevelLabel, 'Statutory evidence confirmed');
+  assert.strictEqual(getVerificationLevelLabel('SUPPORTED', 'STATUTORY_VERIFIED', 'GSTN'), 'Statutory evidence confirmed');
   assert.strictEqual(gstinEvaluation.confidenceScore, 92.0);
   assert.strictEqual(gstinEvaluation.claimType, 'REGISTRATION');
   assert.strictEqual(gstinEvaluation.evaluatedClaim, 'GST Registration Claim');
@@ -373,6 +375,7 @@ runTest('Evidence Methodology: Maps explicit statutory claims & derives grounded
   });
   assert.strictEqual(fssaiEvaluation.verificationStatus, 'SUPPORTED');
   assert.strictEqual(fssaiEvaluation.verificationLevel, 'STATUTORY_VERIFIED');
+  assert.strictEqual(fssaiEvaluation.verificationLevelLabel, 'Statutory evidence confirmed');
   assert.strictEqual(fssaiEvaluation.confidenceScore, 86.0); // 86% without doc URL
   assert.strictEqual(fssaiEvaluation.claimType, 'CERTIFICATION');
   assert.strictEqual(fssaiEvaluation.evaluatedClaim, 'Food Safety & Standards Authority of India (FSSAI) License Claim');
@@ -384,13 +387,18 @@ runTest('Evidence Methodology: Maps explicit statutory claims & derives grounded
   });
   assert.strictEqual(photoEvaluation.verificationStatus, 'PARTIALLY_SUPPORTED');
   assert.strictEqual(photoEvaluation.verificationLevel, 'BASIC', 'Storefront photo MUST NEVER yield STATUTORY_VERIFIED');
+  assert.strictEqual(photoEvaluation.verificationLevelLabel, 'Corroborated');
+  assert.strictEqual(getVerificationLevelLabel('PARTIALLY_SUPPORTED', 'BASIC', undefined, 'STOREFRONT_PHOTO'), 'Corroborated');
   assert.strictEqual(photoEvaluation.confidenceScore, 65.0, 'Visual evidence confidence must be grounded (<=65%)');
   assert.strictEqual(photoEvaluation.claimType, 'GENERAL_FACT');
   assert.ok(photoEvaluation.evidenceSummary.includes('visual/location evidence only'));
+  assert.ok(photoEvaluation.evidenceSummary.includes('actual physical site inspection was not conducted'));
 
   // Case D: Missing / empty evidence -> BASIC fallback
   const fallbackEvaluation = evaluateVerificationEvidence(undefined);
   assert.strictEqual(fallbackEvaluation.verificationLevel, 'BASIC');
+  assert.strictEqual(fallbackEvaluation.verificationLevelLabel, 'Applicant evidence only');
+  assert.strictEqual(getVerificationLevelLabel('UNVERIFIED', undefined), 'Applicant evidence only');
   assert.strictEqual(fallbackEvaluation.confidenceScore, 50.0);
 });
 
