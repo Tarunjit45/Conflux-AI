@@ -18,7 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const { id, slug } = req.query;
-  const targetId = (id || slug || '').toString().toLowerCase().trim();
+  const targetId = (id || slug || '').toString().trim();
 
   if (!targetId) {
     return res.status(400).json({ success: false, error: 'Missing business id or slug parameter.' });

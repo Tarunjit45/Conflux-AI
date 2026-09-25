@@ -9,6 +9,8 @@ import { emailService } from './emailService.ts';
 const LOCAL_STORAGE_USER_KEY = 'conflux_active_user_session';
 
 const AUTHORIZED_ADMIN_EMAILS = [
+  'founder@confluxai.in',
+  'contact@confluxai.in',
   'confluxdotai@gmail.com',
   'tarunjitbiswas24@gmail.com',
   'shoubhikmajumdar@gmail.com',
@@ -136,7 +138,8 @@ export class AuthService {
    */
   async signIn(email: string, password?: string): Promise<{ success: boolean; error?: string; user?: UserProfile }> {
     this.memorySession = undefined;
-    if (isSupabaseConfigured()) {
+    const isProd = (typeof import.meta !== 'undefined' && (import.meta as any).env?.PROD) || process.env.NODE_ENV === 'production';
+    if (isSupabaseConfigured() && (password || isProd)) {
       try {
         if (password) {
           const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
@@ -159,10 +162,11 @@ export class AuthService {
       }
     }
 
-    // When Supabase is not configured, development and test mode can use simulated local sessions
-    const isProd = (typeof import.meta !== 'undefined' && (import.meta as any).env?.PROD) || process.env.NODE_ENV === 'production';
+    // When Supabase is not configured or in dev/test mode without password, use simulated local sessions
     if (!isProd) {
-      const testRole: UserRole = email.includes('admin') ? 'ADMIN' : email.includes('owner') ? 'BUSINESS_OWNER' : 'USER';
+      const normalizedEmail = email.toLowerCase().trim();
+      const isAuthorizedAdmin = AUTHORIZED_ADMIN_EMAILS.includes(normalizedEmail) || normalizedEmail.includes('admin');
+      const testRole: UserRole = isAuthorizedAdmin ? 'ADMIN' : normalizedEmail.includes('owner') ? 'BUSINESS_OWNER' : 'USER';
       const mockUser: UserProfile = {
         id: `usr_dev_${Date.now()}`,
         email,

@@ -66,7 +66,7 @@ const CompanyGlance: React.FC = () => {
             <div>
               <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Official Domain & Contact</div>
               <a href="https://confluxai.in/" className="text-blue-400 hover:text-blue-300 font-bold text-sm mt-0.5 block">confluxai.in</a>
-              <a href="mailto:confluxdotai@gmail.com" className="text-xs text-slate-400 hover:text-slate-300 font-medium block">confluxdotai@gmail.com</a>
+              <a href="mailto:contact@confluxai.in" className="text-xs text-slate-400 hover:text-slate-300 font-medium block">contact@confluxai.in</a>
             </div>
           </div>
         </div>

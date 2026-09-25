@@ -22,7 +22,7 @@ if (fs.existsSync('.env.local')) {
   }
 }
 
-const ADMIN_EMAIL = process.env.TEST_ADMIN_EMAIL || process.env.ADMIN_EMAIL || 'tarunjitbiswas24@gmail.com';
+const ADMIN_EMAIL = process.env.TEST_ADMIN_EMAIL || process.env.ADMIN_EMAIL || 'founder@confluxai.in';
 const ADMIN_PASS = process.env.TEST_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
 
 async function runTests() {

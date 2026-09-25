@@ -2019,7 +2019,7 @@ const staticPages = [
           Reach out to our engineering leadership in Kolkata. We respond to inquiries and provide custom AI workflow audits within 24 hours.
         </p>
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
-          <p style="font-size: 15px; margin-bottom: 10px;"><strong>Email:</strong> <a href="mailto:confluxdotai@gmail.com" style="color: #2563eb;">confluxdotai@gmail.com</a></p>
+          <p style="font-size: 15px; margin-bottom: 10px;"><strong>Email:</strong> <a href="mailto:contact@confluxai.in" style="color: #2563eb;">contact@confluxai.in</a></p>
           <p style="font-size: 15px; margin-bottom: 10px;"><strong>Phone / WhatsApp:</strong> <a href="tel:+918972517557" style="color: #2563eb;">+91 8972517557</a></p>
           <p style="font-size: 15px; margin-bottom: 0;"><strong>Headquarters:</strong> Kolkata, West Bengal, India (Remote-First Statewide & Global Collaboration)</p>
         </div>
@@ -2560,7 +2560,7 @@ const staticPages = [
           </div>
         </div>
         <div style="text-align: center; margin-top: 30px;">
-          <a href="mailto:confluxdotai@gmail.com?subject=Spontaneous Application — Conflux AI Talent Pool" style="display: inline-block; background: #2563eb; color: white; padding: 14px 28px; border-radius: 12px; font-weight: 800; text-decoration: none; font-size: 14px;">
+          <a href="mailto:contact@confluxai.in?subject=Spontaneous Application — Conflux AI Talent Pool" style="display: inline-block; background: #2563eb; color: white; padding: 14px 28px; border-radius: 12px; font-weight: 800; text-decoration: none; font-size: 14px;">
             Send Portfolio to Talent Pool &rarr;
           </a>
         </div>

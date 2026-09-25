@@ -52,7 +52,8 @@ export default async function handler(
     console.log('Sending email to:', to);
 
     const { data, error } = await resend.emails.send({
-      from: 'Conflux AI <onboarding@resend.dev>',
+      from: 'Conflux AI <no-reply@confluxai.in>',
+      replyTo: 'contact@confluxai.in',
       to: [to],
       subject: `Conflux AI - Status Update for ${businessName}`,
 

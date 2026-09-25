@@ -264,7 +264,7 @@ export const PrivacyPolicyPage: React.FC = () => {
               <div className="space-y-2 text-xs text-slate-600">
                 <div className="flex items-center gap-2.5">
                   <Mail size={15} className="text-blue-600 shrink-0" />
-                  <span>Email: <a href="mailto:privacy@confluxai.in" className="text-blue-600 font-bold hover:underline">privacy@confluxai.in</a> (cc: <a href="mailto:confluxai45@gmail.com" className="text-blue-600 font-bold hover:underline">confluxai45@gmail.com</a>)</span>
+                  <span>Email: <a href="mailto:contact@confluxai.in" className="text-blue-600 font-bold hover:underline">contact@confluxai.in</a> (cc: <a href="mailto:founder@confluxai.in" className="text-blue-600 font-bold hover:underline">founder@confluxai.in</a>)</span>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <Phone size={15} className="text-blue-600 shrink-0" />

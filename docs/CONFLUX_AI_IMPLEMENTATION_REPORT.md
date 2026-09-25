@@ -11,7 +11,7 @@
 ## 1. 🌟 Executed Improvements Summary
 
 ### A. Centralized Entity Knowledge Layer (`data/company.json`)
-- Implemented `data/company.json` as the single source of truth for company identity, founders (Tarunjit Biswas & Shouvik Majumdar), contact details (`tarunjitbiswas24@gmail.com`, `+91-8972517557`), social profiles, verified service offerings, and core competencies.
+- Implemented `data/company.json` as the single source of truth for company identity, founders (Tarunjit Biswas & Shouvik Majumdar), contact details (`contact@confluxai.in`, `founder@confluxai.in`, `+91-8972517557`), social profiles, verified service offerings, and core competencies.
 
 ### B. Dedicated Commercial Service Architecture (`/services/*`)
 - Built `components/ServiceDetailPage.tsx` providing dedicated, deep commercial routes:

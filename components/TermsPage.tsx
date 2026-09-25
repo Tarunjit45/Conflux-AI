@@ -80,7 +80,7 @@ export const TermsPage: React.FC = () => {
               <div className="font-bold text-slate-900">Conflux AI</div>
               <div>Legal Entity Type: Sole Proprietorship registered in West Bengal, India</div>
               <div>Principal Place of Business: Kolkata, West Bengal 700001, India</div>
-              <div>Official Contact Email: <a href="mailto:contact@confluxai.in" className="text-blue-600 font-semibold underline">contact@confluxai.in</a> (cc: <a href="mailto:confluxai45@gmail.com" className="text-blue-600 font-semibold underline">confluxai45@gmail.com</a>)</div>
+              <div>Official Contact Email: <a href="mailto:contact@confluxai.in" className="text-blue-600 font-semibold underline">contact@confluxai.in</a> (cc: <a href="mailto:founder@confluxai.in" className="text-blue-600 font-semibold underline">founder@confluxai.in</a>)</div>
               <div>Customer Care Telephone: <a href="tel:+919734433100" className="text-blue-600 font-semibold underline">+91 97344 33100</a> (Operating Hours: Mon–Sat, 10:00 AM – 6:30 PM IST)</div>
               <div>Designated Grievance Officer: <a href="mailto:grievance@confluxai.in" className="text-blue-600 font-semibold underline">grievance@confluxai.in</a></div>
             </div>

@@ -10,6 +10,9 @@ import { isValidConfluxBusinessId } from '../lib/businessId.ts';
 import searchHandler from '../api/graph/search.ts';
 import bizHandler from '../api/graph/business.ts';
 
+import { loadEnv } from './load_env.js';
+loadEnv();
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
@@ -55,7 +58,9 @@ async function runAcceptanceTests() {
   console.log('\n--- 1. Testing Admin Workflow ---');
   
   // 1.1 Admin Authentication
-  const adminLogin = await authService.signIn('admin@confluxai.in');
+  const adminEmail = process.env.TEST_ADMIN_EMAIL || 'founder@confluxai.in';
+  const adminPassword = process.env.TEST_ADMIN_PASSWORD;
+  const adminLogin = await authService.signIn(adminEmail, adminPassword);
   assertTest('ADMIN', 'Admin authentication returns success', adminLogin.success === true);
   const activeAdmin = await authService.getCurrentUser();
   assertTest('ADMIN', 'Active user role is verified as ADMIN', activeAdmin?.role === 'ADMIN');
@@ -64,7 +69,7 @@ async function runAcceptanceTests() {
   authService.setLocalSession(null);
   const unauthUser = await authService.getCurrentUser();
   const isBlockedForPublic = !unauthUser || unauthUser.role !== 'ADMIN';
-  authService.setLocalSession({ id: 'admin_test', email: 'admin@confluxai.in', role: 'ADMIN', createdAt: new Date().toISOString() });
+  authService.setLocalSession(activeAdmin || { id: 'admin_test', email: adminEmail, role: 'ADMIN', createdAt: new Date().toISOString() });
   assertTest('ADMIN', 'Unauthenticated/Public users are blocked from admin privileges', isBlockedForPublic);
 
   // 1.3 Create Business via Graph Service

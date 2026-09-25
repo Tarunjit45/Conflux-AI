@@ -236,7 +236,7 @@ const WorkplacePolicyPage: React.FC = () => {
           </div>
           <div className="flex flex-wrap gap-4 shrink-0">
             <a 
-              href="mailto:confluxai45@gmail.com?subject=Workplace Policy Inquiry — Conflux AI"
+              href="mailto:contact@confluxai.in?subject=Workplace Policy Inquiry — Conflux AI"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-md shadow-blue-500/20"
             >
               <Mail size={16} /> Email Leadership

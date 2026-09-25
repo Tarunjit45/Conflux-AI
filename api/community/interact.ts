@@ -20,16 +20,18 @@ const getPrivilegedClient = async () => {
     auth: { persistSession: false, autoRefreshToken: false }
   });
 
-  const adminEmail = process.env.SUPABASE_ADMIN_EMAIL || 'tarunjitbiswas24@gmail.com';
-  const adminPassword = process.env.SUPABASE_ADMIN_PASSWORD || 'T13072005@b';
+  const adminEmail = process.env.SUPABASE_ADMIN_EMAIL || process.env.TEST_ADMIN_EMAIL || 'founder@confluxai.in';
+  const adminPassword = process.env.SUPABASE_ADMIN_PASSWORD || process.env.TEST_ADMIN_PASSWORD || '';
 
-  const { error } = await client.auth.signInWithPassword({
-    email: adminEmail,
-    password: adminPassword
-  });
+  if (adminPassword) {
+    const { error } = await client.auth.signInWithPassword({
+      email: adminEmail,
+      password: adminPassword
+    });
 
-  if (error) {
-    console.warn('[CommunityInteractAPI] Admin sign-in notice:', error.message);
+    if (error) {
+      console.warn('[CommunityInteractAPI] Admin sign-in notice:', error.message);
+    }
   }
 
   return client;

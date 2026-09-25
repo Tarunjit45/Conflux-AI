@@ -476,7 +476,7 @@ VITE_SUPABASE_ANON_KEY="your-anon-key"
 VITE_GA_MEASUREMENT_ID="G-4T4BL0LKQ5"
 
 # Operational Contact & Lead Routing
-VITE_CONTACT_EMAIL="confluxai45@gmail.com"
+VITE_CONTACT_EMAIL="contact@confluxai.in"
 VITE_CONTACT_PHONE="+919734433100"
 ```
 
@@ -490,7 +490,8 @@ VITE_CONTACT_PHONE="+919734433100"
 ## 9. 📞 Maintenance & Team Contacts
 
 * **Chief Executive Officer & CTO:** Tarunjit Biswas ([GitHub: @Tarunjit45](https://github.com/Tarunjit45))
+* **Founder Direct:** `founder@confluxai.in`
 * **Chief Financial Officer & CMO:** Shouvik Majumdar
-* **Platform Inquiries:** `confluxai45@gmail.com`
+* **Platform Inquiries:** `contact@confluxai.in`
 * **Direct Engineering Support:** `+91 97344 33100` / `+91 89725 17557`
 * **Office Location:** Kolkata, West Bengal 700001, India

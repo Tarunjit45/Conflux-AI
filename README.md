@@ -168,7 +168,8 @@ For an exhaustive guide covering every subsystem, registrar adapter, data schema
 * **Tarunjit Biswas** — Chief Executive Officer & CTO ([GitHub: @Tarunjit45](https://github.com/Tarunjit45))
 * **Shouvik Majumdar** — Chief Financial Officer & CMO
 * **Headquarters:** Kolkata, West Bengal 700001, India (Remote-First Platform)
-* **General Inquiries:** `confluxai45@gmail.com`
+* **General Inquiries:** `contact@confluxai.in`
+* **Founder Contact:** `founder@confluxai.in`
 * **Phone / WhatsApp:** `+91 97344 33100` / `+91 89725 17557`
 
 ---

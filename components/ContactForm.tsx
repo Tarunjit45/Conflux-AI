@@ -126,7 +126,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ businessId, defaultBusinessNa
           </p>
           <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 font-bold text-xs">
             <Mail size={14} />
-            <span>confluxdotai@gmail.com</span>
+            <span>contact@confluxai.in</span>
           </div>
           <div className="mt-8">
             <button
@@ -160,10 +160,10 @@ const ContactForm: React.FC<ContactFormProps> = ({ businessId, defaultBusinessNa
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 border border-slate-200 hover:border-blue-300 transition-colors">
           <Mail className="w-4 h-4 text-blue-600" />
           <a 
-            href="mailto:confluxdotai@gmail.com" 
+            href="mailto:contact@confluxai.in" 
             className="text-xs font-bold tracking-wide text-slate-800 hover:text-blue-600 transition-colors"
           >
-            confluxdotai@gmail.com
+            contact@confluxai.in
           </a>
         </div>
       </div>

@@ -51,7 +51,7 @@ const CareersPage: React.FC = () => {
             We currently don't have open full-time positions, but we're always interested in meeting exceptional AI developers, growth engineers, and technical creators.
           </p>
           <a 
-            href="mailto:confluxdotai@gmail.com?subject=Spontaneous Application — Conflux AI Talent Pool"
+            href="mailto:contact@confluxai.in?subject=Spontaneous Application — Conflux AI Talent Pool"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm transition-colors shadow-lg shadow-blue-500/25"
           >
             <Mail className="w-4 h-4" />

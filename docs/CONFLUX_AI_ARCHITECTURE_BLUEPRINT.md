@@ -74,12 +74,12 @@ To prevent inconsistent company metadata across components and search engine sch
   "logo": "https://confluxai.in/logo.png",
   "description": "Conflux AI is a Local Visibility + Trust Platform that helps local businesses become discoverable, trusted, and contactable across Google and AI search.",
   "founders": [
-    { "name": "Tarunjit Biswas", "role": "Founder & CTO", "email": "tarunjitbiswas24@gmail.com" },
+    { "name": "Tarunjit Biswas", "role": "Founder & CTO", "email": "founder@confluxai.in" },
     { "name": "Shouvik Majumdar", "role": "Co-Founder & Creative Director" }
   ],
   "contact": {
     "telephone": "+91-8972517557",
-    "email": "tarunjitbiswas24@gmail.com",
+    "email": "contact@confluxai.in",
     "address": { "city": "Kolkata", "state": "West Bengal", "country": "India" }
   },
   "socialProfiles": [

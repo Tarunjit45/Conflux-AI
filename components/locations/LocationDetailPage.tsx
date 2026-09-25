@@ -2861,7 +2861,7 @@ const LocationDetailPage: React.FC = () => {
                     onChange={(e) => setAdminEmailInput(e.target.value)}
                     required
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
-                    placeholder="admin@confluxai.in"
+                    placeholder="founder@confluxai.in"
                   />
                 </div>
 

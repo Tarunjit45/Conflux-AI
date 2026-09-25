@@ -154,7 +154,7 @@ const RefundPolicyPage: React.FC = () => {
               <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-1">
                 <div className="font-bold text-slate-900 text-xs sm:text-sm">B. Cancellation Prior to Initiation of Review</div>
                 <p className="text-xs text-slate-600">
-                  If you request cancellation within <strong>two (2) hours of payment</strong> and our compliance officers have not yet begun document review or external registrar lookups, a full refund will be processed upon written request to <a href="mailto:confluxai45@gmail.com" className="text-blue-600 underline">confluxai45@gmail.com</a>.
+                  If you request cancellation within <strong>two (2) hours of payment</strong> and our compliance officers have not yet begun document review or external registrar lookups, a full refund will be processed upon written request to <a href="mailto:contact@confluxai.in" className="text-blue-600 underline">contact@confluxai.in</a>.
                 </p>
               </div>
               <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-1">
@@ -224,7 +224,7 @@ const RefundPolicyPage: React.FC = () => {
               <div className="space-y-2 text-xs text-slate-600">
                 <div className="flex items-center gap-2.5">
                   <Mail size={15} className="text-blue-600 shrink-0" />
-                  <span>Email: <a href="mailto:confluxai45@gmail.com" className="text-blue-600 font-bold hover:underline">confluxai45@gmail.com</a> (cc: <a href="mailto:contact@confluxai.in" className="text-blue-600 font-bold hover:underline">contact@confluxai.in</a>)</span>
+                  <span>Email: <a href="mailto:contact@confluxai.in" className="text-blue-600 font-bold hover:underline">contact@confluxai.in</a> (cc: <a href="mailto:founder@confluxai.in" className="text-blue-600 font-bold hover:underline">founder@confluxai.in</a>)</span>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <Phone size={15} className="text-blue-600 shrink-0" />

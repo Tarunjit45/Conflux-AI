@@ -106,8 +106,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 5. Environment & Provider Configuration
     const apiKey = process.env.EMAIL_API_KEY || process.env.RESEND_API_KEY;
     const configuredProvider = (process.env.EMAIL_PROVIDER || 'resend').toLowerCase();
-    const fromAddress = process.env.EMAIL_FROM || 'Conflux AI <onboarding@resend.dev>';
-    const replyTo = process.env.EMAIL_REPLY_TO || 'support@confluxai.in';
+    const fromAddress = process.env.EMAIL_FROM || 'Conflux AI <no-reply@confluxai.in>';
+    const replyTo = process.env.EMAIL_REPLY_TO || 'contact@confluxai.in';
 
     let sendResult: EmailSendResult = {
       success: false,

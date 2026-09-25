@@ -16,7 +16,7 @@ import type { VerificationOrder } from './verificationPaymentService.ts';
 import type { ConfluxBusiness, UserProfile } from '../types/business.ts';
 
 const LOCAL_STORAGE_EMAIL_LOGS_KEY = 'conflux_audit_email_logs';
-const ADMIN_DEFAULT_EMAIL = 'admin@confluxai.in';
+const ADMIN_DEFAULT_EMAIL = 'contact@confluxai.in';
 
 let memoryEmailLogs: EmailLog[] = [];
 let memoryUserPreferences: Record<string, UserEmailPreferences> = {};

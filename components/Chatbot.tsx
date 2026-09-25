@@ -68,7 +68,7 @@ const Chatbot: React.FC = () => {
       return "We offer three core infrastructure suites: \n1. Omnichannel AI Agents (WhatsApp, Web, Social automation)\n2. Conversion-Optimized Web (High-speed, premium UX)\n3. Precision Ad Systems (Meta & Google ad scaling)\n\nWhich one would you like to know more about?";
     }
     if (query.includes('contact') || query.includes('email') || query.includes('reach') || query.includes('support')) {
-      return "You can reach us at confluxdotai@gmail.com. We typically respond within 24 hours. Alternatively, you can follow us on our social media handles linked at the bottom of the page.";
+      return "You can reach us at contact@confluxai.in. We typically respond within 24 hours. Alternatively, you can follow us on our social media handles linked at the bottom of the page.";
     }
     if (query.includes('who are you') || query.includes('name')) {
       return "My name is Conflux. I am the hardcoded AI intelligence representing Conflux AI.";

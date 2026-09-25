@@ -33,8 +33,8 @@
                     ▼
  [ 3. EMAIL SECOND: Resend API Dispatch ]
   - Checks process.env.RESEND_API_KEY
-  - FROM: Conflux AI Growth System <onboarding@resend.dev>
-  - TO: process.env.LEAD_NOTIFICATION_EMAIL (tarunjitbiswas24@gmail.com)
+  - FROM: Conflux Notifications <no-reply@confluxai.in>
+  - TO: process.env.LEAD_NOTIFICATION_EMAIL (contact@confluxai.in)
   - REPLY-TO: Prospect's submitted email
   - Subject: New Conflux AI Lead — [Service] — [Company]
                     │
@@ -70,13 +70,13 @@
 | `VITE_SUPABASE_ANON_KEY` | Public / Server | **`PRESENT`** | Supabase Anonymous Key |
 | `SUPABASE_SERVICE_KEY` | Server Only | **`OPTIONAL`** | Supabase Service Role Key |
 | `RESEND_API_KEY` | Server Only | **`REQUIRED`** | Transactional Email API Key |
-| `LEAD_NOTIFICATION_EMAIL` | Server Only | **`REQUIRED`** | Lead recipient inbox (`tarunjitbiswas24@gmail.com`) |
+| `LEAD_NOTIFICATION_EMAIL` | Server Only | **`REQUIRED`** | Lead recipient inbox (`contact@confluxai.in`) |
 
 ---
 
 ## 4. ✉️ Email Headers & Recipient Taxonomy
 
-- **`FROM`:** `Conflux AI Growth System <onboarding@resend.dev>` (or verified domain `leads@confluxai.in`)
-- **`TO`:** `LEAD_NOTIFICATION_EMAIL` (`tarunjitbiswas24@gmail.com`)
+- **`FROM`:** `Conflux Notifications <no-reply@confluxai.in>`
+- **`TO`:** `LEAD_NOTIFICATION_EMAIL` (`contact@confluxai.in`)
 - **`REPLY-TO`:** Prospect's Submitted Email (`reply_to: cleanEmail`)
 - **`SUBJECT`:** `New Conflux AI Lead — [Service] — [Company]`

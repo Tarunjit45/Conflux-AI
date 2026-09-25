@@ -10,7 +10,7 @@ export interface RenderedEmail {
 }
 
 const BASE_URL = 'https://www.confluxai.in';
-const SUPPORT_EMAIL = 'support@confluxai.in';
+const SUPPORT_EMAIL = 'contact@confluxai.in';
 
 /**
  * Base layout wrapper ensuring consistent typography, branding, header, and legal footer
@@ -206,7 +206,7 @@ ${actionUrl}
 
 Notice: The ₹499 fee is an order review fee for manual inspection of submitted statutory proof against official registries. Payment does NOT guarantee verification approval, search ranking priority, or business leads.
 
-Conflux AI • support@confluxai.in • https://www.confluxai.in`;
+Conflux AI • contact@confluxai.in • https://www.confluxai.in`;
 
       return { subject, html, text };
     }
@@ -250,7 +250,7 @@ Your statutory documentation has been securely transferred to the review queue.
 Typical review time: 1–2 business days.
 Check status: ${actionUrl}
 
-Conflux AI • support@confluxai.in`;
+Conflux AI • contact@confluxai.in`;
 
       return { subject, html, text };
     }
@@ -301,7 +301,7 @@ Our verification reviewer has requested additional evidence:
 You have 14 days to submit updated proof with zero additional charge.
 Upload evidence: ${actionUrl}
 
-Conflux AI • support@confluxai.in`;
+Conflux AI • contact@confluxai.in`;
 
       return { subject, html, text };
     }
@@ -364,7 +364,7 @@ Valid until: ${expiresAt}
 View your public verified profile:
 ${actionUrl}
 
-Conflux AI • support@confluxai.in`;
+Conflux AI • contact@confluxai.in`;
 
       return { subject, html, text };
     }
@@ -413,7 +413,7 @@ Evaluation Reason:
 
 Verification requirements: ${actionUrl}
 
-Conflux AI • support@confluxai.in`;
+Conflux AI • contact@confluxai.in`;
 
       return { subject, html, text };
     }
@@ -453,7 +453,7 @@ Business: ${businessName} (${city})
 Thank you for registering on Conflux AI. Our moderation team is reviewing your listing details.
 Directory: ${actionUrl}
 
-Conflux AI • support@confluxai.in`;
+Conflux AI • contact@confluxai.in`;
 
       return { subject, html, text };
     }
@@ -487,7 +487,7 @@ Conflux AI • support@confluxai.in`;
 ${businessName} is now live on Conflux AI!
 View listing: ${actionUrl}
 
-Conflux AI • support@confluxai.in`;
+Conflux AI • contact@confluxai.in`;
 
       return { subject, html, text };
     }
@@ -522,7 +522,7 @@ Conflux AI • support@confluxai.in`;
 Hello ${ownerName},
 We have received your ownership claim for ${businessName}. Our team will review your statutory credentials.
 
-Conflux AI • support@confluxai.in`;
+Conflux AI • contact@confluxai.in`;
 
       return { subject, html, text };
     }
@@ -553,7 +553,7 @@ Hello ${fullName},
 Your Conflux AI account has been successfully created.
 Sign in: ${actionUrl}
 
-Conflux AI • support@confluxai.in`;
+Conflux AI • contact@confluxai.in`;
 
       return { subject, html, text };
     }
@@ -582,7 +582,7 @@ Conflux AI • support@confluxai.in`;
 Please click the link below to verify your email address:
 ${verifyUrl}
 
-Conflux AI • support@confluxai.in`;
+Conflux AI • contact@confluxai.in`;
 
       return { subject, html, text };
     }
@@ -612,7 +612,7 @@ To reset your password, visit:
 ${resetUrl}
 
 If you did not request this, please disregard this email.
-Conflux AI • support@confluxai.in`;
+Conflux AI • contact@confluxai.in`;
 
       return { subject, html, text };
     }
@@ -648,7 +648,7 @@ Conflux AI • support@confluxai.in`;
 ${alertDetails}
 Review account security: ${actionUrl}
 
-Conflux AI • support@confluxai.in`;
+Conflux AI • contact@confluxai.in`;
 
       return { subject, html, text };
     }

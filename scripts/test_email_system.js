@@ -38,7 +38,7 @@ async function main() {
     assert.ok(rendered.subject.includes('Welcome to Conflux AI'));
     assert.ok(rendered.html.includes('CONFLUX'));
     assert.ok(rendered.html.includes('AI'));
-    assert.ok(rendered.html.includes('support@confluxai.in'));
+    assert.ok(rendered.html.includes('contact@confluxai.in'));
     assert.ok(rendered.html.includes('https://www.confluxai.in/terms'));
     assert.ok(rendered.html.includes('https://www.confluxai.in/privacy'));
     assert.ok(rendered.html.includes('https://www.confluxai.in/refund'));
@@ -296,7 +296,7 @@ async function main() {
   // -------------------------------------------------------------
   // TEST 12: Admin Notification Dispatch
   // -------------------------------------------------------------
-  await runTest('Admin Notification Dispatch: Sends to admin@confluxai.in with correct event details', async () => {
+  await runTest('Admin Notification Dispatch: Sends to contact@confluxai.in with correct event details', async () => {
     const adminResult = await emailService.sendAdminVerificationPayment({
       orderId: 'cfx_admin_test_01',
       businessName: 'Ranaghat Gold House',
@@ -308,7 +308,7 @@ async function main() {
     const logs = await emailService.getAllEmailLogs();
     const adminLog = logs.find(l => l.eventType === 'ADMIN_VERIFICATION_PAYMENT');
     assert.ok(adminLog);
-    assert.strictEqual(adminLog.recipient, 'admin@confluxai.in');
+    assert.strictEqual(adminLog.recipient, 'contact@confluxai.in');
     assert.ok(adminLog.subject.includes('₹499 Paid'));
   });
 

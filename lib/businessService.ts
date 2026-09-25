@@ -492,7 +492,11 @@ export class BusinessService {
         console.warn('[BusinessService.getBusinessById] Database query warning:', err?.message || err);
       }
     }
-    const match = memoryStore.find(b => b.id === id || b.confluxBusinessId === id || b.slug === id);
+    const match = memoryStore.find(b => 
+      b.id === id || 
+      (b.confluxBusinessId && b.confluxBusinessId.toLowerCase() === id.toLowerCase()) || 
+      (b.slug && b.slug.toLowerCase() === id.toLowerCase())
+    );
     return match ? applyAdminOverride(match) : null;
   }
 
@@ -682,7 +686,12 @@ export class BusinessService {
         }
       } catch (err: any) {
         console.error('[BusinessService.createBusiness] Database insert failed:', err?.message || err);
-        throw new Error(`[DATABASE_ERROR] Failed to save business to Supabase: ${err?.message || err}`);
+        const isProd = (typeof import.meta !== 'undefined' && (import.meta as any).env?.PROD) || process.env.NODE_ENV === 'production';
+        if (!isProd) {
+          console.warn('[BusinessService.createBusiness] Non-production fallback to memory store:', err?.message || err);
+        } else {
+          throw new Error(`[DATABASE_ERROR] Failed to save business to Supabase: ${err?.message || err}`);
+        }
       }
     }
 
@@ -1090,10 +1099,10 @@ export class BusinessService {
         }
         const { error } = await deleteQuery;
         if (error) throw error;
-        return true;
       } catch (err: any) {
         console.error('[BusinessService.deleteBusiness] Database error:', err);
-        throw err;
+        const isProd = (typeof import.meta !== 'undefined' && (import.meta as any).env?.PROD) || process.env.NODE_ENV === 'production';
+        if (isProd) throw err;
       }
     }
     const initialLen = memoryStore.length;

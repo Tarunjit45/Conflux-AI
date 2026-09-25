@@ -25,7 +25,7 @@ Visitor Lands on Homepage (Hero 5-Second Clarity)
                        │
                        ▼
  1. SAVE FIRST: Lead saved into Supabase leads table
- 2. EMAIL SECOND: Notification dispatched to confluxdotai@gmail.com
+ 2. EMAIL SECOND: Notification dispatched to contact@confluxai.in
  3. REDIRECT: Visitor navigated to /thank-you
 ```
 
@@ -33,7 +33,7 @@ Visitor Lands on Homepage (Hero 5-Second Clarity)
 
 ## 2. 🛡️ Lead Data Protection & Reliability Safeguards
 
-- **Canonical Recipient:** `confluxdotai@gmail.com`
+- **Canonical Recipient:** `contact@confluxai.in`
 - **Reply-To Address:** Prospect's submitted email (`reply_to: cleanEmail`)
 - **Zero Secrets Client-Side:** All transactional email API operations execute on Vercel Node.js Serverless Function (`api/contact.ts`).
 - **Database Failure Shield:** If an email outage occurs, the lead remains safely stored in Supabase with `notification_status = 'failed'`. Zero leads lost.

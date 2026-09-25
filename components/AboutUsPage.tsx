@@ -142,7 +142,7 @@ const AboutUsPage: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-2">
                             <Mail size={15} className="text-blue-400" />
-                            <a href="mailto:confluxai45@gmail.com" className="hover:text-white">confluxai45@gmail.com</a>
+                            <a href="mailto:contact@confluxai.in" className="hover:text-white">contact@confluxai.in</a>
                         </div>
                         <div className="flex items-center gap-2">
                             <Phone size={15} className="text-blue-400" />

@@ -69,7 +69,7 @@ VISUAL ➔ UNDERSTANDING ➔ TRUST ➔ SERVICE ➔ PROOF ➔ CTA
 We are strictly maintaining all existing search engine signals and infrastructure:
 
 * **Preserved Routes:** `/`, `/services`, `/blog`, `/case-studies`, `/contact`, `/careers`, `/thank-you`
-* **Preserved Infrastructure:** `/api/contact` serverless endpoint, Supabase DB storage, Resend transactional notifications to `confluxdotai@gmail.com`
+* **Preserved Infrastructure:** `/api/contact` serverless endpoint, Supabase DB storage, Resend transactional notifications to `contact@confluxai.in`
 * **Preserved Indexing:** `public/robots.txt`, `public/sitemap.xml`, Canonical tags, Open Graph cards
 * **Preserved Schema Graph:** `Organization`, `WebSite`, `Service`, `FAQPage`, `BreadcrumbList`
 

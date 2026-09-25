@@ -11,7 +11,7 @@
 ## 1. 📌 Incident Overview & Root Cause
 
 ### The Problem:
-Visitors could submit an enquiry form on `confluxai.in`, but email notifications were not reliably landing in the official company inbox (`tarunjitbiswas24@gmail.com`).
+Visitors could submit an enquiry form on `confluxai.in`, but email notifications were not reliably landing in the official company inbox (`contact@confluxai.in`).
 
 ### Root Cause Analysis:
 1. **Unreliable Client-Side Script (`EmailJS`):** The legacy contact component attempted to send emails directly from the user's browser using `@emailjs/browser` with placeholder keys (`YOUR_EMAILJS_PUBLIC_KEY`). Adblockers, browser CORS policies, and missing keys caused silent failures.
@@ -42,8 +42,8 @@ Server-Side Validation & HTML Sanitization
 
 ### C. Standardized Email Headers & Content Format
 - **Subject:** `New Conflux AI Lead — [Service] — [Company]`
-- **From:** `Conflux AI Growth System <onboarding@resend.dev>` (or verified domain `leads@confluxai.in`)
-- **To:** `LEAD_NOTIFICATION_EMAIL` (`tarunjitbiswas24@gmail.com`)
+- **From:** `Conflux Notifications <no-reply@confluxai.in>`
+- **To:** `LEAD_NOTIFICATION_EMAIL` (`contact@confluxai.in`)
 - **Reply-To:** Prospect's submitted email address (`reply_to: cleanEmail`)
 
 ### D. Anti-Spam & Input Security

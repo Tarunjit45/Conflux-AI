@@ -48,8 +48,8 @@ const ContactPage: React.FC = () => {
                 </div>
                 <div>
                   <div className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Official Email</div>
-                  <a href="mailto:confluxai45@gmail.com" className="text-slate-900 font-bold text-sm hover:text-blue-600 transition-colors">
-                    confluxai45@gmail.com
+                  <a href="mailto:contact@confluxai.in" className="text-slate-900 font-bold text-sm hover:text-blue-600 transition-colors">
+                    contact@confluxai.in
                   </a>
                 </div>
               </div>

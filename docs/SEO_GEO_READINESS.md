@@ -32,7 +32,7 @@ CONFLUX AI (https://confluxai.in)
 
 ## 2. 📜 Schema.org Structured Data Graph
 
-1. **`Organization` Schema:** Includes official `name: "Conflux AI"`, `url: "https://confluxai.in"`, `logo`, `email: "confluxdotai@gmail.com"`, `knowsAbout` topics, and founder metadata.
+1. **`Organization` Schema:** Includes official `name: "Conflux AI"`, `url: "https://confluxai.in"`, `logo`, `email: "contact@confluxai.in"`, `knowsAbout` topics, and founder metadata.
 2. **`WebSite` Schema:** Injected with `SearchAction` target pointing to `/blog`.
 3. **`FAQPage` Schema:** Injected on `/faq` with Q&A blocks mapping directly to core customer questions.
 
