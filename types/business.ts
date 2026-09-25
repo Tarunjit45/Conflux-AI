@@ -359,8 +359,11 @@ export interface BusinessSubmissionApplication {
   services: string[];
 
   // 2. Location
+  country?: string;
+  state?: string;
   district: string;
   city: string;
+  locality?: string;
   landmark?: string;
   fullAddress: string;
   premisesType?: 'OWNED' | 'LEASED' | 'COMMERCIAL_COMPLEX' | 'STANDALONE_BUILDING';

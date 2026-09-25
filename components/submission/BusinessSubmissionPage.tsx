@@ -1,19 +1,61 @@
 // Conflux Platform — Guided 7-Step Business Onboarding Pipeline (/list-business)
+// Strict Production Rules:
+// - All core fields are MANDATORY (Business Name, Legal Name, Entity Type, Phone, WhatsApp, Email,
+//   Owner Name & Role, Location Hierarchy, Street Address, Website URL, Google Maps Link, Category, Description)
+// - ONLY Social Media (Facebook, Instagram, LinkedIn, IndiaMART) is OPTIONAL
+// - ONLY Statutory GST / Trade License Number ("that Gist things") is OPTIONAL
+// - Location is 100% selectable via dropdowns: Country -> State -> District -> City -> Locality
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Building2, MapPin, Globe, Share2, Phone,
   CheckCircle2, ArrowRight, ArrowLeft, ShieldCheck,
-  AlertCircle, HelpCircle
+  AlertCircle, HelpCircle, Lock, Sparkles, UserCheck, MessageSquare, Mail
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { businessService } from '../../lib/businessService';
-import type { SubmittedOnlineSources, ServiceInterestRequests } from '../../types/business';
-import { WEST_BENGAL_DISTRICTS } from '../../data/locationsData';
+import type { SubmittedOnlineSources, ServiceInterestRequests, BusinessType } from '../../types/business';
+import {
+  getCountries,
+  getStatesForCountry,
+  getDistrictsForState,
+  getCitiesForDistrict,
+  getLocalitiesForCity
+} from '../../data/hierarchicalLocations';
+
+const BUSINESS_TYPE_OPTIONS: { id: BusinessType; label: string }[] = [
+  { id: 'LOCAL_BUSINESS', label: 'Sole Proprietorship (Individual / Family Owned)' },
+  { id: 'ENTERPRISE', label: 'Private Limited Company (Pvt Ltd)' },
+  { id: 'REGIONAL_BRANCH', label: 'Partnership Firm' },
+  { id: 'INSTITUTION', label: 'Limited Liability Partnership (LLP)' },
+  { id: 'COOPERATIVE', label: 'Public Limited Company (Ltd)' }
+];
+
+const OWNER_ROLES = [
+  'Proprietor / Sole Owner',
+  'Managing Director / Founder',
+  'Managing Partner',
+  'General Manager / Authorized Officer',
+  'Authorized Representative'
+];
+
+const CATEGORY_OPTIONS = [
+  { id: 'healthcare', label: 'Healthcare, Clinics & Diagnostic Centres' },
+  { id: 'food-hospitality', label: 'Restaurants, Cafes & Dining' },
+  { id: 'services-repairs', label: 'AC, Electronics & Home Repairs' },
+  { id: 'handloom-textiles', label: 'Handloom Sarees, Textiles & Weaving' },
+  { id: 'retail-shops', label: 'Retail Stores & Supermarkets' },
+  { id: 'fitness-wellness', label: 'Gyms, Fitness & Wellness Centres' },
+  { id: 'tourism-hospitality', label: 'Hotels, Lodging & Homestays' },
+  { id: 'salons-beauty', label: 'Salons, Spa & Personal Grooming' },
+  { id: 'agriculture-farming', label: 'Agro-Processing, Cold Storage & Dairy' },
+  { id: 'manufacturing-industrial', label: 'Manufacturing & Industrial Engineering' },
+  { id: 'it-software', label: 'IT, Software & Digital Services' }
+];
 
 export const BusinessSubmissionPage: React.FC = () => {
-  // 1 to 6 = Questions, 7 = Review & Submit, 8 = Success
+  // 1 to 6 = Questions, 7 = Review & Submit, 8 = Success Screen
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -24,32 +66,24 @@ export const BusinessSubmissionPage: React.FC = () => {
     businessName: string;
   } | null>(null);
 
-  // ── STEP 1: BUSINESS NAME ──
+  // ── STEP 1: BUSINESS IDENTITY (ALL MANDATORY) ──
   const [businessName, setBusinessName] = useState('');
   const [legalName, setLegalName] = useState('');
+  const [businessType, setBusinessType] = useState<BusinessType>('LOCAL_BUSINESS');
 
-  // ── STEP 2: LOCATION ──
+  // ── STEP 2: LOCATION HIERARCHY (100% SELECTABLE OPTIONS, NO MANUAL WRITING FOR REGIONS) ──
+  const [country, setCountry] = useState('india');
+  const [state, setState] = useState('west-bengal');
   const [district, setDistrict] = useState('nadia');
   const [city, setCity] = useState('ranaghat');
+  const [locality, setLocality] = useState('ranaghat-subhas-avenue');
   const [fullAddress, setFullAddress] = useState('');
 
-  // ── STEP 3: WEBSITE ──
-  const [hasWebsite, setHasWebsite] = useState<boolean | null>(null);
+  // ── STEP 3: ONLINE PRESENCE & WEB CHANNELS ──
+  // Mandatory: Website URL & Google Business Profile
+  // Optional: Facebook, Instagram, LinkedIn, IndiaMART
   const [websiteUrl, setWebsiteUrl] = useState('');
-
-  // ── STEP 4: CONTACT ──
-  const [phone, setPhone] = useState('');
-  const [whatsapp, setWhatsapp] = useState('');
-  const [email, setEmail] = useState('');
-  const [ownerName, setOwnerName] = useState('');
-  const [ownerRole, setOwnerRole] = useState('Owner');
-
-  // ── STEP 5: CATEGORY & SERVICES ──
-  const [category, setCategoryId] = useState('healthcare');
-  const [description, setDescription] = useState('');
-
-  // ── STEP 6: EVIDENCE / ONLINE SOURCES ──
-  const [hasOnlineSources, setHasOnlineSources] = useState<boolean | null>(null);
+  const [googleBusinessUrl, setGoogleBusinessUrl] = useState('');
   const [onlineSources, setOnlineSources] = useState<SubmittedOnlineSources>({
     googleBusinessUrl: '',
     facebookUrl: '',
@@ -60,39 +94,178 @@ export const BusinessSubmissionPage: React.FC = () => {
     otherUrl: ''
   });
 
+  // ── STEP 4: CONTACT & PROPRIETOR VERIFICATION (ALL MANDATORY) ──
+  const [phone, setPhone] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [email, setEmail] = useState('');
+  const [ownerName, setOwnerName] = useState('');
+  const [ownerRole, setOwnerRole] = useState(OWNER_ROLES[0]);
+
+  // ── STEP 5: CATEGORY & SERVICES (ALL MANDATORY) ──
+  const [category, setCategoryId] = useState('healthcare');
+  const [description, setDescription] = useState('');
+
+  // ── STEP 6: STATUTORY EVIDENCE (OPTIONAL: "THAT GIST THINGS") ──
+  const [statutoryDocNumber, setStatutoryDocNumber] = useState('');
+
+  // ── STEP 7: DECLARATION ──
+  const [declarationConfirmed, setDeclarationConfirmed] = useState(true);
+
+  // Dynamic Hierarchical Dropdown Lists
+  const countries = useMemo(() => getCountries(), []);
+  const states = useMemo(() => getStatesForCountry(country), [country]);
+  const districts = useMemo(() => getDistrictsForState(country, state), [country, state]);
+  const cities = useMemo(() => getCitiesForDistrict(country, state, district), [country, state, district]);
+  const localities = useMemo(() => getLocalitiesForCity(country, state, district, city), [country, state, district, city]);
+
+  // Hierarchical Handlers
+  const handleCountryChange = (newCountry: string) => {
+    setCountry(newCountry);
+    const availableStates = getStatesForCountry(newCountry);
+    const defaultState = availableStates[0]?.id || '';
+    setState(defaultState);
+
+    const availableDistricts = getDistrictsForState(newCountry, defaultState);
+    const defaultDistrict = availableDistricts[0]?.id || '';
+    setDistrict(defaultDistrict);
+
+    const availableCities = getCitiesForDistrict(newCountry, defaultState, defaultDistrict);
+    const defaultCity = availableCities[0]?.id || '';
+    setCity(defaultCity);
+
+    const availableLocs = getLocalitiesForCity(newCountry, defaultState, defaultDistrict, defaultCity);
+    setLocality(availableLocs[0]?.id || '');
+  };
+
+  const handleStateChange = (newState: string) => {
+    setState(newState);
+    const availableDistricts = getDistrictsForState(country, newState);
+    const defaultDistrict = availableDistricts[0]?.id || '';
+    setDistrict(defaultDistrict);
+
+    const availableCities = getCitiesForDistrict(country, newState, defaultDistrict);
+    const defaultCity = availableCities[0]?.id || '';
+    setCity(defaultCity);
+
+    const availableLocs = getLocalitiesForCity(country, newState, defaultDistrict, defaultCity);
+    setLocality(availableLocs[0]?.id || '');
+  };
+
+  const handleDistrictChange = (newDistrict: string) => {
+    setDistrict(newDistrict);
+    const availableCities = getCitiesForDistrict(country, state, newDistrict);
+    const defaultCity = availableCities[0]?.id || '';
+    setCity(defaultCity);
+
+    const availableLocs = getLocalitiesForCity(country, state, newDistrict, defaultCity);
+    setLocality(availableLocs[0]?.id || '');
+  };
+
+  const handleCityChange = (newCity: string) => {
+    setCity(newCity);
+    const availableLocs = getLocalitiesForCity(country, state, district, newCity);
+    setLocality(availableLocs[0]?.id || '');
+  };
+
+  // Human Readable Names for Summary
+  const countryName = countries.find(c => c.id === country)?.name || country;
+  const stateName = states.find(s => s.id === state)?.name || state;
+  const districtName = districts.find(d => d.id === district)?.name || district;
+  const cityName = cities.find(c => c.id === city)?.name || city;
+  const localityName = localities.find(l => l.id === locality)?.name || locality;
+
   // Validation per step
   const handleNextStep = () => {
     setErrorMessage(null);
 
+    // ── STEP 1 VALIDATION ──
     if (currentStep === 1) {
       if (!businessName || businessName.trim().length < 2) {
-        setErrorMessage('Please enter your business name (minimum 2 characters).');
+        setErrorMessage('Business Trade Name is mandatory (minimum 2 characters).');
         return;
       }
-    } else if (currentStep === 2) {
-      if (!city || city.trim().length < 2) {
-        setErrorMessage('Please enter your city, municipality, or town.');
+      if (!legalName || legalName.trim().length < 2) {
+        setErrorMessage('Legal Registered Entity Name is mandatory (minimum 2 characters).');
         return;
       }
-    } else if (currentStep === 3) {
-      // Step 3 (Online presence) is optional per Section 11: "Add any links you already have"
-      if (websiteUrl && websiteUrl.trim().length > 0 && !websiteUrl.includes('.')) {
-        setErrorMessage('Please enter a valid website URL or leave it blank.');
-        return;
-      }
-    } else if (currentStep === 4) {
-      if (!phone || phone.trim().length < 6) {
-        setErrorMessage('Please enter a valid business contact telephone or mobile number.');
-        return;
-      }
-    } else if (currentStep === 5) {
-      if (!description || description.trim().length < 5) {
-        setErrorMessage('Please provide a brief description of what your business offers.');
-        return;
-      }
-    } else if (currentStep === 6) {
-      // Step 6 (Verification) is optional documentation/proof notes
     }
+
+    // ── STEP 2 VALIDATION ──
+    else if (currentStep === 2) {
+      if (!country) {
+        setErrorMessage('Country selection is mandatory.');
+        return;
+      }
+      if (!state) {
+        setErrorMessage('State / Province selection is mandatory.');
+        return;
+      }
+      if (!district) {
+        setErrorMessage('District / County selection is mandatory.');
+        return;
+      }
+      if (!city) {
+        setErrorMessage('City / Town selection is mandatory.');
+        return;
+      }
+      if (!locality) {
+        setErrorMessage('Locality / Ward selection is mandatory.');
+        return;
+      }
+      if (!fullAddress || fullAddress.trim().length < 5) {
+        setErrorMessage('Street Address, Shop Number, or Premises Landmark is mandatory (minimum 5 characters).');
+        return;
+      }
+    }
+
+    // ── STEP 3 VALIDATION ──
+    else if (currentStep === 3) {
+      if (!websiteUrl || websiteUrl.trim().length < 4 || !websiteUrl.includes('.')) {
+        setErrorMessage('Official Website URL or Primary Online Storefront link is mandatory.');
+        return;
+      }
+      if (!googleBusinessUrl || googleBusinessUrl.trim().length < 5) {
+        setErrorMessage('Google Business Profile or Google Maps location link is mandatory for local verification.');
+        return;
+      }
+    }
+
+    // ── STEP 4 VALIDATION ──
+    else if (currentStep === 4) {
+      const cleanPhone = phone.replace(/[^0-9]/g, '');
+      if (!phone || cleanPhone.length < 10) {
+        setErrorMessage('Official Business Contact Telephone is mandatory (valid 10-digit number).');
+        return;
+      }
+      const cleanWhatsapp = whatsapp.replace(/[^0-9]/g, '');
+      if (!whatsapp || cleanWhatsapp.length < 10) {
+        setErrorMessage('Direct WhatsApp Line is mandatory (valid 10-digit number for customer inquiries).');
+        return;
+      }
+      if (!email || !email.includes('@') || !email.includes('.')) {
+        setErrorMessage('Official Business Email Address is mandatory.');
+        return;
+      }
+      if (!ownerName || ownerName.trim().length < 2) {
+        setErrorMessage('Proprietor or Responsible Manager Name is mandatory.');
+        return;
+      }
+    }
+
+    // ── STEP 5 VALIDATION ──
+    else if (currentStep === 5) {
+      if (!category) {
+        setErrorMessage('Category selection is mandatory.');
+        return;
+      }
+      if (!description || description.trim().length < 20) {
+        setErrorMessage('Business Description is mandatory (minimum 20 characters detailing products and services).');
+        return;
+      }
+    }
+
+    // ── STEP 6: "THAT GIST THINGS" IS OPTIONAL ──
+    // Step 6 has no mandatory requirements, as GST / Trade license is optional per user instructions
 
     setCurrentStep(prev => prev + 1);
   };
@@ -116,31 +289,48 @@ export const BusinessSubmissionPage: React.FC = () => {
         needBookingSystem: false
       };
 
+      const normalizedSources: SubmittedOnlineSources = {
+        ...onlineSources,
+        googleBusinessUrl: googleBusinessUrl.trim()
+      };
+
+      const cleanFullAddress = `${fullAddress.trim()}, ${localityName}, ${cityName}, ${districtName}, ${stateName}, ${countryName}`;
+
       const result = await businessService.submitApplication({
         submissionType: 'CONFLUX_VERIFIED',
         businessName: businessName.trim(),
-        legalName: legalName.trim() || businessName.trim(),
-        businessType: 'LOCAL_BUSINESS',
+        legalName: legalName.trim(),
+        businessType,
         categoryId: category,
-        categoryName: category.replace(/-/g, ' ').toUpperCase(),
+        categoryName: CATEGORY_OPTIONS.find(c => c.id === category)?.label || category.toUpperCase(),
         description: description.trim(),
+        country,
+        state,
         district,
-        city: city.trim(),
-        fullAddress: fullAddress.trim(),
+        city: cityName,
+        locality: localityName,
+        fullAddress: cleanFullAddress,
         phone: phone.trim(),
-        whatsapp: whatsapp.trim() || phone.trim(),
-        email: email.trim() || 'contact@confluxai.in',
-        websiteUrl: hasWebsite && websiteUrl ? websiteUrl.trim() : undefined,
-        hasWebsite: Boolean(hasWebsite),
+        whatsapp: whatsapp.trim(),
+        email: email.trim(),
+        websiteUrl: websiteUrl.trim(),
+        hasWebsite: true,
         bookingUrl: undefined,
-        ownerName: ownerName.trim() || 'Business Proprietor',
-        ownerRole: ownerRole.trim() || 'Owner',
+        ownerName: ownerName.trim(),
+        ownerRole,
         ownerPhone: phone.trim(),
-        ownerEmail: email.trim() || 'contact@confluxai.in',
-        onlineSources: hasOnlineSources ? onlineSources : undefined,
+        ownerEmail: email.trim(),
+        onlineSources: normalizedSources,
         serviceInterestRequests,
-        services: [],
-        privateEvidence: [],
+        services: [category.replace(/-/g, ' ')],
+        privateEvidence: statutoryDocNumber.trim() ? [{
+          id: `DOC-${Date.now()}`,
+          documentType: 'TRADE_LICENSE',
+          documentNumber: statutoryDocNumber.trim(),
+          fileUrl: '',
+          uploadedAt: new Date().toISOString(),
+          verificationStatus: 'PENDING'
+        }] : [],
         declarationConfirmed: true,
         noStockImagesConfirmed: true,
         evidenceStatus: 'PENDING_REVIEW',
@@ -169,7 +359,7 @@ export const BusinessSubmissionPage: React.FC = () => {
         {currentStep <= 7 && (
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
-              <span>Step {currentStep} of 7</span>
+              <span className="font-mono text-slate-700 font-bold">Step {currentStep} of 7</span>
               <span>{Math.round((currentStep / 7) * 100)}% Complete</span>
             </div>
             {/* Progress Bar */}
@@ -194,7 +384,8 @@ export const BusinessSubmissionPage: React.FC = () => {
           )}
 
           <AnimatePresence mode="wait">
-            {/* ── STEP 1: BUSINESS NAME ─────────────────────────────── */}
+            
+            {/* ── STEP 1: BUSINESS IDENTITY (MANDATORY) ──────────────── */}
             {currentStep === 1 && (
               <motion.div
                 key="step1"
@@ -205,34 +396,71 @@ export const BusinessSubmissionPage: React.FC = () => {
               >
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
-                    1 of 7 &bull; Business
+                    1 of 7 &bull; Business Identity (Mandatory)
                   </span>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
                     Add your business
                   </h1>
                   <p className="text-sm text-slate-600">
-                    Let's get your business onto Conflux.
+                    Enter your official business name and legal registration classification.
                   </p>
                 </div>
 
                 <div className="space-y-4 pt-2">
                   <div>
-                    <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                      Business Name *
+                    <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                      Business Trade Name <span className="text-rose-600">*</span>
                     </label>
                     <input
                       type="text"
+                      required
                       value={businessName}
                       onChange={e => setBusinessName(e.target.value)}
-                      placeholder="Enter your business name"
-                      className="w-full px-4 py-3.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
+                      placeholder="e.g. TEETH IN TRUST Dental Clinic"
+                      className="w-full px-4 py-3.5 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                       autoFocus
                     />
+                    <span className="text-[11px] text-slate-500 mt-1 block">
+                      The public commercial name customers recognize on signs and bills.
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                      Legal Registered Entity Name <span className="text-rose-600">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={legalName}
+                      onChange={e => setLegalName(e.target.value)}
+                      placeholder="e.g. TEETH IN TRUST Healthcare Pvt Ltd / Dr. Subir Biswas Clinic"
+                      className="w-full px-4 py-3.5 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
+                    />
+                    <span className="text-[11px] text-slate-500 mt-1 block">
+                      Official legal name registered on municipal, tax, or corporate records.
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                      Business Structure / Legal Type <span className="text-rose-600">*</span>
+                    </label>
+                    <select
+                      value={businessType}
+                      onChange={e => setBusinessType(e.target.value as BusinessType)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 bg-white"
+                    >
+                      {BUSINESS_TYPE_OPTIONS.map(opt => (
+                        <option key={opt.id} value={opt.id}>{opt.label}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </motion.div>
             )}
-            {/* ── STEP 2: LOCATION ──────────────────────────────────── */}
+
+            {/* ── STEP 2: LOCATION HIERARCHY (100% SELECTABLE OPTIONS) ── */}
             {currentStep === 2 && (
               <motion.div
                 key="step2"
@@ -243,63 +471,132 @@ export const BusinessSubmissionPage: React.FC = () => {
               >
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
-                    2 of 7 &bull; Location
+                    2 of 7 &bull; Location Hierarchy (Mandatory Selection)
                   </span>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
-                    Where is your business?
+                    Where is your business located?
                   </h1>
                   <p className="text-sm text-slate-600">
-                    Help local customers in West Bengal find your business.
+                    Select your exact location from the options below (Country, State, District, City, and Locality are all selectable).
                   </p>
                 </div>
 
                 <div className="space-y-4 pt-2">
+                  
+                  {/* Country Selection */}
                   <div>
-                    <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                      City / Locality *
+                    <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                      Country <span className="text-rose-600">*</span>
                     </label>
-                    <input
-                      type="text"
-                      value={city}
-                      onChange={e => setCity(e.target.value)}
-                      placeholder="e.g. Ranaghat, Krishnanagar, Kalyani"
-                      className="w-full px-4 py-3.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
-                      autoFocus
-                    />
+                    <select
+                      value={country}
+                      onChange={e => handleCountryChange(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 bg-white"
+                    >
+                      {countries.map(c => (
+                        <option key={c.id} value={c.id}>
+                          {c.name} ({c.phoneCode})
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
+                  {/* State and District Selection */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-bold text-slate-700 block mb-1.5">District</label>
+                      <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                        State / Province <span className="text-rose-600">*</span>
+                      </label>
                       <select
-                        value={district}
-                        onChange={e => setDistrict(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 bg-white"
+                        value={state}
+                        onChange={e => handleStateChange(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 bg-white"
                       >
-                        {WEST_BENGAL_DISTRICTS.map(d => (
-                          <option key={d.slug} value={d.slug}>{d.name}</option>
+                        {states.map(s => (
+                          <option key={s.id} value={s.id}>{s.name}</option>
                         ))}
                       </select>
                     </div>
 
                     <div>
-                      <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                        Street Address <span className="text-slate-400 font-normal">(optional)</span>
+                      <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                        District / County <span className="text-rose-600">*</span>
                       </label>
-                      <input
-                        type="text"
-                        value={fullAddress}
-                        onChange={e => setFullAddress(e.target.value)}
-                        placeholder="e.g. Subhas Avenue, Near Hospital"
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
-                      />
+                      <select
+                        value={district}
+                        onChange={e => handleDistrictChange(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 bg-white"
+                      >
+                        {districts.map(d => (
+                          <option key={d.id} value={d.id}>{d.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* City and Locality Selection */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                        City / Town / Municipality <span className="text-rose-600">*</span>
+                      </label>
+                      <select
+                        value={city}
+                        onChange={e => handleCityChange(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 bg-white"
+                      >
+                        {cities.map(c => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                        Locality / Commercial Zone / Ward <span className="text-rose-600">*</span>
+                      </label>
+                      <select
+                        value={locality}
+                        onChange={e => setLocality(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 bg-white"
+                      >
+                        {localities.map(l => (
+                          <option key={l.id} value={l.id}>{l.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Specific Street Address / Premise Building */}
+                  <div>
+                    <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                      Street Address / Premises / Shop No / Landmark <span className="text-rose-600">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={fullAddress}
+                      onChange={e => setFullAddress(e.target.value)}
+                      placeholder="e.g. Shop No. 12, Subhas Avenue, Near Ranaghat Sub-Divisional Hospital"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                    />
+                    <span className="text-[11px] text-slate-500 mt-1 block">
+                      Specific door/shop number and landmark for customers visiting your physical premises.
+                    </span>
+                  </div>
+
+                  {/* Selected Location Preview Badge */}
+                  <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900 flex items-start gap-2">
+                    <MapPin size={16} className="text-blue-700 shrink-0 mt-0.5" />
+                    <div>
+                      <strong>Selected Geographic Route:</strong> {countryName} &rarr; {stateName} &rarr; {districtName} &rarr; {cityName} &rarr; {localityName}
                     </div>
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {/* ── STEP 3: ONLINE PRESENCE ────────────────────────────── */}
+            {/* ── STEP 3: ONLINE PRESENCE & CHANNELS ──────────────────── */}
             {currentStep === 3 && (
               <motion.div
                 key="step3"
@@ -310,77 +607,118 @@ export const BusinessSubmissionPage: React.FC = () => {
               >
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
-                    3 of 7 &bull; Online Presence
+                    3 of 7 &bull; Online Presence &amp; Social Links
                   </span>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
-                    Where can customers find you online?
+                    Online Presence &amp; Profiles
                   </h1>
                   <p className="text-sm text-slate-600">
-                    Add any links you already have. We use available public sources to verify your business details.
+                    Website and Google Maps are mandatory for trust verification. Social media links are optional.
                   </p>
                 </div>
 
-                <div className="space-y-3 pt-2">
+                <div className="space-y-4 pt-2">
                   <div>
-                    <label className="text-xs font-bold text-slate-700 block mb-1">Website URL</label>
+                    <label className="text-xs font-bold text-slate-800 block mb-1">
+                      Official Website or Primary Online Catalog <span className="text-rose-600">* (Mandatory)</span>
+                    </label>
                     <input
                       type="url"
+                      required
                       value={websiteUrl}
                       onChange={e => setWebsiteUrl(e.target.value)}
-                      placeholder="https://yourbusiness.in (optional)"
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
+                      placeholder="https://yourbusiness.in or official catalog URL"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium"
                     />
+                    <span className="text-[11px] text-slate-500 mt-1 block">
+                      Your business website, web catalog, or primary digital domain.
+                    </span>
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-700 block mb-1">Google Business Profile / Maps Link</label>
+                    <label className="text-xs font-bold text-slate-800 block mb-1">
+                      Google Business Profile / Maps Link <span className="text-rose-600">* (Mandatory)</span>
+                    </label>
                     <input
                       type="url"
-                      value={onlineSources.googleBusinessUrl}
-                      onChange={e => setOnlineSources({ ...onlineSources, googleBusinessUrl: e.target.value })}
-                      placeholder="https://maps.google.com/... (optional)"
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
+                      required
+                      value={googleBusinessUrl}
+                      onChange={e => {
+                        setGoogleBusinessUrl(e.target.value);
+                        setOnlineSources({ ...onlineSources, googleBusinessUrl: e.target.value });
+                      }}
+                      placeholder="https://maps.google.com/?cid=... or Google Maps link"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium"
                     />
+                    <span className="text-[11px] text-slate-500 mt-1 block">
+                      Required to verify your physical business location against Google Maps.
+                    </span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-xs font-bold text-slate-700 block mb-1">Facebook</label>
-                      <input
-                        type="url"
-                        value={onlineSources.facebookUrl}
-                        onChange={e => setOnlineSources({ ...onlineSources, facebookUrl: e.target.value })}
-                        placeholder="https://facebook.com/... (optional)"
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-slate-700 block mb-1">Instagram</label>
-                      <input
-                        type="url"
-                        value={onlineSources.instagramUrl}
-                        onChange={e => setOnlineSources({ ...onlineSources, instagramUrl: e.target.value })}
-                        placeholder="https://instagram.com/... (optional)"
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
-                      />
-                    </div>
-                  </div>
+                  <div className="pt-2 border-t border-slate-100">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2 font-mono">
+                      Optional Social Media Profiles
+                    </span>
 
-                  <div>
-                    <label className="text-xs font-bold text-slate-700 block mb-1">LinkedIn or Directory Profile</label>
-                    <input
-                      type="url"
-                      value={onlineSources.linkedinUrl}
-                      onChange={e => setOnlineSources({ ...onlineSources, linkedinUrl: e.target.value })}
-                      placeholder="https://linkedin.com/... (optional)"
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
-                    />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 block mb-1">
+                          Facebook Page <span className="text-slate-400 font-normal">(Optional)</span>
+                        </label>
+                        <input
+                          type="url"
+                          value={onlineSources.facebookUrl}
+                          onChange={e => setOnlineSources({ ...onlineSources, facebookUrl: e.target.value })}
+                          placeholder="https://facebook.com/yourpage"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 block mb-1">
+                          Instagram Profile <span className="text-slate-400 font-normal">(Optional)</span>
+                        </label>
+                        <input
+                          type="url"
+                          value={onlineSources.instagramUrl}
+                          onChange={e => setOnlineSources({ ...onlineSources, instagramUrl: e.target.value })}
+                          placeholder="https://instagram.com/yourhandle"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 block mb-1">
+                          LinkedIn Page <span className="text-slate-400 font-normal">(Optional)</span>
+                        </label>
+                        <input
+                          type="url"
+                          value={onlineSources.linkedinUrl}
+                          onChange={e => setOnlineSources({ ...onlineSources, linkedinUrl: e.target.value })}
+                          placeholder="https://linkedin.com/company/yourbiz"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 block mb-1">
+                          IndiaMART / Trade Directory <span className="text-slate-400 font-normal">(Optional)</span>
+                        </label>
+                        <input
+                          type="url"
+                          value={onlineSources.indiamartUrl}
+                          onChange={e => setOnlineSources({ ...onlineSources, indiamartUrl: e.target.value })}
+                          placeholder="https://indiamart.com/company"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {/* ── STEP 4: CONTACT ───────────────────────────────────── */}
+            {/* ── STEP 4: CONTACT & PROPRIETOR (MANDATORY) ───────────── */}
             {currentStep === 4 && (
               <motion.div
                 key="step4"
@@ -391,76 +729,100 @@ export const BusinessSubmissionPage: React.FC = () => {
               >
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
-                    4 of 7 &bull; Contact Information
+                    4 of 7 &bull; Contact &amp; Proprietor Verification (Mandatory)
                   </span>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
-                    How can customers contact you?
+                    Contact &amp; Owner Details
                   </h1>
                   <p className="text-sm text-slate-600">
-                    Only provide what is actually necessary for customers to reach your business directly.
+                    All contact details are mandatory to ensure customers and administrators can reach authentic decision-makers.
                   </p>
                 </div>
 
                 <div className="space-y-4 pt-2">
-                  <div>
-                    <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                      Phone Number *
-                    </label>
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={e => setPhone(e.target.value)}
-                      placeholder="+91 98300 XXXXX"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
-                      autoFocus
-                    />
-                  </div>
-
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                        WhatsApp Number <span className="text-slate-400 font-normal">(optional)</span>
+                      <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                        Calling Telephone / Mobile <span className="text-rose-600">*</span>
                       </label>
                       <input
                         type="tel"
-                        value={whatsapp}
-                        onChange={e => setWhatsapp(e.target.value)}
-                        placeholder="Leave blank to use phone"
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                        required
+                        value={phone}
+                        onChange={e => setPhone(e.target.value)}
+                        placeholder="e.g. +91 98300 XXXXX"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                        autoFocus
                       />
                     </div>
 
                     <div>
-                      <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                        Email Address <span className="text-slate-400 font-normal">(optional)</span>
+                      <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                        Direct WhatsApp Number <span className="text-rose-600">*</span>
                       </label>
                       <input
-                        type="email"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        placeholder="e.g. contact@business.in"
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                        type="tel"
+                        required
+                        value={whatsapp}
+                        onChange={e => setWhatsapp(e.target.value)}
+                        placeholder="e.g. +91 98300 XXXXX"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                      Owner or Manager Name <span className="text-slate-400 font-normal">(optional)</span>
+                    <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                      Official Business Email Address <span className="text-rose-600">*</span>
                     </label>
                     <input
-                      type="text"
-                      value={ownerName}
-                      onChange={e => setOwnerName(e.target.value)}
-                      placeholder="e.g. Amit Ghosh"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                      type="email"
+                      required
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      placeholder="e.g. contact@business.in or owner@gmail.com"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
                     />
+                    <span className="text-[11px] text-slate-500 mt-1 block">
+                      Verification audit notices and customer inquiries will be dispatched here.
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+                    <div>
+                      <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                        Proprietor / Manager Full Name <span className="text-rose-600">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={ownerName}
+                        onChange={e => setOwnerName(e.target.value)}
+                        placeholder="e.g. Dr. Subir Biswas"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                        Designation / Role <span className="text-rose-600">*</span>
+                      </label>
+                      <select
+                        value={ownerRole}
+                        onChange={e => setOwnerRole(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 bg-white"
+                      >
+                        {OWNER_ROLES.map(role => (
+                          <option key={role} value={role}>{role}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {/* ── STEP 5: CATEGORY & SERVICES ───────────────────────── */}
+            {/* ── STEP 5: CATEGORY & DESCRIPTION (MANDATORY) ─────────── */}
             {currentStep === 5 && (
               <motion.div
                 key="step5"
@@ -471,57 +833,53 @@ export const BusinessSubmissionPage: React.FC = () => {
               >
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
-                    5 of 7 &bull; Business Details
+                    5 of 7 &bull; Category &amp; Offerings (Mandatory)
                   </span>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
-                    Tell us about your business
+                    Business Offerings
                   </h1>
                   <p className="text-sm text-slate-600">
-                    Collect only the minimum useful information customers need.
+                    Select your primary sector and describe your specific services for local consumers.
                   </p>
                 </div>
 
                 <div className="space-y-4 pt-2">
                   <div>
-                    <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                      Category *
+                    <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                      Primary Industry Category <span className="text-rose-600">*</span>
                     </label>
                     <select
                       value={category}
                       onChange={e => setCategoryId(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 bg-white"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 bg-white"
                     >
-                      <option value="healthcare">Healthcare &amp; Clinics</option>
-                      <option value="food-hospitality">Restaurants &amp; Dining</option>
-                      <option value="services-repairs">AC &amp; Home Repairs</option>
-                      <option value="handloom-textiles">Handloom &amp; Sarees</option>
-                      <option value="retail-shops">Retail &amp; Local Shops</option>
-                      <option value="fitness-wellness">Gyms &amp; Fitness</option>
-                      <option value="tourism-hospitality">Hotels &amp; Lodging</option>
-                      <option value="salons-beauty">Salons &amp; Spa</option>
-                      <option value="agriculture-farming">Agro &amp; Cold Storage</option>
-                      <option value="manufacturing-industrial">Manufacturing &amp; Industrial</option>
-                      <option value="it-software">IT &amp; Software Services</option>
+                      {CATEGORY_OPTIONS.map(cat => (
+                        <option key={cat.id} value={cat.id}>{cat.label}</option>
+                      ))}
                     </select>
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                      Short Description *
+                    <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                      Detailed Business Description <span className="text-rose-600">* (Minimum 20 characters)</span>
                     </label>
                     <textarea
-                      rows={3}
+                      rows={4}
+                      required
                       value={description}
                       onChange={e => setDescription(e.target.value)}
-                      placeholder="e.g. Trusted dental and oral healthcare clinic providing orthodontics, implants, and consultations. Open 7 days a week."
-                      className="w-full p-4 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                      placeholder="e.g. Advanced dental care and oral surgery clinic in Ranaghat providing orthodontic alignments, dental implants, root canal treatments, and digital X-ray diagnostics. Operating 7 days a week."
+                      className="w-full p-4 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
                     />
+                    <span className="text-[11px] text-slate-500 mt-1 block">
+                      Explain what makes your business reliable and what local customers can expect.
+                    </span>
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {/* ── STEP 6: HELP US VERIFY ────────────────────────────── */}
+            {/* ── STEP 6: STATUTORY EVIDENCE (OPTIONAL: "THAT GIST THINGS") ── */}
             {currentStep === 6 && (
               <motion.div
                 key="step6"
@@ -531,32 +889,41 @@ export const BusinessSubmissionPage: React.FC = () => {
                 className="space-y-6"
               >
                 <div className="space-y-1.5">
-                  <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
-                    6 of 7 &bull; Verification
+                  <span className="text-xs font-semibold text-emerald-700 uppercase tracking-wider block">
+                    6 of 7 &bull; Statutory Registration (Optional)
                   </span>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
-                    Help us verify your business
+                    Government Registration Number
                   </h1>
                   <p className="text-sm text-slate-600">
-                    We use available public and first-party sources to check business information.
+                    This step is optional. Unregistered micro-enterprises and small shops can leave this blank.
                   </p>
                 </div>
 
                 <div className="space-y-4 pt-2">
-                  <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 text-xs text-blue-900 leading-relaxed">
-                    <strong>How verification works:</strong> We corroborate your business against government registrations (Trade License, GSTIN, MCA, or MSME Udyam) and physical location checks. You do not have to upload everything now.
+                  <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-xs text-amber-950 leading-relaxed space-y-1">
+                    <div className="font-bold flex items-center gap-1.5 text-amber-900">
+                      <HelpCircle size={15} className="text-amber-700 shrink-0" />
+                      Optional Field Notice:
+                    </div>
+                    <p>
+                      If your business possesses an active <strong>GSTIN (15-digit)</strong>, <strong>Municipal Trade License No.</strong>, <strong>FSSAI Food License</strong>, or <strong>MCA Corporate CIN</strong>, please enter it below. It accelerates manual statutory verification.
+                    </p>
+                    <p className="text-[11px] text-amber-800">
+                      If you are an unregistered local establishment, you may skip this step without penalty.
+                    </p>
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                      Trade License, GSTIN or Registration Number <span className="text-slate-400 font-normal">(optional)</span>
+                    <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                      Trade License / GSTIN / MCA CIN / Registration No. <span className="text-slate-400 font-normal">(Optional)</span>
                     </label>
                     <input
                       type="text"
-                      value={legalName}
-                      onChange={e => setLegalName(e.target.value)}
-                      placeholder="e.g. GSTIN: 19XXXXX... or Municipality Trade License No."
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                      value={statutoryDocNumber}
+                      onChange={e => setStatutoryDocNumber(e.target.value)}
+                      placeholder="e.g. GSTIN: 19AAAAA0000A1Z5 or Municipal Trade License No."
+                      className="w-full px-4 py-3.5 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20"
                     />
                   </div>
                 </div>
@@ -574,43 +941,84 @@ export const BusinessSubmissionPage: React.FC = () => {
               >
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block">
-                    7. Review &amp; Submit
+                    7 of 7 &bull; Review &amp; Submit
                   </span>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
-                    Review your information
+                    Review your application
                   </h1>
-                  <p className="text-xs sm:text-sm text-slate-600">
-                    Check your details before submitting for Conflux verification.
+                  <p className="text-sm text-slate-600">
+                    Verify that all mandatory information is accurate before submitting for Conflux verification.
                   </p>
                 </div>
 
                 {/* Summary Card */}
                 <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-3.5 text-xs sm:text-sm">
+                  
+                  {/* Entity */}
                   <div className="grid grid-cols-3 gap-2 pb-2.5 border-b border-slate-200">
-                    <span className="font-bold text-slate-500">Business</span>
+                    <span className="font-bold text-slate-500">Business Name</span>
                     <span className="col-span-2 font-bold text-slate-900">{businessName}</span>
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 pb-2.5 border-b border-slate-200">
-                    <span className="font-bold text-slate-500">Location</span>
-                    <span className="col-span-2 text-slate-800">{fullAddress}, {city}, {district}</span>
+                    <span className="font-bold text-slate-500">Legal Name</span>
+                    <span className="col-span-2 text-slate-800">{legalName}</span>
                   </div>
 
+                  {/* Location */}
                   <div className="grid grid-cols-3 gap-2 pb-2.5 border-b border-slate-200">
-                    <span className="font-bold text-slate-500">Website</span>
+                    <span className="font-bold text-slate-500">Selected Location</span>
                     <span className="col-span-2 text-slate-800">
-                      {hasWebsite && websiteUrl ? websiteUrl : 'No website'}
+                      {localityName}, {cityName}, {districtName}, {stateName}, {countryName}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 pb-2.5 border-b border-slate-200">
-                    <span className="font-bold text-slate-500">Contact</span>
-                    <span className="col-span-2 text-slate-800">{phone} {whatsapp ? `• WhatsApp: ${whatsapp}` : ''}</span>
+                    <span className="font-bold text-slate-500">Street Address</span>
+                    <span className="col-span-2 text-slate-800">{fullAddress}</span>
+                  </div>
+
+                  {/* Contacts */}
+                  <div className="grid grid-cols-3 gap-2 pb-2.5 border-b border-slate-200">
+                    <span className="font-bold text-slate-500">Phone &amp; WhatsApp</span>
+                    <span className="col-span-2 text-slate-800">
+                      Call: {phone} &bull; WhatsApp: {whatsapp}
+                    </span>
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 pb-2.5 border-b border-slate-200">
+                    <span className="font-bold text-slate-500">Official Email</span>
+                    <span className="col-span-2 text-slate-800">{email}</span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 pb-2.5 border-b border-slate-200">
+                    <span className="font-bold text-slate-500">Owner / Role</span>
+                    <span className="col-span-2 text-slate-800">{ownerName} ({ownerRole})</span>
+                  </div>
+
+                  {/* Online Presence */}
+                  <div className="grid grid-cols-3 gap-2 pb-2.5 border-b border-slate-200">
+                    <span className="font-bold text-slate-500">Website &amp; Maps</span>
+                    <div className="col-span-2 space-y-1 text-slate-800 truncate">
+                      <div>Web: <a href={websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{websiteUrl}</a></div>
+                      <div>Maps: <a href={googleBusinessUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{googleBusinessUrl}</a></div>
+                    </div>
+                  </div>
+
+                  {/* Category */}
+                  <div className="grid grid-cols-3 gap-2 pb-2.5 border-b border-slate-200">
                     <span className="font-bold text-slate-500">Category</span>
-                    <span className="col-span-2 text-slate-800 capitalize">{category.replace(/-/g, ' ')}</span>
+                    <span className="col-span-2 text-slate-800 font-medium">
+                      {CATEGORY_OPTIONS.find(c => c.id === category)?.label}
+                    </span>
+                  </div>
+
+                  {/* Statutory Document */}
+                  <div className="grid grid-cols-3 gap-2 pb-2.5 border-b border-slate-200">
+                    <span className="font-bold text-slate-500">Statutory GST / License</span>
+                    <span className="col-span-2 text-slate-800 font-mono">
+                      {statutoryDocNumber ? statutoryDocNumber : 'Unregistered / Exempt Local Establishment'}
+                    </span>
                   </div>
 
                   <div className="grid grid-cols-3 gap-2">
@@ -619,9 +1027,18 @@ export const BusinessSubmissionPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-blue-50 border border-blue-200/80 text-xs text-blue-900 leading-relaxed font-medium flex items-start gap-2">
-                  <ShieldCheck size={16} className="text-blue-700 shrink-0 mt-0.5" />
-                  <span>Your submission will be reviewed against official records and confirmed before publishing your verified business badge.</span>
+                {/* Mandatory Declaration Checkbox */}
+                <div className="p-4 rounded-xl bg-blue-50 border border-blue-200/80 text-xs text-blue-900 leading-relaxed font-medium flex items-start gap-2.5">
+                  <input
+                    type="checkbox"
+                    id="declaration"
+                    checked={declarationConfirmed}
+                    onChange={e => setDeclarationConfirmed(e.target.checked)}
+                    className="mt-0.5 rounded text-blue-600 focus:ring-blue-500 h-4 w-4"
+                  />
+                  <label htmlFor="declaration" className="cursor-pointer">
+                    I declare that all stated business, location, and contact information is authentic and accurate. I understand that Conflux conducts manual verification against official records.
+                  </label>
                 </div>
               </motion.div>
             )}
@@ -646,14 +1063,14 @@ export const BusinessSubmissionPage: React.FC = () => {
                     Your business has been submitted
                   </h1>
                   <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                    Conflux will review the information and verification sources.
+                    Conflux audit team will evaluate your business location ({localityName}, {cityName}) and contact details.
                   </p>
                 </div>
 
                 {/* Status Badge */}
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
                   <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                  <span>Status: Under review</span>
+                  <span>Status: Under manual review</span>
                 </div>
 
                 {/* Next Steps Explanation */}
@@ -662,13 +1079,13 @@ export const BusinessSubmissionPage: React.FC = () => {
                     What happens next?
                   </div>
                   <p className="text-slate-600 leading-relaxed">
-                    1. <strong>Document corroboration:</strong> Our local verification team will check your registered details against official government registries (MCA, GSTIN, Trade License).
+                    1. <strong>Location corroboration:</strong> Our local verification team confirms your location in {cityName}, {districtName}.
                   </p>
                   <p className="text-slate-600 leading-relaxed">
-                    2. <strong>Direct confirmation:</strong> We will verify your WhatsApp and telephone reachability.
+                    2. <strong>Direct channel confirmation:</strong> We will verify your WhatsApp and telephone reachability.
                   </p>
                   <p className="text-slate-600 leading-relaxed">
-                    3. <strong>Public launch:</strong> Once approved, your business will receive the <strong>✓ Conflux Verified</strong> badge and become discoverable across Nadia and West Bengal.
+                    3. <strong>Public directory listing:</strong> Once verified, your business profile will be published with authoritative contact lines.
                   </p>
                 </div>
 
@@ -744,8 +1161,8 @@ export const BusinessSubmissionPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleSubmitApplication}
-                  disabled={isSubmitting}
-                  className="px-7 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center gap-2 transition-all cursor-pointer min-h-[44px]"
+                  disabled={isSubmitting || !declarationConfirmed}
+                  className="px-7 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center gap-2 transition-all cursor-pointer min-h-[44px]"
                 >
                   {isSubmitting ? (
                     <span>Submitting Application...</span>
