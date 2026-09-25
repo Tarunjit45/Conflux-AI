@@ -3087,7 +3087,7 @@ const staticPages = [
   {
     path: '/privacy-policy',
     title: 'Privacy Policy | Conflux AI',
-    desc: 'Privacy Policy for Conflux AI detailing compliance with DPDP Act 2023, Information Technology Act 2000, secure documentary evidence handling, and data principal rights.',
+    desc: 'Privacy Policy for Conflux AI detailing data protection practices under the DPDP Act 2023, Information Technology Act 2000, secure documentary evidence handling, and data principal rights.',
     body: `
     <div id="root">
       <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">

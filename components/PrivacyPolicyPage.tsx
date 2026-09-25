@@ -1,5 +1,5 @@
 // Conflux Platform — Privacy Policy & Data Protection Notice
-// Compliant with Digital Personal Data Protection Act, 2023 (DPDP Act) & Information Technology Act, 2000
+// Framed in accordance with the Digital Personal Data Protection Act, 2023 (DPDP Act) & Information Technology Act, 2000
 
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
@@ -40,10 +40,10 @@ export const PrivacyPolicyPage: React.FC = () => {
             <ShieldCheck size={14} /> Privacy &amp; Data Protection Notice
           </div>
           <h1 className="font-orbitron text-3xl sm:text-5xl font-black text-slate-950 tracking-tight leading-tight">
-            Privacy Policy &amp; <span className="text-blue-600">DPDP Compliance</span>
+            Privacy Policy &amp; <span className="text-blue-600">Data Protection Notice</span>
           </h1>
           <p className="text-slate-600 font-normal text-sm sm:text-base leading-relaxed max-w-3xl">
-            This Privacy Policy explains how Conflux AI collects, uses, protects, masks, retains, and disposes of personal and business information in compliance with the <strong>Digital Personal Data Protection Act, 2023 (DPDP Act)</strong> and the <strong>Information Technology Act, 2000</strong>.
+            This Privacy Policy explains how Conflux AI collects, uses, protects, masks, retains, and disposes of personal and business information under principles established in the <strong>Digital Personal Data Protection Act, 2023 (DPDP Act)</strong> and the <strong>Information Technology Act, 2000</strong>.
           </p>
           <div className="text-xs text-slate-600 font-medium">
             Effective Date: {lastUpdated} &bull; Applicable to all applicants, business proprietors, and visitors on confluxai.in
