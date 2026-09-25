@@ -4,8 +4,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
-import { compileEmailTemplate } from '../lib/emailTemplates.ts';
-import type { EmailEventType, EmailLog, EmailSendResult, EmailCategory, EmailDeliveryStatus } from '../types/email.ts';
+import { compileEmailTemplate } from '../lib/emailTemplates.js';
+import type { EmailEventType, EmailLog, EmailSendResult, EmailCategory, EmailDeliveryStatus } from '../types/email.js';
 
 // CORS Headers helper
 function setCorsHeaders(res: VercelResponse) {
