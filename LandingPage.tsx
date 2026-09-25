@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { Hero } from './components/Hero.tsx';
 import {
   ShieldCheck, ArrowRight, CheckCircle2,
-  Building2, Phone, MessageSquare, MapPin, Store, Compass
+  Building2, Phone, MessageSquare, MapPin, Store, Compass,
+  Clock, Lock, AlertCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { businessService } from './lib/businessService';
@@ -283,6 +284,91 @@ const LandingPage: React.FC = () => {
                 Businesses cannot buy higher search rank or purchase trust badges. Evidence and accuracy decide visibility.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: Dedicated Conflux Verified Section */}
+      <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-200">
+        <div className="max-w-4xl mx-auto rounded-3xl bg-slate-50/70 border border-slate-200 shadow-sm p-6 sm:p-10 space-y-8 font-inter">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200/80">
+            <div className="space-y-2 max-w-xl">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold">
+                <ShieldCheck size={14} className="text-emerald-600" />
+                Evidence-Based Trust
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
+                Conflux Verified — Independent evidence review for businesses.
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Earn public customer trust through independent, manual corroboration of statutory records, physical premises, and active contact lines.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-white border border-slate-200 text-center shrink-0 space-y-2 shadow-sm min-w-[200px]">
+              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Assessment Fee</div>
+              <div className="flex items-baseline justify-center gap-1">
+                <span className="text-3xl font-black text-slate-950">₹499</span>
+                <span className="text-xs font-semibold text-slate-500">/ first year</span>
+              </div>
+              <Link
+                to="/verify"
+                className="inline-flex items-center justify-center gap-2 w-full px-5 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold shadow-md shadow-blue-700/20 transition-all cursor-pointer min-h-[42px]"
+              >
+                <span>Apply for Verification</span>
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+          </div>
+
+          {/* Transparent Explanations Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-700">
+            <div className="space-y-1.5 p-4 rounded-2xl bg-white border border-slate-200/80">
+              <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                <CheckCircle2 size={15} className="text-emerald-600 shrink-0" />
+                What is checked
+              </div>
+              <p className="text-slate-600 leading-relaxed">
+                Statutory registration standing against official portals (GSTIN, MCA, MSME Udyam, municipal Trade License), physical premises address, and active telephone/WhatsApp reachability.
+              </p>
+            </div>
+
+            <div className="space-y-1.5 p-4 rounded-2xl bg-white border border-slate-200/80">
+              <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                <CheckCircle2 size={15} className="text-emerald-600 shrink-0" />
+                What is required
+              </div>
+              <p className="text-slate-600 leading-relaxed">
+                Official statutory registration number or document (GSTIN, Trade License, FSSAI, or MCA CIN) plus visual storefront photo corroborating physical locality.
+              </p>
+            </div>
+
+            <div className="space-y-1.5 p-4 rounded-2xl bg-white border border-slate-200/80">
+              <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                <Clock size={15} className="text-blue-600 shrink-0" />
+                Review turnaround time
+              </div>
+              <p className="text-slate-600 leading-relaxed">
+                1–3 business days. Every submission undergoes manual evaluation by our local audit team; if more evidence is needed, you have 14 days to provide details at no extra charge.
+              </p>
+            </div>
+
+            <div className="space-y-1.5 p-4 rounded-2xl bg-white border border-slate-200/80">
+              <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                <Lock size={15} className="text-amber-600 shrink-0" />
+                Assessment fee, not guaranteed approval
+              </div>
+              <p className="text-slate-600 leading-relaxed">
+                Payment strictly covers the manual investigative assessment. Payment does NOT guarantee approval, and verification status NEVER buys search rankings or sponsored placement.
+              </p>
+            </div>
+          </div>
+
+          <div className="pt-2 text-[11px] text-slate-500 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <span>Conflux is an independent trust directory and is not an agency or government department.</span>
+            <Link to="/verify/methodology" className="font-bold text-blue-700 hover:underline">
+              Read Verification Methodology &rarr;
+            </Link>
           </div>
         </div>
       </section>

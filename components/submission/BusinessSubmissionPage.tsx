@@ -672,10 +672,31 @@ export const BusinessSubmissionPage: React.FC = () => {
                   </p>
                 </div>
 
+                {/* Optional Fast-Track Verification Step */}
+                <div className="p-5 rounded-2xl bg-blue-50/70 border border-blue-200 max-w-md mx-auto text-left space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-blue-950 text-xs flex items-center gap-1.5 font-inter">
+                      <ShieldCheck size={16} className="text-blue-700 shrink-0" />
+                      <span>Optional Next Step: Apply for Conflux Verified</span>
+                    </span>
+                    <span className="text-xs font-bold text-blue-800 font-mono">₹499 / 1st yr</span>
+                  </div>
+                  <p className="text-[11px] text-blue-900 leading-relaxed">
+                    Submit your statutory documents (GSTIN, Trade License, or registration certificate) for priority manual evidence evaluation and the official 1-year <strong>✓ Conflux Verified</strong> badge.
+                  </p>
+                  <Link
+                    to="/verify"
+                    className="inline-flex items-center justify-center gap-1.5 w-full py-2.5 px-4 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs shadow-sm transition-all"
+                  >
+                    <span>Apply for Conflux Verified (₹499)</span>
+                    <ArrowRight size={13} />
+                  </Link>
+                </div>
+
                 <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                   <Link
                     to="/discover"
-                    className="px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs transition-all shadow-md"
+                    className="px-6 py-3 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs transition-all shadow-md"
                   >
                     Browse Directory
                   </Link>

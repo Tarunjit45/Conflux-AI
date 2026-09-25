@@ -58,10 +58,10 @@ export const Hero: React.FC = () => {
         {/* Primary Headline & Supporting Copy */}
         <div className="space-y-3">
           <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight leading-tight max-w-3xl mx-auto font-inter">
-            Discover your local area with confidence.
+            Discover local businesses you can trust.
           </h1>
           <p className="text-slate-600 text-sm sm:text-lg max-w-2xl mx-auto leading-relaxed">
-            Find local information and businesses, check the evidence, and connect directly.
+            Find local businesses, check the evidence, and connect directly with verified proprietors.
           </p>
         </div>
 
@@ -77,7 +77,7 @@ export const Hero: React.FC = () => {
               type="text"
               value={whatQuery}
               onChange={(e) => setWhatQuery(e.target.value)}
-              placeholder="Search local businesses, services, places..."
+              placeholder="What are you looking for?"
               className="w-full bg-transparent text-sm sm:text-base font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none py-2"
               autoComplete="off"
             />
@@ -92,19 +92,19 @@ export const Hero: React.FC = () => {
               type="text"
               value={whereQuery}
               onChange={(e) => setWhereQuery(e.target.value)}
-              placeholder="Enter a city, locality or area"
+              placeholder="Where?"
               className="w-full bg-transparent text-sm sm:text-base font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none py-2"
               autoComplete="off"
             />
           </div>
 
-          {/* Submit Action: Explore */}
+          {/* Submit Action: Search */}
           <button
             type="submit"
-            aria-label="Explore local area"
+            aria-label="Search local businesses"
             className="px-7 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 active:bg-blue-900 text-white font-bold text-sm shadow-md shadow-blue-700/20 transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer min-h-[44px]"
           >
-            <span>Explore</span>
+            <span>Search</span>
             <ArrowRight size={15} />
           </button>
         </form>
@@ -136,11 +136,15 @@ export const Hero: React.FC = () => {
           </span>
         </div>
 
-        {/* Business Owner Pathway */}
-        <div className="pt-2 text-xs text-slate-500">
-          Own a local business?{' '}
-          <Link to="/list-business" className="font-bold text-blue-700 hover:underline">
-            List your business free &rarr;
+        {/* Business Owner Pathway / Secondary CTA */}
+        <div className="pt-2 flex items-center justify-center gap-2 text-xs text-slate-500">
+          <span>Own a local business?</span>
+          <Link
+            to="/list-business"
+            className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-blue-50 text-blue-700 hover:text-blue-800 font-bold transition-all border border-slate-200/80"
+          >
+            <span>List Your Business — Free</span>
+            <ArrowRight size={13} />
           </Link>
         </div>
 
