@@ -9,6 +9,12 @@ import type {
   CreateVerificationOrderRequest,
   CreateVerificationOrderResponse
 } from '../types/verificationPayment.ts';
+export type {
+  VerificationOrder,
+  VerificationEvidencePayload,
+  CreateVerificationOrderRequest,
+  CreateVerificationOrderResponse
+};
 import { businessService } from './businessService.ts';
 import { emailService } from './emailService.ts';
 

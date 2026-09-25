@@ -164,12 +164,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Persist to Supabase if configured
-    const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-
     if (supabaseUrl && supabaseKey) {
       try {
-        const supabase = createClient(supabaseUrl, supabaseKey);
+        const supabase = supabaseClient || createClient(supabaseUrl, supabaseKey);
         await supabase.from('verification_orders').insert([{
           order_id: orderId,
           cf_order_id: cfOrderId,

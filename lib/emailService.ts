@@ -12,7 +12,7 @@ import type {
   EmailDeliveryStatus,
   UserEmailPreferences
 } from '../types/email.ts';
-import type { VerificationOrder } from './verificationPaymentService.ts';
+import type { VerificationOrder } from '../types/verificationPayment.ts';
 import type { ConfluxBusiness, UserProfile } from '../types/business.ts';
 
 const LOCAL_STORAGE_EMAIL_LOGS_KEY = 'conflux_audit_email_logs';
@@ -144,7 +144,7 @@ export class EmailService {
             providerMessageId: result.messageId,
             idempotencyKey,
             retryCount: result.retryCount || 0,
-            error_message: result.error,
+            errorMessage: result.error,
             category,
             createdAt: new Date().toISOString()
           };
