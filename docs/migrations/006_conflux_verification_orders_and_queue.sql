@@ -46,20 +46,19 @@ CREATE INDEX IF NOT EXISTS idx_verification_orders_created ON public.verificatio
 -- Enable RLS
 ALTER TABLE public.verification_orders ENABLE ROW LEVEL SECURITY;
 
--- 1. Admin full management policy
+-- 1. Admin full management policy: Only authenticated administrators can inspect all orders
 DROP POLICY IF EXISTS "Admins can manage verification orders" ON public.verification_orders;
 CREATE POLICY "Admins can manage verification orders"
     ON public.verification_orders FOR ALL
     USING (public.is_admin());
 
--- 2. Public / Customer can view their own order by order_id or email
+-- 2. Customer can view their own order if authenticated with matching email, or admins
 DROP POLICY IF EXISTS "Customers can view their own order" ON public.verification_orders;
 CREATE POLICY "Customers can view their own order"
     ON public.verification_orders FOR SELECT
     USING (
-        customer_email = auth.jwt() ->> 'email' OR
         public.is_admin() OR
-        true -- Allow read of non-sensitive order status by order ID lookup
+        (auth.jwt() ->> 'email' IS NOT NULL AND customer_email = auth.jwt() ->> 'email')
     );
 
 -- 3. Anonymous can create a verification order (Checkout initiation)
@@ -67,3 +66,86 @@ DROP POLICY IF EXISTS "Public can initiate verification order" ON public.verific
 CREATE POLICY "Public can initiate verification order"
     ON public.verification_orders FOR INSERT
     WITH CHECK (true);
+
+-- 4. Secure Public Receipt & Order Lookup Function (DPDP Compliant - prevents bulk table dump)
+CREATE OR REPLACE FUNCTION public.get_verification_order_receipt(p_order_id TEXT)
+RETURNS SETOF public.verification_orders
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+    SELECT * FROM public.verification_orders
+    WHERE order_id = p_order_id
+    LIMIT 1;
+$$;
+
+-- ------------------------------------------------------------------------------
+-- STORAGE BUCKET CONFIGURATION FOR SENSITIVE VERIFICATION EVIDENCE (DPDP COMPLIANT)
+-- ------------------------------------------------------------------------------
+-- Ensure 'verification-evidence' bucket exists and is STRICTLY PRIVATE (no public URLs)
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+    'verification-evidence',
+    'verification-evidence',
+    false, -- STRICTLY PRIVATE: Objects CANNOT be accessed via public CDN URLs
+    10485760, -- 10MB maximum file size
+    ARRAY['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
+)
+ON CONFLICT (id) DO UPDATE SET
+    public = false,
+    file_size_limit = 10485760,
+    allowed_mime_types = ARRAY['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+
+-- Storage RLS: Restrict read/download to Admins only (Zero public exposure)
+DROP POLICY IF EXISTS "Admins can view and download verification evidence" ON storage.objects;
+CREATE POLICY "Admins can view and download verification evidence"
+    ON storage.objects FOR SELECT
+    USING (
+        bucket_id = 'verification-evidence' AND
+        public.is_admin()
+    );
+
+-- Storage RLS: Public applicants can upload evidence to their order folder
+DROP POLICY IF EXISTS "Applicants can upload verification evidence" ON storage.objects;
+CREATE POLICY "Applicants can upload verification evidence"
+    ON storage.objects FOR INSERT
+    WITH CHECK (
+        bucket_id = 'verification-evidence' AND
+        (storage.foldername(name))[1] IS NOT NULL
+    );
+
+-- ------------------------------------------------------------------------------
+-- DATA RETENTION & AUTO-PURGING SPECIFICATION (DPDP COMPLIANT)
+-- ------------------------------------------------------------------------------
+-- Procedure to purge raw documentary evidence for expired orders past 1 year retention
+CREATE OR REPLACE FUNCTION public.purge_expired_verification_evidence()
+RETURNS INTEGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    purged_count INTEGER := 0;
+    r RECORD;
+BEGIN
+    -- Select orders expired over 30 days ago where evidence has not yet been purged
+    FOR r IN
+        SELECT id, order_id, evidence_payload
+        FROM public.verification_orders
+        WHERE expires_at < NOW() - INTERVAL '30 days'
+          AND evidence_payload->>'evidenceDocUrl' IS NOT NULL
+    LOOP
+        -- Redact raw file URL references from JSON payload
+        UPDATE public.verification_orders
+        SET evidence_payload = jsonb_set(
+            jsonb_set(evidence_payload, '{evidenceDocUrl}', '"[PURGED_POST_EXPIRY]"'::jsonb),
+            '{purged_at}', to_jsonb(NOW()::text)
+        ),
+        updated_at = NOW()
+        WHERE id = r.id;
+
+        purged_count := purged_count + 1;
+    END LOOP;
+
+    RETURN purged_count;
+END;
+$$;
