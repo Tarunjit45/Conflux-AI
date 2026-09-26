@@ -30,7 +30,7 @@ export const RanaghatVisitorPrompt: React.FC<RanaghatVisitorPromptProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-slate-950/40 backdrop-blur-sm">
+      <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-3 sm:p-4 pb-20 sm:pb-4 bg-slate-950/40 backdrop-blur-sm">
         <motion.div
           initial={{ opacity: 0, y: 30, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}

@@ -101,48 +101,49 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/50 backdrop-blur-sm overflow-y-auto">
+      <div className="fixed inset-0 z-[300] flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-sm overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="w-full max-w-xl bg-white rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-8 font-inter text-slate-900 my-8 relative"
+          className="w-full max-w-xl max-h-[min(90vh,760px)] flex flex-col bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-2xl overflow-hidden font-inter text-slate-900 my-auto relative"
           role="dialog"
           aria-modal="true"
         >
-          {/* Close button */}
-          <button
-            type="button"
-            onClick={onClose}
-            className="absolute top-5 right-5 w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors cursor-pointer"
-            aria-label="Close"
-          >
-            <X size={18} />
-          </button>
-
           {/* Modal Header */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
-              <Briefcase size={22} />
+          <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                <Briefcase size={20} />
+              </div>
+              <div>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-600 block">
+                  Local Opportunities • Ranaghat
+                </span>
+                <h2 className="text-lg sm:text-xl font-bold font-orbitron text-slate-900">
+                  Post a Local Job Listing
+                </h2>
+              </div>
             </div>
-            <div>
-              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-blue-600 block">
-                Local Opportunities • Ranaghat
-              </span>
-              <h2 className="text-xl sm:text-2xl font-bold font-orbitron text-slate-900">
-                Post a Local Job Listing
-              </h2>
-            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+              aria-label="Close"
+            >
+              <X size={18} />
+            </button>
           </div>
 
-          {error && (
-            <div className="mb-5 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-2">
-              <AlertCircle size={16} className="shrink-0 mt-0.5" />
-              <span>{error}</span>
-            </div>
-          )}
+          <div className="p-5 sm:p-6 overflow-y-auto flex-1 overscroll-contain">
+            {error && (
+              <div className="mb-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-2">
+                <AlertCircle size={16} className="shrink-0 mt-0.5" />
+                <span>{error}</span>
+              </div>
+            )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
             {/* Job Title */}
             <div>
               <label className="text-xs font-bold text-slate-700 block mb-1.5">
@@ -287,6 +288,7 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
               </button>
             </div>
           </form>
+          </div>
         </motion.div>
       </div>
     </AnimatePresence>

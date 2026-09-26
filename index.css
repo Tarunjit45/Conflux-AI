@@ -367,3 +367,33 @@ button {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
+
+/* ── Global Form Touch & Zoom Protection (iOS & Android) ────────── */
+@media screen and (max-width: 767px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  input[type="url"],
+  input[type="search"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ── Global Button Touch Target & Wrap Protection ─────────────── */
+button,
+a[role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Viewport Safe Layout Helpers ────────────────────────────── */
+.safe-padding-bottom {
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+}
+
+.modal-viewport-height {
+  max-height: min(90vh, 760px);
+}

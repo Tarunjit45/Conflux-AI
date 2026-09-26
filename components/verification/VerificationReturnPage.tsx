@@ -220,7 +220,7 @@ export const VerificationReturnPage: React.FC = () => {
   const isRejected = order.verificationStatus === 'REJECTED';
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 py-10 sm:py-16 px-4 sm:px-6 lg:px-8 font-inter">
+    <div className="min-h-screen bg-slate-50 text-slate-900 pt-24 pb-20 sm:pb-24 px-4 sm:px-6 lg:px-8 font-inter">
       <div className="max-w-3xl mx-auto space-y-8">
         
         {/* Breadcrumb / Top Link */}

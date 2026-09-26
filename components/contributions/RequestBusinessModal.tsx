@@ -98,15 +98,15 @@ export const RequestBusinessModal: React.FC<RequestBusinessModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 font-inter">
+    <div className="fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 font-inter overflow-y-auto">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200"
+        className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl max-w-lg w-full max-h-[min(90vh,720px)] flex flex-col overflow-hidden border border-slate-200"
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+        <div className="px-5 sm:px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center">
               <Store size={18} />
@@ -129,7 +129,7 @@ export const RequestBusinessModal: React.FC<RequestBusinessModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-5 sm:p-6 overflow-y-auto flex-1 overscroll-contain">
           {isSubmitted ? (
             <div className="py-8 text-center space-y-3">
               <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">

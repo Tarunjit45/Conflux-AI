@@ -356,7 +356,7 @@ export const PublicBusinessProfile: React.FC = () => {
         : []);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-40 md:pb-28 pt-6 sm:pt-8">
+    <div className="min-h-screen bg-slate-50 text-slate-900 pb-40 md:pb-28 pt-20 sm:pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
         {/* Navigation Breadcrumb */}
@@ -1778,7 +1778,7 @@ export const PublicBusinessProfile: React.FC = () => {
       {/* Full Image Preview Modal */}
       {previewMediaItem && (
         <div
-          className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-[300] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
           onClick={() => setPreviewMediaItem(null)}
         >
           <div

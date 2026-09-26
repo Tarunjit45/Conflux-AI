@@ -193,7 +193,7 @@ export const UserOnboardingFlow: React.FC<UserOnboardingFlowProps> = ({
   };
 
   return (
-    <div className={`w-full ${isModal ? '' : 'min-h-[80vh] flex items-center justify-center p-4 sm:p-6'}`}>
+    <div className={`w-full ${isModal ? '' : 'min-h-[80vh] flex items-center justify-center pt-24 pb-16 px-4 sm:px-6'}`}>
       <div className="max-w-md w-full mx-auto bg-white rounded-3xl border border-slate-200/90 shadow-xl p-6 sm:p-8 font-inter text-slate-900 relative">
         {/* Modal Close Button */}
         {onClose && (

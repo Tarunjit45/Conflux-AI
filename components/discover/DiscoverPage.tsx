@@ -218,7 +218,7 @@ export const DiscoverPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-28 font-inter">
       {/* ── DAYLIGHT HERO SECTION ─────────────────────────────────── */}
-      <section className="bg-white border-b border-slate-200 text-slate-900 pt-10 sm:pt-14 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <section className="bg-white border-b border-slate-200 text-slate-900 pt-24 sm:pt-28 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         {/* Subtle background gradient */}
         <div className="absolute top-0 right-0 w-full md:w-1/2 h-full bg-slate-50/60 -z-10" />
         <div className="absolute top-10 right-10 w-72 h-72 bg-blue-50/40 rounded-full blur-3xl -z-10 pointer-events-none" />

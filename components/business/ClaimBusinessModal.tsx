@@ -74,24 +74,26 @@ export const ClaimBusinessModal: React.FC<ClaimBusinessModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full p-6 sm:p-8 my-8 space-y-6"
+        className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full max-h-[min(90vh,760px)] flex flex-col overflow-hidden my-auto"
       >
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div className="flex items-center justify-between p-5 sm:p-6 border-b border-slate-100 shrink-0 bg-white">
           <div className="flex items-center gap-2 text-slate-900 font-bold text-lg font-orbitron">
             <ShieldCheck size={22} className="text-blue-600" /> Claim Business Profile
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 cursor-pointer"
+            className="text-slate-400 hover:text-slate-700 cursor-pointer p-1 rounded-lg hover:bg-slate-100 transition-colors"
           >
             <X size={20} />
           </button>
         </div>
+
+        <div className="p-5 sm:p-6 overflow-y-auto flex-1 overscroll-contain space-y-6">
 
         {/* Target Entity Banner */}
         <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-100 space-y-1">
@@ -207,6 +209,7 @@ export const ClaimBusinessModal: React.FC<ClaimBusinessModalProps> = ({
             </div>
           </form>
         )}
+        </div>
       </motion.div>
     </div>
   );

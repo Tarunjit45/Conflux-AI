@@ -95,7 +95,7 @@ export const AuthModal: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center p-4 sm:p-6 bg-slate-50 font-inter text-slate-900">
+    <div className="min-h-[85vh] flex items-center justify-center pt-24 pb-16 px-4 sm:px-6 bg-slate-50 font-inter text-slate-900">
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
