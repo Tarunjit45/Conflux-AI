@@ -30,7 +30,11 @@ export class AuthService {
 
     if (isSupabaseConfigured()) {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise<{ data: { session: null }; error: null }>((resolve) =>
+          setTimeout(() => resolve({ data: { session: null }, error: null }), 4000)
+        );
+        const { data: { session }, error } = await Promise.race([sessionPromise, timeoutPromise]);
         if (session?.user) {
           const userEmail = (session.user.email || '').toLowerCase().trim();
           const isAdminEmail = AUTHORIZED_ADMIN_EMAILS.includes(userEmail) || userEmail.startsWith('admin@');
@@ -142,16 +146,24 @@ export class AuthService {
     if (isSupabaseConfigured() && (password || isProd)) {
       try {
         if (password) {
-          const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+          const authPromise = supabase.auth.signInWithPassword({ email: email.trim(), password });
+          const timeoutPromise = new Promise<any>((_, reject) =>
+            setTimeout(() => reject(new Error('Sign in request timed out. Please check your internet connection.')), 8000)
+          );
+          const { data, error } = await Promise.race([authPromise, timeoutPromise]);
           if (error) {
             return { success: false, error: error.message };
           }
-          if (data.user) {
+          if (data?.user) {
             const profile = await this.getCurrentUser(true);
             return { success: true, user: profile || undefined };
           }
         } else {
-          const { error } = await supabase.auth.signInWithOtp({ email: email.trim() });
+          const otpPromise = supabase.auth.signInWithOtp({ email: email.trim() });
+          const timeoutPromise = new Promise<any>((_, reject) =>
+            setTimeout(() => reject(new Error('Sign in request timed out. Please check your internet connection.')), 8000)
+          );
+          const { error } = await Promise.race([otpPromise, timeoutPromise]);
           if (error) {
             return { success: false, error: error.message };
           }

@@ -45,7 +45,27 @@ let rawAnonKey =
   (typeof process !== 'undefined' && process.env && (process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY)) ||
   PRODUCTION_SUPABASE_ANON_KEY;
 
-if (!rawAnonKey || rawAnonKey.length < 50 || rawAnonKey.includes('placeholder')) {
+/**
+ * Validates that an anon key is an authentic JWT created for the canonical production project
+ */
+const isValidAnonKey = (key?: string): boolean => {
+  if (!key || typeof key !== 'string' || !key.startsWith('eyJ')) return false;
+  try {
+    const parts = key.split('.');
+    if (parts.length < 3) return false;
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const jsonStr =
+      typeof atob !== 'undefined'
+        ? atob(base64)
+        : Buffer.from(base64, 'base64').toString('utf8');
+    const payload = JSON.parse(jsonStr);
+    return payload.role === 'anon' && payload.ref === 'cqkljjbnoinztsugwqpf';
+  } catch {
+    return false;
+  }
+};
+
+if (!isValidAnonKey(rawAnonKey)) {
   rawAnonKey = PRODUCTION_SUPABASE_ANON_KEY;
 }
 
@@ -57,7 +77,7 @@ const canonicalUrl = normalizeSupabaseUrl(rawEnvUrl);
 export const isSupabaseConfigured = (): boolean => {
   if (!canonicalUrl || !rawAnonKey) return false;
   if (!canonicalUrl.startsWith('https://') || !canonicalUrl.includes('.supabase.co')) return false;
-  if (rawAnonKey.length < 20) return false;
+  if (!isValidAnonKey(rawAnonKey)) return false;
   return true;
 };
 
@@ -67,34 +87,14 @@ export const getSupabaseConfig = () => ({
 });
 
 /**
- * Resilient In-Memory Lock implementation to prevent "Acquiring an exclusive Navigator LockManager lock immediately failed"
- * in browsers with Fingerprinting Protection, Private Browsing, or strict privacy sandboxes (Firefox/Safari/Brave).
- */
-const safeAuthLock = async (
-  _name: string,
-  _acquireTimeout: number,
-  fn: () => Promise<any>
-): Promise<any> => {
-  try {
-    return await fn();
-  } catch (err: any) {
-    if (err?.message?.includes('LockManager') || err?.name === 'AbortError') {
-      return null;
-    }
-    throw err;
-  }
-};
-
-/**
- * Creates or retrieves the Supabase client instance
+ * Creates or retrieves the Supabase client instance with standard GoTrue session management
  */
 const createSupabaseInstance = (): SupabaseClient => {
   return createClient(canonicalUrl, rawAnonKey, {
     auth: {
       persistSession: typeof window !== 'undefined',
       autoRefreshToken: true,
-      detectSessionInUrl: true,
-      lock: safeAuthLock
+      detectSessionInUrl: true
     }
   });
 };

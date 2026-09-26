@@ -24,28 +24,65 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Initial user load
-    authService.getCurrentUser(true).then(u => {
-      setUser(u);
-      setIsLoading(false);
-    });
+    let isMounted = true;
 
-    // Subscribe to auth state changes from Supabase
-    if (isSupabaseConfigured()) {
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-        if (session?.user) {
-          const freshUser = await authService.getCurrentUser(true);
-          setUser(freshUser);
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-        }
+    // Safety timeout: Guarantee that isLoading resolves within 3.5s under any network condition
+    const safetyTimer = setTimeout(() => {
+      if (isMounted) {
         setIsLoading(false);
+      }
+    }, 3500);
+
+    // Initial user load with safe catch
+    authService.getCurrentUser(true)
+      .then(u => {
+        if (isMounted) {
+          setUser(u);
+          setIsLoading(false);
+        }
+      })
+      .catch(err => {
+        console.warn('[AuthProvider] Initial user load warning:', err);
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      })
+      .finally(() => {
+        clearTimeout(safetyTimer);
       });
 
-      return () => {
-        subscription.unsubscribe();
-      };
+    // Subscribe to auth state changes from Supabase
+    let subscription: { unsubscribe: () => void } | undefined;
+    if (isSupabaseConfigured()) {
+      try {
+        const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+          if (!isMounted) return;
+          try {
+            if (session?.user) {
+              const freshUser = await authService.getCurrentUser(true);
+              if (isMounted) setUser(freshUser);
+            } else if (event === 'SIGNED_OUT') {
+              if (isMounted) setUser(null);
+            }
+          } catch (e) {
+            console.warn('[AuthProvider] Auth state change warning:', e);
+          } finally {
+            if (isMounted) {
+              setIsLoading(false);
+            }
+          }
+        });
+        subscription = data.subscription;
+      } catch (subErr) {
+        console.warn('[AuthProvider] Supabase subscription warning:', subErr);
+      }
     }
+
+    return () => {
+      isMounted = false;
+      clearTimeout(safetyTimer);
+      subscription?.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password?: string) => {
