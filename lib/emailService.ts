@@ -13,7 +13,7 @@ import type {
   UserEmailPreferences
 } from '../types/email.ts';
 import type { VerificationOrder } from '../types/verificationPayment.ts';
-import type { ConfluxBusiness, UserProfile } from '../types/business.ts';
+import type { ConfluxBusiness, UserProfile, BusinessSubmissionApplication } from '../types/business.ts';
 
 const LOCAL_STORAGE_EMAIL_LOGS_KEY = 'conflux_audit_email_logs';
 const ADMIN_DEFAULT_EMAIL = 'contact@confluxai.in';
@@ -330,6 +330,48 @@ export class EmailService {
         businessName: business.name,
         city: business.location.city,
         slug: business.slug
+      }
+    });
+  }
+
+  /**
+   * 6b. Business Application Submitted via Onboarding Form (/list-business)
+   */
+  async sendApplicationSubmitted(application: BusinessSubmissionApplication): Promise<EmailSendResult> {
+    const recipient = application.ownerEmail || application.email;
+    if (!recipient) return { success: false, status: 'FAILED', error: 'No contact email provided for application' };
+
+    return this.sendEventEmail({
+      eventType: 'BUSINESS_SUBMITTED',
+      recipient,
+      recipientName: application.ownerName,
+      entityId: application.id,
+      idempotencyKey: `APPLICATION_SUBMITTED:${application.id}`,
+      category: 'TRANSACTIONAL',
+      data: {
+        businessName: application.businessName,
+        city: application.city,
+        applicationId: application.id,
+        district: application.district,
+        fullAddress: application.fullAddress
+      }
+    });
+  }
+
+  async sendAdminNewApplicationSubmission(application: BusinessSubmissionApplication): Promise<EmailSendResult> {
+    return this.sendEventEmail({
+      eventType: 'ADMIN_NEW_BUSINESS_SUBMISSION',
+      recipient: ADMIN_DEFAULT_EMAIL,
+      entityId: application.id,
+      idempotencyKey: `ADMIN_NEW_APPLICATION:${application.id}`,
+      category: 'TRANSACTIONAL',
+      data: {
+        businessName: application.businessName,
+        city: application.city,
+        applicationId: application.id,
+        submitterEmail: application.ownerEmail || application.email || 'Anonymous',
+        ownerName: application.ownerName,
+        phone: application.phone
       }
     });
   }

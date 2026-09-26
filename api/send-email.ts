@@ -149,6 +149,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           if (resendError) {
             lastError = resendError;
             console.warn(`[Resend Attempt ${attempt}/${MAX_RETRIES} Failed]`, resendError);
+
+            // If custom domain is not yet verified in Resend, gracefully fall back to onboarding@resend.dev
+            const errMsg = String(resendError.message || '').toLowerCase();
+            if (errMsg.includes('not verified') && !fromAddress.includes('resend.dev')) {
+              console.log('[Resend Fallback] Attempting dispatch via onboarding@resend.dev');
+              try {
+                const { data: fallbackData, error: fallbackError } = await resend.emails.send({
+                  from: 'Conflux AI <onboarding@resend.dev>',
+                  to: [cleanRecipient],
+                  replyTo: replyTo,
+                  subject: rendered.subject,
+                  html: rendered.html,
+                  text: rendered.text
+                });
+                if (!fallbackError && fallbackData) {
+                  sendResult = {
+                    success: true,
+                    status: 'SENT',
+                    messageId: fallbackData.id,
+                    idempotencyKey: cleanIdempotencyKey,
+                    retryCount: attempt
+                  };
+                  break;
+                } else if (fallbackError) {
+                  lastError = fallbackError;
+                  console.warn('[Resend Fallback Failed]', fallbackError);
+                }
+              } catch (fbErr) {
+                lastError = fbErr;
+              }
+            }
+
             if (attempt < MAX_RETRIES) {
               await new Promise(r => setTimeout(r, attempt * 500));
             }

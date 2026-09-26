@@ -1228,6 +1228,14 @@ export class BusinessService {
       }
     }
 
+    // Dispatch confirmation email to applicant & alert to admin (non-blocking)
+    emailService.sendApplicationSubmitted(newApp).catch(err => {
+      console.warn('[BusinessService.submitApplication] Applicant email notice error:', err);
+    });
+    emailService.sendAdminNewApplicationSubmission(newApp).catch(err => {
+      console.warn('[BusinessService.submitApplication] Admin email notice error:', err);
+    });
+
     memoryApplications.unshift(newApp);
     return newApp;
   }
