@@ -49,12 +49,21 @@ import { AuthModal } from './components/auth/AuthModal';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { UserOnboardingFlow } from './components/auth/UserOnboardingFlow';
 import { ContributePage } from './components/contribute/ContributePage';
+import { PricingPage } from './components/pricing/PricingPage';
 import { BottomNav } from './components/navigation/BottomNav';
 import { AuthProvider } from './lib/authContext';
 import { trackPageView } from './lib/analytics';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 const routeMeta: Record<string, { title: string; description: string }> = {
+  '/pricing': {
+    title: 'Pricing & Plans | Conflux AI - Verified Trust & Growth Subscriptions',
+    description: 'Transparent pricing for local business owners. Apply for the ₹499 Conflux Verified trust badge or accelerate lead conversion with commercial growth plans.'
+  },
+  '/subscription': {
+    title: 'Subscription Plans & Pricing | Conflux AI',
+    description: 'Explore Conflux AI commercial plans and subscription options for local businesses, enterprises, and verified partners.'
+  },
   '/verify/payment-return': {
     title: 'Verification Application Status & Evidence | Conflux AI',
     description: 'Confirmation and evidence intake portal for paid Conflux Verified applications.'
@@ -465,6 +474,8 @@ const App: React.FC = () => {
           <Route path="/list-business" element={<BusinessSubmissionPage />} />
           <Route path="/submit-business" element={<BusinessSubmissionPage />} />
           <Route path="/apply" element={<BusinessSubmissionPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/subscription" element={<PricingPage />} />
           <Route path="/business/india/west-bengal/:district/:city/:slug" element={<PublicBusinessProfile />} />
           <Route path="/business/:slug" element={<PublicBusinessProfile />} />
           <Route path="/blog" element={<BlogPage />} />

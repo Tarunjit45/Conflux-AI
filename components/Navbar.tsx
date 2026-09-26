@@ -24,7 +24,8 @@ const Navbar: React.FC<NavbarProps> = ({ customLogo }) => {
   const navItems = [
     { name: 'Discover', path: '/discover' },
     { name: 'Locations', path: '/locations' },
-    { name: 'For Businesses', path: '/business' }
+    { name: 'For Businesses', path: '/business' },
+    { name: 'Plans & Pricing', path: '/pricing' }
   ];
 
   const primaryBlue = "#1d4ed8";

@@ -11,10 +11,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Building2, MapPin, Globe, Share2, Phone,
   CheckCircle2, ArrowRight, ArrowLeft, ShieldCheck,
-  AlertCircle, HelpCircle, Lock, Sparkles, UserCheck, MessageSquare, Mail
+  AlertCircle, HelpCircle, Lock, Sparkles, UserCheck, MessageSquare, Mail, CreditCard
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { businessService } from '../../lib/businessService';
+import { VerificationCheckoutModal } from '../verification/VerificationCheckoutModal';
 import type { SubmittedOnlineSources, ServiceInterestRequests, BusinessType } from '../../types/business';
 import {
   getCountries,
@@ -173,6 +174,31 @@ export const BusinessSubmissionPage: React.FC = () => {
   const districtName = districts.find(d => d.id === district)?.name || district;
   const cityName = cities.find(c => c.id === city)?.name || city;
   const localityName = localities.find(l => l.id === locality)?.name || locality;
+
+  // Conflux Verified Fast-Track Payment State
+  const [isVerificationCheckoutOpen, setIsVerificationCheckoutOpen] = useState(false);
+
+  const submittedBusinessObj = useMemo(() => {
+    return {
+      id: submissionResult?.confluxBusinessId || submissionResult?.applicationId || `biz_${Date.now()}`,
+      name: businessName || 'Local Business',
+      slug: (businessName || 'local-business').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+      ownerName: ownerName,
+      contact: {
+        phone: phone,
+        whatsapp: whatsapp,
+        email: email
+      },
+      location: {
+        locality: localityName,
+        city: cityName,
+        district: districtName,
+        state: stateName,
+        country: countryName,
+        fullAddress: fullAddress
+      }
+    };
+  }, [submissionResult, businessName, ownerName, phone, whatsapp, email, localityName, cityName, districtName, stateName, countryName, fullAddress]);
 
   // Validation per step
   const handleNextStep = () => {
@@ -1089,25 +1115,73 @@ export const BusinessSubmissionPage: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Optional Fast-Track Verification Step */}
-                <div className="p-5 rounded-2xl bg-blue-50/70 border border-blue-200 max-w-md mx-auto text-left space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-blue-950 text-xs flex items-center gap-1.5 font-inter">
-                      <ShieldCheck size={16} className="text-blue-700 shrink-0" />
-                      <span>Optional Next Step: Apply for Conflux Verified</span>
-                    </span>
-                    <span className="text-xs font-bold text-blue-800 font-mono">₹499 / 1st yr</span>
+                {/* ── PROMINENT FAST-TRACK CONFLUX VERIFIED UPGRADE CARD ── */}
+                <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-blue-900 via-slate-900 to-indigo-950 text-white max-w-xl mx-auto text-left space-y-4 shadow-xl border border-blue-800/80 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
+
+                  <div className="flex items-start justify-between gap-3 relative z-10">
+                    <div className="space-y-1">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-[10px] font-bold uppercase tracking-wider font-mono">
+                        <ShieldCheck size={13} className="text-blue-400" />
+                        <span>Optional Fast-Track Verification</span>
+                      </div>
+                      <h2 className="text-lg sm:text-xl font-black font-orbitron text-white">
+                        Conflux Verified Trust Badge
+                      </h2>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="text-2xl font-black font-orbitron text-white">₹499</div>
+                      <div className="text-[10px] font-semibold text-blue-300">/ 1st Year Review</div>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-blue-900 leading-relaxed">
-                    Submit your statutory documents (GSTIN, Trade License, or registration certificate) for priority manual evidence evaluation and the official 1-year <strong>✓ Conflux Verified</strong> badge.
+
+                  <p className="text-xs text-slate-300 leading-relaxed relative z-10">
+                    Fast-track your application with priority manual evidence evaluation against municipal Trade Licenses, GSTIN, FSSAI, or MCA records. Published with the official <strong>✓ Conflux Verified</strong> trust seal.
                   </p>
-                  <Link
-                    to="/verify"
-                    className="inline-flex items-center justify-center gap-1.5 w-full py-2.5 px-4 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs shadow-sm transition-all"
-                  >
-                    <span>Apply for Conflux Verified (₹499)</span>
-                    <ArrowRight size={13} />
-                  </Link>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-200 relative z-10 pt-1">
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                      <span>Priority 24-48h Manual Audit</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                      <span>1-Year Official Verified Badge</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                      <span>Cashfree UPI, Cards &amp; NetBanking</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                      <span>14-Day Free Evidence Cure Window</span>
+                    </div>
+                  </div>
+
+                  {/* Primary CTA: Launch Cashfree Checkout Modal */}
+                  <div className="pt-2 space-y-2 relative z-10">
+                    <button
+                      type="button"
+                      onClick={() => setIsVerificationCheckoutOpen(true)}
+                      className="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <CreditCard size={15} />
+                      <span>Proceed to Pay ₹499 via Cashfree</span>
+                      <ArrowRight size={14} />
+                    </button>
+
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                        <Lock size={10} /> 256-bit Cashfree PG Secured
+                      </span>
+                      <Link
+                        to="/pricing"
+                        className="text-[11px] text-blue-300 hover:text-white font-semibold underline transition-colors"
+                      >
+                        View All Commercial Plans &amp; Subscriptions &rarr;
+                      </Link>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -1180,6 +1254,15 @@ export const BusinessSubmissionPage: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Cashfree PG Verification Checkout Modal */}
+      {isVerificationCheckoutOpen && (
+        <VerificationCheckoutModal
+          isOpen={isVerificationCheckoutOpen}
+          onClose={() => setIsVerificationCheckoutOpen(false)}
+          business={submittedBusinessObj}
+        />
+      )}
     </main>
   );
 };

@@ -10,7 +10,25 @@ import type { ConfluxBusiness } from '../../types/business.ts';
 interface VerificationCheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  business: ConfluxBusiness;
+  business: {
+    id: string;
+    name: string;
+    slug?: string;
+    ownerName?: string;
+    contact?: {
+      phone?: string;
+      whatsapp?: string;
+      email?: string;
+    };
+    location?: {
+      locality?: string;
+      city?: string;
+      district?: string;
+      state?: string;
+      country?: string;
+      fullAddress?: string;
+    };
+  } | ConfluxBusiness | any;
   onSuccessRedirect?: (orderId: string) => void;
 }
 
@@ -20,9 +38,9 @@ export const VerificationCheckoutModal: React.FC<VerificationCheckoutModalProps>
   business,
   onSuccessRedirect
 }) => {
-  const [applicantName, setApplicantName] = useState('');
+  const [applicantName, setApplicantName] = useState((business as any).ownerName || '');
   const [applicantEmail, setApplicantEmail] = useState(business.contact?.email || '');
-  const [applicantPhone, setApplicantPhone] = useState(business.contact?.phone || '');
+  const [applicantPhone, setApplicantPhone] = useState(business.contact?.phone || business.contact?.whatsapp || '');
   const [agreedToPolicy, setAgreedToPolicy] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -80,16 +98,32 @@ export const VerificationCheckoutModal: React.FC<VerificationCheckoutModalProps>
       }
 
       // Check if Cashfree JS SDK is available for hosted checkout
-      const CashfreeConstructor = await loadCashfreeSdk();
-      if (CashfreeConstructor && orderRes.paymentSessionId && !orderRes.paymentSessionId.startsWith('session_sandbox')) {
-        const cashfree = new CashfreeConstructor({
-          mode: orderRes.environment === 'PRODUCTION' ? 'production' : 'sandbox'
-        });
-        cashfree.checkout({
-          paymentSessionId: orderRes.paymentSessionId,
-          redirectTarget: '_self'
-        });
-        return;
+      const CashfreeFn = await loadCashfreeSdk();
+      if (CashfreeFn && orderRes.paymentSessionId && !orderRes.paymentSessionId.startsWith('session_sandbox')) {
+        let cashfree: any = null;
+        try {
+          cashfree = typeof CashfreeFn === 'function'
+            ? CashfreeFn({
+                mode: orderRes.environment === 'PRODUCTION' ? 'production' : 'sandbox'
+              })
+            : null;
+        } catch {
+          try {
+            cashfree = new (CashfreeFn as any)({
+              mode: orderRes.environment === 'PRODUCTION' ? 'production' : 'sandbox'
+            });
+          } catch (initErr) {
+            console.warn('[Cashfree Init Error]', initErr);
+          }
+        }
+
+        if (cashfree && typeof cashfree.checkout === 'function') {
+          cashfree.checkout({
+            paymentSessionId: orderRes.paymentSessionId,
+            redirectTarget: '_self'
+          });
+          return;
+        }
       }
 
       // In Sandbox or test mode without live banking keys, navigate directly to verification return flow
@@ -124,7 +158,7 @@ export const VerificationCheckoutModal: React.FC<VerificationCheckoutModalProps>
               Get Your Business Verified
             </h2>
             <p className="text-xs text-slate-500">
-              For <strong>{business.name}</strong> &bull; {business.location.locality || business.location.city}, {business.location.district}
+              For <strong>{business.name}</strong> &bull; {business.location?.locality || business.location?.city || 'Local Location'}, {business.location?.district || 'India'}
             </p>
           </div>
           <button

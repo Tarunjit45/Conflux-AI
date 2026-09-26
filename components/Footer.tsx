@@ -20,6 +20,7 @@ const Footer: React.FC<{ siteLogo: string | null }> = ({ siteLogo }) => {
       title: "For Businesses",
       links: [
         { name: "List Your Business Free", path: "/list-business" },
+        { name: "Plans & Pricing", path: "/pricing" },
         { name: "For Business Owners", path: "/business" },
         { name: "Owner Dashboard", path: "/business/dashboard" },
         { name: "Visibility Audit", path: "/business/audit" }
