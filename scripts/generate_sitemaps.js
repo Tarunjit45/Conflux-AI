@@ -59,6 +59,8 @@ const staticRoutes = [
   { url: 'https://confluxai.in/business', changefreq: 'daily', priority: '1.0' },
   { url: 'https://confluxai.in/business/audit', changefreq: 'daily', priority: '0.9' },
   { url: 'https://confluxai.in/list-business', changefreq: 'weekly', priority: '0.9' },
+  { url: 'https://confluxai.in/pricing', changefreq: 'weekly', priority: '0.9' },
+  { url: 'https://confluxai.in/subscription', changefreq: 'weekly', priority: '0.9' },
   { url: 'https://confluxai.in/verify', changefreq: 'daily', priority: '0.9' },
   { url: 'https://confluxai.in/verify/methodology', changefreq: 'weekly', priority: '0.9' },
   { url: 'https://confluxai.in/verify/guides/how-to-verify-indian-company-legal-existence', changefreq: 'weekly', priority: '0.8' },

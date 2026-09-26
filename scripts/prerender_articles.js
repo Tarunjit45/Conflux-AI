@@ -3151,6 +3151,69 @@ const staticPages = [
       </main>
     </div>
     `
+  },
+  {
+    path: '/pricing',
+    title: 'Pricing & Plans | Conflux AI - Verified Trust & Growth Subscriptions',
+    desc: 'Fair, transparent pricing for local businesses. Apply for the ₹499 Conflux Verified trust badge or accelerate lead conversion with commercial growth plans.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/discover" style="margin: 0 10px; color: #475569; text-decoration: none;">Discover</a>
+            <a href="/business" style="margin: 0 10px; color: #475569; text-decoration: none;">For Businesses</a>
+            <a href="/pricing" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Pricing</a>
+            <a href="/contact" style="margin: 0 10px; color: #475569; text-decoration: none;">Contact</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <div style="text-align: center; max-width: 700px; margin: 0 auto 40px auto;">
+          <h1 style="font-size: 38px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 16px;">
+            Fair, Transparent Pricing for Local Businesses
+          </h1>
+          <p style="font-size: 16px; color: #475569; line-height: 1.6;">
+            Zero hidden commission fees. Apply for the official Conflux Verified trust badge (₹499/1st yr) or accelerate customer lead conversion with growth partner subscriptions.
+          </p>
+        </div>
+        <div style="background: linear-gradient(135deg, #1e3a8a, #0f172a); border-radius: 24px; padding: 36px; color: white; margin-bottom: 40px;">
+          <h2 style="font-size: 24px; font-weight: 900; margin: 0 0 12px 0;">✓ Conflux Verified Trust Badge — ₹499 / 1st Year Review</h2>
+          <p style="font-size: 14px; color: #cbd5e1; line-height: 1.6; margin-bottom: 20px;">
+            Independent human evidence evaluation against municipal Trade Licenses, GSTIN, MSME Udyam, or State Regulatory Registers. Displays the official verified badge on your profile across Google and AI search.
+          </p>
+          <a href="/list-business" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 800; text-decoration: none; font-size: 13px;">
+            Apply &amp; Pay via Cashfree &rarr;
+          </a>
+        </div>
+      </main>
+    </div>
+    `
+  },
+  {
+    path: '/subscription',
+    title: 'Commercial Subscriptions & Growth Plans | Conflux AI',
+    desc: 'Explore Conflux AI commercial plans and subscription options for local businesses, enterprises, and verified partners.',
+    body: `
+    <div id="root">
+      <header style="padding: 20px; border-bottom: 1px solid #e2e8f0; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <a href="/" style="font-size: 20px; font-weight: 900; color: #0f172a; text-decoration: none;">CONFLUX <span style="color: #2563eb;">AI</span></a>
+          <nav style="font-size: 13px; font-weight: 700;">
+            <a href="/" style="margin: 0 10px; color: #475569; text-decoration: none;">Home</a>
+            <a href="/pricing" style="margin: 0 10px; color: #2563eb; text-decoration: none;">Pricing</a>
+          </nav>
+        </div>
+      </header>
+      <main style="max-width: 1100px; margin: 0 auto; padding: 50px 20px; font-family: 'Inter', sans-serif;">
+        <h1 style="font-size: 36px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">Conflux Commercial Subscriptions</h1>
+        <p style="font-size: 16px; color: #475569; line-height: 1.6;">Redirecting to the official Conflux Plans &amp; Pricing portal...</p>
+        <p style="margin-top: 20px;"><a href="/pricing" style="color: #2563eb; font-weight: bold;">Click here if you are not redirected &rarr;</a></p>
+      </main>
+    </div>
+    `
   }
 ];
 
